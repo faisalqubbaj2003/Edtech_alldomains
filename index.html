@@ -1912,8 +1912,8 @@ const AGENDA=[
 {t:"13:30",dur:"45 min",k:"meet",title:"Parent meeting — Al Mansoori family",loc:"Meeting Room 2",why:"Sara's list has no floor. Frame the safety school as an addition, keep LSE intact.",sid:"s3"},
 {t:"15:00",dur:"20 min",k:"task",title:"Close Maryam's case with a documented outcome",loc:"",why:"Attendance recovered 79% → 98% and has held for three weeks.",sid:"s5"},
 {t:"16:00",dur:"—",k:"admin",title:"Review Grade 12 parent summaries",loc:"Scheduled to send 22 Nov",why:"Drafted automatically. Nothing leaves until you approve it."}];
-const KIND={meet:{c:"var(--teal)",bg:"var(--tealSoft)",l:"Meeting",i:"users"},task:{c:"var(--checkin)",bg:"var(--checkinSoft)",l:"Action",i:"zap"},
- prep:{c:"var(--violet)",bg:"var(--violetSoft)",l:"Prep",i:"radar"},admin:{c:"var(--monitor)",bg:"var(--monitorSoft)",l:"Admin",i:"doc"}};
+const KIND={meet:{c:"var(--brand)",bg:"var(--brand-3)",l:"Meeting",i:"users"},task:{c:"var(--checkin)",bg:"var(--checkinSoft)",l:"Action",i:"zap"},
+ prep:{c:"var(--violet)",bg:"var(--violet-bg)",l:"Prep",i:"radar"},admin:{c:"var(--monitor)",bg:"var(--monitorSoft)",l:"Admin",i:"doc"}};
 
 
 
@@ -1925,24 +1925,24 @@ function vToday(){
  const meets=AGENDA.filter(a=>a.k==="meet").length;
  return `<div class="fade" style="max-width:920px">
   <div style="margin-bottom:22px">
-   <div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);font-weight:700;margin-bottom:7px">Monday · 24 November</div>
-   <div class="serif" style="font-size:29px;font-weight:600;letter-spacing:-.02em">Good morning, Reem.</div>
-   <div style="font-size:13.5px;color:var(--inkSoft);margin-top:7px;line-height:1.6">${meets} meetings, ${due.length} follow-ups due, and three students changed priority overnight. Everything below is ordered the way your day actually runs.</div>
+   <div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--brand);font-weight:700;margin-bottom:7px">Monday · 24 November</div>
+   <div class="serif" style="font-size:var(--disp-3);font-weight:600;letter-spacing:-.02em">Good morning, Reem.</div>
+   <div style="font-size:13.5px;color:var(--ink-2);margin-top:7px;line-height:1.6">${meets} meetings, ${due.length} follow-ups due, and three students changed priority overnight. Everything below is ordered the way your day actually runs.</div>
   </div>
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px">
-   ${[[meets,"Meetings today","var(--teal)","users"],[due.length,"Follow-ups due","var(--checkin)","brief"],["2","Deadlines this week","var(--urgent)","clock"]]
+   ${[[meets,"Meetings today","var(--brand)","users"],[due.length,"Follow-ups due","var(--checkin)","brief"],["2","Deadlines this week","var(--urgent)","clock"]]
     .map(([v,l,c,i])=>`<div class="card" style="padding:15px 17px;display:flex;align-items:center;gap:12px">
      <span style="color:${c};display:flex">${ic(i,18)}</span>
      <div><div class="serif" style="font-size:22px;font-weight:600;line-height:1;color:${c}">${v}</div>
-     <div style="font-size:11.5px;color:var(--inkSoft);margin-top:2px">${l}</div></div></div>`).join('')}
+     <div style="font-size:11.5px;color:var(--ink-2);margin-top:2px">${l}</div></div></div>`).join('')}
   </div>
   <div class="card" style="padding:20px 22px;margin-bottom:20px">
    <div class="sechead">${ic('radar',13)} What changed overnight</div>
-   ${moved.map((m,i)=>`<div class="lift" data-file="${m.id}" style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:11px 0;border-bottom:${i<moved.length-1?'1px solid var(--lineSoft)':'none'};cursor:pointer">
+   ${moved.map((m,i)=>`<div class="lift" data-file="${m.id}" style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:11px 0;border-bottom:${i<moved.length-1?'1px solid var(--line)':'none'};cursor:pointer">
     <div><div style="font-size:13px;font-weight:600">${m.n}</div>
-     <div style="font-size:11.8px;color:var(--inkMute);margin-top:2px">${m.r}</div></div>
+     <div style="font-size:11.8px;color:var(--ink-3);margin-top:2px">${m.r}</div></div>
     <div style="display:flex;align-items:center;gap:7px;font-size:11px;white-space:nowrap">
-     <span style="color:var(--inkMute)">${m.f}</span>${ic('arrowR',12)}
+     <span style="color:var(--ink-3)">${m.f}</span>${ic('arrowR',12)}
      <span style="font-weight:700;color:${m.t==="Urgent"?'var(--urgent)':m.t==="Recovered"?'var(--good)':'var(--checkin)'}">${m.t}</span></div>
    </div>`).join('')}
   </div>
@@ -1953,17 +1953,17 @@ function vToday(){
     return `<div style="display:grid;grid-template-columns:52px 1fr;gap:18px;margin-bottom:10px;position:relative;animation:rise .4s ${i*.05}s backwards">
      <div style="text-align:right;padding-top:15px">
       <div class="mono" style="font-size:12px;font-weight:600;color:var(--ink)">${a.t}</div>
-      <div style="font-size:9.5px;color:var(--inkMute);margin-top:2px">${a.dur}</div></div>
+      <div style="font-size:9.5px;color:var(--ink-3);margin-top:2px">${a.dur}</div></div>
      <div style="position:relative">
-      <span style="position:absolute;left:-16px;top:19px;width:10px;height:10px;border-radius:50%;background:${K.c};border:2.5px solid var(--panel);z-index:2"></span>
+      <span style="position:absolute;left:-16px;top:19px;width:10px;height:10px;border-radius:50%;background:${K.c};border:2.5px solid var(--bg);z-index:2"></span>
       <div class="card lift" style="padding:15px 17px;border-left:3px solid ${K.c}">
        <div style="display:flex;align-items:flex-start;gap:11px">
         <div style="flex:1">
          <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:3px">
           <b style="font-size:13.5px">${a.title}</b>
           <span class="chip" style="background:${K.bg};color:${K.c}">${K.l}</span></div>
-         ${a.loc?`<div style="font-size:11.3px;color:var(--inkMute);margin-bottom:5px">${a.loc}</div>`:''}
-         <div style="font-size:12.3px;color:var(--inkSoft);line-height:1.55">${a.why}</div></div>
+         ${a.loc?`<div style="font-size:11.3px;color:var(--ink-3);margin-bottom:5px">${a.loc}</div>`:''}
+         <div style="font-size:12.3px;color:var(--ink-2);line-height:1.55">${a.why}</div></div>
         <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
          ${a.sid?`<button class="btn btn-g btn-sm" data-act="brief:${a.sid}">${ic('spark',12)} Brief</button>
           <button class="btn btn-g btn-sm" data-file="${a.sid}">Open file</button>`:''}
@@ -1972,8 +1972,8 @@ function vToday(){
         </div></div></div></div></div>`;}).join('')}
   </div>
   <div class="card" style="padding:17px 20px;margin-top:18px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-   <div style="width:34px;height:34px;border-radius:9px;background:var(--tealSoft);display:grid;place-items:center;color:var(--tealDeep);flex-shrink:0">${ic('checkC',17)}</div>
-   <div style="flex:1;min-width:240px;font-size:12.3px;color:var(--inkSoft);line-height:1.5"><b style="color:var(--ink)">Before you leave.</b> Two cases need an outcome recorded today. Cases closed without a documented outcome are the biggest gap in most schools' support records — and the first thing an inspector asks for.</div>
+   <div style="width:34px;height:34px;border-radius:var(--r);background:var(--brand-3);display:grid;place-items:center;color:var(--brand-2);flex-shrink:0">${ic('checkC',17)}</div>
+   <div style="flex:1;min-width:240px;font-size:12.3px;color:var(--ink-2);line-height:1.5"><b style="color:var(--ink)">Before you leave.</b> Two cases need an outcome recorded today. Cases closed without a documented outcome are the biggest gap in most schools' support records — and the first thing an inspector asks for.</div>
    <button class="btn btn-p btn-sm" data-cnav="si-interventions" style="flex-shrink:0">Record outcomes</button>
   </div>
  </div>`;}
@@ -1985,61 +1985,6 @@ function cohortRag(c){
  if(rs.includes("critical"))return "critical";
  if(rs.includes("watch"))return "watch";
  return "good";}
-
-function agendaBlock(){
- const due=S.ivs.filter(i=>i.status==="open").length;
- const meets=AGENDA.filter(a=>a.k==="meet").length;
- return `<div style="margin-bottom:26px">
-  <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px">
-   <div class="serif" style="font-size:23px;font-weight:600;letter-spacing:-.02em">Today</div>
-   <div style="font-size:12.5px;color:var(--inkMute)">Monday · 24 November · engine swept 07:04</div></div>
-  <div style="font-size:13px;color:var(--inkSoft);margin-bottom:16px;line-height:1.6">${meets} meetings, ${due} follow-ups due, and three students changed priority overnight.</div>
-
-  <div class="card" style="padding:18px 20px;margin-bottom:14px">
-   <div class="sechead">${ic('radar',13)} Changed overnight</div>
-   ${[["Ahmed Khalifa","s1","Monitor","Urgent","Teacher concern corroborated the Maths and attendance signals"],
-      ["Layla Haddad","s2","Review","Check-in","Engagement silence passed the 14-day threshold"],
-      ["Maryam Al Suwaidi","s5","Check-in","Recovered","Attendance held inside her personal band for three weeks"]]
-    .map((m,i)=>`<div class="lift" data-file="${m[1]}" style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:10px 0;border-bottom:${i<2?'1px solid var(--lineSoft)':'none'};cursor:pointer">
-     <div><div style="font-size:12.8px;font-weight:600">${m[0]}</div>
-      <div style="font-size:11.5px;color:var(--inkMute);margin-top:2px">${m[4]}</div></div>
-     <div style="display:flex;align-items:center;gap:7px;font-size:11px;white-space:nowrap">
-      <span style="color:var(--inkMute)">${m[2]}</span>${ic('arrowR',12)}
-      <span style="font-weight:700;color:${m[3]==="Urgent"?'var(--urgent)':m[3]==="Recovered"?'var(--good)':'var(--checkin)'}">${m[3]}</span></div></div>`).join('')}
-  </div>
-
-  <div class="sechead" style="margin-bottom:12px">${ic('clock',13)} What needs doing today</div>
-  <div style="position:relative">
-   <div style="position:absolute;left:56px;top:10px;bottom:10px;width:1px;background:var(--line)"></div>
-   ${AGENDA.map((a,i)=>{const K=KIND[a.k];
-    return `<div style="display:grid;grid-template-columns:50px 1fr;gap:18px;margin-bottom:9px;animation:rise .4s ${i*.04}s backwards">
-     <div style="text-align:right;padding-top:14px">
-      <div class="mono" style="font-size:11.5px;font-weight:600">${a.t}</div>
-      <div style="font-size:9px;color:var(--inkMute);margin-top:1px">${a.dur}</div></div>
-     <div style="position:relative">
-      <span style="position:absolute;left:-24px;top:18px;width:10px;height:10px;border-radius:50%;background:${K.c};border:2.5px solid var(--panel);z-index:1"></span>
-      <div class="card lift" style="padding:13px 16px;border-left:3px solid ${K.c}">
-       <div style="display:flex;align-items:flex-start;gap:11px">
-        <div style="flex:1">
-         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:2px">
-          <b style="font-size:13px">${a.title}</b>
-          <span class="chip" style="background:${K.bg};color:${K.c}">${K.l}</span></div>
-         ${a.loc?`<div style="font-size:11px;color:var(--inkMute);margin-bottom:4px">${a.loc}</div>`:''}
-         <div style="font-size:12.2px;color:var(--inkSoft);line-height:1.5">${a.why}</div></div>
-        <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0">
-         ${a.sid?`<button class="btn btn-g btn-sm" data-act="brief:${a.sid}">${ic('spark',12)} Brief</button>
-          <button class="btn btn-g btn-sm" data-file="${a.sid}">File</button>`:''}
-         ${a.go?`<button class="btn btn-g btn-sm" data-cnav="${a.go}">Open ${ic('arrowR',12)}</button>`:''}
-         ${!a.sid&&!a.go?`<button class="btn btn-g btn-sm" data-toast="Approved · sent and logged">Approve</button>`:''}
-        </div></div></div></div></div>`;}).join('')}
-  </div>
-
-  <div class="card" style="padding:15px 19px;margin-top:14px;display:flex;gap:12px;align-items:center">
-   <div style="width:32px;height:32px;border-radius:9px;background:var(--tealSoft);display:grid;place-items:center;color:var(--tealDeep);flex-shrink:0">${ic('checkC',16)}</div>
-   <div style="flex:1;font-size:12.2px;color:var(--inkSoft);line-height:1.5"><b style="color:var(--ink)">Before you leave.</b> ${due} case${due===1?'':'s'} still need an outcome recorded. Cases closed without one are the first gap an inspector finds.</div>
-   <button class="btn btn-p btn-sm" data-cnav="si-interventions" style="flex-shrink:0">Record outcomes</button>
-  </div>
- </div>`;}
 
 function vCohort(){
  const q=(S.q||"").toLowerCase().trim();
