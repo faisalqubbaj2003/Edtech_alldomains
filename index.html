@@ -256,6 +256,46 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
  border:1px solid rgba(255,255,255,.09)}
 .toastbar svg{width:16px;height:16px;color:#34D399}
 
+/* ══════════ COMMAND PALETTE (Runbook 4.4) ══════════ */
+.palbg{position:fixed;inset:0;background:rgba(12,17,29,.5);
+ backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);z-index:500;
+ display:flex;align-items:flex-start;justify-content:center;
+ padding:11vh 20px 20px;animation:fade .14s ease}
+.pal{background:var(--surface);border-radius:var(--r-lg);width:620px;max-width:100%;
+ box-shadow:var(--sh-xl);overflow:hidden;display:flex;flex-direction:column;
+ max-height:min(560px,70vh);animation:pop .2s cubic-bezier(.22,1,.36,1)}
+.palhead{display:flex;align-items:center;gap:11px;padding:14px 18px;border-bottom:1px solid var(--line);flex-shrink:0}
+.palhead input{flex:1;border:none;outline:none;background:none;font-family:inherit;
+ font-size:15.5px;color:var(--ink);letter-spacing:-.01em;min-width:0}
+.palhead input::placeholder{color:var(--ink-4)}
+.palres{overflow-y:auto;padding:6px;flex:1}
+.palgrp{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-4);
+ font-weight:700;padding:12px 12px 5px}
+.palrow{display:flex;align-items:center;gap:11px;padding:8px 12px;border-radius:var(--r);cursor:pointer}
+.palrow.on{background:var(--surface-3)}
+.palrow.on .palgo{opacity:1}
+.palico{width:28px;height:28px;border-radius:var(--r);background:var(--surface-3);
+ display:grid;place-items:center;color:var(--ink-3);flex-shrink:0}
+.palrow.on .palico{background:var(--brand-3);color:var(--brand-2)}
+.pallbl{font-size:13.5px;font-weight:500;color:var(--ink);letter-spacing:-.008em;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.palsub{font-size:11px;color:var(--ink-3);margin-top:1px;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.palgo{margin-left:auto;font-size:10.5px;color:var(--ink-3);opacity:0;flex-shrink:0;
+ display:flex;align-items:center;gap:5px}
+.palfoot{display:flex;align-items:center;gap:15px;padding:8px 16px;border-top:1px solid var(--line);
+ background:var(--surface-2);font-size:11px;color:var(--ink-4);flex-shrink:0;flex-wrap:wrap}
+.palkbd{font-family:inherit;font-size:10px;background:var(--surface-3);
+ border:1px solid var(--line-2);border-radius:4px;padding:1px 5px;color:var(--ink-3)}
+.palnone{padding:38px 20px;text-align:center}
+.palfind{display:flex;align-items:center;gap:8px;background:var(--surface);
+ border:1px solid var(--line-2);border-radius:9px;height:36px;padding:0 11px;width:236px;
+ box-shadow:var(--sh-xs);cursor:text;font-family:inherit;color:var(--ink-4);
+ font-size:13px;text-align:left;flex-shrink:0}
+.palfind:hover{border-color:var(--line-3)}
+@media(max-width:900px){.palfind span.palfindtxt{display:none}
+ .palfind{width:auto;min-width:36px;justify-content:center;padding:0 9px}}
+
 /* ══════════ CANVAS DEPTH ══════════ */
 .mainpane{
  background:
@@ -428,7 +468,7 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
  .glass > div:last-child > div{min-width:0!important}
 }
 @media (max-width:400px){
- .glass > div:last-child > button{display:none!important}
+ .glass > div:last-child > button:not(.palfind){display:none!important}
  .glass{padding:10px 12px!important}
 }
 
@@ -796,7 +836,7 @@ open:null,tab:"evidence",domFilter:"all",prioFilter:"all",
 cases:JSON.parse(JSON.stringify(STUDENTS)),
 ivs:JSON.parse(JSON.stringify(INTERVENTIONS)),
 audit:JSON.parse(JSON.stringify(AUDIT)),
-toast:null,modal:null,cpQ:null,cpA:null,cpLoad:false,
+toast:null,modal:null,pal:null,cpQ:null,cpA:null,cpLoad:false,
 letter:"idle",thresh:{acad:2,att:3,eng:14,persist:3},
 sortBy:"prio",noteDraft:"",selSlot:null,
 uniOpen:"",pmTopic:"",pmSlot:null,pmNote:"",pathDegree:"",pathCountry:"UK",previewGrade:12,previewTrack:"IB",earlyStart:false,
@@ -984,7 +1024,7 @@ function shell(theme,nav,active,attr,footAv,footN,footR,title,sub,body){
   <div class="glass" style="position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);padding:13px 30px;display:flex;align-items:center;gap:16px">
    <button class="navtoggle" data-navopen="1" aria-label="Menu">${ic('list',18)}</button>
    <div style="flex:1;min-width:0"><div class="serif" style="font-size:18px;font-weight:600">${title}</div><div style="font-size:11.5px;color:var(--ink-3);margin-top:1px">${sub}</div></div>
-   <div style="display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:7px 12px;width:210px">${ic('search',14)}<input placeholder="Search students…" style="border:none;background:none;font-size:12.5px;width:100%;color:var(--ink)"></div>
+   <button class="palfind" data-pal="1" aria-label="Search this portal">${ic('search',14)}<span class="palfindtxt" style="flex:1">Search…</span><kbd class="palkbd">${PAL_KEY}K</kbd></button>
   </div>
   <div style="padding:24px 30px 70px;max-width:1140px">${body}</div>
  </main></div>`;}
@@ -2799,13 +2839,9 @@ function vHSGuide(persona){
 
 function vParent(){
  const c=g(PARENT_ME);const pg=S.previewGrade||12,pt=c.track||"IB";
- let tabs=[["overview","Overview"],["messages","Messages"],["meetings","Meet the counselor"]];
- if(pg===9)tabs.splice(2,0,["guide","High School Guide"]);
- if(pg>=10)tabs.splice(2,0,["pathway","IB or AP"]);
- if(pg>=11)tabs.splice(2,0,["grades","Grades & transcripts"]);
- if(pg===12)tabs.splice(tabs.findIndex(t=>t[0]==="pathway"),0,["uni","University requirements"]);
- if(pg>=11&&pt==="AP")tabs.splice(tabs.findIndex(t=>t[0]==="meetings"),0,["apexams","AP Exams"]);
- tabs.sort((a,b)=>{const ord=["overview","messages","guide","grades","uni","pathway","apexams","meetings"];return ord.indexOf(a[0])-ord.indexOf(b[0]);});
+ /* Same list as the sidebar and the same list the palette offers — this used to
+    be a third hand-maintained copy of the grade rules. */
+ const tabs=roleNav("parent");
  const validKeys=tabs.map(t=>t[0]);
  const pv=validKeys.includes(S.pv)?S.pv:"overview";
  const att=c.baselines.attendance?c.baselines.attendance.series[7]:98;
@@ -3558,6 +3594,191 @@ function modalEl(){
  return '';}
 
 /* ═══════════ RENDER ═══════════ */
+/* ═══════════ COMMAND PALETTE (Runbook 4.4) ═══════════
+   The header has been showing a "Search students… ⌘K" affordance over a dead
+   input since the first prototype. This makes it real, in the Linear/Raycast
+   pattern: one key from anywhere, type a few letters, hit return.
+
+   Two things worth knowing before editing it.
+
+   (1) The student list is SCOPED TO THE ROLE, and that is not decoration. The
+   counselor can reach all 87 because that is her caseload. A parent gets their
+   own child and nothing else; a teacher gets the class in front of them, and
+   their verb is "log a concern", not "read the file". Wiring every role to the
+   same 87 rows would have quietly built the exact permission leak the co-pilot
+   already promises it never makes.
+
+   (2) It does NOT re-render the app on each keystroke. draw() rebuilds the whole
+   tree, which would destroy the input and lose the caret every character — the
+   cohort search box already works around that by saving and restoring the
+   selection. Instead the palette paints only its own results list, so focus and
+   caret are never touched, and a full draw() happens once, when a command runs. */
+let PALHITS=[];
+/* Show the modifier this keyboard actually has, rather than telling a Windows
+   user in the school office to press a key their machine does not have. */
+const PAL_KEY=/Mac|iPhone|iPad/.test(navigator.platform||navigator.userAgent)?"⌘":"Ctrl ";
+
+/* The parent and student sidebars are grade-conditional and are built here so
+   that draw() and the palette read the same list instead of each keeping a copy
+   that drifts. */
+function roleNav(role){
+ const gr=S.previewGrade||12,tr=g(PARENT_ME).track||"IB";
+ if(role==="teacher")return [["class","My classes","users"],["tlog","What I've logged","list"]];
+ if(role==="mentor")return [["requests","Session Requests","inbox",2],["mentees","My Mentees","users"]];
+ if(role==="parent"){
+  const nav=[["overview","Overview","home"],["messages","Messages","msg"],["meetings","Meet the counselor","brief"]];
+  if(gr===9)nav.splice(2,0,["guide","High School Guide","book"]);
+  if(gr>=10)nav.splice(2,0,["pathway","IB or AP","route"]);
+  if(gr>=11)nav.splice(2,0,["grades","Grades & transcripts","book"]);
+  if(gr===12)nav.splice(nav.findIndex(t=>t[0]==="pathway"),0,["uni","University requirements","grad"]);
+  if(gr>=11&&tr==="AP")nav.splice(nav.findIndex(t=>t[0]==="meetings"),0,["apexams","AP Exams","clock"]);
+  const order=["overview","messages","guide","grades","uni","pathway","apexams","meetings"];
+  return nav.sort((a,b)=>order.indexOf(a[0])-order.indexOf(b[0]));
+ }
+ const nav=gr===9?[["guide","High School Guide","book"]]
+  :[["explore","Choosing IB or AP","route"],["mentors","Find a Mentor","mentorMatch",2]];
+ if(gr>=11)nav.unshift(["progress","My progress","trend"]);
+ if(gr===12){nav.splice(1,0,["pathway","My Pathway","route"],["targets","University Targets","target"]);
+  nav.push(["network","My Network","brief"]);}
+ if(gr>=11&&tr==="AP")nav.splice(nav.findIndex(x=>x[0]==="mentors"),0,["apexams","AP Exams","clock"]);
+ return nav;}
+
+const ROLE_LABEL={counselor:"Counselor OS",teacher:"Teacher portal",student:"Career OS",parent:"Family portal",mentor:"Mentor Hub"};
+
+function palCommands(){
+ const L=[],R=S.role;
+ const clearC=()=>{S.open=null;S.fileId=null;S.ragFilter="all";S.prioFilter="all";};
+
+ if(R==="counselor"){
+  /* every student on the caseload — the counselor's actual scope */
+  S.cases.forEach(c=>L.push({grp:"Students",lbl:c.name,
+   sub:c.yr+" · "+PRIO[c.prio].label+" · "+c.goal,av:c.av,prio:c.prio,go:"Open file",
+   key:c.name+" "+c.yr+" "+c.goal+" "+PRIO[c.prio].short+" "+(c.track||""),
+   run:()=>{clearC();S.fileId=c.id;S.fileTab="synth";S.cv="files";}}));
+  CATS.forEach(cat=>cat.sub.forEach(([k,l])=>L.push({grp:"Go to",lbl:l,sub:cat.label,icon:cat.ic,
+   key:l+" "+cat.label,run:()=>{clearC();S.cv=k;}})));
+  SYSNAV.forEach(([k,l,i])=>L.push({grp:"Go to",lbl:l,sub:"Tools & system",icon:i,
+   key:l,run:()=>{clearC();S.cv=k;}}));
+  L.push({grp:"Actions",lbl:"Record a meeting",sub:"Log an outcome against a student",icon:"brief",
+   key:"record meeting log outcome note",
+   run:()=>{S.modal={type:"meet",id:S.fileId||S.open||"s1"};S.mKind="Check-in";S.mOut="Ongoing";}});
+  L.push({grp:"Actions",lbl:"Draft a recommendation letter",sub:"Letter Engine · from verified evidence",icon:"doc",
+   key:"draft write recommendation letter reference ucas",
+   run:()=>{clearC();S.cv="app-letter";S.letter="idle";}});
+  L.push({grp:"Actions",lbl:"Ask the co-pilot a question",sub:"Plain-language query over your cohort",icon:"spark",
+   key:"ask copilot question query ai",run:()=>{clearC();S.cv="copilot";}});
+  L.push({grp:"Actions",lbl:"Tune detection thresholds",sub:"What counts as a signal at this school",icon:"gauge",
+   key:"tune thresholds sensitivity detection settings",run:()=>{clearC();S.cv="thresholds";}});
+ } else {
+  /* Every other role navigates its own sidebar and nothing else. */
+  const attr={parent:"pv",student:"sv",teacher:"tv",mentor:"mv"}[R];
+  roleNav(R).forEach(n=>L.push({grp:"Go to",lbl:n[1],sub:ROLE_LABEL[R],icon:n[2],
+   key:n[1],run:()=>{S[attr]=n[0];}}));
+
+  if(R==="teacher"){
+   /* a teacher's scope is the class in front of them, and their verb is to flag,
+      not to read a counseling file */
+   S.cases.slice(0,6).forEach(c=>L.push({grp:"My class",lbl:c.name,sub:"Log something after your lesson",
+    av:c.av,prio:c.prio,go:"Log",key:c.name+" "+c.yr,
+    run:()=>{S.modal={type:"tflag",id:c.id};S.tKind="concern";S.tTags=[];S.tNote="";}}));
+  } else if(R==="parent"||R==="student"){
+   const me=g(PARENT_ME);
+   L.push({grp:R==="parent"?"Your child":"You",lbl:me.name,sub:me.yr+" · aiming for "+me.goal,
+    av:me.av,prio:"student",go:"Overview",key:me.name+" "+me.yr+" "+me.goal,
+    run:()=>{if(R==="parent")S.pv="overview";else S.sv=(roleNav("student")[0]||["progress"])[0];}});
+   [9,10,11,12].forEach(gr=>L.push({grp:"Family switcher",lbl:"Grade "+gr,
+    sub:"Show the portal as a Grade "+gr+" family sees it",icon:"users",key:"grade "+gr+" switch family",
+    run:()=>{S.previewGrade=gr;S.pv="overview";S.sv=null;}}));
+  }
+ }
+
+ Object.keys(ROLE_LABEL).forEach(r=>{if(r!==R)L.push({grp:"Switch role",lbl:ROLE_LABEL[r],
+  sub:"See the product as "+(r==="counselor"?"the counselor":r==="parent"?"a parent":r==="student"?"a student":r==="teacher"?"a teacher":"a mentor")+" sees it",
+  icon:r==="counselor"?"caseload":r==="parent"?"heart":r==="student"?"grad":r==="teacher"?"users":"mentorMatch",
+  key:ROLE_LABEL[r]+" "+r+" role switch portal",run:()=>{S.role=r;S.open=null;}});});
+ return L;}
+
+/* Rank: an exact prefix beats a word start beats a loose substring. Enough for
+   87 rows typed at a few characters — no fuzzy-match library in a file with no
+   build step. */
+function palFilter(q){
+ const all=palCommands();
+ q=(q||"").trim().toLowerCase();
+ if(!q)return all.filter(c=>c.grp!=="Students").slice(0,14);
+ return all.map(c=>{
+   const hay=((c.key||c.lbl)+" "+(c.sub||"")).toLowerCase(),lbl=c.lbl.toLowerCase();
+   let sc=-1;
+   if(lbl.startsWith(q))sc=0;
+   else if(new RegExp("\\b"+q.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")).test(hay))sc=1;
+   else if(hay.includes(q))sc=2;
+   return sc<0?null:{c,sc};})
+  .filter(Boolean).sort((a,b)=>a.sc-b.sc).slice(0,40).map(x=>x.c);}
+
+function palRows(){
+ const hits=PALHITS;
+ if(!hits.length)return `<div class="palnone">
+  <div style="display:flex;justify-content:center;margin-bottom:12px;color:var(--ink-4)">${ic('search',26)}</div>
+  <div style="font-size:13.5px;color:var(--ink-2);font-weight:500">Nothing matches “${(S.pal.q||"").replace(/[<>&]/g,"")}”</div>
+  <div style="font-size:11.8px;color:var(--ink-4);margin-top:5px">Only what your role can already see is searchable here.</div></div>`;
+ let out="",grp="";
+ hits.forEach((c,i)=>{
+  if(c.grp!==grp){grp=c.grp;out+=`<div class="palgrp">${grp}</div>`;}
+  const on=i===S.pal.sel;
+  out+=`<div class="palrow ${on?'on':''}" data-pali="${i}">
+   ${c.av?av(c.av,c.prio,28,8):`<span class="palico">${ic(c.icon||'chevR',15)}</span>`}
+   <div style="min-width:0"><div class="pallbl">${c.lbl}</div>${c.sub?`<div class="palsub">${c.sub}</div>`:''}</div>
+   <span class="palgo">${c.go||"Go"} ${ic('arrowR',12)}</span></div>`;});
+ return out;}
+
+function paletteEl(){
+ if(!S.pal)return '';
+ PALHITS=palFilter(S.pal.q);
+ if(S.pal.sel>=PALHITS.length)S.pal.sel=Math.max(0,PALHITS.length-1);
+ const scope=S.role==="counselor"?"87 students, every tool"
+  :S.role==="teacher"?"your class and your pages"
+  :S.role==="mentor"?"your pages":"your pages and your own record";
+ return `<div class="palbg" data-palbg="1"><div class="pal" role="dialog" aria-label="Command palette">
+  <div class="palhead"><span style="color:var(--ink-4);display:flex">${ic('search',17)}</span>
+   <input id="palin" placeholder="Search students, tools and actions…" autocomplete="off" spellcheck="false" value="${(S.pal.q||"").replace(/"/g,"&quot;")}">
+   <kbd class="palkbd" data-palclose="1" style="cursor:pointer">esc</kbd></div>
+  <div class="palres" id="palres">${palRows()}</div>
+  <div class="palfoot">
+   <span><kbd class="palkbd">↑</kbd> <kbd class="palkbd">↓</kbd> navigate</span>
+   <span><kbd class="palkbd">↵</kbd> open</span>
+   <span style="margin-left:auto">Searching ${scope}</span></div>
+ </div></div>`;}
+
+/* Repaint the results only — never the app. Keeps the caret where it is. */
+function palPaint(){
+ if(!S.pal)return;
+ PALHITS=palFilter(S.pal.q);
+ if(S.pal.sel>=PALHITS.length)S.pal.sel=Math.max(0,PALHITS.length-1);
+ const box=document.getElementById("palres");
+ if(!box)return;
+ box.innerHTML=palRows();
+ palBindRows();
+ /* scrollIntoView on the very first row scrolls its group header out of sight,
+    so the list opens looking like it starts mid-section */
+ if(S.pal.sel===0){box.scrollTop=0;return;}
+ const on=box.querySelector(".palrow.on");
+ if(on&&on.scrollIntoView)on.scrollIntoView({block:"nearest"});}
+
+function palBindRows(){
+ document.querySelectorAll("[data-pali]").forEach(e=>{
+  e.onmouseenter=()=>{S.pal.sel=+e.dataset.pali;
+   document.querySelectorAll(".palrow").forEach(r=>r.classList.toggle("on",r===e));};
+  e.onclick=()=>palRun(+e.dataset.pali);});}
+
+function palRun(i){
+ const c=PALHITS[i];if(!c)return;
+ S.pal=null;c.run();draw();}
+
+function palOpen(){
+ S.pal={q:"",sel:0};S.navOpen=false;draw();
+ const i=document.getElementById("palin");if(i)i.focus();}
+
+function palClose(){if(!S.pal)return;S.pal=null;draw();}
+
 /* An "arrival" is anything that REPLACES what you are looking at: a different
    role, view, student file or grade — and also a panel whose whole contents are
    new, like the letter finishing its draft or the co-pilot answering. Filtering,
@@ -3609,35 +3830,23 @@ function draw(){
         <span style="width:5px;height:5px;border-radius:99px;background:var(--ok);display:inline-block"></span>Engine swept 07:04</span></div>
      </div>
      <div style="display:flex;align-items:center;gap:9px;flex-shrink:0">
-      <div style="display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line-2);border-radius:9px;padding:0 11px;height:36px;width:236px;box-shadow:var(--sh-xs)">
+      <button class="palfind" data-pal="1" aria-label="Search students, tools and actions">
        <span style="color:var(--ink-4);display:flex">${ic('search',15)}</span>
-       <input placeholder="Search students…" style="border:none;background:none;font-size:13px;width:100%;height:100%">
-       <kbd style="font-family:inherit;font-size:10px;color:var(--ink-4);background:var(--surface-3);border:1px solid var(--line-2);border-radius:4px;padding:1px 5px;flex-shrink:0">⌘K</kbd></div>
+       <span class="palfindtxt" style="flex:1">Search students…</span>
+       <kbd class="palkbd">${PAL_KEY}K</kbd></button>
       <button class="btn btn-g btn-sm" style="height:36px;padding:0 11px" data-toast="Notifications are up to date">${ic('inbox',15)}</button>
      </div>
     </div>
     <div style="padding:26px 28px 72px;max-width:1180px">${body2}</div></main></div>`;
  } else if(S.role==="teacher"){
-  const nav=[["class","My classes","users"],["tlog","What I've logged","list"]];
+  const nav=roleNav("teacher");
   const body3=S.tv==="tlog"?vTLog():vTClass();
   sb=shell("teacher",nav,S.tv,"data-tnav","JD",TEACHER.name,TEACHER.subject,"Teacher portal",TEACHER.name+" · "+TEACHER.subject,body3);
  } else if(S.role==="parent"){
-  const pg2=S.previewGrade||12,pt2=g(PARENT_ME).track||"IB";
-  let nav=[["overview","Overview","home"],["messages","Messages","msg"],["meetings","Meet the counselor","brief"]];
-  if(pg2===9)nav.splice(2,0,["guide","High School Guide","book"]);
-  if(pg2>=10)nav.splice(2,0,["pathway","IB or AP","route"]);
-  if(pg2>=11)nav.splice(2,0,["grades","Grades & transcripts","book"]);
-  if(pg2===12)nav.splice(nav.findIndex(t=>t[0]==="pathway"),0,["uni","University requirements","grad"]);
-  if(pg2>=11&&pt2==="AP")nav.splice(nav.findIndex(t=>t[0]==="meetings"),0,["apexams","AP Exams","clock"]);
-  const order2=["overview","messages","guide","grades","uni","pathway","apexams","meetings"];
-  nav.sort((a,b)=>order2.indexOf(a[0])-order2.indexOf(b[0]));
+  const nav=roleNav("parent");
   sb=shell("parent",nav,S.pv,"data-pv",PARENTS[PARENT_ME].av,PARENTS[PARENT_ME].name,"Parent of "+g(PARENT_ME).name.split(" ")[0],"Family portal",g(PARENT_ME).name+" · "+g(PARENT_ME).yr+" · "+SCHOOL.name,vParent());
  } else if(S.role==="student"){
-  const pg=S.previewGrade||12,pt=g(PARENT_ME).track||"IB";
-  let nav=pg===9?[["guide","High School Guide","book"]]:[["explore","Choosing IB or AP","route"],["mentors","Find a Mentor","mentorMatch",2]];
-  if(pg>=11)nav.unshift(["progress","My progress","trend"]);
-  if(pg===12){nav.splice(1,0,["pathway","My Pathway","route"],["targets","University Targets","target"]);nav.push(["network","My Network","brief"]);}
-  if(pg>=11&&pt==="AP")nav.splice(nav.findIndex(x=>x[0]==="mentors"),0,["apexams","AP Exams","clock"]);
+  const nav=roleNav("student");
   const validSv=nav.map(x=>x[0]);
   const sv=validSv.includes(S.sv)?S.sv:nav[0][0];
   let body;
@@ -3653,7 +3862,7 @@ function draw(){
   const curStu=g(PARENT_ME);
   sb=shell("student",nav,sv,"data-snav",curStu.av,curStu.name,curStu.yr+" · "+curStu.goal,"My Career OS",curStu.name+" · "+curStu.yr+" · "+SCHOOL.name,body);
  } else {
-  const nav=[["requests","Session Requests","inbox",2],["mentees","My Mentees","users"]];
+  const nav=roleNav("mentor");
   body=S.mv==="requests"?vMentorReq():vMentorMentees();
   sb=shell("mentor",nav,S.mv,"data-mnav","HR","Hassan Al Rashid","Goldman Sachs · LSE '21","Mentor Hub","Hassan Al Rashid · Analyst, IBD · Goldman Sachs",body);
  }
@@ -3675,7 +3884,7 @@ function draw(){
  const tabbar=`<nav class="tabbar">${TABS.map(t=>{
    const on=t[0]!=="__menu"&&curKey===t[0];
    return `<button class="tabitem ${on?'on':''}" ${t[0]==="__menu"?'data-navopen="1"':navAttr+'="'+t[0]+'"'}>${ic(t[2],20)}<span>${t[1]}</span>${t[0]==="si-cases"&&prioCounts().urgent?`<i class="tabdot"></i>`:''}</button>`;}).join('')}</nav>`;
- R.innerHTML=`<div class="navscrim" data-navclose="1"></div><div style="height:100vh;display:flex;flex-direction:column">${roleBar()}${sb}</div>${tabbar}${modalEl()}${tflagModal()}${meetModal()}${mergeModal()}${assignModal()}${S.toast?`<div class="toastbar pop">${ic('checkC',17)}${S.toast}</div>`:''}`;
+ R.innerHTML=`<div class="navscrim" data-navclose="1"></div><div style="height:100vh;display:flex;flex-direction:column">${roleBar()}${sb}</div>${tabbar}${modalEl()}${tflagModal()}${meetModal()}${mergeModal()}${assignModal()}${paletteEl()}${S.toast?`<div class="toastbar pop">${ic('checkC',17)}${S.toast}</div>`:''}`;
  bind();
 }
 
@@ -3774,6 +3983,21 @@ function bind(){
    logAudit("R.HADDAD","MEETING_RECORDED",c.name,S.mKind+" · outcome "+S.mOut);
    S.modal=null;toast("Meeting recorded for "+c.name.split(" ")[0]);draw();});
 
+ /* ── command palette ── */
+ q("[data-pal]",e=>e.onclick=()=>palOpen());
+ q("[data-palclose]",e=>e.onclick=()=>palClose());
+ const pbg=document.querySelector("[data-palbg]");
+ if(pbg)pbg.onclick=(ev)=>{if(ev.target===pbg)palClose();};
+ const pin=document.getElementById("palin");
+ if(pin){
+  pin.oninput=()=>{S.pal.q=pin.value;S.pal.sel=0;palPaint();};
+  pin.onkeydown=(ev)=>{
+   if(ev.key==="ArrowDown"){ev.preventDefault();S.pal.sel=Math.min(S.pal.sel+1,PALHITS.length-1);palPaint();}
+   else if(ev.key==="ArrowUp"){ev.preventDefault();S.pal.sel=Math.max(S.pal.sel-1,0);palPaint();}
+   else if(ev.key==="Enter"){ev.preventDefault();palRun(S.pal.sel);}
+   else if(ev.key==="Escape"){ev.preventDefault();palClose();}};
+  palBindRows();}
+
  q("[data-navopen]",e=>e.onclick=()=>{S.navOpen=true;draw();});
  q("[data-navclose]",e=>e.onclick=()=>{S.navOpen=false;draw();});
  q("[data-cfilter]",e=>e.onclick=()=>{S.cohortFilter=e.dataset.cfilter;draw();});
@@ -3850,6 +4074,16 @@ function bind(){
   S.modal=null;S.selSlot=null;toast("Session booked with "+m.n.split(' ')[0]+" · your counselor can see it");});
  const cp=document.getElementById("cpin");if(cp)cp.onkeydown=(ev)=>{if(ev.key==="Enter")document.querySelector("[data-cpask]").click();};
 }
+
+/* Attached once, not from bind() — bind() re-runs on every draw and would stack
+   a new listener each time. */
+document.addEventListener("keydown",ev=>{
+ if((ev.metaKey||ev.ctrlKey)&&(ev.key==="k"||ev.key==="K")){
+  ev.preventDefault();
+  if(S.pal)palClose();else palOpen();
+  return;}
+ if(ev.key==="Escape"&&S.pal){ev.preventDefault();palClose();}});
+
 draw();
 
 </script>
