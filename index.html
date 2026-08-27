@@ -2645,10 +2645,10 @@ function vParent(){
   ${tabs.map(T).join('')}</div>
 
  ${pv==="overview"?`
- <div class="card" style="padding:22px;margin-bottom:16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap">
-  ${av(c.av,"student",56,14)}
-  <div style="flex:1;min-width:180px"><div class="serif" style="font-size:22px;font-weight:600">${c.name}</div>
-   <div style="font-size:12.5px;color:var(--ink-3);margin-top:2px">${c.yr}${c.track&&c.track!=="undecided"?" · "+(c.track==="IB"?"IB Diploma":c.track+" track"):""} · aiming for ${c.goal}</div></div>
+ <div class="card" style="padding:26px 28px;margin-bottom:18px;display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+  ${av(c.av,"student",60,15)}
+  <div style="flex:1;min-width:180px"><div class="serif" style="font-size:var(--disp-3);font-weight:600;letter-spacing:-.02em;line-height:1.1">${c.name}</div>
+   <div style="font-size:12.5px;color:var(--ink-3);margin-top:5px">${c.yr}${c.track&&c.track!=="undecided"?" · "+(c.track==="IB"?"IB Diploma":c.track+" track"):""} · aiming for ${c.goal}</div></div>
   ${chip("On track","var(--ok)","var(--ok-bg)","checkC")}
  </div>
  <div style="display:grid;grid-template-columns:repeat(${pg<=10?2:pg===11?3:4},1fr);gap:12px;margin-bottom:16px">
@@ -2664,37 +2664,37 @@ function vParent(){
    .map(x=>`<div class="card" style="padding:16px 18px"><div class="serif" style="font-size:24px;font-weight:600;color:${x[2]};line-height:1">${x[1]}</div>
    <div style="font-size:11.5px;color:var(--ink-3);margin-top:4px">${x[0]}</div></div>`).join('')}</div>
 
- ${pg===9?`<div class="card" style="padding:20px;margin-bottom:16px;background:linear-gradient(135deg,#FDF0F6,#FEF6FA);border-color:var(--rose-line)">
+ ${pg===9?`<div class="card" style="padding:20px;margin-bottom:16px;background:var(--rose-bg);border-color:var(--rose-line)">
   <div style="display:flex;gap:13px;align-items:flex-start">
-   <div style="width:38px;height:38px;border-radius:11px;background:var(--rose);color:#fff;display:grid;place-items:center;flex-shrink:0">${ic('spark',19)}</div>
+   <div style="width:38px;height:38px;border-radius:11px;background:#fff;color:var(--rose);display:grid;place-items:center;flex-shrink:0">${ic('spark',19)}</div>
    <div style="flex:1">
     <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--rose-2);font-weight:700;margin-bottom:6px">Where things stand at this stage</div>
     <div style="font-size:14px;font-weight:600;color:var(--ink);margin-bottom:6px;line-height:1.4">This year is about understanding the system, not choosing within it.</div>
     <div style="font-size:12.8px;color:var(--ink-2);line-height:1.65;margin-bottom:9px">Before Grade 10's real decision between IB and AP, it helps to understand how grading actually works here and what subjects exist. There is a full guide covering both.</div>
     <button class="btn btn-sm" style="margin-top:4px;background:var(--rose);color:#fff" data-pv="guide">${ic('book',13)} Open the High School Guide</button>
    </div></div>
- </div>`:pg===12?`<div class="card" style="padding:20px;margin-bottom:16px;background:linear-gradient(135deg,#FDF0F6,#FEF6FA);border-color:var(--rose-line)">
+ </div>`:pg===12?`<div class="card" style="padding:20px;margin-bottom:16px;background:var(--rose-bg);border-color:var(--rose-line)">
   <div style="display:flex;gap:13px;align-items:flex-start">
-   <div style="width:38px;height:38px;border-radius:11px;background:var(--rose);color:#fff;display:grid;place-items:center;flex-shrink:0">${ic('spark',19)}</div>
+   <div style="width:38px;height:38px;border-radius:11px;background:#fff;color:var(--rose);display:grid;place-items:center;flex-shrink:0">${ic('spark',19)}</div>
    <div style="flex:1">
     <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--rose-2);font-weight:700;margin-bottom:6px">How you can help this week</div>
     <div style="font-size:14px;font-weight:600;color:var(--ink);margin-bottom:6px;line-height:1.4">${HELP_THIS_WEEK.headline}</div>
     <div style="font-size:12.8px;color:var(--ink-2);line-height:1.65;margin-bottom:9px">${HELP_THIS_WEEK.detail}</div>
-    <div style="font-size:12.3px;color:var(--ink-3);line-height:1.6;padding-top:9px;border-top:1px solid #F5D9E6">${HELP_THIS_WEEK.secondary}</div>
+    <div style="font-size:12.3px;color:var(--ink-3);line-height:1.6;padding-top:9px;border-top:1px solid var(--rose-line)">${HELP_THIS_WEEK.secondary}</div>
     <button class="btn btn-sm" style="margin-top:12px;background:var(--rose);color:#fff" data-pv="uni">${ic('grad',13)} See her university list</button>
    </div></div>
- </div>`:pg===10?`<div class="card" style="padding:20px;margin-bottom:16px;background:linear-gradient(135deg,#FDF0F6,#FEF6FA);border-color:var(--rose-line)">
+ </div>`:pg===10?`<div class="card" style="padding:20px;margin-bottom:16px;background:var(--rose-bg);border-color:var(--rose-line)">
   <div style="display:flex;gap:13px;align-items:flex-start">
-   <div style="width:38px;height:38px;border-radius:11px;background:var(--rose);color:#fff;display:grid;place-items:center;flex-shrink:0">${ic('spark',19)}</div>
+   <div style="width:38px;height:38px;border-radius:11px;background:#fff;color:var(--rose);display:grid;place-items:center;flex-shrink:0">${ic('spark',19)}</div>
    <div style="flex:1">
     <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--rose-2);font-weight:700;margin-bottom:6px">Where things stand at this stage</div>
     <div style="font-size:14px;font-weight:600;color:var(--ink);margin-bottom:6px;line-height:1.4">There is nothing to apply for yet — and that is exactly right for Grade 10.</div>
     <div style="font-size:12.8px;color:var(--ink-2);line-height:1.65;margin-bottom:9px">The one real decision at this stage is IB versus AP, and which subjects within that. The most useful thing a parent can do right now is look at where each combination has actually led other students, not guess.</div>
     <button class="btn btn-sm" style="margin-top:4px;background:var(--rose);color:#fff" data-pv="pathway">${ic('route',13)} See where past choices have led</button>
    </div></div>
- </div>`:`<div class="card" style="padding:20px;margin-bottom:16px;background:linear-gradient(135deg,#FDF0F6,#FEF6FA);border-color:var(--rose-line)">
+ </div>`:`<div class="card" style="padding:20px;margin-bottom:16px;background:var(--rose-bg);border-color:var(--rose-line)">
   <div style="display:flex;gap:13px;align-items:flex-start">
-   <div style="width:38px;height:38px;border-radius:11px;background:var(--rose);color:#fff;display:grid;place-items:center;flex-shrink:0">${ic('spark',19)}</div>
+   <div style="width:38px;height:38px;border-radius:11px;background:#fff;color:var(--rose);display:grid;place-items:center;flex-shrink:0">${ic('spark',19)}</div>
    <div style="flex:1">
     <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--rose-2);font-weight:700;margin-bottom:6px">Where things stand at this stage</div>
     <div style="font-size:14px;font-weight:600;color:var(--ink);margin-bottom:6px;line-height:1.4">This is the year to start narrowing down real options.</div>
@@ -2861,10 +2861,10 @@ function vParent(){
  </div>`):''}
 
  ${pv==="uni"?`
- <div class="card" style="padding:18px 20px;margin-bottom:16px;background:var(--rose-bg,#FEF1F5);border-color:#F9D5E0">
+ <div class="card" style="padding:18px 20px;margin-bottom:16px;background:var(--rose-bg);border-color:var(--rose-line)">
   <div style="display:flex;gap:12px;align-items:flex-start">
    <span style="color:var(--rose);flex-shrink:0;display:flex">${ic('grad',18)}</span>
-   <div style="font-size:12.5px;color:#8A2247;line-height:1.6">This is the question most parents ask first: <b>what does my child actually need to take to get in?</b> Below is every university on the list, the courses this school offers that each one requires, and whether she is currently on track. Where a university accepts more than one route, both are shown.</div></div>
+   <div style="font-size:12.5px;color:var(--rose-2);line-height:1.6">This is the question most parents ask first: <b>what does my child actually need to take to get in?</b> Below is every university on the list, the courses this school offers that each one requires, and whether she is currently on track. Where a university accepts more than one route, both are shown.</div></div>
  </div>
  ${c.uni.targets.map((t,i)=>{const R=UNI_REQS[t.u];if(!R)return '';
    const open=(S.uniOpen||"")===t.u;
@@ -2941,9 +2941,9 @@ function vParent(){
   <div style="font-size:11.5px;font-weight:600;color:var(--ink-2);margin-bottom:8px">What would you like to discuss?</div>
   <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
    ${MEETING_TOPICS.map(t=>{const on=(S.pmTopic||"")===t[0];
-    return `<button data-pmtopic="${t[0]}" style="text-align:left;font-family:inherit;cursor:pointer;border:1px solid ${on?'var(--rose)':'var(--line)'};background:${on?'#FEF1F5':'var(--surface)'};border-radius:11px;padding:12px 14px;display:flex;gap:11px;align-items:flex-start">
+    return `<button data-pmtopic="${t[0]}" style="text-align:left;font-family:inherit;cursor:pointer;border:1px solid ${on?'var(--rose)':'var(--line)'};background:${on?'var(--rose-bg)':'var(--surface)'};border-radius:11px;padding:12px 14px;display:flex;gap:11px;align-items:flex-start">
      <span style="width:16px;height:16px;border-radius:99px;border:2px solid ${on?'var(--rose)':'var(--line-3)'};background:${on?'var(--rose)':'#fff'};flex-shrink:0;margin-top:1px;display:grid;place-items:center">${on?'<span style="width:5px;height:5px;border-radius:99px;background:#fff"></span>':''}</span>
-     <span><b style="font-size:12.8px;color:${on?'#8A2247':'var(--ink)'}">${t[1]}</b>
+     <span><b style="font-size:12.8px;color:${on?'var(--rose-2)':'var(--ink)'}">${t[1]}</b>
       <div style="font-size:11.5px;color:var(--ink-3);margin-top:2px">${t[2]}</div></span></button>`;}).join('')}
   </div>
   <div style="font-size:11.5px;font-weight:600;color:var(--ink-2);margin-bottom:8px">Briefly, what would you like to cover?</div>
