@@ -799,9 +799,9 @@ function roleBar(){
 
 /* ═══════════ SHELL ═══════════ */
 function shell(theme,nav,active,attr,footAv,footN,footR,title,sub,body){
- const bg={counselor:"#131829",student:"#241D52",mentor:"#0A352F",parent:"#3A1029"}[theme];
- const bar={counselor:"#3FE0BE",student:"#9B8CFF",mentor:"#3FE0BE",parent:"#F472B6"}[theme];
- const nm={counselor:"Counselor OS",student:"Career OS",mentor:"Mentor Hub",parent:"Family Portal"}[theme];
+ const bg={counselor:"#131829",student:"#241D52",mentor:"#0A352F",parent:"#3A1029",teacher:"#131829"}[theme];
+ const bar={counselor:"#3FE0BE",student:"#9B8CFF",mentor:"#3FE0BE",parent:"#F472B6",teacher:"#3FE0BE"}[theme];
+ const nm={counselor:"Counselor OS",student:"Career OS",mentor:"Mentor Hub",parent:"Family Portal",teacher:"Teacher portal"}[theme];
  return `<div class="shell" style="flex:1;display:flex;overflow:hidden">
  <aside class="sidebar" style="width:218px;background:${bg};display:flex;flex-direction:column;padding:18px 0;flex-shrink:0;overflow-y:auto">
   <div style="padding:0 18px 16px;display:flex;align-items:center;gap:10px">
@@ -816,10 +816,10 @@ function shell(theme,nav,active,attr,footAv,footN,footR,title,sub,body){
    ${av(footAv,theme==="student"?"student":"mentor",32,50)}
    <div><div style="font-size:12px;font-weight:600;color:#fff">${footN}</div><div style="font-size:10px;color:rgba(255,255,255,.42)">${footR}</div></div></div>
  </aside>
- <main class="mainpane" style="flex:1;overflow-y:auto;background:var(--panel)">
+ <main class="mainpane" style="flex:1;overflow-y:auto;background:var(--bg)">
   <div class="glass" style="position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);padding:13px 30px;display:flex;align-items:center;gap:16px">
    <button class="navtoggle" data-navopen="1" aria-label="Menu">${ic('list',18)}</button>
-   <div style="flex:1;min-width:0"><div class="serif" style="font-size:18px;font-weight:600">${title}</div><div style="font-size:11.5px;color:var(--inkMute);margin-top:1px">${sub}</div></div>
+   <div style="flex:1;min-width:0"><div class="serif" style="font-size:18px;font-weight:600">${title}</div><div style="font-size:11.5px;color:var(--ink-3);margin-top:1px">${sub}</div></div>
    <div style="display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:7px 12px;width:210px">${ic('search',14)}<input placeholder="Search students…" style="border:none;background:none;font-size:12.5px;width:100%;color:var(--ink)"></div>
   </div>
   <div style="padding:24px 30px 70px;max-width:1140px">${body}</div>
@@ -2079,10 +2079,14 @@ function vTClass(){
    <div style="min-width:0"><b style="font-size:13.5px">${c.name}</b>
     <div style="font-size:11.5px;color:var(--ink-3);margin-top:1px">${cls.code}${mine.length?` · you logged ${mine.length} this term`:''}</div></div>
    <span class="btn btn-g btn-sm" style="pointer-events:none">${ic('plus',13)} Log</span>
-  </div>`;}).join('')}</div>
- <div class="card" style="padding:16px 18px;margin-top:16px">
-  <div class="sechead">${ic('list',13)} What you have logged</div>
-  ${TFLAGS.filter(f=>f.by.indexOf("Davies")>-1).map(f=>{
+  </div>`;}).join('')}</div></div>`;}
+
+function vTLog(){
+ const mine=TFLAGS.filter(f=>f.by.indexOf("Davies")>-1);
+ return `<div class="fade">
+ ${head("What I've logged","Every entry, and what happened next","A record of what you have flagged this term, and how the counselor acted on it — so nothing you raise disappears into a form you never hear back from.","var(--brand)","list")}
+ <div class="card" style="padding:16px 18px">
+  ${mine.length?mine.map(f=>{
    var K=FLAG_KINDS.find(function(k){return k.k===f.kind;});
    var routed=f.routed?'<div style="font-size:11px;color:var(--ok);margin-top:5px;display:flex;align-items:center;gap:5px">'+ic('checkC',12)+' '+f.routed+'</div>':'';
    return '<div style="padding:11px 0;border-bottom:1px solid var(--line)">'+
@@ -2090,7 +2094,7 @@ function vTClass(){
      '<b style="font-size:12.5px">'+f.student+'</b>'+chip(K.short,K.c,K.bg)+
      '<span style="font-size:11px;color:var(--ink-4);margin-left:auto">'+f.when+'</span></div>'+
     '<div style="font-size:12px;color:var(--ink-2);line-height:1.5">'+f.txt+'</div>'+routed+'</div>';
-  }).join('')}
+  }).join(''):`<div style="font-size:12.3px;color:var(--ink-3);line-height:1.6">Nothing logged yet this term.</div>`}
  </div></div>`;}
 
 /* ── the log sheet (modal) ── */
@@ -3426,8 +3430,8 @@ function draw(){
     <div style="padding:26px 28px 72px;max-width:1180px">${body2}</div></main></div>`;
  } else if(S.role==="teacher"){
   const nav=[["class","My classes","users"],["tlog","What I've logged","list"]];
-  const body3=S.tv==="tlog"?vTClass():vTClass();
-  sb=shell("mentor",nav,S.tv,"data-tnav","JD",TEACHER.name,TEACHER.subject,"Teacher portal",TEACHER.name+" · "+TEACHER.subject,body3);
+  const body3=S.tv==="tlog"?vTLog():vTClass();
+  sb=shell("teacher",nav,S.tv,"data-tnav","JD",TEACHER.name,TEACHER.subject,"Teacher portal",TEACHER.name+" · "+TEACHER.subject,body3);
  } else if(S.role==="parent"){
   const pg2=S.previewGrade||12,pt2=g(PARENT_ME).track||"IB";
   let nav=[["overview","Overview","home"],["messages","Messages","msg"],["meetings","Meet the counselor","brief"]];
