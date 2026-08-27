@@ -86,7 +86,42 @@ body{
 .fade{animation:fade .3s ease backwards}
 .spin{animation:spin .7s linear infinite;display:inline-block}
 .pulsedot{animation:ping 2.2s cubic-bezier(.4,0,.6,1) infinite}
-@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+/* Zeroing duration alone was not enough: everything staggered here is delayed as
+   well as animated, and an animation with `backwards` fill holds its from-state
+   (opacity 0) for the whole delay — so a reduced-motion user sat looking at a
+   blank card for up to a second before it snapped in. Delay has to go too. */
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-delay:0ms!important;transition-duration:.01ms!important;transition-delay:0ms!important}}
+
+/* ══════════ MOTION, DELIBERATELY (Runbook 4.3) ══════════
+   draw() rebuilds the entire tree on every state change, so until now every one
+   of the 25 `animation:rise` staggers replayed on every click — toggling one
+   filter chip re-animated the whole page. That is not motion design, it is a
+   side effect, and it is what made the product feel mushy rather than quick.
+
+   The rule now: entry motion belongs to ARRIVING somewhere, not to every
+   keystroke once you are there. viewKey() decides whether this draw is an
+   arrival; if it is not, .still lands on #root and every entry animation is
+   suppressed. Anything that is genuinely new in the moment it appears — the
+   toast, a modal, the spinner, the shimmer skeleton — is exempt, because those
+   ARE the state change rather than a re-render of it.
+
+   Three moments are then allowed to be slower and more staged than the ambient
+   .rise: what changed overnight, the letter drafting itself, and the signal
+   meter finding its level. Everything else stays quick and gets out of the way. */
+@keyframes arrive{from{opacity:0;transform:translateY(11px)}to{opacity:1;transform:none}}
+@keyframes land{0%{opacity:0;transform:scale(.84)}62%{opacity:1;transform:scale(1.055)}100%{opacity:1;transform:scale(1)}}
+@keyframes fill{from{width:0}}
+.arrive{animation:arrive .46s cubic-bezier(.22,1,.36,1) backwards}
+.land{animation:land .42s cubic-bezier(.34,1.56,.64,1) backwards;display:inline-block}
+.meter>div{animation:fill .72s cubic-bezier(.16,1,.3,1) backwards}
+
+.still [style*="animation:rise"],.still [style*="animation:fade"],
+.still [style*="animation:pop"],.still .rise,.still .fade,
+.still .arrive,.still .land,.still .meter>div,
+.still .pop:not(.toastbar){animation:none!important}
+/* drawline animates TO stroke-dashoffset:0 from an attribute of 1200 — killing
+   the animation without also landing the end state would leave the line invisible */
+.still [style*="animation:drawline"]{animation:none!important;stroke-dashoffset:0!important}
 
 /* ══════════ SURFACES ══════════ */
 .card{
@@ -1404,16 +1439,16 @@ function vLetter(){
    ${S.letter==='gen'?`<div style="padding:56px 24px;text-align:center">
     ${spin(34)}<div style="font-size:13px;color:var(--ink-2);margin-top:14px;display:flex;align-items:center;justify-content:center;gap:8px">Reading the file, matching your voice ${dots()}</div>
     <div style="max-width:70%;margin:18px auto 0">${[92,100,84,96].map(w=>`<div style="height:10px;width:${w}%;margin:0 auto 8px;background:linear-gradient(90deg,#eef0f6 25%,#f7f8fc 50%,#eef0f6 75%);background-size:1000px 100%;animation:shimmer 1.4s infinite;border-radius:6px"></div>`).join('')}</div></div>`:''}
-   ${S.letter==='done'?`<div class="read pop" style="padding:32px 40px;font-size:15.5px;line-height:1.85;background:#FFFDF8">
-    ${LETTER.split('\n\n').map(p=>`<p style="margin-bottom:15px">${p}</p>`).join('')}</div>`:''}
+   ${S.letter==='done'?`<div class="read" style="padding:32px 40px;font-size:15.5px;line-height:1.85;background:#FFFDF8">
+    ${LETTER.split('\n\n').map((p,i)=>`<p class="arrive" style="margin-bottom:15px;animation-delay:${(i*.17).toFixed(2)}s">${p}</p>`).join('')}</div>`:''}
   </div>
   <div style="display:flex;flex-direction:column;gap:14px">
    <div class="card" style="padding:18px;background:var(--nav);border:none;color:#fff">
     <div class="serif" style="font-size:16px;font-weight:600;margin-bottom:6px">It never invents</div>
     <div style="font-size:12px;color:rgba(255,255,255,.7);line-height:1.55;margin-bottom:14px">Every claim is drawn from a dated entry in Sara's record. If the evidence is not there, the sentence is not written.</div>
     <button class="btn" data-letter="${S.letter==='done'?'reset':'go'}" ${S.letter==='gen'?'disabled':''} style="width:100%;background:rgba(255,255,255,.14);color:#fff">${S.letter==='done'?ic('refresh',15)+' Regenerate':'Generate draft'}</button></div>
-   ${S.letter==='done'?`<div class="card pop" style="padding:18px"><div class="sechead">${ic('checkC',13)} Evidence used</div>
-    ${ev.map(e=>`<div style="display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line);font-size:11.8px;color:var(--ink-2);line-height:1.5">${ic('checkC',14)}<span>${e}</span></div>`).join('')}</div>`:''}
+   ${S.letter==='done'?`<div class="card arrive" style="padding:18px;animation-delay:${(LETTER.split('\n\n').length*.17+.1).toFixed(2)}s"><div class="sechead">${ic('checkC',13)} Evidence used</div>
+    ${ev.map((e,i)=>`<div class="arrive" style="display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line);font-size:11.8px;color:var(--ink-2);line-height:1.5;animation-delay:${(LETTER.split('\n\n').length*.17+.22+i*.07).toFixed(2)}s">${ic('checkC',14)}<span>${e}</span></div>`).join('')}</div>`:''}
    <div class="card" style="padding:18px"><div class="sechead">Time returned this season</div>
     <div class="serif" style="font-size:32px;font-weight:600;color:var(--brand);line-height:1">190 hrs</div>
     <div style="font-size:12px;color:var(--ink-2);margin-top:5px">84 letters at 60 minutes of writing each, reduced to 10 minutes of review.</div></div>
@@ -2067,12 +2102,12 @@ function vToday(){
   </div>
   <div class="card" style="padding:20px 22px;margin-bottom:20px">
    <div class="sechead">${ic('overnight',13)} What changed overnight</div>
-   ${moved.map((m,i)=>`<div class="lift" data-file="${m.id}" style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:11px 0;border-bottom:${i<moved.length-1?'1px solid var(--line)':'none'};cursor:pointer">
+   ${moved.map((m,i)=>`<div class="lift arrive" data-file="${m.id}" style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:11px 0;border-bottom:${i<moved.length-1?'1px solid var(--line)':'none'};cursor:pointer;animation-delay:${(.12+i*.13).toFixed(2)}s">
     <div><div style="font-size:13px;font-weight:600">${m.n}</div>
      <div style="font-size:11.8px;color:var(--ink-3);margin-top:2px">${m.r}</div></div>
     <div style="display:flex;align-items:center;gap:7px;font-size:11px;white-space:nowrap">
      <span style="color:var(--ink-3)">${m.f}</span>${ic('arrowR',12)}
-     <span style="font-weight:700;color:${m.t==="Urgent"?'var(--urgent)':m.t==="Recovered"?'var(--good)':'var(--checkin)'}">${m.t}</span></div>
+     <span class="land" style="font-weight:700;animation-delay:${(.42+i*.13).toFixed(2)}s;color:${m.t==="Urgent"?'var(--urgent)':m.t==="Recovered"?'var(--good)':'var(--checkin)'}">${m.t}</span></div>
    </div>`).join('')}
   </div>
   <div class="sechead" style="margin-bottom:14px">${ic('clock',13)} Your day</div>
@@ -3523,8 +3558,19 @@ function modalEl(){
  return '';}
 
 /* ═══════════ RENDER ═══════════ */
+/* An "arrival" is anything that REPLACES what you are looking at: a different
+   role, view, student file or grade — and also a panel whose whole contents are
+   new, like the letter finishing its draft or the co-pilot answering. Filtering,
+   sorting, expanding, toggling and typing are not arrivals: you are already
+   there, and re-animating the page around you is noise, not feedback. */
+let LASTPLACE=null;
+function place(){return [S.role,S.cv,S.sv,S.pv,S.tv,S.mv,S.open,S.fileId,S.previewGrade,
+ S.tab,S.fileTab,S.letter,S.cpQ,S.cpLoad].join("|");}
+
 function draw(){
  let body="",sb="";
+ const here=place(),arrived=here!==LASTPLACE;LASTPLACE=here;
+ R.className=arrived?"":"still";
  PARENT_ME=FAMILY_STUDENT_ID[S.previewGrade||12]||"s3";
  PMSGS=PMSGS_BY_GRADE[S.previewGrade||12]||PMSGS_BY_GRADE[12];
  PARENT_MEETINGS=PARENT_MEETINGS_BY_GRADE[S.previewGrade||12]||PARENT_MEETINGS_BY_GRADE[12];
