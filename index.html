@@ -788,6 +788,86 @@ function spin(sz,c){return `<span class="spin" style="width:${sz||16}px;height:$
 function dots(){return '<span class="dots"><span></span><span></span><span></span></span>';}
 function meter(v,c){return `<div class="meter"><div style="width:${v}%;background:${c||'var(--teal)'}"></div></div>`;}
 
+/* ═══════════ MOMENTS (Runbook 4.2) ═══════════
+   Five specific, well-drawn moments on the family side — four states that are
+   empty because nothing has happened YET, and one because something finally did.
+
+   The point is not decoration. A Grade 9 parent opening this portal sees almost
+   nothing, and a portal that looks broken is a portal a family stops opening —
+   which is precisely the Naviance failure the Markup cites. So each of these
+   draws the specific thing that is missing and says, in the copy, why its
+   absence is correct at this stage and what happens next.
+
+   Warmth lives on the parent side (rose) and is dialled back on the student
+   side (violet): a Grade 12 student applying to university is a serious
+   audience, per Runbook 3.2 — no characters, no confetti, no streaks.
+
+   All inline SVG on one 128×96 grid, two-tone (a soft accent wash plus a
+   2px accent stroke), no external asset — this file still has no build step. */
+const ILLUS={
+
+ /* nobody matched yet: a family on one side, an empty slot on the other */
+ mentor:(a,sf)=>`<ellipse cx="64" cy="83" rx="44" ry="6.5" fill="${sf}"/>
+  <path d="M31 55c2-15 16-23 33-23s31 8 33 23" fill="none" stroke="${a}" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="3.5 6.5" opacity=".65"/>
+  <circle cx="31" cy="64" r="14" fill="${sf}" stroke="${a}" stroke-width="2"/>
+  <circle cx="31" cy="60" r="4.6" fill="${a}"/>
+  <path d="M23.4 71.6c1.7-3.9 4.3-5.8 7.6-5.8s5.9 1.9 7.6 5.8" fill="none" stroke="${a}" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="97" cy="64" r="14" fill="none" stroke="${a}" stroke-width="2.4" stroke-dasharray="4 5" opacity=".7"/>
+  <path d="M97 57.5v13M90.5 64h13" stroke="${a}" stroke-width="2.6" stroke-linecap="round" opacity=".7"/>`,
+
+ /* the first offer a family has ever received — a sealed letter, not a warning */
+ offer:(a,sf)=>`<ellipse cx="62" cy="84" rx="38" ry="6" fill="${sf}"/>
+  <g transform="rotate(-4 62 48)">
+   <rect x="30" y="20" width="64" height="56" rx="9" fill="${sf}" stroke="${a}" stroke-width="2"/>
+   <path d="M43 37h38M43 47h30M43 57h21" stroke="${a}" stroke-width="2" stroke-linecap="round" opacity=".4"/></g>
+  <circle cx="92" cy="64" r="15" fill="${a}"/>
+  <path d="M85.4 64.6 90 69.2 99 59.6" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M101 33.5 107 30M105.5 45l6.5.8M95 24.5l2.2-6" stroke="${a}" stroke-width="2.2" stroke-linecap="round" opacity=".45"/>`,
+
+ /* nothing to apply for yet: where the family is, and how far off the year is */
+ early:(a,sf)=>`<ellipse cx="62" cy="82" rx="46" ry="6.5" fill="${sf}"/>
+  <path d="M26 70h72" stroke="${a}" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="1.5 9" opacity=".5"/>
+  <circle cx="26" cy="70" r="14" fill="${sf}" stroke="${a}" stroke-width="2.4"/>
+  <circle cx="26" cy="70" r="6" fill="${a}"/>
+  <path d="M98 71V21" stroke="${a}" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M98 23h22l-6 8.5 6 8.5H98z" fill="${sf}" stroke="${a}" stroke-width="2.4" stroke-linejoin="round"/>
+  <circle cx="98" cy="70" r="3.6" fill="${a}"/>`,
+
+ /* the IB/AP decision, undecided — both branches drawn at exactly equal weight,
+    because the product must not put its thumb on this scale */
+ fork:(a,sf)=>`<ellipse cx="64" cy="84" rx="40" ry="6" fill="${sf}"/>
+  <path d="M64 78V56" stroke="${a}" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M64 56c0-14-11-16-23-22" fill="none" stroke="${a}" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M64 56c0-14 11-16 23-22" fill="none" stroke="${a}" stroke-width="2.4" stroke-linecap="round"/>
+  <circle cx="35" cy="30" r="13" fill="${sf}" stroke="${a}" stroke-width="2"/>
+  <circle cx="93" cy="30" r="13" fill="${sf}" stroke="${a}" stroke-width="2"/>
+  <text x="35" y="34.6" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" fill="${a}">IB</text>
+  <text x="93" y="34.6" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" fill="${a}">AP</text>
+  <circle cx="64" cy="78" r="5" fill="${a}"/>`,
+
+ /* an empty shortlist: three slots waiting, the first one open */
+ shortlist:(a,sf)=>`<rect x="22" y="14" width="84" height="20" rx="7" fill="${sf}" stroke="${a}" stroke-width="2" stroke-dasharray="5 5"/>
+  <path d="M64 18.5v11M58.5 24h11" stroke="${a}" stroke-width="2.2" stroke-linecap="round"/>
+  <rect x="22" y="42" width="84" height="20" rx="7" fill="none" stroke="${a}" stroke-width="2" stroke-dasharray="5 5" opacity=".42"/>
+  <rect x="22" y="70" width="84" height="20" rx="7" fill="none" stroke="${a}" stroke-width="2" stroke-dasharray="5 5" opacity=".24"/>`};
+
+/* acc/soft default to the parent rose; pass the violet pair for student surfaces.
+   serif=true gives the title the Fraunces display treatment the parent portal
+   earned in 3.1 — the student side stays on Inter on purpose. */
+function art(n,acc,soft,w){w=w||128;
+ const a=acc||"var(--rose)",sf=soft||"var(--rose-bg)";
+ return `<svg viewBox="0 0 128 96" style="width:${w}px;height:${Math.round(w*96/128)}px;flex-shrink:0;display:block" aria-hidden="true">${(ILLUS[n]||(()=>''))(a,sf)}</svg>`;}
+
+function moment(o){
+ const a=o.acc||"var(--rose)",sf=o.soft||"var(--rose-bg)",w=o.w||128;
+ return `<div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap;background:${o.bg||'var(--surface-2)'};border:1px solid ${o.line||'var(--line)'};border-radius:var(--r-lg);padding:${o.pad||'20px 22px'}">
+  ${art(o.art,a,sf,w)}
+  <div style="flex:1;min-width:230px">
+   <div class="${o.serif?'serif':''}" style="font-size:${o.serif?'19px':'14.5px'};font-weight:600;color:var(--ink);line-height:1.3;letter-spacing:${o.serif?'-.02em':'-.01em'}">${o.title}</div>
+   <div style="font-size:12.8px;color:var(--ink-2);line-height:1.65;margin-top:${o.serif?'7px':'5px'}">${o.body}</div>
+   ${o.action?`<div style="margin-top:13px">${o.action}</div>`:''}
+  </div></div>`;}
+
 /* ═══════════ BASELINE DEVIATION CHART ═══════════
    The doc's core principle: deviation from the student's OWN normal.
    Shaded band = personal baseline range. Line = actual. Red = outside band. */
@@ -2482,11 +2562,9 @@ function vPathExplorer(navAttr,uniTab,contactTab,persona){
   </div>
   <div style="background:var(--surface-3);border-radius:10px;padding:14px 16px;margin-top:14px;font-size:12.5px;color:var(--ink-2);line-height:1.6">
    <b>What matters most on this route</b> is choosing AP courses that line up with whichever university and degree ${c.name.split(' ')[0]} ends up targeting — the "See where these choices have led" section below shows exactly which AP combinations led to which universities for students who came before.</div>`
-  :`<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:${ACBG};border:1px solid ${ACLINE};border-radius:12px;padding:16px">
-   <span style="color:${AC};display:flex">${ic('spark',22)}</span>
-   <div style="flex:1;min-width:220px"><b style="font-size:14px;color:${AC2}">${c.name.split(' ')[0]} has not chosen a pathway yet.</b>
-    <div style="font-size:12.3px;color:${AC2};margin-top:3px;line-height:1.55">That decision — IB or AP — is exactly what this page is here to help with. There is no wrong choice, only a better-informed one.</div></div>
-  </div>`}
+  :moment({art:"fork",w:122,acc:AC,soft:ACBG,bg:ACBG,line:ACLINE,serif:persona!=="student",
+    title:`${c.name.split(' ')[0]} has not chosen a pathway yet.`,
+    body:"That decision — IB or AP — is exactly what this page is here to help with. Neither route is drawn larger than the other above, and that is deliberate: there is no wrong choice here, only a better-informed one."})}
  </div>
  <div class="card" style="padding:20px;margin-bottom:16px">
   <div class="sechead">${ic('layers',13)} IB and AP, side by side</div>
@@ -2743,11 +2821,11 @@ function vParent(){
     <button class="btn btn-sm" style="margin-top:12px;background:var(--rose);color:#fff" data-pv="uni">${ic('grad',13)} See her university list</button>
    </div></div>
  </div>`:pg===10?`<div class="card" style="padding:20px;margin-bottom:16px;background:linear-gradient(135deg,#FDF0F6,#FEF6FA);border-color:var(--rose-line)">
-  <div style="display:flex;gap:13px;align-items:flex-start">
-   <div style="width:38px;height:38px;border-radius:11px;background:var(--rose);color:#fff;display:grid;place-items:center;flex-shrink:0">${ic('spark',19)}</div>
-   <div style="flex:1">
+  <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+   ${art("early","var(--rose)","var(--rose-bg)",112)}
+   <div style="flex:1;min-width:250px">
     <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--rose-2);font-weight:700;margin-bottom:6px">Where things stand at this stage</div>
-    <div style="font-size:14px;font-weight:600;color:var(--ink);margin-bottom:6px;line-height:1.4">There is nothing to apply for yet — and that is exactly right for Grade 10.</div>
+    <div class="serif" style="font-size:20px;font-weight:600;color:var(--ink);margin-bottom:7px;line-height:1.25;letter-spacing:-.02em">There is nothing to apply for yet — and that is exactly right for Grade 10.</div>
     <div style="font-size:12.8px;color:var(--ink-2);line-height:1.65;margin-bottom:9px">The one real decision at this stage is IB versus AP, and which subjects within that. The most useful thing a parent can do right now is look at where each combination has actually led other students, not guess.</div>
     <button class="btn btn-sm" style="margin-top:4px;background:var(--rose);color:#fff" data-pv="pathway">${ic('route',13)} See where past choices have led</button>
    </div></div>
@@ -2773,15 +2851,16 @@ function vParent(){
   ${S.earlyStart?`
   <div style="font-size:12.3px;color:var(--ink-2);line-height:1.6;margin-bottom:14px;padding-top:14px;border-top:1px solid var(--line)">Nothing here is due yet, and nothing is locked in. This just gives ${c.name.split(' ')[0]} somewhere to start putting ideas down before the deadline pressure of Grade 12 begins.</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-   <div style="background:var(--surface-3);border-radius:11px;padding:14px 16px">
+   <div style="background:var(--surface-3);border-radius:11px;padding:14px 16px;display:flex;flex-direction:column">
     <div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">${ic('pencil',12)} Early statement notes</div>
     <div style="font-size:11.8px;color:var(--ink-3);line-height:1.5;margin-bottom:9px">A rough first attempt — themes, a story, a strong opening line. This will not be the final statement.</div>
-    <button class="btn btn-g btn-sm" style="width:100%" data-toast="Early statement workspace opened — nothing here is submitted or reviewed until Grade 12">${ic('pencil',13)} Start jotting ideas</button>
+    <button class="btn btn-g btn-sm" style="width:100%;margin-top:auto" data-toast="Early statement workspace opened — nothing here is submitted or reviewed until Grade 12">${ic('pencil',13)} Start jotting ideas</button>
    </div>
-   <div style="background:var(--surface-3);border-radius:11px;padding:14px 16px">
+   <div style="background:var(--surface-3);border-radius:11px;padding:14px 16px;display:flex;flex-direction:column">
     <div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">${ic('grad',12)} Early interest list</div>
-    <div style="font-size:11.8px;color:var(--ink-3);line-height:1.5;margin-bottom:9px">A loose, changeable list of universities worth a closer look — not the real application list yet.</div>
-    <button class="btn btn-g btn-sm" style="width:100%" data-pv="pathway">${ic('grad',13)} Browse universities</button>
+    <div style="display:flex;justify-content:center;margin:2px 0 10px">${art("shortlist","var(--rose)","var(--rose-bg)",96)}</div>
+    <div style="font-size:11.8px;color:var(--ink-3);line-height:1.5;margin-bottom:9px">Three open slots, nothing committed. A loose, changeable list of universities worth a closer look — not the real application list yet.</div>
+    <button class="btn btn-g btn-sm" style="width:100%;margin-top:auto" data-pv="pathway">${ic('grad',13)} Browse universities</button>
    </div>
   </div>`:''}
  </div>`}
@@ -2820,7 +2899,9 @@ function vParent(){
    <div style="font-size:11.5px;color:var(--ink-3);background:var(--surface-3);border-radius:9px;padding:9px 11px;margin-bottom:10px;line-height:1.4">${PARENT_MENTOR.path}</div>
    <div style="display:flex;gap:8px;align-items:flex-start;font-size:11.3px;color:var(--brand-2);background:var(--brand-3);border-radius:9px;padding:10px 11px;line-height:1.55">
     ${ic('shield',14)}<span>${c.name.split(" ")[0]} asked to be matched with an alumnus in finance. Every session happens inside the platform and is recorded — the school is in the loop and nothing is exchanged outside CAROS.</span></div>`
-   :`<div style="font-size:12.3px;color:var(--ink-3);line-height:1.6">No mentor matched yet. ${c.name.split(" ")[0]} can request one from the alumni network once ready — every session is safeguarded and happens inside the platform.</div>`}
+   :moment({art:"mentor",w:112,bg:"transparent",line:"transparent",pad:"2px 0",
+     title:"No mentor matched yet",
+     body:`${c.name.split(" ")[0]} can ask to be matched with an alumnus who took the route ${c.name.split(" ")[0].endsWith("a")?"she":"he"} is aiming for, whenever ${c.name.split(" ")[0].endsWith("a")?"she":"he"} is ready — there is no advantage to doing it early. Every session is safeguarded, happens inside the platform, and is visible to the school.`})}
   </div>
  </div>
 
@@ -2952,14 +3033,27 @@ function vParent(){
      </div>`).join('')}
     </div>`).join('')}
     ${(()=>{const off=OFFERS[t.u];if(!off||off.status==="pending")return'';
-      const col=off.status==="conditional"?"var(--warn)":"var(--ok)";
-      const bg=off.status==="conditional"?"var(--warn-bg)":"var(--ok-bg)";
-      return `<div style="border:1px solid ${col};border-radius:12px;padding:16px;margin-top:12px;background:${bg}">
-       <div style="display:flex;align-items:center;gap:9px;margin-bottom:7px">
-        ${ic(off.status==="conditional"?"alert":"checkC",16)}
-        <b style="font-size:13.5px;color:${col==="var(--warn)"?"#7A4A00":"#05603A"}">${off.status==="conditional"?"Conditional offer received":"Unconditional offer"} · ${off.date}</b></div>
-       <div style="font-size:12.3px;color:${col==="var(--warn)"?"#7A4A00":"#05603A"};line-height:1.6;margin-bottom:6px"><b>What she needs to keep:</b> ${off.condition}</div>
-       <div style="font-size:11.8px;color:${col==="var(--warn)"?"#8A5A10":"#0A7050"};line-height:1.55">${off.detail}</div>
+      /* The first offer a family ever receives is the moment this whole product
+         is building toward — for a lot of parents it is the first hard proof
+         that any of it worked. It was drawing itself with an alert triangle,
+         the same mark the counselor console uses for an urgent escalation.
+         A conditional offer still carries a condition, so the amber stays and
+         the condition keeps top billing — but the moment gets its own drawing
+         and its own display line first. (Runbook 4.2) */
+      const cond=off.status==="conditional";
+      const col=cond?"var(--warn)":"var(--ok)";
+      const bg=cond?"var(--warn-bg)":"var(--ok-bg)";
+      const deep=cond?"#7A4A00":"#05603A";
+      const first=Object.keys(OFFERS).filter(k=>OFFERS[k].status!=="pending").length===1;
+      return `<div style="border:1px solid ${col};border-radius:12px;padding:18px;margin-top:12px;background:${bg}">
+       <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+        ${art("offer",col,cond?"var(--warn-bg)":"var(--ok-bg)",104)}
+        <div style="flex:1;min-width:250px">
+         <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:${col};margin-bottom:5px">${first?"Her first offer":"Offer received"} · ${off.date}</div>
+         <div class="serif" style="font-size:21px;font-weight:600;line-height:1.2;letter-spacing:-.02em;color:${deep}">${cond?"Conditional offer":"Unconditional offer"} from ${t.u}</div>
+         <div style="font-size:12.5px;color:${deep};line-height:1.6;margin-top:9px"><b>What she needs to keep:</b> ${off.condition}</div>
+         <div style="font-size:11.8px;color:${cond?"#8A5A10":"#0A7050"};line-height:1.55;margin-top:6px">${off.detail}</div>
+        </div></div>
       </div>`;})()}
     ${(()=>{const cost=UNI_COSTS[t.u];if(!cost)return'';
       return `<div style="border:1px solid var(--line);border-radius:12px;padding:16px;margin-top:12px;background:var(--surface)">
