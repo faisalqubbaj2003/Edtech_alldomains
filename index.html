@@ -480,7 +480,56 @@ route:'M6 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM9 19
 gauge:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 12l4-4',
 list:'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01',
 merge:'M6 3v6a6 6 0 0 0 6 6h6M18 12l3 3-3 3',heart:'M12 21C7 16.5 3 13.2 3 9.3 3 6.4 5.2 4.5 7.7 4.5c1.7 0 3.3.9 4.3 2.4 1-1.5 2.6-2.4 4.3-2.4 2.5 0 4.7 1.9 4.7 4.8 0 3.9-4 7.2-9 11.7z',inbox:'M3 12h5l2 3h4l2-3h5M5 5h14l2 7v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z',msg:'M21 12a8 8 0 0 1-11.5 7.2L3 21l1.8-6.5A8 8 0 1 1 21 12z',chevR:'M9 6l6 6-6 6',refresh:'M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5',user:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 20c0-4 3.5-6 8-6s8 2 8 6',target:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2z'};
-function ic(n,s){s=s||17;return '<svg class="ico" viewBox="0 0 24 24" style="width:'+s+'px;height:'+s+'px">'+(IP[n]||'').split('M').filter(Boolean).map(function(d){return '<path d="M'+d+'"/>';}).join('')+'</svg>';}
+/* ═══════════ BESPOKE ICONS (Runbook 4.1) ═══════════
+   Six concepts CAROS owns, where the borrowed Feather metaphor says the wrong
+   thing. Everything else keeps the stock outline set above on purpose — a
+   product that draws all forty of its own icons reads as decorated, not
+   designed. Same grammar as IP so they sit in the same family: 24×24 grid,
+   currentColor stroke, 1.75 weight inherited from svg.ico, round caps.
+   Fill is used only to mark the one element that carries the meaning.
+
+   signal    — deviation from the student's OWN baseline band, not a trend.
+               This is baseChart() at 17px: shaded personal band, the line
+               inside it, the point where it breaks out. The generic 'trend'
+               arrow said "going up", which is the opposite of the idea.
+   caseload  — a triaged stack, ordered by attention. Not 'users' (a group of
+               people) and not 'list' (equal-weight rows): the leading marks
+               and row lengths descend, because that is what a caseload is.
+   overnight — the 07:04 sweep passing over the cohort and one student rising
+               out of it. The product's best retention hook deserves its own
+               mark rather than sharing 'radar' with the whole SI section.
+   trackIB   — the IB's own programme model: one closed hexagon around a core.
+   trackAP   — the same subject matter, structured the opposite way: separate,
+               independently-examined courses that never close into a shape.
+               The pair only works as a pair — that contrast IS the decision
+               a Grade 10 student is being asked to make.
+   mentorMatch — two parties converging on one made connection. Not 'merge'
+               (a flow arrow) and not 'users' (people who happen to co-exist).
+*/
+const IC_X={
+ signal:'<rect x="2.7" y="8.4" width="18.6" height="7.2" rx="2.2" fill="currentColor" stroke="none" opacity=".14"/>'
+  +'<path d="M2.7 8.4h18.6M2.7 15.6h18.6" opacity=".34"/>'
+  +'<path d="M3.4 13.5 7.4 11.2 10.9 12.8 14.4 10.1 18 4.4"/>'
+  +'<circle cx="18.1" cy="4.2" r="2.15" fill="currentColor" stroke="none"/>',
+ caseload:'<circle cx="5" cy="5.4" r="2.5" fill="currentColor" stroke="none"/><path d="M10.2 5.4h11.1"/>'
+  +'<circle cx="5" cy="12" r="2.5" opacity=".7"/><path d="M10.2 12h8.4" opacity=".7"/>'
+  +'<circle cx="5" cy="18.6" r="2.5" opacity=".42"/><path d="M10.2 18.6h5.7" opacity=".42"/>',
+ overnight:'<path d="M2.6 18.8h18.8M2.6 8.2h18.8" opacity=".33"/>'
+  +'<circle cx="6.3" cy="18.8" r="2.3" opacity=".5"/>'
+  +'<path d="M9 17.1c2.7-1.3 4.7-3.6 6-6.4" opacity=".65"/>'
+  +'<circle cx="17.5" cy="8.2" r="2.9" fill="currentColor" stroke="none"/>',
+ trackIB:'<path d="M12 2.4 20.7 7.2v9.6L12 21.6 3.3 16.8V7.2z"/><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"/>',
+ trackAP:'<rect x="3.1" y="3.3" width="13.6" height="5.3" rx="1.9"/>'
+  +'<rect x="5.6" y="10.35" width="13.6" height="5.3" rx="1.9" opacity=".72"/>'
+  +'<rect x="3.1" y="17.4" width="13.6" height="5.3" rx="1.9" opacity=".48"/>',
+ mentorMatch:'<circle cx="4.9" cy="6.4" r="2.7"/><circle cx="4.9" cy="17.6" r="2.7"/>'
+  +'<path d="M7.6 7.3c3.6 1.1 5.6 2.6 6.6 4.4M7.6 16.7c3.6-1.1 5.6-2.6 6.6-4.4"/>'
+  +'<circle cx="17.2" cy="12" r="3.4" fill="currentColor" stroke="none"/>'};
+
+function ic(n,s){s=s||17;
+ const open='<svg class="ico" viewBox="0 0 24 24" style="width:'+s+'px;height:'+s+'px">';
+ if(IC_X[n])return open+IC_X[n]+'</svg>';
+ return open+(IP[n]||'').split('M').filter(Boolean).map(function(d){return '<path d="M'+d+'"/>';}).join('')+'</svg>';}
 
 const SCHOOL={name:"Al Bateen Academy",counselor:"Ms. Reem Haddad",role:"Head of University Counseling",dsl:"Mr. J. Okonkwo (DSL)",cohort:84};
 const PRIO={
@@ -843,7 +892,7 @@ function vCommand(){
   ["monitor",pc.monitor,"Monitor","Isolated, low signal strength"],
   ["good",pc.good,"Recovered","Positive change detected"]];
  return `<div class="fade">
- ${head("Monday · 24 November · 07:04 sweep","Good morning, Reem.","Your cohort of 84 was evaluated at 07:04 this morning. Three students moved priority overnight. Nothing here is a diagnosis — each card shows what changed, the evidence behind it, and a proportionate next step.","var(--teal)","radar")}
+ ${head("Monday · 24 November · 07:04 sweep","Good morning, Reem.","Your cohort of 84 was evaluated at 07:04 this morning. Three students moved priority overnight. Nothing here is a diagnosis — each card shows what changed, the evidence behind it, and a proportionate next step.","var(--teal)","overnight")}
 
  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:20px">
  ${stats.map(([k,n,l,s],i)=>{const P=PRIO[k];const on=S.prioFilter===k;
@@ -918,7 +967,7 @@ function vIntel(){
   {k:"academic",t:"Academic anomalies",v:"84%",d:"cohort mean · −4 pts",series:cohortAcad,bad:true,n:ds.academic.n,det:[["Result outside personal band","5 students"],["Multi-week decline","2 students"],["Predicted vs current mismatch","4 students"]]},
   {k:"engagement",t:"Engagement",v:"61",d:"index · −21 over 8 weeks",series:cohortEng,bad:true,n:ds.engagement.n,det:[["No login 14+ days","2 students"],["Abandoned tasks","7 students"],["Missed scheduled meetings","3 students"]]}];
  return `<div class="fade">
- ${head("Student Wellbeing & Success Engine","Signal intelligence","Every signal is compared against each student's own historical pattern, not the cohort average. Weak signals across domains are combined so a pattern becomes visible before a crisis or a missed deadline.","var(--teal)","radar")}
+ ${head("Student Wellbeing & Success Engine","Signal intelligence","Every signal is compared against each student's own historical pattern, not the cohort average. Weak signals across domains are combined so a pattern becomes visible before a crisis or a missed deadline.","var(--teal)","signal")}
 
  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:18px">
  ${tiles.map((t,i)=>`<div class="card lift" style="padding:18px 20px;animation:rise .4s ${i*.06}s backwards">
@@ -1326,7 +1375,7 @@ function vCopilot(){
 
 /* ═══════════ PROVE-IT REPORTING (doc §13) ═══════════ */
 function vProve(){
- const fam=[["Detection quality","radar",METRICS.detection],["Counselor efficiency","clock",METRICS.efficiency],["Intervention performance","brief",METRICS.intervention],["Student progress","trend",METRICS.student]];
+ const fam=[["Detection quality","signal",METRICS.detection],["Counselor efficiency","clock",METRICS.efficiency],["Intervention performance","brief",METRICS.intervention],["Student progress","trend",METRICS.student]];
  return `<div class="fade">
  ${head("Reporting & prove-it layer","Evidence that students are noticed earlier","The question a head of school actually asks is whether this changed anything. These are the metrics that answer it — detection quality, time returned, and whether students recovered.","var(--brand)","chart")}
  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
@@ -1431,7 +1480,7 @@ function vFileOne(c){
  </div>`:''}
 
  ${ft==="signals"?`<div class="card pop" style="padding:20px">
-  <div class="sechead">${ic('radar',13)} All signal domains · against this student's own baseline</div>
+  <div class="sechead">${ic('signal',13)} All signal domains · against this student's own baseline</div>
   ${Object.entries(c.baselines).map(([k,b],i)=>`<div style="margin-top:${i?20:8}px;animation:rise .4s ${i*.07}s backwards">
    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="color:${DOMAINS[k].c}">${ic(DOMAINS[k].ic,14)}</span>
     <b style="font-size:12.5px">${b.label}</b>
@@ -1569,7 +1618,7 @@ function vArch(){
  const pipe=[["1","Data sources","SIS, gradebook, LMS, attendance, behaviour, teacher input, counselor notes, university workflow","brief"],
   ["2","Normalisation","Identity matching, timestamps, subject mapping, missing-data handling, source quality","layers"],
   ["3","Feature layer","Trend, deviation, frequency, persistence, recency, cross-signal relationships","trend"],
-  ["4","Intelligence","Baseline model, anomaly detection, rules, confidence, contextual weighting","radar"],
+  ["4","Intelligence","Baseline model, anomaly detection, rules, confidence, contextual weighting","signal"],
   ["5","Action output","Inform, review, check-in, urgent escalation, follow-up and outcome tracking","zap"]];
  const objs=[["Student profile","Stable facts: identity, year group, subjects, declared goals, support roles and permissions."],
   ["Event","A time-stamped occurrence — absence, grade, incident, missed task, teacher concern, application milestone."],
@@ -1773,12 +1822,12 @@ function dimCounts(key){const f=DIMS[key].f;const o={critical:0,watch:0,good:0};
 
 /* ═══════════ CATEGORY NAV ═══════════ */
 const CATS=[
- {id:"cohort",label:"My Cohort",ic:"users",sub:[
+ {id:"cohort",label:"My Cohort",ic:"caseload",sub:[
    ["cohort-schedule","Today"],["cohort-all","All students"],["flags","From teachers"],["meetings","Meetings"]]},
  {id:"uni",label:"University Applications",ic:"grad",sub:[
    ["app-progress","Application progress"],["app-list","List balance"],["app-deadlines","Deadlines"],
    ["app-docs","Documents & references"],["app-statement","Personal statements"],["app-letter","Letter Engine"]]},
- {id:"si",label:"Student Intelligence",ic:"radar",sub:[
+ {id:"si",label:"Student Intelligence",ic:"signal",sub:[
    ["si-cases","Priority cases"],["si-attendance","Attendance"],["si-punctuality","Punctuality & tardiness"],
    ["si-academic","Academic signals"],["si-engagement","Engagement"],["si-behaviour","Behaviour & conduct"],
    ["si-interventions","Interventions"]]}];
@@ -1937,7 +1986,7 @@ function vToday(){
      <div style="font-size:11.5px;color:var(--ink-2);margin-top:2px">${l}</div></div></div>`).join('')}
   </div>
   <div class="card" style="padding:20px 22px;margin-bottom:20px">
-   <div class="sechead">${ic('radar',13)} What changed overnight</div>
+   <div class="sechead">${ic('overnight',13)} What changed overnight</div>
    ${moved.map((m,i)=>`<div class="lift" data-file="${m.id}" style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:11px 0;border-bottom:${i<moved.length-1?'1px solid var(--line)':'none'};cursor:pointer">
     <div><div style="font-size:13px;font-weight:600">${m.n}</div>
      <div style="font-size:11.8px;color:var(--ink-3);margin-top:2px">${m.r}</div></div>
@@ -2420,14 +2469,14 @@ function vPathExplorer(navAttr,uniTab,contactTab,persona){
  <div class="card" style="padding:20px;margin-bottom:16px">
   <div class="sechead">${ic('route',13)} What ${c.name.split(' ')[0]} is doing now</div>
   ${c.track==="IB"?`<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--ok-bg);border:1px solid var(--ok-line);border-radius:12px;padding:16px">
-   <span style="color:var(--ok);display:flex">${ic('checkC',22)}</span>
+   <span style="color:var(--ok);display:flex">${ic('trackIB',22)}</span>
    <div style="flex:1;min-width:220px"><b style="font-size:14px;color:#05603A">${c.name.split(' ')[0]} is on the full IB Diploma.</b>
     <div style="font-size:12.3px;color:#05603A;margin-top:3px;line-height:1.55">Six subjects, three at Higher Level, plus Theory of Knowledge, the Extended Essay and CAS.${c.pred&&c.pred!=="—"?" Predicted grades: "+c.pred+".":""}</div></div>
   </div>
   ${c.uni.targets.length?`<div style="background:var(--surface-3);border-radius:10px;padding:14px 16px;margin-top:14px;font-size:12.5px;color:var(--ink-2);line-height:1.6">
    <b>Does ${c.name.split(' ')[0].endsWith('a')?'she':'he'} need IB for the universities ${c.name.split(' ')[0].endsWith('a')?'she':'he'} wants?</b> Every university currently on the list accepts the IB Diploma, so the pathway already fits — the work now is finishing the applications built on it.</div>`:''}`
   :c.track==="AP"?`<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--info-bg);border:1px solid #B2DDFF;border-radius:12px;padding:16px">
-   <span style="color:var(--info);display:flex">${ic('checkC',22)}</span>
+   <span style="color:var(--info);display:flex">${ic('trackAP',22)}</span>
    <div style="flex:1;min-width:220px"><b style="font-size:14px;color:#0B4A8F">${c.name.split(' ')[0]} chose the AP route.</b>
     <div style="font-size:12.3px;color:#0B4A8F;margin-top:3px;line-height:1.55">AP is examined course by course rather than as a single diploma, which gives more control over exactly which subjects to take in depth — and which exams to sit, and when.</div></div>
   </div>
@@ -2762,7 +2811,7 @@ function vParent(){
    </div>
   </div>
   <div class="card" style="padding:20px">
-   <div class="sechead">${ic('users',13)} Mentor</div>
+   <div class="sechead">${ic('mentorMatch',13)} Mentor</div>
    ${c.id==="s3"?`<div style="display:flex;gap:11px;align-items:flex-start;margin-bottom:12px">
     ${av("HR","mentor",42,12)}
     <div style="min-width:0"><b style="font-size:13.5px">${PARENT_MENTOR.name}</b>
@@ -3263,7 +3312,7 @@ function vStuTargets(){
 
 function vStuMentors(){
  return `<div class="fade">
- ${head("Mentor marketplace","Talk to someone who got there","Verified alumni who walked your exact route. Every session happens inside the platform and is recorded — your school is in the loop.","var(--violet)","users")}
+ ${head("Mentor marketplace","Talk to someone who got there","Verified alumni who walked your exact route. Every session happens inside the platform and is recorded — your school is in the loop.","var(--violet)","mentorMatch")}
  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
  ${MENTORS.map((m,i)=>`<div class="card lift" style="padding:20px;animation:rise .4s ${i*.05}s backwards">
   <div style="display:flex;gap:13px;margin-bottom:12px">
@@ -3445,7 +3494,7 @@ function draw(){
   sb=shell("parent",nav,S.pv,"data-pv",PARENTS[PARENT_ME].av,PARENTS[PARENT_ME].name,"Parent of "+g(PARENT_ME).name.split(" ")[0],"Family portal",g(PARENT_ME).name+" · "+g(PARENT_ME).yr+" · "+SCHOOL.name,vParent());
  } else if(S.role==="student"){
   const pg=S.previewGrade||12,pt=g(PARENT_ME).track||"IB";
-  let nav=pg===9?[["guide","High School Guide","book"]]:[["explore","Choosing IB or AP","route"],["mentors","Find a Mentor","users",2]];
+  let nav=pg===9?[["guide","High School Guide","book"]]:[["explore","Choosing IB or AP","route"],["mentors","Find a Mentor","mentorMatch",2]];
   if(pg>=11)nav.unshift(["progress","My progress","trend"]);
   if(pg===12){nav.splice(1,0,["pathway","My Pathway","route"],["targets","University Targets","target"]);nav.push(["network","My Network","brief"]);}
   if(pg>=11&&pt==="AP")nav.splice(nav.findIndex(x=>x[0]==="mentors"),0,["apexams","AP Exams","clock"]);
@@ -3474,8 +3523,8 @@ function draw(){
   counselor:[["cohort-schedule","Today","clock"],["cohort-all","Cohort","users"],["si-cases","Priority","alert"],["__menu","More","list"]],
   student:(()=>{const pg=S.previewGrade||12,pt=g(PARENT_ME).track||"IB";
    if(pg===9)return[["guide","Guide","book"],["__menu","More","list"]];
-   if(pg===10)return[["explore","Explore","route"],["mentors","Mentors","users"],["__menu","More","list"]];
-   if(pg===11)return pt==="AP"?[["progress","Progress","trend"],["explore","Explore","route"],["apexams","AP","clock"],["__menu","More","list"]]:[["progress","Progress","trend"],["explore","Explore","route"],["mentors","Mentors","users"],["__menu","More","list"]];
+   if(pg===10)return[["explore","Explore","route"],["mentors","Mentors","mentorMatch"],["__menu","More","list"]];
+   if(pg===11)return pt==="AP"?[["progress","Progress","trend"],["explore","Explore","route"],["apexams","AP","clock"],["__menu","More","list"]]:[["progress","Progress","trend"],["explore","Explore","route"],["mentors","Mentors","mentorMatch"],["__menu","More","list"]];
    return[["progress","Progress","trend"],["pathway","Pathway","route"],["targets","Targets","target"],["__menu","More","list"]];})(),
   mentor:[["requests","Requests","inbox"],["mentees","Mentees","users"],["__menu","More","list"]],
   teacher:[["class","My class","users"],["__menu","More","list"]],
