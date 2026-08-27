@@ -1370,21 +1370,21 @@ s6:["Founded school enterprise society","Duke of Edinburgh Silver","Basketball t
 function vFiles(){
  if(S.fileId) return vFileOne(g(S.fileId));
  return `<div class="fade">
- ${head("360° student files","One explainable view per student","Every student's academic, attendance, wellbeing and university journey synthesised into a single file — with a briefing you can read in fifteen seconds before any meeting.","var(--teal)","layers")}
+ ${head("360° student files","One explainable view per student","Every student's academic, attendance, wellbeing and university journey synthesised into a single file — with a briefing you can read in fifteen seconds before any meeting.","var(--brand)","layers")}
  <div class="card" style="padding:16px 19px;margin-bottom:16px;display:flex;gap:12px;align-items:center">
-  <div style="width:36px;height:36px;border-radius:10px;background:var(--tealSoft);display:grid;place-items:center;color:var(--tealDeep);flex-shrink:0">${ic('clock',18)}</div>
-  <div style="flex:1;font-size:12.3px;color:var(--inkSoft);line-height:1.5"><b style="color:var(--ink)">Meeting preparation went from 22 minutes to 4.</b> Previously this meant opening the MIS, the gradebook, your spreadsheet and your email before every conversation. Now it is one screen.</div>
+  <div style="width:36px;height:36px;border-radius:var(--r);background:var(--brand-3);display:grid;place-items:center;color:var(--brand-2);flex-shrink:0">${ic('clock',18)}</div>
+  <div style="flex:1;font-size:12.3px;color:var(--ink-2);line-height:1.5"><b style="color:var(--ink)">Meeting preparation went from 22 minutes to 4.</b> Previously this meant opening the MIS, the gradebook, your spreadsheet and your email before every conversation. Now it is one screen.</div>
  </div>
  ${S.cases.map((c,i)=>{const P=PRIO[c.prio];const doms=[...new Set(c.evidence.filter(e=>e.w>0).map(e=>e.dom))];
   return `<div class="card concerncard" data-file="${c.id}" style="padding:15px 18px;margin-bottom:10px;animation:rise .4s ${i*.04}s backwards">
   <div style="display:grid;grid-template-columns:auto 1fr auto auto;gap:15px;align-items:center">
    ${av(c.av,c.prio,42,12)}
    <div><div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap"><b style="font-size:14px">${c.name}</b>${pchip(c.prio)}</div>
-    <div style="font-size:11.5px;color:var(--inkMute);margin-top:2px">${c.yr} · ${c.goal} · GPA ${c.gpa} · Predicted ${c.pred}</div></div>
+    <div style="font-size:11.5px;color:var(--ink-3);margin-top:2px">${c.yr} · ${c.goal} · GPA ${c.gpa} · Predicted ${c.pred}</div></div>
    <div style="display:flex;gap:5px">${Object.keys(DOMAINS).filter(k=>k!=="positive").map(k=>{
      const hit=c.evidence.filter(e=>e.dom===k&&e.w>0);const w=hit.reduce((a,b)=>a+b.w,0);
-     return `<span title="${DOMAINS[k].label}" style="width:8px;height:22px;border-radius:3px;background:${w>=30?'var(--urgent)':w>=18?'var(--checkin)':w>0?'var(--review)':'var(--lineSoft)'}"></span>`;}).join('')}</div>
-   <span style="font-size:11.5px;font-weight:600;color:var(--tealDeep);display:flex;align-items:center;gap:5px;white-space:nowrap">Open file ${ic('arrowR',13)}</span>
+     return `<span title="${DOMAINS[k].label}" style="width:8px;height:22px;border-radius:3px;background:${w>=30?'var(--urgent)':w>=18?'var(--checkin)':w>0?'var(--review)':'var(--line)'}"></span>`;}).join('')}</div>
+   <span style="font-size:11.5px;font-weight:600;color:var(--brand-2);display:flex;align-items:center;gap:5px;white-space:nowrap">Open file ${ic('arrowR',13)}</span>
   </div></div>`;}).join('')}
  </div>`;}
 
@@ -1401,19 +1401,19 @@ function vFileOne(c){
    ${av(c.av,c.prio,54,14)}
    <div style="flex:1"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
     <span class="serif" style="font-size:23px;font-weight:600">${c.name}</span>${pchip(c.prio)}</div>
-    <div style="font-size:12px;color:var(--inkMute);margin-top:3px">${c.yr} · ${c.goal} · GPA ${c.gpa} · Predicted ${c.pred} · Last contact ${c.lastContact}</div></div>
+    <div style="font-size:12px;color:var(--ink-3);margin-top:3px">${c.yr} · ${c.goal} · GPA ${c.gpa} · Predicted ${c.pred} · Last contact ${c.lastContact}</div></div>
    <div style="display:flex;gap:7px;flex-shrink:0">
     <button class="btn btn-g btn-sm" data-act="brief:${c.id}">${ic('spark',13)} 60-sec brief</button>
     <button class="btn btn-p btn-sm" data-open="${c.id}">Open case</button></div>
   </div>
   <div style="background:linear-gradient(180deg,#FBFCFE,#fff);padding:19px 22px">
    <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px">
-    <span class="chip" style="background:var(--tealSoft);color:var(--tealDeep)">${ic('spark',11)} 15-SECOND BRIEFING</span>
-    <span style="font-size:11px;color:var(--inkMute)">Auto-synthesised · no counselor input required</span></div>
+    <span class="chip" style="background:var(--brand-3);color:var(--brand-2)">${ic('spark',11)} 15-SECOND BRIEFING</span>
+    <span style="font-size:11px;color:var(--ink-3)">Auto-synthesised · no counselor input required</span></div>
    <div class="read" style="font-size:16px;line-height:1.7;color:var(--ink)">${c.plain}</div>
   </div>
  </div>
- <div style="display:flex;gap:6px;margin-bottom:14px;background:var(--panel);padding:4px;border-radius:11px;width:fit-content;flex-wrap:wrap">
+ <div style="display:flex;gap:6px;margin-bottom:14px;background:var(--bg);padding:4px;border-radius:var(--r-lg);width:fit-content;flex-wrap:wrap">
   ${tabs.map(([k,l])=>`<button class="tab ${ft===k?'on':''}" data-ftab="${k}">${l}</button>`).join('')}</div>
 
  ${ft==="synth"?`<div class="pop" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
@@ -1423,11 +1423,11 @@ function vFileOne(c){
     ["University journey","grad",[["Target career",c.goal],["Universities listed",c.uni.targets.length],["List balance",c.uni.targets.some(t=>t.b==="safety")?"Balanced":"No safety school"],["Journey flags",c.uni.flags.length||"None"]]]
    ].map(([t,i,rows],ix)=>`<div class="card" style="padding:18px 20px;animation:rise .4s ${ix*.06}s backwards">
     <div class="sechead">${ic(i,13)} ${t}</div>
-    ${rows.map(([l,v])=>`<div class="kv"><span style="color:var(--inkMute)">${l}</span><b>${v}</b></div>`).join('')}</div>`).join('')}
+    ${rows.map(([l,v])=>`<div class="kv"><span style="color:var(--ink-3)">${l}</span><b>${v}</b></div>`).join('')}</div>`).join('')}
   <div class="card" style="padding:18px 20px;grid-column:span 2">
    <div class="sechead">${ic('trend',13)} Verified activities & evidence base</div>
-   <div style="font-size:11.5px;color:var(--inkMute);margin-bottom:11px;line-height:1.5">This is what the Letter Engine draws on. Nothing is written that does not appear here.</div>
-   ${acts.map(a=>`<div style="display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--lineSoft);font-size:12.5px;color:var(--inkSoft)">${ic('checkC',14)}<span>${a}</span></div>`).join('')}</div>
+   <div style="font-size:11.5px;color:var(--ink-3);margin-bottom:11px;line-height:1.5">This is what the Letter Engine draws on. Nothing is written that does not appear here.</div>
+   ${acts.map(a=>`<div style="display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--ink-2)">${ic('checkC',14)}<span>${a}</span></div>`).join('')}</div>
  </div>`:''}
 
  ${ft==="signals"?`<div class="card pop" style="padding:20px">
@@ -1441,57 +1441,57 @@ function vFileOne(c){
    <div class="sechead">${ic('list',13)} Every event on file this term</div>
    ${c.evidence.map(e=>`<div class="evd">
     <div><div style="display:flex;align-items:center;gap:5px;color:${DOMAINS[e.dom].c};font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em">${ic(DOMAINS[e.dom].ic,11)}${DOMAINS[e.dom].label}</div>
-    <div class="mono" style="font-size:10px;color:var(--inkMute);margin-top:3px">${e.date}</div></div>
-    <div><div style="line-height:1.55">${e.txt}</div><div style="font-size:10.5px;color:var(--inkMute);margin-top:3px">${e.src}</div></div>
+    <div class="mono" style="font-size:10px;color:var(--ink-3);margin-top:3px">${e.date}</div></div>
+    <div><div style="line-height:1.55">${e.txt}</div><div style="font-size:10.5px;color:var(--ink-3);margin-top:3px">${e.src}</div></div>
     <span class="mono" style="font-size:12px;font-weight:600;color:${e.w>0?'var(--urgent)':'var(--good)'}">${e.w>0?'+':''}${e.w}</span></div>`).join('')}</div>
  </div>`:''}
 
  ${ft==="uni"?`<div class="card pop" style="padding:20px">
   <div class="sechead">${ic('grad',13)} Goal → path → programmes</div>
-  <div style="background:var(--panel);border-radius:11px;padding:15px 17px;margin-bottom:16px">
-   <div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--inkMute);font-weight:700;margin-bottom:5px">Stated long-term goal</div>
+  <div style="background:var(--bg);border-radius:var(--r-lg);padding:15px 17px;margin-bottom:16px">
+   <div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);font-weight:700;margin-bottom:5px">Stated long-term goal</div>
    <div class="serif" style="font-size:18px;font-weight:600">${c.goal}</div>
-   <div style="font-size:12px;color:var(--inkSoft);margin-top:5px;line-height:1.5">The engine connects this goal to programmes and the highest-probability current path. Where the list drifts from the goal, it flags it to you privately.</div></div>
+   <div style="font-size:12px;color:var(--ink-2);margin-top:5px;line-height:1.5">The engine connects this goal to programmes and the highest-probability current path. Where the list drifts from the goal, it flags it to you privately.</div></div>
   ${c.uni.targets.map(t=>{const col=t.b==="reach"?'var(--urgent)':t.b==="match"?'var(--good)':'var(--review)';
-   return `<div style="padding:12px 0;border-bottom:1px solid var(--lineSoft)">
-    <div style="display:flex;justify-content:space-between;align-items:baseline"><div><b style="font-size:13px">${t.u}</b><div style="font-size:11.5px;color:var(--inkMute)">${t.c}</div></div>
+   return `<div style="padding:12px 0;border-bottom:1px solid var(--line)">
+    <div style="display:flex;justify-content:space-between;align-items:baseline"><div><b style="font-size:13px">${t.u}</b><div style="font-size:11.5px;color:var(--ink-3)">${t.c}</div></div>
     <div style="text-align:right"><span class="serif" style="font-size:19px;font-weight:600;color:${col}">${t.p}%</span><div>${chip(t.b.toUpperCase(),col,t.b==="reach"?'var(--urgentSoft)':t.b==="match"?'var(--goodSoft)':'var(--reviewSoft)')}</div></div></div>
     <div style="margin-top:7px">${meter(t.p,col)}</div></div>`;}).join('')}
-  ${!c.uni.targets.some(t=>t.b==="safety")?`<div style="background:var(--reviewSoft);border-radius:10px;padding:13px 15px;margin-top:14px;font-size:11.8px;color:#7A5504;line-height:1.55">
+  ${!c.uni.targets.some(t=>t.b==="safety")?`<div style="background:var(--reviewSoft);border-radius:var(--r-lg);padding:13px 15px;margin-top:14px;font-size:11.8px;color:#7A5504;line-height:1.55">
    <b>Reality-check (counselor eyes only).</b> No secure floor on this list. Frame as an addition — keep the ambition, add a match-level option that still serves ${c.goal}. Explain <i>why</i> the gap exists and <i>what action</i> could improve the path.</div>`:''}
  </div>`:''}
 
  ${ft==="support"?`<div class="pop" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
   <div class="card" style="padding:20px">
    <div class="sechead">${ic('brief',13)} Interventions</div>
-   ${ivs.length?ivs.map(i=>`<div style="padding:12px 0;border-bottom:1px solid var(--lineSoft)">
+   ${ivs.length?ivs.map(i=>`<div style="padding:12px 0;border-bottom:1px solid var(--line)">
     <div style="display:flex;justify-content:space-between;gap:9px;align-items:baseline"><b style="font-size:12.5px">${i.type}</b>
     ${i.status==="resolved"?chip("Resolved","var(--good)","var(--goodSoft)"):chip("Open","var(--checkin)","var(--checkinSoft)")}</div>
-    <div style="font-size:11.3px;color:var(--inkMute);margin-top:3px">Opened ${i.opened} · owner ${i.owner} · ${i.status==="resolved"?"closed in "+i.resolvedIn:"due "+i.due}</div>
-    ${i.outcome?`<div style="font-size:11.8px;color:#075E45;background:var(--goodSoft);border-radius:8px;padding:9px 11px;margin-top:7px;line-height:1.5"><b>Outcome.</b> ${i.outcome}</div>`:''}</div>`).join('')
-   :`<div style="font-size:12.5px;color:var(--inkMute);padding:10px 0">No interventions on file. This student has not required formal support this year.</div>`}
+    <div style="font-size:11.3px;color:var(--ink-3);margin-top:3px">Opened ${i.opened} · owner ${i.owner} · ${i.status==="resolved"?"closed in "+i.resolvedIn:"due "+i.due}</div>
+    ${i.outcome?`<div style="font-size:11.8px;color:#075E45;background:var(--goodSoft);border-radius:var(--r);padding:9px 11px;margin-top:7px;line-height:1.5"><b>Outcome.</b> ${i.outcome}</div>`:''}</div>`).join('')
+   :`<div style="font-size:12.5px;color:var(--ink-3);padding:10px 0">No interventions on file. This student has not required formal support this year.</div>`}
   </div>
   <div class="card" style="padding:20px">
    <div class="sechead">${ic('clock',13)} Contact & support log</div>
-   ${log.map((l,i)=>`<div class="tlrow"><div style="display:flex;flex-direction:column;align-items:center"><span class="tldot" style="background:${l.k==="met"?'var(--teal)':'var(--inkMute)'}"></span>${i<log.length-1?'<span class="tlline"></span>':''}</div>
-    <div><div style="font-size:10.5px;color:var(--inkMute);font-weight:600">${l.d} · ${l.w}</div><div style="font-size:12.3px;color:var(--inkSoft);line-height:1.45">${l.t}</div></div></div>`).join('')}
-   <div style="font-size:10.5px;color:var(--inkMute);margin-top:8px;line-height:1.45">Response-time and coverage metrics in Reporting are calculated from this log.</div>
+   ${log.map((l,i)=>`<div class="tlrow"><div style="display:flex;flex-direction:column;align-items:center"><span class="tldot" style="background:${l.k==="met"?'var(--brand)':'var(--ink-3)'}"></span>${i<log.length-1?'<span class="tlline"></span>':''}</div>
+    <div><div style="font-size:10.5px;color:var(--ink-3);font-weight:600">${l.d} · ${l.w}</div><div style="font-size:12.3px;color:var(--ink-2);line-height:1.45">${l.t}</div></div></div>`).join('')}
+   <div style="font-size:10.5px;color:var(--ink-3);margin-top:8px;line-height:1.45">Response-time and coverage metrics in Reporting are calculated from this log.</div>
   </div>
  </div>`:''}
 
  ${ft==="access"?`<div class="card pop" style="padding:20px">
   <div class="sechead">${ic('lock',13)} Minimum necessary visibility · who can see what in this file</div>
-  <div style="font-size:12px;color:var(--inkSoft);margin-bottom:14px;line-height:1.55">Sensitive information is shown only to staff whose role requires it, with an audit trail of access and action. This panel is what you show a parent or a regulator who asks.</div>
+  <div style="font-size:12px;color:var(--ink-2);margin-bottom:14px;line-height:1.55">Sensitive information is shown only to staff whose role requires it, with an audit trail of access and action. This panel is what you show a parent or a regulator who asks.</div>
   <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">
-   <thead><tr>${["Role","Signals & baselines","Concern notes","University journey","Safeguarding record"].map((h,i)=>`<th style="text-align:${i?'center':'left'};padding:9px 8px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--inkMute);border-bottom:1px solid var(--line)">${h}</th>`).join('')}</tr></thead>
+   <thead><tr>${["Role","Signals & baselines","Concern notes","University journey","Safeguarding record"].map((h,i)=>`<th style="text-align:${i?'center':'left'};padding:9px 8px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);border-bottom:1px solid var(--line)">${h}</th>`).join('')}</tr></thead>
    <tbody>${[["Student","No","No","Own view only","No"],["Parent","No","No","Approved reports only","No"],["Teacher","Submit only","No","No","No"],["Counselor (you)","Yes","Yes","Yes","Referral only"],["Year head","Year group only","Summary","Summary","No"],["Safeguarding lead","Yes","Yes","Yes","Yes"],["Head of school","Aggregated","No","Aggregated","Policy-controlled"]]
-    .map(r=>`<tr style="border-bottom:1px solid var(--lineSoft)">
+    .map(r=>`<tr style="border-bottom:1px solid var(--line)">
      <td style="padding:10px 8px;font-weight:600;white-space:nowrap">${r[0]}</td>
-     ${r.slice(1).map(v=>`<td style="padding:10px 8px;text-align:center;color:${v==="No"?'var(--inkMute)':v==="Yes"?'var(--good)':'var(--inkSoft)'};font-weight:${v==="Yes"?600:400}">${v}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+     ${r.slice(1).map(v=>`<td style="padding:10px 8px;text-align:center;color:${v==="No"?'var(--ink-3)':v==="Yes"?'var(--good)':'var(--ink-2)'};font-weight:${v==="Yes"?600:400}">${v}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
   <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line)">
    <div class="sechead">${ic('list',13)} Access audit for this file</div>
    ${[["13 Nov 07:04","SYSTEM","Signal evaluation · automated sweep"],["12 Nov 16:22","R.HADDAD","File access · purpose: case review"],["11 Nov 14:07","M.DAVIES","Concern submitted · no file read access granted"],["2 Oct 09:40","R.HADDAD","File access · purpose: scheduled meeting prep"]]
-    .map(a=>`<div class="audit"><span style="width:96px;flex-shrink:0">${a[0]}</span><span style="width:86px;flex-shrink:0;color:${a[1]==='SYSTEM'?'var(--teal)':'var(--violet)'};font-weight:500">${a[1]}</span><span style="flex:1">${a[2]}</span></div>`).join('')}</div>
+    .map(a=>`<div class="audit"><span style="width:96px;flex-shrink:0">${a[0]}</span><span style="width:86px;flex-shrink:0;color:${a[1]==='SYSTEM'?'var(--brand)':'var(--violet)'};font-weight:500">${a[1]}</span><span style="flex:1">${a[2]}</span></div>`).join('')}</div>
  </div>`:''}
  </div>`;}
 /* ═══════════ WORKFLOW AUTOMATION (doc §03.7 + §08) ═══════════ */
@@ -2000,13 +2000,13 @@ function vCohort(){
  return `<div class="fade" style="max-width:960px">
   <div style="border-top:1px solid var(--line);padding-top:24px">
    <div class="serif" style="font-size:23px;font-weight:600;letter-spacing:-.02em;margin-bottom:4px">My cohort</div>
-   <div style="font-size:13px;color:var(--inkSoft);margin-bottom:16px;line-height:1.6">Your ${S.cases.length} students, Grades 9 to 12. Search by name, goal or university — any row opens the full 360° file.</div>
+   <div style="font-size:13px;color:var(--ink-2);margin-bottom:16px;line-height:1.6">Your ${S.cases.length} students, Grades 9 to 12. Search by name, goal or university — any row opens the full 360° file.</div>
    <div class="card" style="padding:14px 17px;margin-bottom:14px">
-    <div style="display:flex;align-items:center;gap:9px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 13px">
+    <div style="display:flex;align-items:center;gap:9px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:9px 13px">
      ${ic('search',15)}<input id="cq" value="${(S.q||"").replace(/"/g,'&quot;')}" placeholder="Search name, goal or university…" style="border:none;background:none;font-size:13px;width:100%;color:var(--ink)">
-     ${q?`<button data-q="" style="border:none;background:none;cursor:pointer;color:var(--inkMute);display:flex;padding:0">${ic('x',14)}</button>`:''}</div>
+     ${q?`<button data-q="" style="border:none;background:none;cursor:pointer;color:var(--ink-3);display:flex;padding:0">${ic('x',14)}</button>`:''}</div>
     <div style="display:flex;gap:7px;margin-top:11px;flex-wrap:wrap">
-     ${chips.map(([k,l,n,c])=>`<button data-cfilter="${k}" style="display:flex;align-items:center;gap:7px;border:1px solid ${filt===k?c:'var(--line)'};background:${filt===k?c:'#fff'};color:${filt===k?'#fff':'var(--inkSoft)'};border-radius:20px;padding:6px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s">
+     ${chips.map(([k,l,n,c])=>`<button data-cfilter="${k}" style="display:flex;align-items:center;gap:7px;border:1px solid ${filt===k?c:'var(--line)'};background:${filt===k?c:'#fff'};color:${filt===k?'#fff':'var(--ink-2)'};border-radius:var(--r-pill);padding:6px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s">
       ${k!=="all"?`<span style="width:7px;height:7px;border-radius:50%;background:${filt===k?'#fff':c}"></span>`:''}${l}<span style="opacity:.7">${n}</span></button>`).join('')}</div>
    </div>
    <div class="card" style="padding:0;overflow:hidden">
@@ -2014,22 +2014,22 @@ function vCohort(){
      <span style="width:36px"></span><span>Student</span><span>Application</span><span>Signals</span><span>Last contact</span><span style="text-align:right">Status</span></div>
     ${list.length?list.map((c,i)=>{const r=cohortRag(c);const R=RAG[r];const prog=DIMS["app-progress"].f(c);
      const dots=[["app-list"],["app-statement"],["si-attendance"],["si-punctuality"],["si-academic"],["si-engagement"]];
-     return `<div class="lift" data-file="${c.id}" style="display:grid;grid-template-columns:auto 1fr 120px 170px 110px 92px;gap:14px;padding:13px 18px;align-items:center;border-bottom:${i<list.length-1?'1px solid var(--lineSoft)':'none'};cursor:pointer">
+     return `<div class="lift" data-file="${c.id}" style="display:grid;grid-template-columns:auto 1fr 120px 170px 110px 92px;gap:14px;padding:13px 18px;align-items:center;border-bottom:${i<list.length-1?'1px solid var(--line)':'none'};cursor:pointer">
       ${av(c.av,c.prio,36,10)}
       <div style="min-width:0"><b style="font-size:13.2px">${c.name}</b>
-       <div style="font-size:11px;color:var(--inkMute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.goal} · ${c.pred}</div></div>
+       <div style="font-size:11px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.goal} · ${c.pred}</div></div>
       <div><div style="height:5px;border-radius:3px;background:var(--line);overflow:hidden"><div style="height:100%;width:${parseInt(prog.v)}%;background:${RAG[prog.r].c};border-radius:3px"></div></div>
-       <div style="font-size:10px;color:var(--inkMute);margin-top:3px">${prog.v}</div></div>
+       <div style="font-size:10px;color:var(--ink-3);margin-top:3px">${prog.v}</div></div>
       <div style="display:flex;gap:4px">${dots.map(([k])=>{const rr=DIMS[k].f(c).r;
-        return `<span title="${DIMS[k].t}: ${RAG[rr].l}" style="width:8px;height:18px;border-radius:3px;background:${rr==="good"?'var(--lineSoft)':RAG[rr].c}"></span>`;}).join('')}</div>
-      <span style="font-size:11.5px;color:var(--inkMute)">${c.lastContact}</span>
+        return `<span title="${DIMS[k].t}: ${RAG[rr].l}" style="width:8px;height:18px;border-radius:3px;background:${rr==="good"?'var(--line)':RAG[rr].c}"></span>`;}).join('')}</div>
+      <span style="font-size:11.5px;color:var(--ink-3)">${c.lastContact}</span>
       <div style="text-align:right">${chip(R.l,R.c,R.bg)}</div></div>`;}).join('')
-    :`<div style="padding:38px;text-align:center;color:var(--inkMute);font-size:13px">No students match “${q}”.</div>`}
+    :`<div style="padding:38px;text-align:center;color:var(--ink-3);font-size:13px">No students match “${q}”.</div>`}
    </div>
-   <div style="display:flex;gap:14px;margin-top:11px;font-size:10.3px;color:var(--inkMute);flex-wrap:wrap;align-items:center">
+   <div style="display:flex;gap:14px;margin-top:11px;font-size:10.3px;color:var(--ink-3);flex-wrap:wrap;align-items:center">
     <span><b>Signal strip:</b></span>
     ${["List balance","Statement","Attendance","Punctuality","Academic","Engagement"].map(l=>`<span>${l}</span>`).join('<span style="opacity:.4">·</span>')}
-    <span style="margin-left:auto;display:flex;align-items:center;gap:5px"><span style="width:8px;height:12px;border-radius:3px;background:var(--lineSoft)"></span>inside personal baseline</span></div>
+    <span style="margin-left:auto;display:flex;align-items:center;gap:5px"><span style="width:8px;height:12px;border-radius:3px;background:var(--line)"></span>inside personal baseline</span></div>
   </div>
  </div>`;}
 /* ═══════════════ TEACHER PORTAL ═══════════════
@@ -3381,7 +3381,6 @@ function draw(){
   else if(S.fileId)body2=vFileOne(g(S.fileId));
   else if(DIMS[S.cv])body2=vDim(S.cv);
   else if(S.cv==="roster")body2=vRoster();
-  else if(S.cv==="cohort"||S.cv==="today"||S.cv==="files")body2=vCohort();
   else if(S.cv==="cohort-schedule")body2=vToday();
   else if(S.cv==="cohort-all")body2=vCohort();
   else if(S.cv==="flags")body2=vFlagInbox();
