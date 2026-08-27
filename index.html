@@ -3300,15 +3300,15 @@ function vMentorReq(){
  const reqs=[{n:"Sara Al Mansoori",av:"SA",goal:"Investment Banking · LSE Economics",msg:"Hi Hassan — I had a great first call. I'd love a follow-up on spring week applications and how to frame my Economics Society project in interviews.",when:"2 hours ago"},
   {n:"Khalid Noor",av:"KN",goal:"Finance · targeting LSE",msg:"Could we talk about the LSE Economics application and what made yours stand out?",when:"Yesterday"}];
  return `<div class="fade">
- ${head("Session requests","Students who want to talk","Students matched to your route have asked for time. You walked their exact path — that is the most valuable thing they can access.","var(--teal)","inbox")}
+ ${head("Session requests","Students who want to talk","Students matched to your route have asked for time. You walked their exact path — that is the most valuable thing they can access.","var(--brand)","inbox")}
  <div class="card" style="padding:16px 19px;margin-bottom:16px;display:flex;gap:12px;align-items:center">
-  <div style="width:34px;height:34px;border-radius:9px;background:var(--tealSoft);display:grid;place-items:center;color:var(--tealDeep);flex-shrink:0">${ic('shield',17)}</div>
-  <div style="font-size:12.2px;color:var(--inkSoft);line-height:1.5"><b style="color:var(--ink)">Safeguarding active.</b> Sessions with under-18 students happen in-platform and are recorded. The school is in the loop and consent is on file. You never exchange private contact details.</div></div>
+  <div style="width:34px;height:34px;border-radius:9px;background:var(--brand-3);display:grid;place-items:center;color:var(--brand-2);flex-shrink:0">${ic('shield',17)}</div>
+  <div style="font-size:12.2px;color:var(--ink-2);line-height:1.5"><b style="color:var(--ink)">Safeguarding active.</b> Sessions with under-18 students happen in-platform and are recorded. The school is in the loop and consent is on file. You never exchange private contact details.</div></div>
  ${reqs.map((r,i)=>`<div class="card" style="padding:20px;margin-bottom:12px;animation:rise .4s ${i*.06}s backwards">
   <div style="display:flex;align-items:center;gap:13px;margin-bottom:12px">${av(r.av,"student",44,12)}
-   <div style="flex:1"><b style="font-size:15px">${r.n}</b><div style="font-size:12px;color:var(--inkMute)">${r.goal}</div></div>
-   ${chip(r.when,"var(--tealDeep)","var(--tealSoft)")}</div>
-  <div style="background:var(--panel);border-radius:11px;padding:13px 15px;font-size:12.5px;color:var(--inkSoft);line-height:1.6;font-style:italic;margin-bottom:12px">"${r.msg}"</div>
+   <div style="flex:1"><b style="font-size:15px">${r.n}</b><div style="font-size:12px;color:var(--ink-3)">${r.goal}</div></div>
+   ${chip(r.when,"var(--brand-2)","var(--brand-3)")}</div>
+  <div style="background:var(--bg);border-radius:11px;padding:13px 15px;font-size:12.5px;color:var(--ink-2);line-height:1.6;font-style:italic;margin-bottom:12px">"${r.msg}"</div>
   <div style="display:flex;gap:8px;flex-wrap:wrap">
    <button class="btn btn-p btn-sm" data-toast="Accepted — added to your calendar and the school log">${ic('check',13)} Accept & schedule</button>
    <button class="btn btn-g btn-sm" data-toast="Alternative times sent">Propose another time</button>
@@ -3318,19 +3318,19 @@ function vMentorReq(){
 function vMentorMentees(){
  const ms=[{n:"Sara Al Mansoori",av:"SA",goal:"Goldman IBD",s:1,next:"Spring week strategy"},{n:"Omar Farouk",av:"OF",goal:"Entrepreneurship",s:2,next:"Networking into VC"}];
  return `<div class="fade">
- ${head("My mentees","Students you are guiding","Each one is walking a route you have already walked.","var(--teal)","users")}
+ ${head("My mentees","Students you are guiding","Each one is walking a route you have already walked.","var(--brand)","users")}
  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
  ${ms.map(m=>`<div class="card lift" style="padding:20px">
   <div style="display:flex;gap:12px;margin-bottom:13px">${av(m.av,"student",44,12)}
-   <div><b style="font-size:14.5px">${m.n}</b><div style="font-size:12px;color:var(--inkMute)">Goal: ${m.goal}</div></div></div>
+   <div><b style="font-size:14.5px">${m.n}</b><div style="font-size:12px;color:var(--ink-3)">Goal: ${m.goal}</div></div></div>
   <div style="display:flex;align-items:center;gap:15px">
-   <div><b style="font-size:14px">${m.s}</b><div style="font-size:9.5px;color:var(--inkMute);text-transform:uppercase">sessions</div></div>
-   <div style="flex:1"><b style="font-size:12.3px">${m.next}</b><div style="font-size:9.5px;color:var(--inkMute);text-transform:uppercase">next focus</div></div>
+   <div><b style="font-size:14px">${m.s}</b><div style="font-size:9.5px;color:var(--ink-3);text-transform:uppercase">sessions</div></div>
+   <div style="flex:1"><b style="font-size:12.3px">${m.next}</b><div style="font-size:9.5px;color:var(--ink-3);text-transform:uppercase">next focus</div></div>
    <button class="btn btn-p btn-sm" data-toast="Opening session workspace">Message</button></div></div>`).join('')}
  </div>
  <div class="card" style="padding:20px"><div class="sechead">${ic('trend',13)} Your impact</div>
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
-  ${[["34","Sessions delivered"],["4.9","Average rating"],["$4,080","Earned to date"]].map(([v,l])=>`<div><div class="serif" style="font-size:27px;font-weight:600;color:var(--teal)">${v}</div><div style="font-size:12px;color:var(--inkSoft)">${l}</div></div>`).join('')}</div></div>
+  ${[["34","Sessions delivered"],["4.9","Average rating"],["$4,080","Earned to date"]].map(([v,l])=>`<div><div class="serif" style="font-size:27px;font-weight:600;color:var(--brand)">${v}</div><div style="font-size:12px;color:var(--ink-2)">${l}</div></div>`).join('')}</div></div>
  </div>`;}
 /* ═══════════ MODALS ═══════════ */
 function modalEl(){
