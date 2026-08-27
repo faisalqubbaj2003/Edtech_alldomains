@@ -1260,34 +1260,34 @@ Head of University Counseling, Al Bateen Academy`;
 function vLetter(){
  const ev=["Economics Society presidency — verified activity record, 14 Sep","Trade-policy project — counselor meeting note, 3 Oct","Methodology rebuild — teacher comment, Ms. Fahri, 19 Oct","Predicted A*AA — gradebook, current","Tone matched to 6 uploaded letters by Ms. Haddad"];
  return `<div class="fade">
- ${head("Recommendation Letter Engine","A first draft from real evidence","Every sentence traces to a dated entry in the student's file. The engine drafts; you own the letter. Writing becomes reviewing.","var(--teal)","doc")}
+ ${head("Recommendation Letter Engine","A first draft from real evidence","Every sentence traces to a dated entry in the student's file. The engine drafts; you own the letter. Writing becomes reviewing.","var(--brand)","doc")}
  <div style="display:grid;grid-template-columns:1fr 300px;gap:18px;align-items:start">
   <div class="card" style="overflow:hidden">
    <div style="display:flex;align-items:center;gap:10px;padding:13px 20px;border-bottom:1px solid var(--line);background:#FCFCFE">
     <span style="width:8px;height:8px;border-radius:50%;background:${S.letter==='done'?'var(--good)':'var(--monitor)'}"></span>
-    <span style="font-size:12.5px;color:var(--inkSoft)">${S.letter==='done'?'Draft ready for your review':'Sara Al Mansoori · LSE BSc Economics'}</span>
+    <span style="font-size:12.5px;color:var(--ink-2)">${S.letter==='done'?'Draft ready for your review':'Sara Al Mansoori · LSE BSc Economics'}</span>
     ${S.letter==='done'?`<div style="margin-left:auto;display:flex;gap:7px"><button class="btn btn-g btn-sm">${ic('pencil',13)} Edit</button><button class="btn btn-p btn-sm" data-toast="Exported · logged in audit trail">${ic('doc',13)} Export</button></div>`:''}
    </div>
    ${S.letter==='idle'?`<div style="padding:56px 24px;text-align:center">
-    <div style="width:52px;height:52px;border-radius:14px;background:var(--tealSoft);display:grid;place-items:center;color:var(--tealDeep);margin:0 auto 14px">${ic('doc',24)}</div>
-    <div style="font-size:13.5px;color:var(--inkSoft);margin-bottom:14px">Ready to draft from Sara's verified file</div>
+    <div style="width:52px;height:52px;border-radius:var(--r-lg);background:var(--brand-3);display:grid;place-items:center;color:var(--brand-2);margin:0 auto 14px">${ic('doc',24)}</div>
+    <div style="font-size:13.5px;color:var(--ink-2);margin-bottom:14px">Ready to draft from Sara's verified file</div>
     <button class="btn btn-p" data-letter="go">${ic('spark',15)} Generate first draft</button></div>`:''}
    ${S.letter==='gen'?`<div style="padding:56px 24px;text-align:center">
-    ${spin(34)}<div style="font-size:13px;color:var(--inkSoft);margin-top:14px;display:flex;align-items:center;justify-content:center;gap:8px">Reading the file, matching your voice ${dots()}</div>
+    ${spin(34)}<div style="font-size:13px;color:var(--ink-2);margin-top:14px;display:flex;align-items:center;justify-content:center;gap:8px">Reading the file, matching your voice ${dots()}</div>
     <div style="max-width:70%;margin:18px auto 0">${[92,100,84,96].map(w=>`<div style="height:10px;width:${w}%;margin:0 auto 8px;background:linear-gradient(90deg,#eef0f6 25%,#f7f8fc 50%,#eef0f6 75%);background-size:1000px 100%;animation:shimmer 1.4s infinite;border-radius:6px"></div>`).join('')}</div></div>`:''}
    ${S.letter==='done'?`<div class="read pop" style="padding:32px 40px;font-size:15.5px;line-height:1.85;background:#FFFDF8">
     ${LETTER.split('\n\n').map(p=>`<p style="margin-bottom:15px">${p}</p>`).join('')}</div>`:''}
   </div>
   <div style="display:flex;flex-direction:column;gap:14px">
-   <div class="card" style="padding:18px;background:var(--navy);border:none;color:#fff">
+   <div class="card" style="padding:18px;background:var(--nav);border:none;color:#fff">
     <div class="serif" style="font-size:16px;font-weight:600;margin-bottom:6px">It never invents</div>
     <div style="font-size:12px;color:rgba(255,255,255,.7);line-height:1.55;margin-bottom:14px">Every claim is drawn from a dated entry in Sara's record. If the evidence is not there, the sentence is not written.</div>
     <button class="btn" data-letter="${S.letter==='done'?'reset':'go'}" ${S.letter==='gen'?'disabled':''} style="width:100%;background:rgba(255,255,255,.14);color:#fff">${S.letter==='done'?ic('refresh',15)+' Regenerate':'Generate draft'}</button></div>
    ${S.letter==='done'?`<div class="card pop" style="padding:18px"><div class="sechead">${ic('checkC',13)} Evidence used</div>
-    ${ev.map(e=>`<div style="display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--lineSoft);font-size:11.8px;color:var(--inkSoft);line-height:1.5">${ic('checkC',14)}<span>${e}</span></div>`).join('')}</div>`:''}
+    ${ev.map(e=>`<div style="display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line);font-size:11.8px;color:var(--ink-2);line-height:1.5">${ic('checkC',14)}<span>${e}</span></div>`).join('')}</div>`:''}
    <div class="card" style="padding:18px"><div class="sechead">Time returned this season</div>
-    <div class="serif" style="font-size:32px;font-weight:600;color:var(--teal);line-height:1">190 hrs</div>
-    <div style="font-size:12px;color:var(--inkSoft);margin-top:5px">84 letters at 60 minutes of writing each, reduced to 10 minutes of review.</div></div>
+    <div class="serif" style="font-size:32px;font-weight:600;color:var(--brand);line-height:1">190 hrs</div>
+    <div style="font-size:12px;color:var(--ink-2);margin-top:5px">84 letters at 60 minutes of writing each, reduced to 10 minutes of review.</div></div>
   </div></div></div>`;}
 
 /* ═══════════ CO-PILOT (doc §09) ═══════════ */
@@ -1328,25 +1328,25 @@ function vCopilot(){
 function vProve(){
  const fam=[["Detection quality","radar",METRICS.detection],["Counselor efficiency","clock",METRICS.efficiency],["Intervention performance","brief",METRICS.intervention],["Student progress","trend",METRICS.student]];
  return `<div class="fade">
- ${head("Reporting & prove-it layer","Evidence that students are noticed earlier","The question a head of school actually asks is whether this changed anything. These are the metrics that answer it — detection quality, time returned, and whether students recovered.","var(--teal)","chart")}
+ ${head("Reporting & prove-it layer","Evidence that students are noticed earlier","The question a head of school actually asks is whether this changed anything. These are the metrics that answer it — detection quality, time returned, and whether students recovered.","var(--brand)","chart")}
  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
  ${fam.map(([t,i,rows],ix)=>`<div class="card" style="padding:20px;animation:rise .4s ${ix*.06}s backwards">
   <div class="sechead">${ic(i,13)} ${t}</div>
-  ${rows.map(([l,v,s])=>`<div style="padding:11px 0;border-bottom:1px solid var(--lineSoft)">
-   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><span style="font-size:12.3px;color:var(--inkSoft)">${l}</span>
+  ${rows.map(([l,v,s])=>`<div style="padding:11px 0;border-bottom:1px solid var(--line)">
+   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><span style="font-size:12.3px;color:var(--ink-2)">${l}</span>
    <b class="serif" style="font-size:19px;font-weight:600">${v}</b></div>
-   <div style="font-size:10.5px;color:var(--inkMute);margin-top:2px">${s}</div></div>`).join('')}
+   <div style="font-size:10.5px;color:var(--ink-3);margin-top:2px">${s}</div></div>`).join('')}
  </div>`).join('')}
  </div>
  <div class="card" style="padding:20px;margin-bottom:16px">
   <div class="sechead">${ic('lock',13)} Trust & safety monitoring</div>
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
   ${[["Access violations","0","role scope enforced"],["Unexplained alerts","0","every flag traces to evidence"],["Overturned recommendations","6","counselor downgraded — thresholds retuned"],["Disproportionate flagging","None detected","monitored across student groups"]]
-   .map(([l,v,s])=>`<div style="background:var(--panel);border-radius:11px;padding:14px 15px"><div class="serif" style="font-size:22px;font-weight:600;color:${v==="0"||v==="None detected"?'var(--good)':'var(--review)'};line-height:1.1">${v}</div><div style="font-size:11.5px;font-weight:600;margin-top:5px">${l}</div><div style="font-size:10.3px;color:var(--inkMute);margin-top:2px;line-height:1.4">${s}</div></div>`).join('')}</div>
+   .map(([l,v,s])=>`<div style="background:var(--bg);border-radius:var(--r-lg);padding:14px 15px"><div class="serif" style="font-size:22px;font-weight:600;color:${v==="0"||v==="None detected"?'var(--good)':'var(--review)'};line-height:1.1">${v}</div><div style="font-size:11.5px;font-weight:600;margin-top:5px">${l}</div><div style="font-size:10.3px;color:var(--ink-3);margin-top:2px;line-height:1.4">${s}</div></div>`).join('')}</div>
  </div>
  <div class="card" style="padding:20px">
   <div class="sechead">${ic('list',13)} Live audit log</div>
-  ${S.audit.slice(0,9).map(a=>`<div class="audit"><span style="width:90px;flex-shrink:0">${a.t}</span><span style="width:80px;flex-shrink:0;color:${a.who==='SYSTEM'?'var(--teal)':'var(--violet)'};font-weight:500">${a.who}</span><span style="width:128px;flex-shrink:0;font-weight:500">${a.act}</span><span style="width:130px;flex-shrink:0">${a.obj}</span><span style="flex:1">${a.det}</span></div>`).join('')}
+  ${S.audit.slice(0,9).map(a=>`<div class="audit"><span style="width:90px;flex-shrink:0">${a.t}</span><span style="width:80px;flex-shrink:0;color:${a.who==='SYSTEM'?'var(--brand)':'var(--violet)'};font-weight:500">${a.who}</span><span style="width:128px;flex-shrink:0;font-weight:500">${a.act}</span><span style="width:130px;flex-shrink:0">${a.obj}</span><span style="flex:1">${a.det}</span></div>`).join('')}
  </div></div>`;}
 
 /* ═══════════ 360° STUDENT FILE (doc §03.3) ═══════════
