@@ -22,7 +22,7 @@
  --ok:#079455;   --ok-bg:#ECFDF3;   --ok-line:#ABEFC6;
  --info:#175CD3; --info-bg:#EFF8FF; --info-line:#B2DDFF;
  --mute:#475467; --mute-bg:#F2F4F7; --mute-line:#E4E7EC;
- --violet:#6938EF; --violet-bg:#F4F3FF;
+ --violet:#6938EF; --violet-2:#5925DC; --violet-bg:#F4F3FF; --violet-line:#DDD6FE;
  --rose:#E11D74; --rose-2:#BE185D; --rose-bg:#FDF0F6; --rose-line:#FBCFE8;
  /* sidebar */
  --nav:#0C111D; --nav-2:#101828; --nav-line:rgba(255,255,255,.08);
@@ -41,7 +41,7 @@
  --urgent:var(--crit); --urgentSoft:var(--crit-bg); --review:var(--warn); --reviewSoft:var(--warn-bg);
  --checkin:#E04F16; --checkinSoft:#FEF6EE; --good:var(--ok); --goodSoft:var(--ok-bg);
  --monitor:var(--mute); --monitorSoft:var(--mute-bg); --navy:var(--nav); --blue:var(--info); --blueSoft:var(--info-bg);
- --violetSoft:var(--violet-bg); --violetDeep:#5925DC;
+ --violetSoft:var(--violet-bg); --violetDeep:var(--violet-2);
  /* persona accents — named for what they mean, not the hue. one per role that's earned one. */
  --persona-counselor:var(--brand); --persona-student:var(--violet); --persona-parent:var(--rose);
  /* concern-domain tags — folded onto the existing severity/persona palette instead of 7 free-floating hex */
@@ -86,7 +86,42 @@ body{
 .fade{animation:fade .3s ease backwards}
 .spin{animation:spin .7s linear infinite;display:inline-block}
 .pulsedot{animation:ping 2.2s cubic-bezier(.4,0,.6,1) infinite}
-@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+/* Zeroing duration alone was not enough: everything staggered here is delayed as
+   well as animated, and an animation with `backwards` fill holds its from-state
+   (opacity 0) for the whole delay — so a reduced-motion user sat looking at a
+   blank card for up to a second before it snapped in. Delay has to go too. */
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-delay:0ms!important;transition-duration:.01ms!important;transition-delay:0ms!important}}
+
+/* ══════════ MOTION, DELIBERATELY (Runbook 4.3) ══════════
+   draw() rebuilds the entire tree on every state change, so until now every one
+   of the 25 `animation:rise` staggers replayed on every click — toggling one
+   filter chip re-animated the whole page. That is not motion design, it is a
+   side effect, and it is what made the product feel mushy rather than quick.
+
+   The rule now: entry motion belongs to ARRIVING somewhere, not to every
+   keystroke once you are there. viewKey() decides whether this draw is an
+   arrival; if it is not, .still lands on #root and every entry animation is
+   suppressed. Anything that is genuinely new in the moment it appears — the
+   toast, a modal, the spinner, the shimmer skeleton — is exempt, because those
+   ARE the state change rather than a re-render of it.
+
+   Three moments are then allowed to be slower and more staged than the ambient
+   .rise: what changed overnight, the letter drafting itself, and the signal
+   meter finding its level. Everything else stays quick and gets out of the way. */
+@keyframes arrive{from{opacity:0;transform:translateY(11px)}to{opacity:1;transform:none}}
+@keyframes land{0%{opacity:0;transform:scale(.84)}62%{opacity:1;transform:scale(1.055)}100%{opacity:1;transform:scale(1)}}
+@keyframes fill{from{width:0}}
+.arrive{animation:arrive .46s cubic-bezier(.22,1,.36,1) backwards}
+.land{animation:land .42s cubic-bezier(.34,1.56,.64,1) backwards;display:inline-block}
+.meter>div{animation:fill .72s cubic-bezier(.16,1,.3,1) backwards}
+
+.still [style*="animation:rise"],.still [style*="animation:fade"],
+.still [style*="animation:pop"],.still .rise,.still .fade,
+.still .arrive,.still .land,.still .meter>div,
+.still .pop:not(.toastbar){animation:none!important}
+/* drawline animates TO stroke-dashoffset:0 from an attribute of 1200 — killing
+   the animation without also landing the end state would leave the line invisible */
+.still [style*="animation:drawline"]{animation:none!important;stroke-dashoffset:0!important}
 
 /* ══════════ SURFACES ══════════ */
 .card{
@@ -220,6 +255,46 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
  font-size:13px;font-weight:500;z-index:400;animation:pop .26s cubic-bezier(.22,1,.36,1);
  border:1px solid rgba(255,255,255,.09)}
 .toastbar svg{width:16px;height:16px;color:#34D399}
+
+/* ══════════ COMMAND PALETTE (Runbook 4.4) ══════════ */
+.palbg{position:fixed;inset:0;background:rgba(12,17,29,.5);
+ backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);z-index:500;
+ display:flex;align-items:flex-start;justify-content:center;
+ padding:11vh 20px 20px;animation:fade .14s ease}
+.pal{background:var(--surface);border-radius:var(--r-lg);width:620px;max-width:100%;
+ box-shadow:var(--sh-xl);overflow:hidden;display:flex;flex-direction:column;
+ max-height:min(560px,70vh);animation:pop .2s cubic-bezier(.22,1,.36,1)}
+.palhead{display:flex;align-items:center;gap:11px;padding:14px 18px;border-bottom:1px solid var(--line);flex-shrink:0}
+.palhead input{flex:1;border:none;outline:none;background:none;font-family:inherit;
+ font-size:15.5px;color:var(--ink);letter-spacing:-.01em;min-width:0}
+.palhead input::placeholder{color:var(--ink-4)}
+.palres{overflow-y:auto;padding:6px;flex:1}
+.palgrp{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-4);
+ font-weight:700;padding:12px 12px 5px}
+.palrow{display:flex;align-items:center;gap:11px;padding:8px 12px;border-radius:var(--r);cursor:pointer}
+.palrow.on{background:var(--surface-3)}
+.palrow.on .palgo{opacity:1}
+.palico{width:28px;height:28px;border-radius:var(--r);background:var(--surface-3);
+ display:grid;place-items:center;color:var(--ink-3);flex-shrink:0}
+.palrow.on .palico{background:var(--brand-3);color:var(--brand-2)}
+.pallbl{font-size:13.5px;font-weight:500;color:var(--ink);letter-spacing:-.008em;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.palsub{font-size:11px;color:var(--ink-3);margin-top:1px;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.palgo{margin-left:auto;font-size:10.5px;color:var(--ink-3);opacity:0;flex-shrink:0;
+ display:flex;align-items:center;gap:5px}
+.palfoot{display:flex;align-items:center;gap:15px;padding:8px 16px;border-top:1px solid var(--line);
+ background:var(--surface-2);font-size:11px;color:var(--ink-4);flex-shrink:0;flex-wrap:wrap}
+.palkbd{font-family:inherit;font-size:10px;background:var(--surface-3);
+ border:1px solid var(--line-2);border-radius:4px;padding:1px 5px;color:var(--ink-3)}
+.palnone{padding:38px 20px;text-align:center}
+.palfind{display:flex;align-items:center;gap:8px;background:var(--surface);
+ border:1px solid var(--line-2);border-radius:9px;height:36px;padding:0 11px;width:236px;
+ box-shadow:var(--sh-xs);cursor:text;font-family:inherit;color:var(--ink-4);
+ font-size:13px;text-align:left;flex-shrink:0}
+.palfind:hover{border-color:var(--line-3)}
+@media(max-width:900px){.palfind span.palfindtxt{display:none}
+ .palfind{width:auto;min-width:36px;justify-content:center;padding:0 9px}}
 
 /* ══════════ CANVAS DEPTH ══════════ */
 .mainpane{
@@ -393,7 +468,7 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
  .glass > div:last-child > div{min-width:0!important}
 }
 @media (max-width:400px){
- .glass > div:last-child > button{display:none!important}
+ .glass > div:last-child > button:not(.palfind){display:none!important}
  .glass{padding:10px 12px!important}
 }
 
@@ -480,7 +555,56 @@ route:'M6 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM9 19
 gauge:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 12l4-4',
 list:'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01',
 merge:'M6 3v6a6 6 0 0 0 6 6h6M18 12l3 3-3 3',heart:'M12 21C7 16.5 3 13.2 3 9.3 3 6.4 5.2 4.5 7.7 4.5c1.7 0 3.3.9 4.3 2.4 1-1.5 2.6-2.4 4.3-2.4 2.5 0 4.7 1.9 4.7 4.8 0 3.9-4 7.2-9 11.7z',inbox:'M3 12h5l2 3h4l2-3h5M5 5h14l2 7v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z',msg:'M21 12a8 8 0 0 1-11.5 7.2L3 21l1.8-6.5A8 8 0 1 1 21 12z',chevR:'M9 6l6 6-6 6',refresh:'M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5',user:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 20c0-4 3.5-6 8-6s8 2 8 6',target:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2z'};
-function ic(n,s){s=s||17;return '<svg class="ico" viewBox="0 0 24 24" style="width:'+s+'px;height:'+s+'px">'+(IP[n]||'').split('M').filter(Boolean).map(function(d){return '<path d="M'+d+'"/>';}).join('')+'</svg>';}
+/* ═══════════ BESPOKE ICONS (Runbook 4.1) ═══════════
+   Six concepts CAROS owns, where the borrowed Feather metaphor says the wrong
+   thing. Everything else keeps the stock outline set above on purpose — a
+   product that draws all forty of its own icons reads as decorated, not
+   designed. Same grammar as IP so they sit in the same family: 24×24 grid,
+   currentColor stroke, 1.75 weight inherited from svg.ico, round caps.
+   Fill is used only to mark the one element that carries the meaning.
+
+   signal    — deviation from the student's OWN baseline band, not a trend.
+               This is baseChart() at 17px: shaded personal band, the line
+               inside it, the point where it breaks out. The generic 'trend'
+               arrow said "going up", which is the opposite of the idea.
+   caseload  — a triaged stack, ordered by attention. Not 'users' (a group of
+               people) and not 'list' (equal-weight rows): the leading marks
+               and row lengths descend, because that is what a caseload is.
+   overnight — the 07:04 sweep passing over the cohort and one student rising
+               out of it. The product's best retention hook deserves its own
+               mark rather than sharing 'radar' with the whole SI section.
+   trackIB   — the IB's own programme model: one closed hexagon around a core.
+   trackAP   — the same subject matter, structured the opposite way: separate,
+               independently-examined courses that never close into a shape.
+               The pair only works as a pair — that contrast IS the decision
+               a Grade 10 student is being asked to make.
+   mentorMatch — two parties converging on one made connection. Not 'merge'
+               (a flow arrow) and not 'users' (people who happen to co-exist).
+*/
+const IC_X={
+ signal:'<rect x="2.7" y="8.4" width="18.6" height="7.2" rx="2.2" fill="currentColor" stroke="none" opacity=".14"/>'
+  +'<path d="M2.7 8.4h18.6M2.7 15.6h18.6" opacity=".34"/>'
+  +'<path d="M3.4 13.5 7.4 11.2 10.9 12.8 14.4 10.1 18 4.4"/>'
+  +'<circle cx="18.1" cy="4.2" r="2.15" fill="currentColor" stroke="none"/>',
+ caseload:'<circle cx="5" cy="5.4" r="2.5" fill="currentColor" stroke="none"/><path d="M10.2 5.4h11.1"/>'
+  +'<circle cx="5" cy="12" r="2.5" opacity=".7"/><path d="M10.2 12h8.4" opacity=".7"/>'
+  +'<circle cx="5" cy="18.6" r="2.5" opacity=".42"/><path d="M10.2 18.6h5.7" opacity=".42"/>',
+ overnight:'<path d="M2.6 18.8h18.8M2.6 8.2h18.8" opacity=".33"/>'
+  +'<circle cx="6.3" cy="18.8" r="2.3" opacity=".5"/>'
+  +'<path d="M9 17.1c2.7-1.3 4.7-3.6 6-6.4" opacity=".65"/>'
+  +'<circle cx="17.5" cy="8.2" r="2.9" fill="currentColor" stroke="none"/>',
+ trackIB:'<path d="M12 2.4 20.7 7.2v9.6L12 21.6 3.3 16.8V7.2z"/><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"/>',
+ trackAP:'<rect x="3.1" y="3.3" width="13.6" height="5.3" rx="1.9"/>'
+  +'<rect x="5.6" y="10.35" width="13.6" height="5.3" rx="1.9" opacity=".72"/>'
+  +'<rect x="3.1" y="17.4" width="13.6" height="5.3" rx="1.9" opacity=".48"/>',
+ mentorMatch:'<circle cx="4.9" cy="6.4" r="2.7"/><circle cx="4.9" cy="17.6" r="2.7"/>'
+  +'<path d="M7.6 7.3c3.6 1.1 5.6 2.6 6.6 4.4M7.6 16.7c3.6-1.1 5.6-2.6 6.6-4.4"/>'
+  +'<circle cx="17.2" cy="12" r="3.4" fill="currentColor" stroke="none"/>'};
+
+function ic(n,s){s=s||17;
+ const open='<svg class="ico" viewBox="0 0 24 24" style="width:'+s+'px;height:'+s+'px">';
+ if(IC_X[n])return open+IC_X[n]+'</svg>';
+ return open+(IP[n]||'').split('M').filter(Boolean).map(function(d){return '<path d="M'+d+'"/>';}).join('')+'</svg>';}
 
 const SCHOOL={name:"Al Bateen Academy",counselor:"Ms. Reem Haddad",role:"Head of University Counseling",dsl:"Mr. J. Okonkwo (DSL)",cohort:84};
 const PRIO={
@@ -712,7 +836,7 @@ open:null,tab:"evidence",domFilter:"all",prioFilter:"all",
 cases:JSON.parse(JSON.stringify(STUDENTS)),
 ivs:JSON.parse(JSON.stringify(INTERVENTIONS)),
 audit:JSON.parse(JSON.stringify(AUDIT)),
-toast:null,modal:null,cpQ:null,cpA:null,cpLoad:false,
+toast:null,modal:null,pal:null,cpQ:null,cpA:null,cpLoad:false,
 letter:"idle",thresh:{acad:2,att:3,eng:14,persist:3},
 sortBy:"prio",noteDraft:"",selSlot:null,
 uniOpen:"",pmTopic:"",pmSlot:null,pmNote:"",pathDegree:"",pathCountry:"UK",previewGrade:12,previewTrack:"IB",earlyStart:false,
@@ -738,6 +862,86 @@ function pchip(p){const P=PRIO[p];return chip(P.short,P.c,P.bg,p==="urgent"?"ale
 function spin(sz,c){return `<span class="spin" style="width:${sz||16}px;height:${sz||16}px;border:2.5px solid var(--line);border-top-color:${c||'var(--teal)'};border-radius:50%"></span>`;}
 function dots(){return '<span class="dots"><span></span><span></span><span></span></span>';}
 function meter(v,c){return `<div class="meter"><div style="width:${v}%;background:${c||'var(--teal)'}"></div></div>`;}
+
+/* ═══════════ MOMENTS (Runbook 4.2) ═══════════
+   Five specific, well-drawn moments on the family side — four states that are
+   empty because nothing has happened YET, and one because something finally did.
+
+   The point is not decoration. A Grade 9 parent opening this portal sees almost
+   nothing, and a portal that looks broken is a portal a family stops opening —
+   which is precisely the Naviance failure the Markup cites. So each of these
+   draws the specific thing that is missing and says, in the copy, why its
+   absence is correct at this stage and what happens next.
+
+   Warmth lives on the parent side (rose) and is dialled back on the student
+   side (violet): a Grade 12 student applying to university is a serious
+   audience, per Runbook 3.2 — no characters, no confetti, no streaks.
+
+   All inline SVG on one 128×96 grid, two-tone (a soft accent wash plus a
+   2px accent stroke), no external asset — this file still has no build step. */
+const ILLUS={
+
+ /* nobody matched yet: a family on one side, an empty slot on the other */
+ mentor:(a,sf)=>`<ellipse cx="64" cy="83" rx="44" ry="6.5" fill="${sf}"/>
+  <path d="M31 55c2-15 16-23 33-23s31 8 33 23" fill="none" stroke="${a}" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="3.5 6.5" opacity=".65"/>
+  <circle cx="31" cy="64" r="14" fill="${sf}" stroke="${a}" stroke-width="2"/>
+  <circle cx="31" cy="60" r="4.6" fill="${a}"/>
+  <path d="M23.4 71.6c1.7-3.9 4.3-5.8 7.6-5.8s5.9 1.9 7.6 5.8" fill="none" stroke="${a}" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="97" cy="64" r="14" fill="none" stroke="${a}" stroke-width="2.4" stroke-dasharray="4 5" opacity=".7"/>
+  <path d="M97 57.5v13M90.5 64h13" stroke="${a}" stroke-width="2.6" stroke-linecap="round" opacity=".7"/>`,
+
+ /* the first offer a family has ever received — a sealed letter, not a warning */
+ offer:(a,sf)=>`<ellipse cx="62" cy="84" rx="38" ry="6" fill="${sf}"/>
+  <g transform="rotate(-4 62 48)">
+   <rect x="30" y="20" width="64" height="56" rx="9" fill="${sf}" stroke="${a}" stroke-width="2"/>
+   <path d="M43 37h38M43 47h30M43 57h21" stroke="${a}" stroke-width="2" stroke-linecap="round" opacity=".4"/></g>
+  <circle cx="92" cy="64" r="15" fill="${a}"/>
+  <path d="M85.4 64.6 90 69.2 99 59.6" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M101 33.5 107 30M105.5 45l6.5.8M95 24.5l2.2-6" stroke="${a}" stroke-width="2.2" stroke-linecap="round" opacity=".45"/>`,
+
+ /* nothing to apply for yet: where the family is, and how far off the year is */
+ early:(a,sf)=>`<ellipse cx="62" cy="82" rx="46" ry="6.5" fill="${sf}"/>
+  <path d="M26 70h72" stroke="${a}" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="1.5 9" opacity=".5"/>
+  <circle cx="26" cy="70" r="14" fill="${sf}" stroke="${a}" stroke-width="2.4"/>
+  <circle cx="26" cy="70" r="6" fill="${a}"/>
+  <path d="M98 71V21" stroke="${a}" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M98 23h22l-6 8.5 6 8.5H98z" fill="${sf}" stroke="${a}" stroke-width="2.4" stroke-linejoin="round"/>
+  <circle cx="98" cy="70" r="3.6" fill="${a}"/>`,
+
+ /* the IB/AP decision, undecided — both branches drawn at exactly equal weight,
+    because the product must not put its thumb on this scale */
+ fork:(a,sf)=>`<ellipse cx="64" cy="84" rx="40" ry="6" fill="${sf}"/>
+  <path d="M64 78V56" stroke="${a}" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M64 56c0-14-11-16-23-22" fill="none" stroke="${a}" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M64 56c0-14 11-16 23-22" fill="none" stroke="${a}" stroke-width="2.4" stroke-linecap="round"/>
+  <circle cx="35" cy="30" r="13" fill="${sf}" stroke="${a}" stroke-width="2"/>
+  <circle cx="93" cy="30" r="13" fill="${sf}" stroke="${a}" stroke-width="2"/>
+  <text x="35" y="34.6" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" fill="${a}">IB</text>
+  <text x="93" y="34.6" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" fill="${a}">AP</text>
+  <circle cx="64" cy="78" r="5" fill="${a}"/>`,
+
+ /* an empty shortlist: three slots waiting, the first one open */
+ shortlist:(a,sf)=>`<rect x="22" y="14" width="84" height="20" rx="7" fill="${sf}" stroke="${a}" stroke-width="2" stroke-dasharray="5 5"/>
+  <path d="M64 18.5v11M58.5 24h11" stroke="${a}" stroke-width="2.2" stroke-linecap="round"/>
+  <rect x="22" y="42" width="84" height="20" rx="7" fill="none" stroke="${a}" stroke-width="2" stroke-dasharray="5 5" opacity=".42"/>
+  <rect x="22" y="70" width="84" height="20" rx="7" fill="none" stroke="${a}" stroke-width="2" stroke-dasharray="5 5" opacity=".24"/>`};
+
+/* acc/soft default to the parent rose; pass the violet pair for student surfaces.
+   serif=true gives the title the Fraunces display treatment the parent portal
+   earned in 3.1 — the student side stays on Inter on purpose. */
+function art(n,acc,soft,w){w=w||128;
+ const a=acc||"var(--rose)",sf=soft||"var(--rose-bg)";
+ return `<svg viewBox="0 0 128 96" style="width:${w}px;height:${Math.round(w*96/128)}px;flex-shrink:0;display:block" aria-hidden="true">${(ILLUS[n]||(()=>''))(a,sf)}</svg>`;}
+
+function moment(o){
+ const a=o.acc||"var(--rose)",sf=o.soft||"var(--rose-bg)",w=o.w||128;
+ return `<div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap;background:${o.bg||'var(--surface-2)'};border:1px solid ${o.line||'var(--line)'};border-radius:var(--r-lg);padding:${o.pad||'20px 22px'}">
+  ${art(o.art,a,sf,w)}
+  <div style="flex:1;min-width:230px">
+   <div class="${o.serif?'serif':''}" style="font-size:${o.serif?'19px':'14.5px'};font-weight:600;color:var(--ink);line-height:1.3;letter-spacing:${o.serif?'-.02em':'-.01em'}">${o.title}</div>
+   <div style="font-size:12.8px;color:var(--ink-2);line-height:1.65;margin-top:${o.serif?'7px':'5px'}">${o.body}</div>
+   ${o.action?`<div style="margin-top:13px">${o.action}</div>`:''}
+  </div></div>`;}
 
 /* ═══════════ BASELINE DEVIATION CHART ═══════════
    The doc's core principle: deviation from the student's OWN normal.
@@ -799,9 +1003,9 @@ function roleBar(){
 
 /* ═══════════ SHELL ═══════════ */
 function shell(theme,nav,active,attr,footAv,footN,footR,title,sub,body){
- const bg={counselor:"#131829",student:"#241D52",mentor:"#0A352F",parent:"#3A1029"}[theme];
- const bar={counselor:"#3FE0BE",student:"#9B8CFF",mentor:"#3FE0BE",parent:"#F472B6"}[theme];
- const nm={counselor:"Counselor OS",student:"Career OS",mentor:"Mentor Hub",parent:"Family Portal"}[theme];
+ const bg={counselor:"#131829",student:"#241D52",mentor:"#0A352F",parent:"#3A1029",teacher:"#131829"}[theme];
+ const bar={counselor:"#3FE0BE",student:"#9B8CFF",mentor:"#3FE0BE",parent:"#F472B6",teacher:"#3FE0BE"}[theme];
+ const nm={counselor:"Counselor OS",student:"Career OS",mentor:"Mentor Hub",parent:"Family Portal",teacher:"Teacher portal"}[theme];
  return `<div class="shell" style="flex:1;display:flex;overflow:hidden">
  <aside class="sidebar" style="width:218px;background:${bg};display:flex;flex-direction:column;padding:18px 0;flex-shrink:0;overflow-y:auto">
   <div style="padding:0 18px 16px;display:flex;align-items:center;gap:10px">
@@ -816,11 +1020,11 @@ function shell(theme,nav,active,attr,footAv,footN,footR,title,sub,body){
    ${av(footAv,theme==="student"?"student":"mentor",32,50)}
    <div><div style="font-size:12px;font-weight:600;color:#fff">${footN}</div><div style="font-size:10px;color:rgba(255,255,255,.42)">${footR}</div></div></div>
  </aside>
- <main class="mainpane" style="flex:1;overflow-y:auto;background:var(--panel)">
+ <main class="mainpane" style="flex:1;overflow-y:auto;background:var(--bg)">
   <div class="glass" style="position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);padding:13px 30px;display:flex;align-items:center;gap:16px">
    <button class="navtoggle" data-navopen="1" aria-label="Menu">${ic('list',18)}</button>
-   <div style="flex:1;min-width:0"><div class="serif" style="font-size:18px;font-weight:600">${title}</div><div style="font-size:11.5px;color:var(--inkMute);margin-top:1px">${sub}</div></div>
-   <div style="display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:7px 12px;width:210px">${ic('search',14)}<input placeholder="Search students…" style="border:none;background:none;font-size:12.5px;width:100%;color:var(--ink)"></div>
+   <div style="flex:1;min-width:0"><div class="serif" style="font-size:18px;font-weight:600">${title}</div><div style="font-size:11.5px;color:var(--ink-3);margin-top:1px">${sub}</div></div>
+   <button class="palfind" data-pal="1" aria-label="Search this portal">${ic('search',14)}<span class="palfindtxt" style="flex:1">Search…</span><kbd class="palkbd">${PAL_KEY}K</kbd></button>
   </div>
   <div style="padding:24px 30px 70px;max-width:1140px">${body}</div>
  </main></div>`;}
@@ -843,7 +1047,7 @@ function vCommand(){
   ["monitor",pc.monitor,"Monitor","Isolated, low signal strength"],
   ["good",pc.good,"Recovered","Positive change detected"]];
  return `<div class="fade">
- ${head("Monday · 24 November · 07:04 sweep","Good morning, Reem.","Your cohort of 84 was evaluated at 07:04 this morning. Three students moved priority overnight. Nothing here is a diagnosis — each card shows what changed, the evidence behind it, and a proportionate next step.","var(--teal)","radar")}
+ ${head("Monday · 24 November · 07:04 sweep","Good morning, Reem.","Your cohort of 84 was evaluated at 07:04 this morning. Three students moved priority overnight. Nothing here is a diagnosis — each card shows what changed, the evidence behind it, and a proportionate next step.","var(--teal)","overnight")}
 
  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:20px">
  ${stats.map(([k,n,l,s],i)=>{const P=PRIO[k];const on=S.prioFilter===k;
@@ -918,7 +1122,7 @@ function vIntel(){
   {k:"academic",t:"Academic anomalies",v:"84%",d:"cohort mean · −4 pts",series:cohortAcad,bad:true,n:ds.academic.n,det:[["Result outside personal band","5 students"],["Multi-week decline","2 students"],["Predicted vs current mismatch","4 students"]]},
   {k:"engagement",t:"Engagement",v:"61",d:"index · −21 over 8 weeks",series:cohortEng,bad:true,n:ds.engagement.n,det:[["No login 14+ days","2 students"],["Abandoned tasks","7 students"],["Missed scheduled meetings","3 students"]]}];
  return `<div class="fade">
- ${head("Student Wellbeing & Success Engine","Signal intelligence","Every signal is compared against each student's own historical pattern, not the cohort average. Weak signals across domains are combined so a pattern becomes visible before a crisis or a missed deadline.","var(--teal)","radar")}
+ ${head("Student Wellbeing & Success Engine","Signal intelligence","Every signal is compared against each student's own historical pattern, not the cohort average. Weak signals across domains are combined so a pattern becomes visible before a crisis or a missed deadline.","var(--teal)","signal")}
 
  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:18px">
  ${tiles.map((t,i)=>`<div class="card lift" style="padding:18px 20px;animation:rise .4s ${i*.06}s backwards">
@@ -1260,34 +1464,34 @@ Head of University Counseling, Al Bateen Academy`;
 function vLetter(){
  const ev=["Economics Society presidency — verified activity record, 14 Sep","Trade-policy project — counselor meeting note, 3 Oct","Methodology rebuild — teacher comment, Ms. Fahri, 19 Oct","Predicted A*AA — gradebook, current","Tone matched to 6 uploaded letters by Ms. Haddad"];
  return `<div class="fade">
- ${head("Recommendation Letter Engine","A first draft from real evidence","Every sentence traces to a dated entry in the student's file. The engine drafts; you own the letter. Writing becomes reviewing.","var(--teal)","doc")}
+ ${head("Recommendation Letter Engine","A first draft from real evidence","Every sentence traces to a dated entry in the student's file. The engine drafts; you own the letter. Writing becomes reviewing.","var(--brand)","doc")}
  <div style="display:grid;grid-template-columns:1fr 300px;gap:18px;align-items:start">
   <div class="card" style="overflow:hidden">
    <div style="display:flex;align-items:center;gap:10px;padding:13px 20px;border-bottom:1px solid var(--line);background:#FCFCFE">
     <span style="width:8px;height:8px;border-radius:50%;background:${S.letter==='done'?'var(--good)':'var(--monitor)'}"></span>
-    <span style="font-size:12.5px;color:var(--inkSoft)">${S.letter==='done'?'Draft ready for your review':'Sara Al Mansoori · LSE BSc Economics'}</span>
+    <span style="font-size:12.5px;color:var(--ink-2)">${S.letter==='done'?'Draft ready for your review':'Sara Al Mansoori · LSE BSc Economics'}</span>
     ${S.letter==='done'?`<div style="margin-left:auto;display:flex;gap:7px"><button class="btn btn-g btn-sm">${ic('pencil',13)} Edit</button><button class="btn btn-p btn-sm" data-toast="Exported · logged in audit trail">${ic('doc',13)} Export</button></div>`:''}
    </div>
    ${S.letter==='idle'?`<div style="padding:56px 24px;text-align:center">
-    <div style="width:52px;height:52px;border-radius:14px;background:var(--tealSoft);display:grid;place-items:center;color:var(--tealDeep);margin:0 auto 14px">${ic('doc',24)}</div>
-    <div style="font-size:13.5px;color:var(--inkSoft);margin-bottom:14px">Ready to draft from Sara's verified file</div>
+    <div style="width:52px;height:52px;border-radius:var(--r-lg);background:var(--brand-3);display:grid;place-items:center;color:var(--brand-2);margin:0 auto 14px">${ic('doc',24)}</div>
+    <div style="font-size:13.5px;color:var(--ink-2);margin-bottom:14px">Ready to draft from Sara's verified file</div>
     <button class="btn btn-p" data-letter="go">${ic('spark',15)} Generate first draft</button></div>`:''}
    ${S.letter==='gen'?`<div style="padding:56px 24px;text-align:center">
-    ${spin(34)}<div style="font-size:13px;color:var(--inkSoft);margin-top:14px;display:flex;align-items:center;justify-content:center;gap:8px">Reading the file, matching your voice ${dots()}</div>
+    ${spin(34)}<div style="font-size:13px;color:var(--ink-2);margin-top:14px;display:flex;align-items:center;justify-content:center;gap:8px">Reading the file, matching your voice ${dots()}</div>
     <div style="max-width:70%;margin:18px auto 0">${[92,100,84,96].map(w=>`<div style="height:10px;width:${w}%;margin:0 auto 8px;background:linear-gradient(90deg,#eef0f6 25%,#f7f8fc 50%,#eef0f6 75%);background-size:1000px 100%;animation:shimmer 1.4s infinite;border-radius:6px"></div>`).join('')}</div></div>`:''}
-   ${S.letter==='done'?`<div class="read pop" style="padding:32px 40px;font-size:15.5px;line-height:1.85;background:#FFFDF8">
-    ${LETTER.split('\n\n').map(p=>`<p style="margin-bottom:15px">${p}</p>`).join('')}</div>`:''}
+   ${S.letter==='done'?`<div class="read" style="padding:32px 40px;font-size:15.5px;line-height:1.85;background:#FFFDF8">
+    ${LETTER.split('\n\n').map((p,i)=>`<p class="arrive" style="margin-bottom:15px;animation-delay:${(i*.17).toFixed(2)}s">${p}</p>`).join('')}</div>`:''}
   </div>
   <div style="display:flex;flex-direction:column;gap:14px">
-   <div class="card" style="padding:18px;background:var(--navy);border:none;color:#fff">
+   <div class="card" style="padding:18px;background:var(--nav);border:none;color:#fff">
     <div class="serif" style="font-size:16px;font-weight:600;margin-bottom:6px">It never invents</div>
     <div style="font-size:12px;color:rgba(255,255,255,.7);line-height:1.55;margin-bottom:14px">Every claim is drawn from a dated entry in Sara's record. If the evidence is not there, the sentence is not written.</div>
     <button class="btn" data-letter="${S.letter==='done'?'reset':'go'}" ${S.letter==='gen'?'disabled':''} style="width:100%;background:rgba(255,255,255,.14);color:#fff">${S.letter==='done'?ic('refresh',15)+' Regenerate':'Generate draft'}</button></div>
-   ${S.letter==='done'?`<div class="card pop" style="padding:18px"><div class="sechead">${ic('checkC',13)} Evidence used</div>
-    ${ev.map(e=>`<div style="display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--lineSoft);font-size:11.8px;color:var(--inkSoft);line-height:1.5">${ic('checkC',14)}<span>${e}</span></div>`).join('')}</div>`:''}
+   ${S.letter==='done'?`<div class="card arrive" style="padding:18px;animation-delay:${(LETTER.split('\n\n').length*.17+.1).toFixed(2)}s"><div class="sechead">${ic('checkC',13)} Evidence used</div>
+    ${ev.map((e,i)=>`<div class="arrive" style="display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line);font-size:11.8px;color:var(--ink-2);line-height:1.5;animation-delay:${(LETTER.split('\n\n').length*.17+.22+i*.07).toFixed(2)}s">${ic('checkC',14)}<span>${e}</span></div>`).join('')}</div>`:''}
    <div class="card" style="padding:18px"><div class="sechead">Time returned this season</div>
-    <div class="serif" style="font-size:32px;font-weight:600;color:var(--teal);line-height:1">190 hrs</div>
-    <div style="font-size:12px;color:var(--inkSoft);margin-top:5px">84 letters at 60 minutes of writing each, reduced to 10 minutes of review.</div></div>
+    <div class="serif" style="font-size:32px;font-weight:600;color:var(--brand);line-height:1">190 hrs</div>
+    <div style="font-size:12px;color:var(--ink-2);margin-top:5px">84 letters at 60 minutes of writing each, reduced to 10 minutes of review.</div></div>
   </div></div></div>`;}
 
 /* ═══════════ CO-PILOT (doc §09) ═══════════ */
@@ -1299,17 +1503,17 @@ const CPQ=[
  {q:"Which interventions from last month have not yet been followed up?",a:"<b>All October interventions are closed.</b> Maryam Al Suwaidi's case, opened 4 Oct, resolved on 7 Nov after 34 days with sustained recovery — attendance came back from 79% to 98% and held for three weeks.<br><br>Currently open: three cases, all opened within the last 48 hours. Ahmed and Layla are due within two school days, Sara by 20 Nov. Follow-up completion this term is 92%."}];
 function vCopilot(){
  return `<div class="fade">
- ${head("AI Co-pilot","Interrogate the cohort in plain language","Ask across your assigned students. Every answer shows its evidence, and every draft is labelled and editable. No external message is ever sent without your confirmation.","var(--teal)","spark")}
+ ${head("AI Co-pilot","Interrogate the cohort in plain language","Ask across your assigned students. Every answer shows its evidence, and every draft is labelled and editable. No external message is ever sent without your confirmation.","var(--brand)","spark")}
  <div class="card" style="padding:20px;margin-bottom:16px">
   <div style="display:flex;gap:10px;margin-bottom:14px">
-   <input id="cpin" placeholder="Ask about your cohort…" value="${S.cpQ||''}" style="flex:1;border:1px solid var(--line);border-radius:11px;padding:12px 14px;font-size:13px;color:var(--ink)">
+   <input id="cpin" placeholder="Ask about your cohort…" value="${S.cpQ||''}" style="flex:1;border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;font-size:13px;color:var(--ink)">
    <button class="btn btn-d" data-cpask="1">${ic('send',15)} Ask</button></div>
-  <div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--inkMute);font-weight:700;margin-bottom:9px">Try one of these</div>
-  ${CPQ.map((x,i)=>`<div class="lift" data-cpq="${i}" style="border:1px solid var(--line);border-radius:10px;padding:11px 14px;margin-bottom:7px;font-size:12.5px;color:var(--inkSoft);cursor:pointer;background:var(--panel)">${x.q}</div>`).join('')}
+  <div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);font-weight:700;margin-bottom:9px">Try one of these</div>
+  ${CPQ.map((x,i)=>`<div class="lift" data-cpq="${i}" style="border:1px solid var(--line);border-radius:var(--r);padding:11px 14px;margin-bottom:7px;font-size:12.5px;color:var(--ink-2);cursor:pointer;background:var(--bg)">${x.q}</div>`).join('')}
  </div>
- ${S.cpLoad?`<div class="card" style="padding:22px"><div style="display:flex;align-items:center;gap:9px;color:var(--teal);font-size:12.5px;font-weight:600;margin-bottom:14px">Searching your authorised cohort ${dots()}</div>
+ ${S.cpLoad?`<div class="card" style="padding:22px"><div style="display:flex;align-items:center;gap:9px;color:var(--brand);font-size:12.5px;font-weight:600;margin-bottom:14px">Searching your authorised cohort ${dots()}</div>
   ${[88,96,72,90].map(w=>`<div style="height:10px;width:${w}%;margin-bottom:9px;background:linear-gradient(90deg,#eef0f6 25%,#f7f8fc 50%,#eef0f6 75%);background-size:1000px 100%;animation:shimmer 1.4s infinite;border-radius:6px"></div>`).join('')}</div>`:''}
- ${S.cpA&&!S.cpLoad?`<div class="card pop" style="padding:22px;background:var(--navy);border:none;color:#fff">
+ ${S.cpA&&!S.cpLoad?`<div class="card pop" style="padding:22px;background:var(--nav);border:none;color:#fff">
   <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#6FE0CC;font-weight:700;margin-bottom:11px;display:flex;align-items:center;gap:6px">${ic('spark',12)} Co-pilot · AI-generated, review before use</div>
   <div style="font-size:13.5px;line-height:1.7;color:rgba(255,255,255,.9)">${S.cpA}</div>
   <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
@@ -1321,32 +1525,32 @@ function vCopilot(){
   <div class="sechead">${ic('lock',13)} Automation boundaries</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 22px">
   ${["No external communication without human confirmation","No safeguarding conclusion generated by the model","No student automatically disciplined or denied an opportunity","Sensitive notes never used outside their purpose","Every AI draft visibly labelled and editable","Retrieval limited to your permission scope"]
-   .map(x=>`<div style="display:flex;gap:8px;align-items:flex-start;padding:7px 0;font-size:12px;color:var(--inkSoft)">${ic('checkC',14)}<span>${x}</span></div>`).join('')}</div>
+   .map(x=>`<div style="display:flex;gap:8px;align-items:flex-start;padding:7px 0;font-size:12px;color:var(--ink-2)">${ic('checkC',14)}<span>${x}</span></div>`).join('')}</div>
  </div></div>`;}
 
 /* ═══════════ PROVE-IT REPORTING (doc §13) ═══════════ */
 function vProve(){
- const fam=[["Detection quality","radar",METRICS.detection],["Counselor efficiency","clock",METRICS.efficiency],["Intervention performance","brief",METRICS.intervention],["Student progress","trend",METRICS.student]];
+ const fam=[["Detection quality","signal",METRICS.detection],["Counselor efficiency","clock",METRICS.efficiency],["Intervention performance","brief",METRICS.intervention],["Student progress","trend",METRICS.student]];
  return `<div class="fade">
- ${head("Reporting & prove-it layer","Evidence that students are noticed earlier","The question a head of school actually asks is whether this changed anything. These are the metrics that answer it — detection quality, time returned, and whether students recovered.","var(--teal)","chart")}
+ ${head("Reporting & prove-it layer","Evidence that students are noticed earlier","The question a head of school actually asks is whether this changed anything. These are the metrics that answer it — detection quality, time returned, and whether students recovered.","var(--brand)","chart")}
  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
  ${fam.map(([t,i,rows],ix)=>`<div class="card" style="padding:20px;animation:rise .4s ${ix*.06}s backwards">
   <div class="sechead">${ic(i,13)} ${t}</div>
-  ${rows.map(([l,v,s])=>`<div style="padding:11px 0;border-bottom:1px solid var(--lineSoft)">
-   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><span style="font-size:12.3px;color:var(--inkSoft)">${l}</span>
+  ${rows.map(([l,v,s])=>`<div style="padding:11px 0;border-bottom:1px solid var(--line)">
+   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><span style="font-size:12.3px;color:var(--ink-2)">${l}</span>
    <b class="serif" style="font-size:19px;font-weight:600">${v}</b></div>
-   <div style="font-size:10.5px;color:var(--inkMute);margin-top:2px">${s}</div></div>`).join('')}
+   <div style="font-size:10.5px;color:var(--ink-3);margin-top:2px">${s}</div></div>`).join('')}
  </div>`).join('')}
  </div>
  <div class="card" style="padding:20px;margin-bottom:16px">
   <div class="sechead">${ic('lock',13)} Trust & safety monitoring</div>
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
   ${[["Access violations","0","role scope enforced"],["Unexplained alerts","0","every flag traces to evidence"],["Overturned recommendations","6","counselor downgraded — thresholds retuned"],["Disproportionate flagging","None detected","monitored across student groups"]]
-   .map(([l,v,s])=>`<div style="background:var(--panel);border-radius:11px;padding:14px 15px"><div class="serif" style="font-size:22px;font-weight:600;color:${v==="0"||v==="None detected"?'var(--good)':'var(--review)'};line-height:1.1">${v}</div><div style="font-size:11.5px;font-weight:600;margin-top:5px">${l}</div><div style="font-size:10.3px;color:var(--inkMute);margin-top:2px;line-height:1.4">${s}</div></div>`).join('')}</div>
+   .map(([l,v,s])=>`<div style="background:var(--bg);border-radius:var(--r-lg);padding:14px 15px"><div class="serif" style="font-size:22px;font-weight:600;color:${v==="0"||v==="None detected"?'var(--good)':'var(--review)'};line-height:1.1">${v}</div><div style="font-size:11.5px;font-weight:600;margin-top:5px">${l}</div><div style="font-size:10.3px;color:var(--ink-3);margin-top:2px;line-height:1.4">${s}</div></div>`).join('')}</div>
  </div>
  <div class="card" style="padding:20px">
   <div class="sechead">${ic('list',13)} Live audit log</div>
-  ${S.audit.slice(0,9).map(a=>`<div class="audit"><span style="width:90px;flex-shrink:0">${a.t}</span><span style="width:80px;flex-shrink:0;color:${a.who==='SYSTEM'?'var(--teal)':'var(--violet)'};font-weight:500">${a.who}</span><span style="width:128px;flex-shrink:0;font-weight:500">${a.act}</span><span style="width:130px;flex-shrink:0">${a.obj}</span><span style="flex:1">${a.det}</span></div>`).join('')}
+  ${S.audit.slice(0,9).map(a=>`<div class="audit"><span style="width:90px;flex-shrink:0">${a.t}</span><span style="width:80px;flex-shrink:0;color:${a.who==='SYSTEM'?'var(--brand)':'var(--violet)'};font-weight:500">${a.who}</span><span style="width:128px;flex-shrink:0;font-weight:500">${a.act}</span><span style="width:130px;flex-shrink:0">${a.obj}</span><span style="flex:1">${a.det}</span></div>`).join('')}
  </div></div>`;}
 
 /* ═══════════ 360° STUDENT FILE (doc §03.3) ═══════════
@@ -1431,7 +1635,7 @@ function vFileOne(c){
  </div>`:''}
 
  ${ft==="signals"?`<div class="card pop" style="padding:20px">
-  <div class="sechead">${ic('radar',13)} All signal domains · against this student's own baseline</div>
+  <div class="sechead">${ic('signal',13)} All signal domains · against this student's own baseline</div>
   ${Object.entries(c.baselines).map(([k,b],i)=>`<div style="margin-top:${i?20:8}px;animation:rise .4s ${i*.07}s backwards">
    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="color:${DOMAINS[k].c}">${ic(DOMAINS[k].ic,14)}</span>
     <b style="font-size:12.5px">${b.label}</b>
@@ -1569,7 +1773,7 @@ function vArch(){
  const pipe=[["1","Data sources","SIS, gradebook, LMS, attendance, behaviour, teacher input, counselor notes, university workflow","brief"],
   ["2","Normalisation","Identity matching, timestamps, subject mapping, missing-data handling, source quality","layers"],
   ["3","Feature layer","Trend, deviation, frequency, persistence, recency, cross-signal relationships","trend"],
-  ["4","Intelligence","Baseline model, anomaly detection, rules, confidence, contextual weighting","radar"],
+  ["4","Intelligence","Baseline model, anomaly detection, rules, confidence, contextual weighting","signal"],
   ["5","Action output","Inform, review, check-in, urgent escalation, follow-up and outcome tracking","zap"]];
  const objs=[["Student profile","Stable facts: identity, year group, subjects, declared goals, support roles and permissions."],
   ["Event","A time-stamped occurrence — absence, grade, incident, missed task, teacher concern, application milestone."],
@@ -1773,12 +1977,12 @@ function dimCounts(key){const f=DIMS[key].f;const o={critical:0,watch:0,good:0};
 
 /* ═══════════ CATEGORY NAV ═══════════ */
 const CATS=[
- {id:"cohort",label:"My Cohort",ic:"users",sub:[
+ {id:"cohort",label:"My Cohort",ic:"caseload",sub:[
    ["cohort-schedule","Today"],["cohort-all","All students"],["flags","From teachers"],["meetings","Meetings"]]},
  {id:"uni",label:"University Applications",ic:"grad",sub:[
    ["app-progress","Application progress"],["app-list","List balance"],["app-deadlines","Deadlines"],
    ["app-docs","Documents & references"],["app-statement","Personal statements"],["app-letter","Letter Engine"]]},
- {id:"si",label:"Student Intelligence",ic:"radar",sub:[
+ {id:"si",label:"Student Intelligence",ic:"signal",sub:[
    ["si-cases","Priority cases"],["si-attendance","Attendance"],["si-punctuality","Punctuality & tardiness"],
    ["si-academic","Academic signals"],["si-engagement","Engagement"],["si-behaviour","Behaviour & conduct"],
    ["si-interventions","Interventions"]]}];
@@ -1937,13 +2141,13 @@ function vToday(){
      <div style="font-size:11.5px;color:var(--ink-2);margin-top:2px">${l}</div></div></div>`).join('')}
   </div>
   <div class="card" style="padding:20px 22px;margin-bottom:20px">
-   <div class="sechead">${ic('radar',13)} What changed overnight</div>
-   ${moved.map((m,i)=>`<div class="lift" data-file="${m.id}" style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:11px 0;border-bottom:${i<moved.length-1?'1px solid var(--line)':'none'};cursor:pointer">
+   <div class="sechead">${ic('overnight',13)} What changed overnight</div>
+   ${moved.map((m,i)=>`<div class="lift arrive" data-file="${m.id}" style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:11px 0;border-bottom:${i<moved.length-1?'1px solid var(--line)':'none'};cursor:pointer;animation-delay:${(.12+i*.13).toFixed(2)}s">
     <div><div style="font-size:13px;font-weight:600">${m.n}</div>
      <div style="font-size:11.8px;color:var(--ink-3);margin-top:2px">${m.r}</div></div>
     <div style="display:flex;align-items:center;gap:7px;font-size:11px;white-space:nowrap">
      <span style="color:var(--ink-3)">${m.f}</span>${ic('arrowR',12)}
-     <span style="font-weight:700;color:${m.t==="Urgent"?'var(--urgent)':m.t==="Recovered"?'var(--good)':'var(--checkin)'}">${m.t}</span></div>
+     <span class="land" style="font-weight:700;animation-delay:${(.42+i*.13).toFixed(2)}s;color:${m.t==="Urgent"?'var(--urgent)':m.t==="Recovered"?'var(--good)':'var(--checkin)'}">${m.t}</span></div>
    </div>`).join('')}
   </div>
   <div class="sechead" style="margin-bottom:14px">${ic('clock',13)} Your day</div>
@@ -2079,10 +2283,14 @@ function vTClass(){
    <div style="min-width:0"><b style="font-size:13.5px">${c.name}</b>
     <div style="font-size:11.5px;color:var(--ink-3);margin-top:1px">${cls.code}${mine.length?` · you logged ${mine.length} this term`:''}</div></div>
    <span class="btn btn-g btn-sm" style="pointer-events:none">${ic('plus',13)} Log</span>
-  </div>`;}).join('')}</div>
- <div class="card" style="padding:16px 18px;margin-top:16px">
-  <div class="sechead">${ic('list',13)} What you have logged</div>
-  ${TFLAGS.filter(f=>f.by.indexOf("Davies")>-1).map(f=>{
+  </div>`;}).join('')}</div></div>`;}
+
+function vTLog(){
+ const mine=TFLAGS.filter(f=>f.by.indexOf("Davies")>-1);
+ return `<div class="fade">
+ ${head("What I've logged","Every entry, and what happened next","A record of what you have flagged this term, and how the counselor acted on it — so nothing you raise disappears into a form you never hear back from.","var(--brand)","list")}
+ <div class="card" style="padding:16px 18px">
+  ${mine.length?mine.map(f=>{
    var K=FLAG_KINDS.find(function(k){return k.k===f.kind;});
    var routed=f.routed?'<div style="font-size:11px;color:var(--ok);margin-top:5px;display:flex;align-items:center;gap:5px">'+ic('checkC',12)+' '+f.routed+'</div>':'';
    return '<div style="padding:11px 0;border-bottom:1px solid var(--line)">'+
@@ -2090,7 +2298,7 @@ function vTClass(){
      '<b style="font-size:12.5px">'+f.student+'</b>'+chip(K.short,K.c,K.bg)+
      '<span style="font-size:11px;color:var(--ink-4);margin-left:auto">'+f.when+'</span></div>'+
     '<div style="font-size:12px;color:var(--ink-2);line-height:1.5">'+f.txt+'</div>'+routed+'</div>';
-  }).join('')}
+  }).join(''):`<div style="font-size:12.3px;color:var(--ink-3);line-height:1.6">Nothing logged yet this term.</div>`}
  </div></div>`;}
 
 /* ── the log sheet (modal) ── */
@@ -2386,7 +2594,7 @@ function gradeSwitcher(){
  const stu=g(PARENT_ME);
  const trackLabel=stu.track==="undecided"?"deciding between IB and AP":stu.track+" track";
  return `<div style="border:1.5px solid var(--line-2);border-radius:12px;padding:12px 16px;margin-bottom:18px;background:var(--surface-2);display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-  <span class="chip" style="background:var(--violet-bg);color:var(--violetDeep)">${ic('users',11)} Family switcher</span>
+  <span class="chip" style="background:var(--violet-bg);color:var(--violet-2)">${ic('users',11)} Family switcher</span>
   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
    <div style="display:flex;background:var(--surface-3);border-radius:9px;padding:3px;gap:2px">
     ${grades.map(gr=>`<button data-pgrade="${gr}" style="padding:6px 12px;border-radius:7px;border:none;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;background:${S.previewGrade===gr?'var(--surface)':'transparent'};color:${S.previewGrade===gr?'var(--ink)':'var(--ink-3)'};box-shadow:${S.previewGrade===gr?'var(--sh-xs)':'none'}">Grade ${gr}</button>`).join('')}
@@ -2406,30 +2614,32 @@ const COURSE_CATALOG=[
  {dept:"Core (IB only)",courses:["Theory of Knowledge","Extended Essay","CAS (Creativity, Activity, Service)"]}];
 
 
-function vPathExplorer(navAttr,uniTab,contactTab){
+function vPathExplorer(navAttr,uniTab,contactTab,persona){
  const c=g(PARENT_ME);
+ const AC=persona==="student"?"var(--violet)":"var(--rose)";
+ const AC2=persona==="student"?"var(--violet-2)":"var(--rose-2)";
+ const ACBG=persona==="student"?"var(--violet-bg)":"var(--rose-bg)";
+ const ACLINE=persona==="student"?"var(--violet-line)":"var(--rose-line)";
  return `
  <div class="card" style="padding:20px;margin-bottom:16px">
   <div class="sechead">${ic('route',13)} What ${c.name.split(' ')[0]} is doing now</div>
   ${c.track==="IB"?`<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--ok-bg);border:1px solid var(--ok-line);border-radius:12px;padding:16px">
-   <span style="color:var(--ok);display:flex">${ic('checkC',22)}</span>
+   <span style="color:var(--ok);display:flex">${ic('trackIB',22)}</span>
    <div style="flex:1;min-width:220px"><b style="font-size:14px;color:#05603A">${c.name.split(' ')[0]} is on the full IB Diploma.</b>
     <div style="font-size:12.3px;color:#05603A;margin-top:3px;line-height:1.55">Six subjects, three at Higher Level, plus Theory of Knowledge, the Extended Essay and CAS.${c.pred&&c.pred!=="—"?" Predicted grades: "+c.pred+".":""}</div></div>
   </div>
   ${c.uni.targets.length?`<div style="background:var(--surface-3);border-radius:10px;padding:14px 16px;margin-top:14px;font-size:12.5px;color:var(--ink-2);line-height:1.6">
    <b>Does ${c.name.split(' ')[0].endsWith('a')?'she':'he'} need IB for the universities ${c.name.split(' ')[0].endsWith('a')?'she':'he'} wants?</b> Every university currently on the list accepts the IB Diploma, so the pathway already fits — the work now is finishing the applications built on it.</div>`:''}`
   :c.track==="AP"?`<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--info-bg);border:1px solid #B2DDFF;border-radius:12px;padding:16px">
-   <span style="color:var(--info);display:flex">${ic('checkC',22)}</span>
+   <span style="color:var(--info);display:flex">${ic('trackAP',22)}</span>
    <div style="flex:1;min-width:220px"><b style="font-size:14px;color:#0B4A8F">${c.name.split(' ')[0]} chose the AP route.</b>
     <div style="font-size:12.3px;color:#0B4A8F;margin-top:3px;line-height:1.55">AP is examined course by course rather than as a single diploma, which gives more control over exactly which subjects to take in depth — and which exams to sit, and when.</div></div>
   </div>
   <div style="background:var(--surface-3);border-radius:10px;padding:14px 16px;margin-top:14px;font-size:12.5px;color:var(--ink-2);line-height:1.6">
    <b>What matters most on this route</b> is choosing AP courses that line up with whichever university and degree ${c.name.split(' ')[0]} ends up targeting — the "See where these choices have led" section below shows exactly which AP combinations led to which universities for students who came before.</div>`
-  :`<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--rose-bg);border:1px solid var(--rose-line);border-radius:12px;padding:16px">
-   <span style="color:var(--rose);display:flex">${ic('spark',22)}</span>
-   <div style="flex:1;min-width:220px"><b style="font-size:14px;color:var(--rose-2)">${c.name.split(' ')[0]} has not chosen a pathway yet.</b>
-    <div style="font-size:12.3px;color:var(--rose-2);margin-top:3px;line-height:1.55">That decision — IB or AP — is exactly what this page is here to help with. There is no wrong choice, only a better-informed one.</div></div>
-  </div>`}
+  :moment({art:"fork",w:122,acc:AC,soft:ACBG,bg:ACBG,line:ACLINE,serif:persona!=="student",
+    title:`${c.name.split(' ')[0]} has not chosen a pathway yet.`,
+    body:"That decision — IB or AP — is exactly what this page is here to help with. Neither route is drawn larger than the other above, and that is deliberate: there is no wrong choice here, only a better-informed one."})}
  </div>
  <div class="card" style="padding:20px;margin-bottom:16px">
   <div class="sechead">${ic('layers',13)} IB and AP, side by side</div>
@@ -2452,9 +2662,9 @@ function vPathExplorer(navAttr,uniTab,contactTab){
    ${COUNTRY_OPTIONS.map(cn=>{const on=(S.pathCountry||"UK")===cn;
     const stats=(()=>{const all=PATH_ALUMNI.filter(a=>a.country===cn);return{n:all.length,u:[...new Set(all.map(a=>a.uni))].length};})();
     const flagBg={UK:"linear-gradient(135deg,#3B5FE0,#1A3AA8)",US:"linear-gradient(135deg,#E0473B,#A82A1A)",UAE:"linear-gradient(135deg,#1FA97E,#0B7D5C)"}[cn];
-    return `<button data-pcty="${cn}" style="text-align:left;font-family:inherit;cursor:pointer;border-radius:13px;padding:14px 15px;border:1.5px solid ${on?'var(--rose)':'var(--line)'};background:${on?'var(--rose-bg)':'var(--surface)'};box-shadow:${on?'0 0 0 3px var(--rose-line)':'none'};transition:all .15s">
+    return `<button data-pcty="${cn}" style="text-align:left;font-family:inherit;cursor:pointer;border-radius:13px;padding:14px 15px;border:1.5px solid ${on?AC:'var(--line)'};background:${on?ACBG:'var(--surface)'};box-shadow:${on?'0 0 0 3px '+ACLINE:'none'};transition:all .15s">
      <div style="width:34px;height:34px;border-radius:9px;background:${flagBg};color:#fff;display:grid;place-items:center;font-size:11px;font-weight:700;margin-bottom:10px;box-shadow:inset 0 1px 0 rgba(255,255,255,.25)">${cn}</div>
-     <div style="font-size:13.5px;font-weight:700;color:${on?'var(--rose-2)':'var(--ink)'}">${cn==="UK"?"United Kingdom":cn==="US"?"United States":"United Arab Emirates"}</div>
+     <div style="font-size:13.5px;font-weight:700;color:${on?AC2:'var(--ink)'}">${cn==="UK"?"United Kingdom":cn==="US"?"United States":"United Arab Emirates"}</div>
      <div style="font-size:11px;color:var(--ink-3);margin-top:2px">${stats.u} universities · ${stats.n} students tracked</div>
     </button>`;}).join('')}
   </div>
@@ -2465,7 +2675,7 @@ function vPathExplorer(navAttr,uniTab,contactTab){
     const goalMap={"Investment Banking":"Economics"};
     const goalMatch=goalMap[c.goal]||DEGREE_OPTIONS.find(d=>c.goal.includes(d))||"";
     const isGoal=val===goalMatch&&goalMatch!=="";
-    return `<button data-pdeg="${val}" style="font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:99px;cursor:pointer;font-family:inherit;border:1px solid ${on?'var(--rose)':'var(--line-2)'};background:${on?'var(--rose)':'var(--surface)'};color:${on?'#fff':'var(--ink-2)'};transition:all .15s">${label}${isGoal?` <span style="opacity:.7">· their goal</span>`:''}</button>`;}).join('')}
+    return `<button data-pdeg="${val}" style="font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:99px;cursor:pointer;font-family:inherit;border:1px solid ${on?AC:'var(--line-2)'};background:${on?AC:'var(--surface)'};color:${on?'#fff':'var(--ink-2)'};transition:all .15s">${label}${isGoal?` <span style="opacity:.7">· their goal</span>`:''}</button>`;}).join('')}
   </div>
 
   ${(()=>{
@@ -2481,8 +2691,8 @@ function vPathExplorer(navAttr,uniTab,contactTab){
 
    return `
    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">
-    <div style="background:var(--rose-bg);border:1px solid var(--rose-line);border-radius:11px;padding:14px 16px">
-     <div class="serif" style="font-size:26px;font-weight:600;color:var(--rose-2);line-height:1">${uniList.length}</div>
+    <div style="background:${ACBG};border:1px solid ${ACLINE};border-radius:11px;padding:14px 16px">
+     <div class="serif" style="font-size:26px;font-weight:600;color:${AC2};line-height:1">${uniList.length}</div>
      <div style="font-size:11.3px;color:var(--ink-3);margin-top:3px">universities represented</div></div>
     <div style="background:var(--surface-3);border-radius:11px;padding:14px 16px">
      <div class="serif" style="font-size:26px;font-weight:600;color:var(--ink);line-height:1">${matches.length}</div>
@@ -2496,10 +2706,10 @@ function vPathExplorer(navAttr,uniTab,contactTab){
      const reach=c.uni.targets.filter(t=>t.b==="reach").length;
      const match=c.uni.targets.filter(t=>t.b==="match").length;
      const safety=c.uni.targets.filter(t=>t.b==="safety").length;
-     return `<div style="border:1px solid var(--rose-line);border-radius:13px;padding:18px 20px;margin-bottom:18px;background:linear-gradient(135deg,#FEF6FA,#FDF0F6)">
+     return `<div style="border:1px solid ${ACLINE};border-radius:13px;padding:18px 20px;margin-bottom:18px;background:${ACBG}">
      <div style="display:flex;gap:11px;align-items:flex-start;margin-bottom:12px">
-      <div style="width:32px;height:32px;border-radius:9px;background:var(--rose);color:#fff;display:grid;place-items:center;flex-shrink:0">${ic('spark',16)}</div>
-      <div style="font-size:13.5px;font-weight:700;color:var(--rose-2);padding-top:5px">What this means for ${c.name.split(' ')[0]}</div>
+      <div style="width:32px;height:32px;border-radius:9px;background:#fff;color:${AC};display:grid;place-items:center;flex-shrink:0">${ic('spark',16)}</div>
+      <div style="font-size:13.5px;font-weight:700;color:${AC2};padding-top:5px">What this means for ${c.name.split(' ')[0]}</div>
      </div>
      ${c.track==="undecided"?`
      <div style="font-size:12.8px;color:var(--ink-2);line-height:1.7;margin-bottom:12px">${c.name.split(' ')[0]} has not chosen a pathway yet — that choice is exactly what this page is for. The students shown below took a real mix of subject combinations and both the IB and AP routes to reach ${uniList.length} different universities in ${cty==="UK"?"the UK":cty==="US"?"the US":"the UAE"} — this is what those choices actually looked like, not a prediction.</div>
@@ -2510,12 +2720,12 @@ function vPathExplorer(navAttr,uniTab,contactTab){
      :`
      <div style="font-size:12.8px;color:var(--ink-2);line-height:1.7;margin-bottom:12px">${c.name.split(' ')[0]} is on the ${c.track} route, aiming for ${c.goal}. The students shown below took a real mix of subject combinations and both the IB and AP routes to reach ${uniList.length} different universities in ${cty==="UK"?"the UK":cty==="US"?"the US":"the UAE"} — this is what those choices actually looked like, not a prediction.</div>
      <div style="font-size:12.8px;color:var(--ink-2);line-height:1.7;margin-bottom:14px">Use this the way a family would use it before finalising subject choices: look at the combination, look at where it led, and see whether it matches the country or course ${c.name.split(' ')[0]} is aiming for. The rest is about finishing a strong application — the personal statement, the references, and a university list with a genuine floor.</div>`}
-     <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:center;padding-top:12px;border-top:1px solid #F5D9E6">
+     <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:center;padding-top:12px;border-top:1px solid ${ACLINE}">
       <span style="font-size:11.5px;color:var(--ink-3)">${c.uni.targets.length?"Their own list right now:":"No university list yet:"}</span>
-      <span class="chip" style="background:var(--urgent-bg,#FEF3F2);color:var(--crit)">${reach} reach</span>
+      <span class="chip" style="background:var(--crit-bg);color:var(--crit)">${reach} reach</span>
       <span class="chip" style="background:var(--ok-bg);color:var(--ok)">${match} match</span>
       <span class="chip" style="background:${safety?'var(--ok-bg)':'var(--warn-bg)'};color:${safety?'var(--ok)':'var(--warn)'}">${safety} safety</span>
-      <button class="btn btn-sm" style="margin-left:auto;background:var(--rose);color:#fff" ${navAttr}="${uniTab}">${ic('grad',13)} See full application status</button>
+      <button class="btn btn-sm" style="margin-left:auto;background:${AC};color:#fff" ${navAttr}="${uniTab}">${ic('grad',13)} See full application status</button>
      </div>
     </div>`;})():''}
 
@@ -2524,7 +2734,7 @@ Universities in ${cty==="UK"?"the United Kingdom":cty==="US"?"the United States"
    <div style="display:flex;flex-direction:column;gap:10px">
     ${uniList.map(([uniName,list],i)=>`<div style="border:1px solid var(--line);border-radius:12px;overflow:hidden;animation:rise .3s ${i*.05}s backwards">
      <div style="display:flex;align-items:center;gap:11px;padding:13px 15px;background:var(--surface-2)">
-      <span style="width:32px;height:32px;border-radius:9px;background:var(--rose-bg);color:var(--rose-2);display:grid;place-items:center;flex-shrink:0">${ic('grad',16)}</span>
+      <span style="width:32px;height:32px;border-radius:9px;background:${ACBG};color:${AC2};display:grid;place-items:center;flex-shrink:0">${ic('grad',16)}</span>
       <div style="flex:1;min-width:0"><b style="font-size:13.5px">${uniName}</b></div>
       <span class="chip" style="background:var(--surface);border:1px solid var(--line-2);color:var(--ink-3);flex-shrink:0">${list.length} student${list.length>1?'s':''}</span>
      </div>
@@ -2544,7 +2754,7 @@ Universities in ${cty==="UK"?"the United Kingdom":cty==="US"?"the United States"
          ${!deg?`<span style="font-size:10.5px;color:var(--ink-4)">${a.degree}</span>`:''}
          <span style="font-size:10.5px;color:var(--ink-4)">Class of ${a.grad}</span></div>
         <div style="font-size:11px;color:var(--ink-3);margin-top:2px">${a.subjects}</div>
-        ${a.note?`<div style="font-size:10.8px;color:var(--rose-2);margin-top:2px;font-style:italic">${a.note}</div>`:''}
+        ${a.note?`<div style="font-size:10.8px;color:${AC2};margin-top:2px;font-style:italic">${a.note}</div>`:''}
        </div>
        <div style="text-align:right;flex-shrink:0">
         <span class="chip" style="background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok-line)">${ic('checkC',11)} Now attending</span>
@@ -2590,7 +2800,9 @@ function vApExamsStandalone(navAttr,contactTab){
   ${contactTab?`<button class="btn btn-g btn-sm" style="flex-shrink:0" ${navAttr}="${contactTab}">${ic('msg',13)} Message Ms. Haddad</button>`:''}
  </div>`;}
 
-function vHSGuide(){
+function vHSGuide(persona){
+ const AC2=persona==="student"?"var(--violet-2)":"var(--rose-2)";
+ const ACBG=persona==="student"?"var(--violet-bg)":"var(--rose-bg)";
  return `<div class="card" style="padding:20px;margin-bottom:16px">
   <div class="sechead">${ic('spark',13)} Welcome to Al Bateen Academy's senior school</div>
   <div style="font-size:12.5px;color:var(--ink-3);line-height:1.65;margin-bottom:8px">Grade 9 is orientation, not application. Nothing here is being tracked toward a university yet — the goal this year is simply understanding how the system works, so that the real decision in Grade 10 (IB or AP) is an informed one rather than a guess.</div>
@@ -2604,8 +2816,8 @@ function vHSGuide(){
     <b style="font-size:13px">Unweighted GPA</b>
     <div style="font-size:12.2px;color:var(--ink-3);margin-top:4px;line-height:1.6">Every course counts the same regardless of difficulty. An A in an introductory course and an A in an advanced one both earn a 4.0. This is the simplest way to compare, but it does not reward students for taking harder subjects.</div>
    </div>
-   <div style="border:1px solid var(--line);border-radius:11px;padding:14px 16px;background:var(--rose-bg)">
-    <b style="font-size:13px;color:var(--rose-2)">Weighted GPA — what actually matters for university applications</b>
+   <div style="border:1px solid var(--line);border-radius:11px;padding:14px 16px;background:${ACBG}">
+    <b style="font-size:13px;color:${AC2}">Weighted GPA — what actually matters for university applications</b>
     <div style="font-size:12.2px;color:var(--ink-2);margin-top:4px;line-height:1.6">Higher Level IB courses and AP courses typically carry extra weight — often an additional 0.5 to 1.0 points on a 4.0 scale for the same letter grade. This is why two students with the same letter grades can have different GPAs: one took a heavier course load.</div>
    </div>
    <div style="border:1px solid var(--line);border-radius:11px;padding:14px 16px">
@@ -2619,7 +2831,7 @@ function vHSGuide(){
   <div class="sechead">${ic('book',13)} Every subject offered at this school</div>
   <div style="font-size:12.2px;color:var(--ink-3);margin-bottom:14px;line-height:1.6">This is the full catalogue across Grades 9 through 12. Not every combination is available at every level — the IB Diploma requires one subject from most groups, while AP allows any combination. Grade 10 is when this turns into an actual choice.</div>
   ${COURSE_CATALOG.map(d=>`<div style="margin-bottom:14px">
-   <div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--rose-2);margin-bottom:7px">${d.dept}</div>
+   <div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:${AC2};margin-bottom:7px">${d.dept}</div>
    <div style="display:flex;flex-wrap:wrap;gap:6px">
     ${d.courses.map(c=>`<span class="chip" style="background:var(--surface-3);color:var(--ink-2);border:1px solid var(--line-2)">${c}</span>`).join('')}</div>
   </div>`).join('')}
@@ -2627,13 +2839,9 @@ function vHSGuide(){
 
 function vParent(){
  const c=g(PARENT_ME);const pg=S.previewGrade||12,pt=c.track||"IB";
- let tabs=[["overview","Overview"],["messages","Messages"],["meetings","Meet the counselor"]];
- if(pg===9)tabs.splice(2,0,["guide","High School Guide"]);
- if(pg>=10)tabs.splice(2,0,["pathway","IB or AP"]);
- if(pg>=11)tabs.splice(2,0,["grades","Grades & transcripts"]);
- if(pg===12)tabs.splice(tabs.findIndex(t=>t[0]==="pathway"),0,["uni","University requirements"]);
- if(pg>=11&&pt==="AP")tabs.splice(tabs.findIndex(t=>t[0]==="meetings"),0,["apexams","AP Exams"]);
- tabs.sort((a,b)=>{const ord=["overview","messages","guide","grades","uni","pathway","apexams","meetings"];return ord.indexOf(a[0])-ord.indexOf(b[0]);});
+ /* Same list as the sidebar and the same list the palette offers — this used to
+    be a third hand-maintained copy of the grade rules. */
+ const tabs=roleNav("parent");
  const validKeys=tabs.map(t=>t[0]);
  const pv=validKeys.includes(S.pv)?S.pv:"overview";
  const att=c.baselines.attendance?c.baselines.attendance.series[7]:98;
@@ -2684,11 +2892,11 @@ function vParent(){
     <button class="btn btn-sm" style="margin-top:12px;background:var(--rose);color:#fff" data-pv="uni">${ic('grad',13)} See her university list</button>
    </div></div>
  </div>`:pg===10?`<div class="card" style="padding:20px;margin-bottom:16px;background:linear-gradient(135deg,#FDF0F6,#FEF6FA);border-color:var(--rose-line)">
-  <div style="display:flex;gap:13px;align-items:flex-start">
-   <div style="width:38px;height:38px;border-radius:11px;background:var(--rose);color:#fff;display:grid;place-items:center;flex-shrink:0">${ic('spark',19)}</div>
-   <div style="flex:1">
+  <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+   ${art("early","var(--rose)","var(--rose-bg)",112)}
+   <div style="flex:1;min-width:250px">
     <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--rose-2);font-weight:700;margin-bottom:6px">Where things stand at this stage</div>
-    <div style="font-size:14px;font-weight:600;color:var(--ink);margin-bottom:6px;line-height:1.4">There is nothing to apply for yet — and that is exactly right for Grade 10.</div>
+    <div class="serif" style="font-size:20px;font-weight:600;color:var(--ink);margin-bottom:7px;line-height:1.25;letter-spacing:-.02em">There is nothing to apply for yet — and that is exactly right for Grade 10.</div>
     <div style="font-size:12.8px;color:var(--ink-2);line-height:1.65;margin-bottom:9px">The one real decision at this stage is IB versus AP, and which subjects within that. The most useful thing a parent can do right now is look at where each combination has actually led other students, not guess.</div>
     <button class="btn btn-sm" style="margin-top:4px;background:var(--rose);color:#fff" data-pv="pathway">${ic('route',13)} See where past choices have led</button>
    </div></div>
@@ -2714,15 +2922,16 @@ function vParent(){
   ${S.earlyStart?`
   <div style="font-size:12.3px;color:var(--ink-2);line-height:1.6;margin-bottom:14px;padding-top:14px;border-top:1px solid var(--line)">Nothing here is due yet, and nothing is locked in. This just gives ${c.name.split(' ')[0]} somewhere to start putting ideas down before the deadline pressure of Grade 12 begins.</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-   <div style="background:var(--surface-3);border-radius:11px;padding:14px 16px">
+   <div style="background:var(--surface-3);border-radius:11px;padding:14px 16px;display:flex;flex-direction:column">
     <div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">${ic('pencil',12)} Early statement notes</div>
     <div style="font-size:11.8px;color:var(--ink-3);line-height:1.5;margin-bottom:9px">A rough first attempt — themes, a story, a strong opening line. This will not be the final statement.</div>
-    <button class="btn btn-g btn-sm" style="width:100%" data-toast="Early statement workspace opened — nothing here is submitted or reviewed until Grade 12">${ic('pencil',13)} Start jotting ideas</button>
+    <button class="btn btn-g btn-sm" style="width:100%;margin-top:auto" data-toast="Early statement workspace opened — nothing here is submitted or reviewed until Grade 12">${ic('pencil',13)} Start jotting ideas</button>
    </div>
-   <div style="background:var(--surface-3);border-radius:11px;padding:14px 16px">
+   <div style="background:var(--surface-3);border-radius:11px;padding:14px 16px;display:flex;flex-direction:column">
     <div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">${ic('grad',12)} Early interest list</div>
-    <div style="font-size:11.8px;color:var(--ink-3);line-height:1.5;margin-bottom:9px">A loose, changeable list of universities worth a closer look — not the real application list yet.</div>
-    <button class="btn btn-g btn-sm" style="width:100%" data-pv="pathway">${ic('grad',13)} Browse universities</button>
+    <div style="display:flex;justify-content:center;margin:2px 0 10px">${art("shortlist","var(--rose)","var(--rose-bg)",96)}</div>
+    <div style="font-size:11.8px;color:var(--ink-3);line-height:1.5;margin-bottom:9px">Three open slots, nothing committed. A loose, changeable list of universities worth a closer look — not the real application list yet.</div>
+    <button class="btn btn-g btn-sm" style="width:100%;margin-top:auto" data-pv="pathway">${ic('grad',13)} Browse universities</button>
    </div>
   </div>`:''}
  </div>`}
@@ -2752,7 +2961,7 @@ function vParent(){
    </div>
   </div>
   <div class="card" style="padding:20px">
-   <div class="sechead">${ic('users',13)} Mentor</div>
+   <div class="sechead">${ic('mentorMatch',13)} Mentor</div>
    ${c.id==="s3"?`<div style="display:flex;gap:11px;align-items:flex-start;margin-bottom:12px">
     ${av("HR","mentor",42,12)}
     <div style="min-width:0"><b style="font-size:13.5px">${PARENT_MENTOR.name}</b>
@@ -2761,7 +2970,9 @@ function vParent(){
    <div style="font-size:11.5px;color:var(--ink-3);background:var(--surface-3);border-radius:9px;padding:9px 11px;margin-bottom:10px;line-height:1.4">${PARENT_MENTOR.path}</div>
    <div style="display:flex;gap:8px;align-items:flex-start;font-size:11.3px;color:var(--brand-2);background:var(--brand-3);border-radius:9px;padding:10px 11px;line-height:1.55">
     ${ic('shield',14)}<span>${c.name.split(" ")[0]} asked to be matched with an alumnus in finance. Every session happens inside the platform and is recorded — the school is in the loop and nothing is exchanged outside CAROS.</span></div>`
-   :`<div style="font-size:12.3px;color:var(--ink-3);line-height:1.6">No mentor matched yet. ${c.name.split(" ")[0]} can request one from the alumni network once ready — every session is safeguarded and happens inside the platform.</div>`}
+   :moment({art:"mentor",w:112,bg:"transparent",line:"transparent",pad:"2px 0",
+     title:"No mentor matched yet",
+     body:`${c.name.split(" ")[0]} can ask to be matched with an alumnus who took the route ${c.name.split(" ")[0].endsWith("a")?"she":"he"} is aiming for, whenever ${c.name.split(" ")[0].endsWith("a")?"she":"he"} is ready — there is no advantage to doing it early. Every session is safeguarded, happens inside the platform, and is visible to the school.`})}
   </div>
  </div>
 
@@ -2816,7 +3027,7 @@ function vParent(){
  </div>`:''}
 
  ${pv==="apexams"?vApExamsStandalone("data-pv","messages"):''}
- ${pv==="guide"?vHSGuide():''}
+ ${pv==="guide"?vHSGuide("parent"):''}
 
  ${pv==="grades"?(c.track==="IB"?`
  <div class="card" style="padding:20px;margin-bottom:16px">
@@ -2893,14 +3104,27 @@ function vParent(){
      </div>`).join('')}
     </div>`).join('')}
     ${(()=>{const off=OFFERS[t.u];if(!off||off.status==="pending")return'';
-      const col=off.status==="conditional"?"var(--warn)":"var(--ok)";
-      const bg=off.status==="conditional"?"var(--warn-bg)":"var(--ok-bg)";
-      return `<div style="border:1px solid ${col};border-radius:12px;padding:16px;margin-top:12px;background:${bg}">
-       <div style="display:flex;align-items:center;gap:9px;margin-bottom:7px">
-        ${ic(off.status==="conditional"?"alert":"checkC",16)}
-        <b style="font-size:13.5px;color:${col==="var(--warn)"?"#7A4A00":"#05603A"}">${off.status==="conditional"?"Conditional offer received":"Unconditional offer"} · ${off.date}</b></div>
-       <div style="font-size:12.3px;color:${col==="var(--warn)"?"#7A4A00":"#05603A"};line-height:1.6;margin-bottom:6px"><b>What she needs to keep:</b> ${off.condition}</div>
-       <div style="font-size:11.8px;color:${col==="var(--warn)"?"#8A5A10":"#0A7050"};line-height:1.55">${off.detail}</div>
+      /* The first offer a family ever receives is the moment this whole product
+         is building toward — for a lot of parents it is the first hard proof
+         that any of it worked. It was drawing itself with an alert triangle,
+         the same mark the counselor console uses for an urgent escalation.
+         A conditional offer still carries a condition, so the amber stays and
+         the condition keeps top billing — but the moment gets its own drawing
+         and its own display line first. (Runbook 4.2) */
+      const cond=off.status==="conditional";
+      const col=cond?"var(--warn)":"var(--ok)";
+      const bg=cond?"var(--warn-bg)":"var(--ok-bg)";
+      const deep=cond?"#7A4A00":"#05603A";
+      const first=Object.keys(OFFERS).filter(k=>OFFERS[k].status!=="pending").length===1;
+      return `<div style="border:1px solid ${col};border-radius:12px;padding:18px;margin-top:12px;background:${bg}">
+       <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+        ${art("offer",col,cond?"var(--warn-bg)":"var(--ok-bg)",104)}
+        <div style="flex:1;min-width:250px">
+         <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:${col};margin-bottom:5px">${first?"Her first offer":"Offer received"} · ${off.date}</div>
+         <div class="serif" style="font-size:21px;font-weight:600;line-height:1.2;letter-spacing:-.02em;color:${deep}">${cond?"Conditional offer":"Unconditional offer"} from ${t.u}</div>
+         <div style="font-size:12.5px;color:${deep};line-height:1.6;margin-top:9px"><b>What she needs to keep:</b> ${off.condition}</div>
+         <div style="font-size:11.8px;color:${cond?"#8A5A10":"#0A7050"};line-height:1.55;margin-top:6px">${off.detail}</div>
+        </div></div>
       </div>`;})()}
     ${(()=>{const cost=UNI_COSTS[t.u];if(!cost)return'';
       return `<div style="border:1px solid var(--line);border-radius:12px;padding:16px;margin-top:12px;background:var(--surface)">
@@ -2932,7 +3156,7 @@ function vParent(){
   <div style="flex:1;min-width:220px;font-size:12.2px;color:var(--ink-3);line-height:1.55">Requirements are taken from each university's published entry criteria for 2026 entry and are checked against current predicted grades. They can change, and an offer is always at the university's discretion.</div>
  </div>`:''}
 
- ${pv==="pathway"?vPathExplorer("data-pv","uni","meetings"):''}
+ ${pv==="pathway"?vPathExplorer("data-pv","uni","meetings","parent"):''}
 
  ${pv==="meetings"?`
  <div class="card" style="padding:22px;margin-bottom:16px">
@@ -3217,19 +3441,19 @@ function vStuPath(){
   <div style="display:flex;gap:20px;align-items:center;margin-bottom:20px;flex-wrap:wrap">
    <div style="position:relative;width:96px;height:96px;flex-shrink:0">${ringSvg(p)}
     <div style="position:absolute;inset:0;display:grid;place-items:center"><span class="serif" style="font-size:25px;font-weight:600;color:var(--violet)">${p}%</span></div></div>
-   <div><div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--inkMute);font-weight:700">Current probability</div>
+   <div><div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);font-weight:700">Current probability</div>
     <div class="serif" style="font-size:20px;font-weight:600;margin:3px 0 5px">${STU.goal}</div>
-    <div style="font-size:12.5px;color:var(--inkSoft)">Started at ${STU.prob}% · ${p>STU.prob?`<b style="color:var(--good)">+${p-STU.prob} points from your completed moves</b>`:'tick a move below to see it climb'}</div></div>
+    <div style="font-size:12.5px;color:var(--ink-2)">Started at ${STU.prob}% · ${p>STU.prob?`<b style="color:var(--good)">+${p-STU.prob} points from your completed moves</b>`:'tick a move below to see it climb'}</div></div>
   </div>
-  ${STU.steps.map((s,i)=>`<div style="display:grid;grid-template-columns:auto 1fr auto;gap:15px;align-items:center;padding:15px 0;border-bottom:${i<STU.steps.length-1?'1px solid var(--lineSoft)':'none'}">
+  ${STU.steps.map((s,i)=>`<div style="display:grid;grid-template-columns:auto 1fr auto;gap:15px;align-items:center;padding:15px 0;border-bottom:${i<STU.steps.length-1?'1px solid var(--line)':'none'}">
    <div data-step="${i}" style="width:26px;height:26px;border-radius:50%;border:2px solid ${S.pathDone[i]?'var(--good)':'var(--line)'};background:${S.pathDone[i]?'var(--good)':'#fff'};display:grid;place-items:center;color:#fff;cursor:pointer;transition:all .2s">${S.pathDone[i]?ic('check',14):''}</div>
-   <div><div style="font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:8px">${s.t}<span class="chip" style="background:var(--panel);color:var(--inkMute);border:1px solid var(--line)">${s.when}</span></div>
-   <div style="font-size:11.8px;color:var(--inkMute);margin-top:2px">${s.d}</div></div>
+   <div><div style="font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:8px">${s.t}<span class="chip" style="background:var(--bg);color:var(--ink-3);border:1px solid var(--line)">${s.when}</span></div>
+   <div style="font-size:11.8px;color:var(--ink-3);margin-top:2px">${s.d}</div></div>
    <span class="serif" style="font-size:16px;font-weight:600;color:var(--good);flex-shrink:0">+${s.imp}%</span></div>`).join('')}
  </div>
- <div class="card" style="padding:18px 20px;background:var(--violetSoft);border-color:#DDD8F7;display:flex;gap:13px;align-items:flex-start">
-  <div style="width:36px;height:36px;border-radius:10px;background:var(--violet);color:#fff;display:grid;place-items:center;flex-shrink:0">${ic('spark',18)}</div>
-  <div style="font-size:12.5px;color:var(--violetDeep);line-height:1.6"><b>Your next move.</b> Talk to <b>Hassan Al Rashid</b> — he went Al Bateen → LSE Economics → Evercore spring week → Goldman IBD. That is your exact route, and he is the single highest-leverage person in your network right now.</div>
+ <div class="card" style="padding:18px 20px;background:var(--violet-bg);border-color:var(--violet-line);display:flex;gap:13px;align-items:flex-start">
+  <div style="width:36px;height:36px;border-radius:10px;background:#fff;color:var(--violet);display:grid;place-items:center;flex-shrink:0">${ic('spark',18)}</div>
+  <div style="font-size:12.5px;color:var(--violet-2);line-height:1.6"><b>Your next move.</b> Talk to <b>Hassan Al Rashid</b> — he went Al Bateen → LSE Economics → Evercore spring week → Goldman IBD. That is your exact route, and he is the single highest-leverage person in your network right now.</div>
  </div></div>`;}
 
 function vStuTargets(){
@@ -3239,35 +3463,35 @@ function vStuTargets(){
  ${STU.targets.map((t,i)=>{const col=t.b==="reach"?'var(--urgent)':t.b==="match"?'var(--good)':'var(--review)';
   return `<div class="card lift" style="padding:20px;animation:rise .4s ${i*.05}s backwards">
    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
-    <div><b style="font-size:14.5px">${t.u}</b><div style="font-size:12px;color:var(--inkMute)">${t.c}</div></div>
+    <div><b style="font-size:14.5px">${t.u}</b><div style="font-size:12px;color:var(--ink-3)">${t.c}</div></div>
     <span class="serif" style="font-size:25px;font-weight:600;color:${col}">${t.p}%</span></div>
    ${meter(t.p,col)}
    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:11px">
-    ${chip(t.b.toUpperCase(),col,t.b==="reach"?'var(--urgentSoft)':t.b==="match"?'var(--goodSoft)':'var(--reviewSoft)')}
-    <span style="font-size:11.3px;color:var(--inkMute)">${t.b==="reach"?"Ambitious — keep pushing":t.b==="match"?"Strong fit":"Your safety net"}</span></div>
+    ${chip(t.b.toUpperCase(),col,t.b==="reach"?'var(--crit-bg)':t.b==="match"?'var(--ok-bg)':'var(--warn-bg)')}
+    <span style="font-size:11.3px;color:var(--ink-3)">${t.b==="reach"?"Ambitious — keep pushing":t.b==="match"?"Strong fit":"Your safety net"}</span></div>
   </div>`;}).join('')}
  </div>
- <div class="card" style="padding:17px 20px;margin-top:14px;background:var(--reviewSoft);border-color:#EDD9A6;display:flex;gap:12px;align-items:flex-start">
+ <div class="card" style="padding:17px 20px;margin-top:14px;background:var(--warn-bg);border-color:#EDD9A6;display:flex;gap:12px;align-items:flex-start">
   ${ic('alert',18)}<div style="font-size:12.3px;color:#7A5504;line-height:1.55"><b>Worth a conversation.</b> Your list is strong but every option sits at match or above. Ms. Haddad suggested adding one secure floor — Bath or Bristol Economics — so nothing rests on a single result. Keep LSE exactly where it is.</div>
  </div></div>`;}
 
 function vStuMentors(){
  return `<div class="fade">
- ${head("Mentor marketplace","Talk to someone who got there","Verified alumni who walked your exact route. Every session happens inside the platform and is recorded — your school is in the loop.","var(--violet)","users")}
+ ${head("Mentor marketplace","Talk to someone who got there","Verified alumni who walked your exact route. Every session happens inside the platform and is recorded — your school is in the loop.","var(--violet)","mentorMatch")}
  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
  ${MENTORS.map((m,i)=>`<div class="card lift" style="padding:20px;animation:rise .4s ${i*.05}s backwards">
   <div style="display:flex;gap:13px;margin-bottom:12px">
    ${av(m.av,"mentor",48,13)}
    <div style="flex:1"><div style="display:flex;align-items:center;gap:6px"><b style="font-size:14.5px">${m.n}</b>${ic('checkC',14)}</div>
-    <div style="font-size:12.2px;color:var(--inkSoft)">${m.role} · ${m.firm}</div>
-    <div style="font-size:11.3px;color:var(--inkMute)">${m.uni} · ${m.grad}</div></div>
-   ${m.best?chip("Best match","var(--violetDeep)","var(--violetSoft)"):''}</div>
-  <div style="background:var(--panel);border-radius:10px;padding:9px 11px;margin-bottom:11px;display:flex;flex-wrap:wrap;gap:5px;align-items:center">
-   ${m.path.map((p,j)=>`<span style="font-size:10.3px;background:#fff;border:1px solid var(--line);border-radius:6px;padding:2px 7px;color:var(--inkSoft)">${p}</span>${j<m.path.length-1?`<span style="color:var(--inkMute)">${ic('arrowR',10)}</span>`:''}`).join('')}</div>
-  <div style="font-size:12.2px;color:var(--inkSoft);line-height:1.5;margin-bottom:13px">${m.bio}</div>
+    <div style="font-size:12.2px;color:var(--ink-2)">${m.role} · ${m.firm}</div>
+    <div style="font-size:11.3px;color:var(--ink-3)">${m.uni} · ${m.grad}</div></div>
+   ${m.best?chip("Best match","var(--violet-2)","var(--violet-bg)"):''}</div>
+  <div style="background:var(--bg);border-radius:10px;padding:9px 11px;margin-bottom:11px;display:flex;flex-wrap:wrap;gap:5px;align-items:center">
+   ${m.path.map((p,j)=>`<span style="font-size:10.3px;background:#fff;border:1px solid var(--line);border-radius:6px;padding:2px 7px;color:var(--ink-2)">${p}</span>${j<m.path.length-1?`<span style="color:var(--ink-3)">${ic('arrowR',10)}</span>`:''}`).join('')}</div>
+  <div style="font-size:12.2px;color:var(--ink-2);line-height:1.5;margin-bottom:13px">${m.bio}</div>
   <div style="display:flex;align-items:center;gap:15px;padding-top:13px;border-top:1px solid var(--line)">
-   <div><b style="font-size:13px">★ ${m.r}</b><div style="font-size:9.5px;color:var(--inkMute);text-transform:uppercase;letter-spacing:.04em">${m.s} sessions</div></div>
-   <div><b style="font-size:13px">$${m.p}</b><div style="font-size:9.5px;color:var(--inkMute);text-transform:uppercase;letter-spacing:.04em">per session</div></div>
+   <div><b style="font-size:13px">★ ${m.r}</b><div style="font-size:9.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em">${m.s} sessions</div></div>
+   <div><b style="font-size:13px">$${m.p}</b><div style="font-size:9.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em">per session</div></div>
    <button class="btn btn-sm" data-book="${m.id}" style="margin-left:auto;background:var(--violet);color:#fff">Book session</button></div>
  </div>`).join('')}
  </div></div>`;}
@@ -3276,10 +3500,10 @@ function vStuNet(){
  return `<div class="fade">
  ${head("My network","The people on your path","Mentors, family connections you have added, and people you meet through CAROS. This graph is yours — every connection is tagged to where it sits on your route.","var(--violet)","route")}
  <div class="card" style="padding:22px">
-  ${STU.net.map((n,i)=>`<div style="display:grid;grid-template-columns:auto 1fr auto;gap:13px;align-items:center;padding:13px 0;border-bottom:${i<STU.net.length-1?'1px solid var(--lineSoft)':'none'};animation:rise .35s ${i*.05}s backwards">
+  ${STU.net.map((n,i)=>`<div style="display:grid;grid-template-columns:auto 1fr auto;gap:13px;align-items:center;padding:13px 0;border-bottom:${i<STU.net.length-1?'1px solid var(--line)':'none'};animation:rise .35s ${i*.05}s backwards">
    ${av(n.n.split(' ').map(w=>w[0]).slice(0,2).join(''),"student",38,11)}
-   <div><b style="font-size:13.3px">${n.n}</b><div style="font-size:11.5px;color:var(--inkMute)">${n.r}</div></div>
-   ${chip(n.w?"Warm":"1st","var(--good)","var(--goodSoft)")}</div>`).join('')}
+   <div><b style="font-size:13.3px">${n.n}</b><div style="font-size:11.5px;color:var(--ink-3)">${n.r}</div></div>
+   ${chip(n.w?"Warm":"1st","var(--good)","var(--ok-bg)")}</div>`).join('')}
   <div style="display:flex;gap:9px;margin-top:15px">
    <button class="btn btn-sm" data-snav="mentors" style="background:var(--violet);color:#fff">${ic('plus',13)} Add a mentor</button>
    <button class="btn btn-g btn-sm" data-toast="Add someone you already know — a family contact counts">${ic('plus',13)} Add someone I know</button></div>
@@ -3290,15 +3514,15 @@ function vMentorReq(){
  const reqs=[{n:"Sara Al Mansoori",av:"SA",goal:"Investment Banking · LSE Economics",msg:"Hi Hassan — I had a great first call. I'd love a follow-up on spring week applications and how to frame my Economics Society project in interviews.",when:"2 hours ago"},
   {n:"Khalid Noor",av:"KN",goal:"Finance · targeting LSE",msg:"Could we talk about the LSE Economics application and what made yours stand out?",when:"Yesterday"}];
  return `<div class="fade">
- ${head("Session requests","Students who want to talk","Students matched to your route have asked for time. You walked their exact path — that is the most valuable thing they can access.","var(--teal)","inbox")}
+ ${head("Session requests","Students who want to talk","Students matched to your route have asked for time. You walked their exact path — that is the most valuable thing they can access.","var(--brand)","inbox")}
  <div class="card" style="padding:16px 19px;margin-bottom:16px;display:flex;gap:12px;align-items:center">
-  <div style="width:34px;height:34px;border-radius:9px;background:var(--tealSoft);display:grid;place-items:center;color:var(--tealDeep);flex-shrink:0">${ic('shield',17)}</div>
-  <div style="font-size:12.2px;color:var(--inkSoft);line-height:1.5"><b style="color:var(--ink)">Safeguarding active.</b> Sessions with under-18 students happen in-platform and are recorded. The school is in the loop and consent is on file. You never exchange private contact details.</div></div>
+  <div style="width:34px;height:34px;border-radius:9px;background:var(--brand-3);display:grid;place-items:center;color:var(--brand-2);flex-shrink:0">${ic('shield',17)}</div>
+  <div style="font-size:12.2px;color:var(--ink-2);line-height:1.5"><b style="color:var(--ink)">Safeguarding active.</b> Sessions with under-18 students happen in-platform and are recorded. The school is in the loop and consent is on file. You never exchange private contact details.</div></div>
  ${reqs.map((r,i)=>`<div class="card" style="padding:20px;margin-bottom:12px;animation:rise .4s ${i*.06}s backwards">
   <div style="display:flex;align-items:center;gap:13px;margin-bottom:12px">${av(r.av,"student",44,12)}
-   <div style="flex:1"><b style="font-size:15px">${r.n}</b><div style="font-size:12px;color:var(--inkMute)">${r.goal}</div></div>
-   ${chip(r.when,"var(--tealDeep)","var(--tealSoft)")}</div>
-  <div style="background:var(--panel);border-radius:11px;padding:13px 15px;font-size:12.5px;color:var(--inkSoft);line-height:1.6;font-style:italic;margin-bottom:12px">"${r.msg}"</div>
+   <div style="flex:1"><b style="font-size:15px">${r.n}</b><div style="font-size:12px;color:var(--ink-3)">${r.goal}</div></div>
+   ${chip(r.when,"var(--brand-2)","var(--brand-3)")}</div>
+  <div style="background:var(--bg);border-radius:11px;padding:13px 15px;font-size:12.5px;color:var(--ink-2);line-height:1.6;font-style:italic;margin-bottom:12px">"${r.msg}"</div>
   <div style="display:flex;gap:8px;flex-wrap:wrap">
    <button class="btn btn-p btn-sm" data-toast="Accepted — added to your calendar and the school log">${ic('check',13)} Accept & schedule</button>
    <button class="btn btn-g btn-sm" data-toast="Alternative times sent">Propose another time</button>
@@ -3308,19 +3532,19 @@ function vMentorReq(){
 function vMentorMentees(){
  const ms=[{n:"Sara Al Mansoori",av:"SA",goal:"Goldman IBD",s:1,next:"Spring week strategy"},{n:"Omar Farouk",av:"OF",goal:"Entrepreneurship",s:2,next:"Networking into VC"}];
  return `<div class="fade">
- ${head("My mentees","Students you are guiding","Each one is walking a route you have already walked.","var(--teal)","users")}
+ ${head("My mentees","Students you are guiding","Each one is walking a route you have already walked.","var(--brand)","users")}
  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
  ${ms.map(m=>`<div class="card lift" style="padding:20px">
   <div style="display:flex;gap:12px;margin-bottom:13px">${av(m.av,"student",44,12)}
-   <div><b style="font-size:14.5px">${m.n}</b><div style="font-size:12px;color:var(--inkMute)">Goal: ${m.goal}</div></div></div>
+   <div><b style="font-size:14.5px">${m.n}</b><div style="font-size:12px;color:var(--ink-3)">Goal: ${m.goal}</div></div></div>
   <div style="display:flex;align-items:center;gap:15px">
-   <div><b style="font-size:14px">${m.s}</b><div style="font-size:9.5px;color:var(--inkMute);text-transform:uppercase">sessions</div></div>
-   <div style="flex:1"><b style="font-size:12.3px">${m.next}</b><div style="font-size:9.5px;color:var(--inkMute);text-transform:uppercase">next focus</div></div>
+   <div><b style="font-size:14px">${m.s}</b><div style="font-size:9.5px;color:var(--ink-3);text-transform:uppercase">sessions</div></div>
+   <div style="flex:1"><b style="font-size:12.3px">${m.next}</b><div style="font-size:9.5px;color:var(--ink-3);text-transform:uppercase">next focus</div></div>
    <button class="btn btn-p btn-sm" data-toast="Opening session workspace">Message</button></div></div>`).join('')}
  </div>
  <div class="card" style="padding:20px"><div class="sechead">${ic('trend',13)} Your impact</div>
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
-  ${[["34","Sessions delivered"],["4.9","Average rating"],["$4,080","Earned to date"]].map(([v,l])=>`<div><div class="serif" style="font-size:27px;font-weight:600;color:var(--teal)">${v}</div><div style="font-size:12px;color:var(--inkSoft)">${l}</div></div>`).join('')}</div></div>
+  ${[["34","Sessions delivered"],["4.9","Average rating"],["$4,080","Earned to date"]].map(([v,l])=>`<div><div class="serif" style="font-size:27px;font-weight:600;color:var(--brand)">${v}</div><div style="font-size:12px;color:var(--ink-2)">${l}</div></div>`).join('')}</div></div>
  </div>`;}
 /* ═══════════ MODALS ═══════════ */
 function modalEl(){
@@ -3370,8 +3594,204 @@ function modalEl(){
  return '';}
 
 /* ═══════════ RENDER ═══════════ */
+/* ═══════════ COMMAND PALETTE (Runbook 4.4) ═══════════
+   The header has been showing a "Search students… ⌘K" affordance over a dead
+   input since the first prototype. This makes it real, in the Linear/Raycast
+   pattern: one key from anywhere, type a few letters, hit return.
+
+   Two things worth knowing before editing it.
+
+   (1) The student list is SCOPED TO THE ROLE, and that is not decoration. The
+   counselor can reach all 87 because that is her caseload. A parent gets their
+   own child and nothing else; a teacher gets the class in front of them, and
+   their verb is "log a concern", not "read the file". Wiring every role to the
+   same 87 rows would have quietly built the exact permission leak the co-pilot
+   already promises it never makes.
+
+   (2) It does NOT re-render the app on each keystroke. draw() rebuilds the whole
+   tree, which would destroy the input and lose the caret every character — the
+   cohort search box already works around that by saving and restoring the
+   selection. Instead the palette paints only its own results list, so focus and
+   caret are never touched, and a full draw() happens once, when a command runs. */
+let PALHITS=[];
+/* Show the modifier this keyboard actually has, rather than telling a Windows
+   user in the school office to press a key their machine does not have. */
+const PAL_KEY=/Mac|iPhone|iPad/.test(navigator.platform||navigator.userAgent)?"⌘":"Ctrl ";
+
+/* The parent and student sidebars are grade-conditional and are built here so
+   that draw() and the palette read the same list instead of each keeping a copy
+   that drifts. */
+function roleNav(role){
+ const gr=S.previewGrade||12,tr=g(PARENT_ME).track||"IB";
+ if(role==="teacher")return [["class","My classes","users"],["tlog","What I've logged","list"]];
+ if(role==="mentor")return [["requests","Session Requests","inbox",2],["mentees","My Mentees","users"]];
+ if(role==="parent"){
+  const nav=[["overview","Overview","home"],["messages","Messages","msg"],["meetings","Meet the counselor","brief"]];
+  if(gr===9)nav.splice(2,0,["guide","High School Guide","book"]);
+  if(gr>=10)nav.splice(2,0,["pathway","IB or AP","route"]);
+  if(gr>=11)nav.splice(2,0,["grades","Grades & transcripts","book"]);
+  if(gr===12)nav.splice(nav.findIndex(t=>t[0]==="pathway"),0,["uni","University requirements","grad"]);
+  if(gr>=11&&tr==="AP")nav.splice(nav.findIndex(t=>t[0]==="meetings"),0,["apexams","AP Exams","clock"]);
+  const order=["overview","messages","guide","grades","uni","pathway","apexams","meetings"];
+  return nav.sort((a,b)=>order.indexOf(a[0])-order.indexOf(b[0]));
+ }
+ const nav=gr===9?[["guide","High School Guide","book"]]
+  :[["explore","Choosing IB or AP","route"],["mentors","Find a Mentor","mentorMatch",2]];
+ if(gr>=11)nav.unshift(["progress","My progress","trend"]);
+ if(gr===12){nav.splice(1,0,["pathway","My Pathway","route"],["targets","University Targets","target"]);
+  nav.push(["network","My Network","brief"]);}
+ if(gr>=11&&tr==="AP")nav.splice(nav.findIndex(x=>x[0]==="mentors"),0,["apexams","AP Exams","clock"]);
+ return nav;}
+
+const ROLE_LABEL={counselor:"Counselor OS",teacher:"Teacher portal",student:"Career OS",parent:"Family portal",mentor:"Mentor Hub"};
+
+function palCommands(){
+ const L=[],R=S.role;
+ const clearC=()=>{S.open=null;S.fileId=null;S.ragFilter="all";S.prioFilter="all";};
+
+ if(R==="counselor"){
+  /* every student on the caseload — the counselor's actual scope */
+  S.cases.forEach(c=>L.push({grp:"Students",lbl:c.name,
+   sub:c.yr+" · "+PRIO[c.prio].label+" · "+c.goal,av:c.av,prio:c.prio,go:"Open file",
+   key:c.name+" "+c.yr+" "+c.goal+" "+PRIO[c.prio].short+" "+(c.track||""),
+   run:()=>{clearC();S.fileId=c.id;S.fileTab="synth";S.cv="files";}}));
+  CATS.forEach(cat=>cat.sub.forEach(([k,l])=>L.push({grp:"Go to",lbl:l,sub:cat.label,icon:cat.ic,
+   key:l+" "+cat.label,run:()=>{clearC();S.cv=k;}})));
+  SYSNAV.forEach(([k,l,i])=>L.push({grp:"Go to",lbl:l,sub:"Tools & system",icon:i,
+   key:l,run:()=>{clearC();S.cv=k;}}));
+  L.push({grp:"Actions",lbl:"Record a meeting",sub:"Log an outcome against a student",icon:"brief",
+   key:"record meeting log outcome note",
+   run:()=>{S.modal={type:"meet",id:S.fileId||S.open||"s1"};S.mKind="Check-in";S.mOut="Ongoing";}});
+  L.push({grp:"Actions",lbl:"Draft a recommendation letter",sub:"Letter Engine · from verified evidence",icon:"doc",
+   key:"draft write recommendation letter reference ucas",
+   run:()=>{clearC();S.cv="app-letter";S.letter="idle";}});
+  L.push({grp:"Actions",lbl:"Ask the co-pilot a question",sub:"Plain-language query over your cohort",icon:"spark",
+   key:"ask copilot question query ai",run:()=>{clearC();S.cv="copilot";}});
+  L.push({grp:"Actions",lbl:"Tune detection thresholds",sub:"What counts as a signal at this school",icon:"gauge",
+   key:"tune thresholds sensitivity detection settings",run:()=>{clearC();S.cv="thresholds";}});
+ } else {
+  /* Every other role navigates its own sidebar and nothing else. */
+  const attr={parent:"pv",student:"sv",teacher:"tv",mentor:"mv"}[R];
+  roleNav(R).forEach(n=>L.push({grp:"Go to",lbl:n[1],sub:ROLE_LABEL[R],icon:n[2],
+   key:n[1],run:()=>{S[attr]=n[0];}}));
+
+  if(R==="teacher"){
+   /* a teacher's scope is the class in front of them, and their verb is to flag,
+      not to read a counseling file */
+   S.cases.slice(0,6).forEach(c=>L.push({grp:"My class",lbl:c.name,sub:"Log something after your lesson",
+    av:c.av,prio:c.prio,go:"Log",key:c.name+" "+c.yr,
+    run:()=>{S.modal={type:"tflag",id:c.id};S.tKind="concern";S.tTags=[];S.tNote="";}}));
+  } else if(R==="parent"||R==="student"){
+   const me=g(PARENT_ME);
+   L.push({grp:R==="parent"?"Your child":"You",lbl:me.name,sub:me.yr+" · aiming for "+me.goal,
+    av:me.av,prio:"student",go:"Overview",key:me.name+" "+me.yr+" "+me.goal,
+    run:()=>{if(R==="parent")S.pv="overview";else S.sv=(roleNav("student")[0]||["progress"])[0];}});
+   [9,10,11,12].forEach(gr=>L.push({grp:"Family switcher",lbl:"Grade "+gr,
+    sub:"Show the portal as a Grade "+gr+" family sees it",icon:"users",key:"grade "+gr+" switch family",
+    run:()=>{S.previewGrade=gr;S.pv="overview";S.sv=null;}}));
+  }
+ }
+
+ Object.keys(ROLE_LABEL).forEach(r=>{if(r!==R)L.push({grp:"Switch role",lbl:ROLE_LABEL[r],
+  sub:"See the product as "+(r==="counselor"?"the counselor":r==="parent"?"a parent":r==="student"?"a student":r==="teacher"?"a teacher":"a mentor")+" sees it",
+  icon:r==="counselor"?"caseload":r==="parent"?"heart":r==="student"?"grad":r==="teacher"?"users":"mentorMatch",
+  key:ROLE_LABEL[r]+" "+r+" role switch portal",run:()=>{S.role=r;S.open=null;}});});
+ return L;}
+
+/* Rank: an exact prefix beats a word start beats a loose substring. Enough for
+   87 rows typed at a few characters — no fuzzy-match library in a file with no
+   build step. */
+function palFilter(q){
+ const all=palCommands();
+ q=(q||"").trim().toLowerCase();
+ if(!q)return all.filter(c=>c.grp!=="Students").slice(0,14);
+ return all.map(c=>{
+   const hay=((c.key||c.lbl)+" "+(c.sub||"")).toLowerCase(),lbl=c.lbl.toLowerCase();
+   let sc=-1;
+   if(lbl.startsWith(q))sc=0;
+   else if(new RegExp("\\b"+q.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")).test(hay))sc=1;
+   else if(hay.includes(q))sc=2;
+   return sc<0?null:{c,sc};})
+  .filter(Boolean).sort((a,b)=>a.sc-b.sc).slice(0,40).map(x=>x.c);}
+
+function palRows(){
+ const hits=PALHITS;
+ if(!hits.length)return `<div class="palnone">
+  <div style="display:flex;justify-content:center;margin-bottom:12px;color:var(--ink-4)">${ic('search',26)}</div>
+  <div style="font-size:13.5px;color:var(--ink-2);font-weight:500">Nothing matches “${(S.pal.q||"").replace(/[<>&]/g,"")}”</div>
+  <div style="font-size:11.8px;color:var(--ink-4);margin-top:5px">Only what your role can already see is searchable here.</div></div>`;
+ let out="",grp="";
+ hits.forEach((c,i)=>{
+  if(c.grp!==grp){grp=c.grp;out+=`<div class="palgrp">${grp}</div>`;}
+  const on=i===S.pal.sel;
+  out+=`<div class="palrow ${on?'on':''}" data-pali="${i}">
+   ${c.av?av(c.av,c.prio,28,8):`<span class="palico">${ic(c.icon||'chevR',15)}</span>`}
+   <div style="min-width:0"><div class="pallbl">${c.lbl}</div>${c.sub?`<div class="palsub">${c.sub}</div>`:''}</div>
+   <span class="palgo">${c.go||"Go"} ${ic('arrowR',12)}</span></div>`;});
+ return out;}
+
+function paletteEl(){
+ if(!S.pal)return '';
+ PALHITS=palFilter(S.pal.q);
+ if(S.pal.sel>=PALHITS.length)S.pal.sel=Math.max(0,PALHITS.length-1);
+ const scope=S.role==="counselor"?"87 students, every tool"
+  :S.role==="teacher"?"your class and your pages"
+  :S.role==="mentor"?"your pages":"your pages and your own record";
+ return `<div class="palbg" data-palbg="1"><div class="pal" role="dialog" aria-label="Command palette">
+  <div class="palhead"><span style="color:var(--ink-4);display:flex">${ic('search',17)}</span>
+   <input id="palin" placeholder="Search students, tools and actions…" autocomplete="off" spellcheck="false" value="${(S.pal.q||"").replace(/"/g,"&quot;")}">
+   <kbd class="palkbd" data-palclose="1" style="cursor:pointer">esc</kbd></div>
+  <div class="palres" id="palres">${palRows()}</div>
+  <div class="palfoot">
+   <span><kbd class="palkbd">↑</kbd> <kbd class="palkbd">↓</kbd> navigate</span>
+   <span><kbd class="palkbd">↵</kbd> open</span>
+   <span style="margin-left:auto">Searching ${scope}</span></div>
+ </div></div>`;}
+
+/* Repaint the results only — never the app. Keeps the caret where it is. */
+function palPaint(){
+ if(!S.pal)return;
+ PALHITS=palFilter(S.pal.q);
+ if(S.pal.sel>=PALHITS.length)S.pal.sel=Math.max(0,PALHITS.length-1);
+ const box=document.getElementById("palres");
+ if(!box)return;
+ box.innerHTML=palRows();
+ palBindRows();
+ /* scrollIntoView on the very first row scrolls its group header out of sight,
+    so the list opens looking like it starts mid-section */
+ if(S.pal.sel===0){box.scrollTop=0;return;}
+ const on=box.querySelector(".palrow.on");
+ if(on&&on.scrollIntoView)on.scrollIntoView({block:"nearest"});}
+
+function palBindRows(){
+ document.querySelectorAll("[data-pali]").forEach(e=>{
+  e.onmouseenter=()=>{S.pal.sel=+e.dataset.pali;
+   document.querySelectorAll(".palrow").forEach(r=>r.classList.toggle("on",r===e));};
+  e.onclick=()=>palRun(+e.dataset.pali);});}
+
+function palRun(i){
+ const c=PALHITS[i];if(!c)return;
+ S.pal=null;c.run();draw();}
+
+function palOpen(){
+ S.pal={q:"",sel:0};S.navOpen=false;draw();
+ const i=document.getElementById("palin");if(i)i.focus();}
+
+function palClose(){if(!S.pal)return;S.pal=null;draw();}
+
+/* An "arrival" is anything that REPLACES what you are looking at: a different
+   role, view, student file or grade — and also a panel whose whole contents are
+   new, like the letter finishing its draft or the co-pilot answering. Filtering,
+   sorting, expanding, toggling and typing are not arrivals: you are already
+   there, and re-animating the page around you is noise, not feedback. */
+let LASTPLACE=null;
+function place(){return [S.role,S.cv,S.sv,S.pv,S.tv,S.mv,S.open,S.fileId,S.previewGrade,
+ S.tab,S.fileTab,S.letter,S.cpQ,S.cpLoad].join("|");}
+
 function draw(){
  let body="",sb="";
+ const here=place(),arrived=here!==LASTPLACE;LASTPLACE=here;
+ R.className=arrived?"":"still";
  PARENT_ME=FAMILY_STUDENT_ID[S.previewGrade||12]||"s3";
  PMSGS=PMSGS_BY_GRADE[S.previewGrade||12]||PMSGS_BY_GRADE[12];
  PARENT_MEETINGS=PARENT_MEETINGS_BY_GRADE[S.previewGrade||12]||PARENT_MEETINGS_BY_GRADE[12];
@@ -3410,40 +3830,28 @@ function draw(){
         <span style="width:5px;height:5px;border-radius:99px;background:var(--ok);display:inline-block"></span>Engine swept 07:04</span></div>
      </div>
      <div style="display:flex;align-items:center;gap:9px;flex-shrink:0">
-      <div style="display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line-2);border-radius:9px;padding:0 11px;height:36px;width:236px;box-shadow:var(--sh-xs)">
+      <button class="palfind" data-pal="1" aria-label="Search students, tools and actions">
        <span style="color:var(--ink-4);display:flex">${ic('search',15)}</span>
-       <input placeholder="Search students…" style="border:none;background:none;font-size:13px;width:100%;height:100%">
-       <kbd style="font-family:inherit;font-size:10px;color:var(--ink-4);background:var(--surface-3);border:1px solid var(--line-2);border-radius:4px;padding:1px 5px;flex-shrink:0">⌘K</kbd></div>
+       <span class="palfindtxt" style="flex:1">Search students…</span>
+       <kbd class="palkbd">${PAL_KEY}K</kbd></button>
       <button class="btn btn-g btn-sm" style="height:36px;padding:0 11px" data-toast="Notifications are up to date">${ic('inbox',15)}</button>
      </div>
     </div>
     <div style="padding:26px 28px 72px;max-width:1180px">${body2}</div></main></div>`;
  } else if(S.role==="teacher"){
-  const nav=[["class","My classes","users"],["tlog","What I've logged","list"]];
-  const body3=S.tv==="tlog"?vTClass():vTClass();
-  sb=shell("mentor",nav,S.tv,"data-tnav","JD",TEACHER.name,TEACHER.subject,"Teacher portal",TEACHER.name+" · "+TEACHER.subject,body3);
+  const nav=roleNav("teacher");
+  const body3=S.tv==="tlog"?vTLog():vTClass();
+  sb=shell("teacher",nav,S.tv,"data-tnav","JD",TEACHER.name,TEACHER.subject,"Teacher portal",TEACHER.name+" · "+TEACHER.subject,body3);
  } else if(S.role==="parent"){
-  const pg2=S.previewGrade||12,pt2=g(PARENT_ME).track||"IB";
-  let nav=[["overview","Overview","home"],["messages","Messages","msg"],["meetings","Meet the counselor","brief"]];
-  if(pg2===9)nav.splice(2,0,["guide","High School Guide","book"]);
-  if(pg2>=10)nav.splice(2,0,["pathway","IB or AP","route"]);
-  if(pg2>=11)nav.splice(2,0,["grades","Grades & transcripts","book"]);
-  if(pg2===12)nav.splice(nav.findIndex(t=>t[0]==="pathway"),0,["uni","University requirements","grad"]);
-  if(pg2>=11&&pt2==="AP")nav.splice(nav.findIndex(t=>t[0]==="meetings"),0,["apexams","AP Exams","clock"]);
-  const order2=["overview","messages","guide","grades","uni","pathway","apexams","meetings"];
-  nav.sort((a,b)=>order2.indexOf(a[0])-order2.indexOf(b[0]));
+  const nav=roleNav("parent");
   sb=shell("parent",nav,S.pv,"data-pv",PARENTS[PARENT_ME].av,PARENTS[PARENT_ME].name,"Parent of "+g(PARENT_ME).name.split(" ")[0],"Family portal",g(PARENT_ME).name+" · "+g(PARENT_ME).yr+" · "+SCHOOL.name,vParent());
  } else if(S.role==="student"){
-  const pg=S.previewGrade||12,pt=g(PARENT_ME).track||"IB";
-  let nav=pg===9?[["guide","High School Guide","book"]]:[["explore","Choosing IB or AP","route"],["mentors","Find a Mentor","users",2]];
-  if(pg>=11)nav.unshift(["progress","My progress","trend"]);
-  if(pg===12){nav.splice(1,0,["pathway","My Pathway","route"],["targets","University Targets","target"]);nav.push(["network","My Network","brief"]);}
-  if(pg>=11&&pt==="AP")nav.splice(nav.findIndex(x=>x[0]==="mentors"),0,["apexams","AP Exams","clock"]);
+  const nav=roleNav("student");
   const validSv=nav.map(x=>x[0]);
   const sv=validSv.includes(S.sv)?S.sv:nav[0][0];
   let body;
-  if(sv==="guide")body=`<div class="fade">${vHSGuide()}</div>`;
-  else if(sv==="explore")body=`<div class="fade">${vPathExplorer("data-snav","targets","mentors")}</div>`;
+  if(sv==="guide")body=`<div class="fade">${vHSGuide("student")}</div>`;
+  else if(sv==="explore")body=`<div class="fade">${vPathExplorer("data-snav","targets","mentors","student")}</div>`;
   else if(sv==="progress")body=vStuProgress();
   else if(sv==="pathway")body=vStuPath();
   else if(sv==="targets")body=vStuTargets();
@@ -3454,7 +3862,7 @@ function draw(){
   const curStu=g(PARENT_ME);
   sb=shell("student",nav,sv,"data-snav",curStu.av,curStu.name,curStu.yr+" · "+curStu.goal,"My Career OS",curStu.name+" · "+curStu.yr+" · "+SCHOOL.name,body);
  } else {
-  const nav=[["requests","Session Requests","inbox",2],["mentees","My Mentees","users"]];
+  const nav=roleNav("mentor");
   body=S.mv==="requests"?vMentorReq():vMentorMentees();
   sb=shell("mentor",nav,S.mv,"data-mnav","HR","Hassan Al Rashid","Goldman Sachs · LSE '21","Mentor Hub","Hassan Al Rashid · Analyst, IBD · Goldman Sachs",body);
  }
@@ -3464,8 +3872,8 @@ function draw(){
   counselor:[["cohort-schedule","Today","clock"],["cohort-all","Cohort","users"],["si-cases","Priority","alert"],["__menu","More","list"]],
   student:(()=>{const pg=S.previewGrade||12,pt=g(PARENT_ME).track||"IB";
    if(pg===9)return[["guide","Guide","book"],["__menu","More","list"]];
-   if(pg===10)return[["explore","Explore","route"],["mentors","Mentors","users"],["__menu","More","list"]];
-   if(pg===11)return pt==="AP"?[["progress","Progress","trend"],["explore","Explore","route"],["apexams","AP","clock"],["__menu","More","list"]]:[["progress","Progress","trend"],["explore","Explore","route"],["mentors","Mentors","users"],["__menu","More","list"]];
+   if(pg===10)return[["explore","Explore","route"],["mentors","Mentors","mentorMatch"],["__menu","More","list"]];
+   if(pg===11)return pt==="AP"?[["progress","Progress","trend"],["explore","Explore","route"],["apexams","AP","clock"],["__menu","More","list"]]:[["progress","Progress","trend"],["explore","Explore","route"],["mentors","Mentors","mentorMatch"],["__menu","More","list"]];
    return[["progress","Progress","trend"],["pathway","Pathway","route"],["targets","Targets","target"],["__menu","More","list"]];})(),
   mentor:[["requests","Requests","inbox"],["mentees","Mentees","users"],["__menu","More","list"]],
   teacher:[["class","My class","users"],["__menu","More","list"]],
@@ -3476,7 +3884,7 @@ function draw(){
  const tabbar=`<nav class="tabbar">${TABS.map(t=>{
    const on=t[0]!=="__menu"&&curKey===t[0];
    return `<button class="tabitem ${on?'on':''}" ${t[0]==="__menu"?'data-navopen="1"':navAttr+'="'+t[0]+'"'}>${ic(t[2],20)}<span>${t[1]}</span>${t[0]==="si-cases"&&prioCounts().urgent?`<i class="tabdot"></i>`:''}</button>`;}).join('')}</nav>`;
- R.innerHTML=`<div class="navscrim" data-navclose="1"></div><div style="height:100vh;display:flex;flex-direction:column">${roleBar()}${sb}</div>${tabbar}${modalEl()}${tflagModal()}${meetModal()}${mergeModal()}${assignModal()}${S.toast?`<div class="toastbar pop">${ic('checkC',17)}${S.toast}</div>`:''}`;
+ R.innerHTML=`<div class="navscrim" data-navclose="1"></div><div style="height:100vh;display:flex;flex-direction:column">${roleBar()}${sb}</div>${tabbar}${modalEl()}${tflagModal()}${meetModal()}${mergeModal()}${assignModal()}${paletteEl()}${S.toast?`<div class="toastbar pop">${ic('checkC',17)}${S.toast}</div>`:''}`;
  bind();
 }
 
@@ -3575,6 +3983,21 @@ function bind(){
    logAudit("R.HADDAD","MEETING_RECORDED",c.name,S.mKind+" · outcome "+S.mOut);
    S.modal=null;toast("Meeting recorded for "+c.name.split(" ")[0]);draw();});
 
+ /* ── command palette ── */
+ q("[data-pal]",e=>e.onclick=()=>palOpen());
+ q("[data-palclose]",e=>e.onclick=()=>palClose());
+ const pbg=document.querySelector("[data-palbg]");
+ if(pbg)pbg.onclick=(ev)=>{if(ev.target===pbg)palClose();};
+ const pin=document.getElementById("palin");
+ if(pin){
+  pin.oninput=()=>{S.pal.q=pin.value;S.pal.sel=0;palPaint();};
+  pin.onkeydown=(ev)=>{
+   if(ev.key==="ArrowDown"){ev.preventDefault();S.pal.sel=Math.min(S.pal.sel+1,PALHITS.length-1);palPaint();}
+   else if(ev.key==="ArrowUp"){ev.preventDefault();S.pal.sel=Math.max(S.pal.sel-1,0);palPaint();}
+   else if(ev.key==="Enter"){ev.preventDefault();palRun(S.pal.sel);}
+   else if(ev.key==="Escape"){ev.preventDefault();palClose();}};
+  palBindRows();}
+
  q("[data-navopen]",e=>e.onclick=()=>{S.navOpen=true;draw();});
  q("[data-navclose]",e=>e.onclick=()=>{S.navOpen=false;draw();});
  q("[data-cfilter]",e=>e.onclick=()=>{S.cohortFilter=e.dataset.cfilter;draw();});
@@ -3651,6 +4074,16 @@ function bind(){
   S.modal=null;S.selSlot=null;toast("Session booked with "+m.n.split(' ')[0]+" · your counselor can see it");});
  const cp=document.getElementById("cpin");if(cp)cp.onkeydown=(ev)=>{if(ev.key==="Enter")document.querySelector("[data-cpask]").click();};
 }
+
+/* Attached once, not from bind() — bind() re-runs on every draw and would stack
+   a new listener each time. */
+document.addEventListener("keydown",ev=>{
+ if((ev.metaKey||ev.ctrlKey)&&(ev.key==="k"||ev.key==="K")){
+  ev.preventDefault();
+  if(S.pal)palClose();else palOpen();
+  return;}
+ if(ev.key==="Escape"&&S.pal){ev.preventDefault();palClose();}});
+
 draw();
 
 </script>
