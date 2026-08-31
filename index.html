@@ -2625,53 +2625,93 @@ const ARCHETYPES={
  finance:{title:"Investment Banking & Finance",tag:"Fast-paced · analytical · high reward",icon:"trend",color:"var(--brand)",
   blurb:"You lean toward numbers, strategy, and environments where the stakes are real. This path rewards precision under pressure.",
   score:{analyzing:2,money:3,fast:2,finance:3},
+  courses:["IB Economics HL","IB Mathematics HL","AP Calculus AB/BC","AP Statistics","AP Microeconomics"],
+  clubs:["Investment Club","Model UN","Debate Team","Student Government","Case Competition Club"],
+  companies:["Goldman Sachs","JP Morgan","Morgan Stanley","Barclays","Citi","BNY Mellon","Lazard","Evercore","Moelis","Rothschild & Co"],
+  companies_vc:["Sequoia Capital","Andreessen Horowitz","General Catalyst","Index Ventures","Accel Partners","Benchmark"],
   steps:[
-   {t:"Build the academic base",d:"Maths and Economics at the highest level you can take — this is non-negotiable for competitive finance programmes.",done:false},
-   {t:"Join or start an Economics/Finance society",d:"Shows initiative before anyone asks you to.",done:false},
-   {t:"Target Economics or Finance degrees",d:"LSE, UCL, Warwick and similar — apply broadly with a real safety.",done:false},
-   {t:"Land a spring week (Year 1 of university)",d:"The single highest-leverage move in the entire path — most banking offers trace back to one.",done:false},
-   {t:"Convert into a summer internship",d:"Spring weeks that go well typically convert directly.",done:false},
-   {t:"Full-time analyst offer",d:"The internship is a 10-week interview. Treat it that way.",done:false}]},
+   {t:"Nail Maths HL and Economics HL (or AP equivalents)",d:"Non-negotiable for competitive finance programs. Universities check these explicitly. Start with past papers now if available.",done:false},
+   {t:"Join Investment Club or start one",d:"Analyze real stocks, build models, pitch to the club. Shows genuine interest before applications. Examples: tracking your portfolio against indices like FTSE100, S&P 500.",done:false},
+   {t:"Get real finance internship (Spring/Summer Year 10–11)",d:"Corporate finance, accounting firms (Big 4: Deloitte, EY, KPMG, PwC), or investment research. Anything that touches real deals.",done:false},
+   {t:"Target LSE, UCL, Warwick, or NYU Stern for Economics/Finance",d:"Consistently produce the most analyst hires at Goldman, JP Morgan, Morgan Stanley. Apply to 3-5 targets with realistic safeties.",done:false},
+   {t:"Land a Spring Insight (Year 1 of university)",d:"Goldman Sachs Spring Insight, JP Morgan Spring Into Banking, Morgan Stanley Insight Programme. This filters 80% of future analysts.",done:false},
+   {t:"Convert to Summer Analyst internship (Year 2)",d:"10-week program at the bank — essentially a 10-week interview. Expect M&A, Debt Capital Markets, or Equity Research. Most summer offers become full-time.",done:false},
+   {t:"Full-time Analyst offer (On graduation)",d:"Typically 2-3 years as analyst before choice: stay, move to private equity (Carlyle, Apollo, KKR), or venture capital.",done:false}]},
  tech:{title:"Technology & Software Engineering",tag:"Builder · independent · high ceiling",icon:"route",color:"var(--info)",
   blurb:"You like making things work — and you'd rather build the thing than talk about building it.",
   score:{building:3,freedom:2,solo:2,tech:3,mastery:1},
+  courses:["IB Computer Science","AP Computer Science A","AP Computer Science Principles","IB Mathematics AA/AI","Physics HL"],
+  clubs:["Coding Club","Robotics Club","Hackathon Club","AI/ML Club","Game Development Club"],
+  companies:["Google","Microsoft","Apple","Amazon","Meta","Tesla","Stripe","Figma","Airbnb","Netflix"],
+  startups:["Y Combinator (startup accelerator)","Techstars","Thiel Fellowship startups","500 Global","AngelList"],
   steps:[
-   {t:"Learn to actually build something",d:"One real project beats ten tutorials — a website, an app, anything that works.",done:false},
-   {t:"Take Computer Science and Maths",d:"The two subjects nearly every strong CS programme wants to see.",done:false},
-   {t:"Apply to CS-strong universities",d:"Consider both traditional CS degrees and more flexible liberal-arts-plus-CS routes.",done:false},
-   {t:"Get one real internship",d:"Even a small startup internship teaches more than another year of tutorials.",done:false},
-   {t:"Contribute to something public",d:"Open source, a shipped side project — something a recruiter can actually look at.",done:false},
-   {t:"First engineering role or start something",d:"Both are valid outcomes of this exact path.",done:false}]},
+   {t:"Build a real project (before university)",d:"Not a tutorial copy. A website, app, or tool that solves something real. Get it on GitHub. Host it live. Examples: Personal finance tracker, task management app, local business website.",done:false},
+   {t:"Take Computer Science and Maths at HL/AP level",d:"Universities want to see these two together. CS HL + Maths AA HL is the gold standard for top CS programs.",done:false},
+   {t:"Contribute to open source or build a public portfolio",d:"GitHub with 3-5 real projects, not just tutorials. Shows actual ability to a recruiter. Consider Kaggle competitions.",done:false},
+   {t:"Target CS-strong universities with internship pipelines",d:"Stanford, MIT, Berkeley, CMU (US); Cambridge, Oxford, Imperial, UCL (UK) — internship pipelines to Google, Microsoft, Amazon.",done:false},
+   {t:"Land a software engineering internship (Year 1-2 of university)",d:"Google Summer of Code, Microsoft Explore, Amazon internship, Meta Rotational. 12 weeks of real code production.",done:false},
+   {t:"Ship something public or contribute meaningfully to open source",d:"A side project that's live and used by others. Or consistent open source contributions. Shows you can finish things.",done:false},
+   {t:"Offer from top tech company or startup (On graduation)",d:"Software Engineer (SWE) role at Google, Microsoft, Amazon, or early-stage startup. Salary + equity package typical for strong backgrounds.",done:false}]},
  medicine:{title:"Medicine",tag:"People-focused · high mastery · long runway",icon:"heart",color:"var(--crit)",
   blurb:"You're drawn to people and to mastery at the same time — medicine is one of the few paths that genuinely asks for both.",
   score:{people:2,mastery:2,steady:1,science:3},
+  courses:["IB Biology HL","IB Chemistry HL","IB Mathematics AA","AP Biology","AP Chemistry","Organic Chemistry"],
+  clubs:["Medical Society","Volunteer at Hospital/Clinic","Red Cross","Debate/Public Speaking","Peer Tutoring"],
+  universities:["University of Edinburgh","University College London Medical School","Oxford","Cambridge","Harvard Medical","Johns Hopkins","Stanford Medical","NYU Medical"],
   steps:[
-   {t:"Biology, Chemistry, and Maths",d:"The core science base every medical school requires, no exceptions.",done:false},
-   {t:"Get real clinical exposure",d:"Volunteering or shadowing — medical schools want to see you've actually seen the job.",done:false},
-   {t:"Sit the admissions test early",d:"UCAT or equivalent — start preparing well before the year you apply.",done:false},
-   {t:"Apply to medical school",d:"A demanding, structured process — your counselor will walk you through it in detail.",done:false},
-   {t:"Foundation training",d:"The two-year clinical training every doctor starts with.",done:false},
-   {t:"Choose a specialty",d:"Years away, but the direction becomes real from here.",done:false}]},
+   {t:"Biology HL, Chemistry HL, and Maths at highest level",d:"Non-negotiable. Every medical school requires these three to highest available level. No exceptions.",done:false},
+   {t:"Get clinical exposure now (volunteer/shadow)",d:"Hospital, GP clinic, ambulance service, care home. Medical schools want to see you know what you're getting into. Aim for 40+ hours minimum.",done:false},
+   {t:"Do well on admissions tests (UCAT or MCAT)",d:"UCAT (UK): 8 weeks prep, practice tests daily. MCAT (US): 3-4 months prep. Median admitted score at top schools is typically 750+ (UCAT) / 520+ (MCAT).",done:false},
+   {t:"Target top medical schools with strong research programs",d:"University of Edinburgh, University College London, Oxford, Cambridge (UK); Harvard Medical, Johns Hopkins, Stanford Medical (US).",done:false},
+   {t:"Build a portfolio: volunteering + leadership + academic excellence",d:"Medical schools see: grades (> A- range), UCAT/MCAT, 100+ hours clinical/care volunteering, leadership (club president, debate), any publications/research.",done:false},
+   {t:"Complete medical school (4-6 years)",d:"Year 1-2: Pre-clinical (lectures, labs). Year 3+: Clinical placements (wards, clinics, ED). Year 5-6: Focus on specialty.",done:false},
+   {t:"Foundation Training (2 years post-graduation)",d:"Rotations through different specialties. Decide: Surgery, Psychiatry, General Practice, Pediatrics, etc.",done:false},
+   {t:"Specialty Training (3-8 years depending on field)",d:"e.g., Surgery (7 yrs), Psychiatry (5 yrs), General Practice (3 yrs). Leads to Consultant or Senior GP role.",done:false}]},
  venture:{title:"Entrepreneurship & Venture Capital",tag:"High risk · high freedom · builder-investor",icon:"zap",color:"var(--violet)",
   blurb:"You want to build something yours, or back the people who do. This path rewards judgment as much as raw skill.",
   score:{building:1,money:1,freedom:3,fast:1,finance:1},
+  courses:["IB Economics","IB Business Management","AP Microeconomics","Accounting basics","Any CS if tech-interested"],
+  clubs:["Entrepreneurship Club","Business Club","Pitch Competition","Case Competition","Startup Club"],
+  vc_firms:["Sequoia Capital","Andreessen Horowitz","General Catalyst","Index Ventures","Accel Partners","Benchmark","Khosla Ventures"],
+  accelerators:["Y Combinator","Techstars","500 Global","Plug and Play","AngelList"],
   steps:[
-   {t:"Build something small and real",d:"A tiny business, a project with actual users — proof you can execute, not just plan.",done:false},
-   {t:"Study Business, Economics or a technical subject",d:"VC and founders both benefit from understanding how businesses actually work.",done:false},
-   {t:"Get close to the industry early",d:"An internship at a startup or a VC fund teaches more than any course.",done:false},
-   {t:"Build a genuine network",d:"This industry runs on relationships more than almost any other.",done:false},
-   {t:"First real role — operator or investor",d:"Both are legitimate entry points into the same world.",done:false},
-   {t:"Found, or back founders",d:"The long-term fork. Many people do both across a career.",done:false}]},
+   {t:"Start or run something small with real users",d:"Not a side hustle that fails. Run a micro-business, online service, or product with actual paying/using customers. Revenue or user traction required.",done:false},
+   {t:"Study Business/Economics + (CS if tech-focused)",d:"Business majors at top schools (Wharton, Stanford GSB undergrad, LSE) have strongest VC/founder networks.",done:false},
+   {t:"Intern at an early-stage startup (not a big tech company)",d:"Series A or B startup. Wear many hats: you'll learn how actual companies scale. Examples: Series A SaaS company, fintech, deeptech startup.",done:false},
+   {t:"Join or start a founder/investor network while at university",d:"YC at your university, AngelList syndicates, local founder groups. Connections are currency in this world.",done:false},
+   {t:"Spend 2-3 years operating at a growth-stage startup",d:"Before joining a VC fund. Roles: Growth, Product, Strategy. This gives you credibility with partners. Example: Series B company growing 10x/year.",done:false},
+   {t:"Move to a VC fund as Associate or Analyst",d:"Sequoia, Accel, General Catalyst recruit heavily from ex-founders. Analyst → Associate → Partner track.",done:false},
+   {t:"Or: Raise funding for your own company",d:"Pitch to angels, then seed funds (Khosla, General Catalyst), then Series A VCs. Or bootstrap to profitability.",done:false}]},
  design:{title:"Design & Creative Direction",tag:"Creative · visual · detail-obsessed",icon:"spark",color:"#E8B93C",
   blurb:"You think in images and experiences, not just words and numbers. This path turns that into a career.",
   score:{creating:3,design:3,solo:1,freedom:1},
+  courses:["Art/Design (IB or AP level)","Digital Art/Video","Photography","Graphic Design software (Adobe Suite)","Any coding if interested in UX/UI"],
+  clubs:["Design Club/Society","Photography Club","Film/Video Club","UI/UX Club","Art Exhibition Group"],
+  design_companies:["Airbnb (Design)","Apple (Design)","Google Design","Meta Design","Stripe","Figma","Adobe","Canva","Dropbox","Mailchimp"],
+  design_studios:["IDEO","Pentagram","MetaDesign","Wolff Olins","The Futur"],
   steps:[
-   {t:"Build a real portfolio",d:"Design schools and studios care about the work itself, far more than grades.",done:false},
-   {t:"Take Art, Design Technology or Film",d:"Whatever the school offers that lets you make things and get feedback.",done:false},
-   {t:"Apply with a portfolio-led application",d:"A different process to most degrees — your counselor can guide the specifics.",done:false},
-   {t:"Study design, architecture or a related field",d:"Course structure varies a lot — worth researching carefully.",done:false},
-   {t:"Internship at a studio or in-house team",d:"Real client work teaches things a classroom can't.",done:false},
-   {t:"First design role",d:"In-house, agency, or freelance — all legitimate starting points.",done:false}]}
+   {t:"Build a real portfolio (before university)",d:"3-5 actual design projects. Not school projects. Real client work or self-directed projects. Website design, brand identity, mobile app UI, poster series. Post on Dribbble, Behance.",done:false},
+   {t:"Take Design Technology, Art, or Film at highest level available",d:"IB Art, AP Art & Design, or equivalent. You need work to show. Quality > grades in design.",done:false},
+   {t:"Study graphic design, UX/UI, or fine art at a strong design school",d:"Parsons School of Design, Rhode Island School of Design (RISD), California Institute of the Arts (CalArts), Royal College of Art, London College of Fashion.",done:false},
+   {t:"Do a design internship at a real studio or tech company",d:"IDEO (design thinking), Airbnb (design systems), Stripe (product design), Figma (design software company). Real client work or product impact.",done:false},
+   {t:"Contribute to design systems or products",d:"A published iOS app you designed, an open-source design system, or case studies showing 50K+ users of your design work.",done:false},
+   {t:"Junior Designer/UX Designer role at a top company",d:"Airbnb, Apple, Google, Meta, or a respected design studio. Entry-level: $70K-90K + equity/benefits.",done:false},
+   {t:"Senior Designer → Design Lead → Design Director",d:"Career path: 2-3 years junior → senior → lead → director/manager. Some designers go independent/agency.",done:false}]}
+};
+
+/* Real data: Courses, Clubs, Companies */
+const COURSE_DATA={
+ ib_econ:"IB Economics HL - Markets, macroeconomics, international economics. Assessment: Paper 1-3 exams + internal assessment.",
+ ib_math_aa:"IB Mathematics AA HL - Pure math, calculus, linear algebra. Required for engineering/CS. Assessment: Paper 1-3 exams.",
+ ib_cs:"IB Computer Science HL - Programming, data structures, algorithms, theory. Uses pseudocode. Assessment: Paper 1-3 + practical project.",
+ ib_bio:"IB Biology HL - Cellular biology, ecology, genetics, evolution. Lab work required. Assessment: Paper 1-3 + practical.",
+ ib_chem:"IB Chemistry HL - Organic, inorganic, physical chemistry. Lab work heavy. Assessment: Paper 1-3 + practical.",
+ ap_calc:"AP Calculus (AB/BC) - Limits, derivatives, integrals. AP Score 4-5 = college credit.",
+ ap_cs:"AP Computer Science A - Java-based, data structures, algorithms. Harder than it sounds.",
+ ap_stats:"AP Statistics - Probability, hypothesis testing, confidence intervals. Less technical than Calc.",
+ ap_econ:"AP Microeconomics - Supply/demand, markets, consumer choice. Single exam.",
+ ap_bio:"AP Biology - Cellular biology, genetics, evolution, ecology. Lots of memorization.",
+ ap_chem:"AP Chemistry - Stoichiometry, equilibrium, thermodynamics. Quantitative."
 };
 
 /* AI discovery — scripted, but genuinely responsive to what the quiz already revealed. */
@@ -3093,44 +3133,40 @@ function vDiscoveryChat(){
    ${!chatDone?`<div style="height:3px;background:var(--line-2);border-radius:99px;margin-top:16px;overflow:hidden"><div style="height:100%;width:${Math.min(90,Math.round((step/MIN_QUESTIONS)*70))}%;background:linear-gradient(90deg,#9B8AFB,#6938EF);border-radius:99px;transition:width .3s ease"></div></div>`:''}
   </div>
 
-  <div id="chatlog" style="display:flex;flex-direction:column;gap:18px;margin-bottom:22px;max-height:480px;overflow-y:auto;padding-right:6px">
+  <div id="chatlog" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;max-height:420px;overflow-y:auto;padding-right:4px">
    <div style="display:flex;flex-direction:column;align-items:flex-start">
-    <div style="max-width:92%;background:var(--surface-2);padding:16px 20px;border-radius:16px;border:1px solid var(--line);font-size:14px;line-height:1.65;color:var(--ink-2)">Let me understand what you're genuinely trying to work out. I'll ask whatever it actually takes to build something real — not just a form to fill in.</div>
+    <div style="max-width:90%;background:var(--surface-2);padding:11px 14px;border-radius:13px;border:1px solid var(--line);font-size:13.5px;line-height:1.5;color:var(--ink-2)">Let me understand what you're genuinely trying to work out. I'll ask whatever it actually takes.</div>
    </div>
    ${log.map(m=>`<div style="display:flex;flex-direction:column;align-items:${m.from==='you'?'flex-end':'flex-start'}">
-    <div style="max-width:92%;background:${m.from==='you'?'linear-gradient(135deg,#9B8AFB,#6938EF)':'var(--surface-2)'};color:${m.from==='you'?'#fff':'var(--ink)'};padding:16px 20px;border-radius:${m.from==='you'?'16px 16px 4px 16px':'16px 16px 16px 4px'};border:${m.from==='you'?'1px solid rgba(255,255,255,.15)':'1px solid var(--line)'};font-size:14px;line-height:1.65;white-space:pre-wrap">
-     <span style="opacity:${m.from==='you'?.95:1}">${m.text}</span>
+    <div style="max-width:90%;background:${m.from==='you'?'linear-gradient(135deg,#9B8AFB,#6938EF)':'var(--surface-2)'};color:${m.from==='you'?'#fff':'var(--ink)'};padding:11px 14px;border-radius:${m.from==='you'?'13px 13px 3px 13px':'13px 13px 13px 3px'};border:${m.from==='you'?'1px solid rgba(255,255,255,.1)':'1px solid var(--line)'};font-size:13.5px;line-height:1.5;white-space:pre-wrap">
+     <span style="opacity:${m.from==='you'?.98:1}">${m.text}</span>
     </div>
    </div>`).join('')}
   </div>
 
   ${!chatDone?(()=>{const qText=q.text(c,step>=6?scoreWithChat(answers,chatAnswers)[0]:null);
-   return `<div style="display:flex;flex-direction:column;align-items:flex-start;margin-bottom:16px">
-    <div style="max-width:92%;background:var(--surface-2);padding:18px 22px;border-radius:16px;border:1px solid var(--line);font-size:14px;line-height:1.70;color:var(--ink-2)">${qText}</div>
+   return `<div style="display:flex;flex-direction:column;align-items:flex-start;margin-bottom:11px">
+    <div style="max-width:90%;background:var(--surface-2);padding:12px 15px;border-radius:13px;border:1px solid var(--line);font-size:13.5px;line-height:1.55;color:var(--ink-2)">${qText}</div>
    </div>
-   <div style="display:flex;gap:12px;align-items:flex-end;background:var(--surface);padding:20px;border-radius:16px;border:1px solid var(--line-2)">
-    <textarea id="chatinput" placeholder="Share your thoughts here…" style="flex:1;min-height:80px;border:1.5px solid var(--line);border-radius:12px;padding:15px 16px;font-size:14px;line-height:1.65;resize:vertical;font-family:inherit;background:#fff"></textarea>
-    <button data-chat-send="${q.id}" class="btn" style="background:linear-gradient(135deg,#9B8AFB,#6938EF);color:#fff;height:48px;flex-shrink:0;border-radius:12px;font-weight:600;box-shadow:0 4px 12px rgba(105,56,239,.3)">${ic('send',16)}</button>
+   <div style="display:flex;gap:9px;align-items:flex-end">
+    <textarea id="chatinput" placeholder="Your answer…" style="flex:1;min-height:64px;border:1.5px solid var(--line);border-radius:11px;padding:12px 13px;font-size:13px;line-height:1.5;resize:vertical;font-family:inherit;background:#fff"></textarea>
+    <button data-chat-send="${q.id}" class="btn" style="background:linear-gradient(135deg,#9B8AFB,#6938EF);color:#fff;height:40px;width:40px;flex-shrink:0;border-radius:11px;font-weight:600;padding:0;display:grid;place-items:center;box-shadow:0 3px 10px rgba(105,56,239,.25)">${ic('send',16)}</button>
    </div>
-   <div style="font-size:12px;color:var(--ink-4);margin-top:10px;text-align:center">A specific, honest answer moves things along better than a vague one</div>`;})()
+   <div style="font-size:11px;color:var(--ink-4);margin-top:7px;text-align:center">Be specific — vague answers slow things down</div>`;})()
   :inNarrow?(()=>{
-   return `<div style="display:flex;flex-direction:column;align-items:flex-start;margin-bottom:16px">
-    <div style="max-width:92%;background:linear-gradient(135deg,rgba(105,56,239,.08),rgba(153,70,255,.05));padding:18px 22px;border-radius:16px;border:1px solid rgba(105,56,239,.2);font-size:14px;line-height:1.70;color:var(--ink-2)">
-     <div style="display:flex;gap:8px;align-items:flex-start">
-      <span style="color:#6938EF;font-weight:700;flex-shrink:0">→</span>
-      <div><b style="display:block;color:var(--ink);margin-bottom:4px;font-size:14.5px">Everything points toward ${ARCHETYPES[currentSignal].title.toLowerCase()}</b>${narrowQ.ask}</div>
-     </div>
-    </div>
+   return `<div style="display:flex;flex-direction:column;align-items:flex-start;margin-bottom:11px">
+    <div style="max-width:90%;background:linear-gradient(135deg,rgba(105,56,239,.08),rgba(153,70,255,.05));padding:13px 15px;border-radius:13px;border:1px solid rgba(105,56,239,.2);font-size:13.5px;line-height:1.55;color:var(--ink-2)">
+     <b style="display:block;color:var(--ink);margin-bottom:3px;font-size:13.5px">→ ${ARCHETYPES[currentSignal].title.toLowerCase()}</b>${narrowQ.ask}</div>
    </div>
-   <div style="display:flex;gap:12px;align-items:flex-end;background:var(--surface);padding:20px;border-radius:16px;border:1px solid var(--line-2)">
-    <textarea id="chatinput" placeholder="Share your thoughts here…" style="flex:1;min-height:80px;border:1.5px solid var(--line);border-radius:12px;padding:15px 16px;font-size:14px;line-height:1.65;resize:vertical;font-family:inherit;background:#fff"></textarea>
-    <button data-narrow-send="${currentSignal}" class="btn" style="background:linear-gradient(135deg,#9B8AFB,#6938EF);color:#fff;height:48px;flex-shrink:0;border-radius:12px;font-weight:600;box-shadow:0 4px 12px rgba(105,56,239,.3)">${ic('send',16)}</button>
+   <div style="display:flex;gap:9px;align-items:flex-end">
+    <textarea id="chatinput" placeholder="Your answer…" style="flex:1;min-height:64px;border:1.5px solid var(--line);border-radius:11px;padding:12px 13px;font-size:13px;line-height:1.5;resize:vertical;font-family:inherit;background:#fff"></textarea>
+    <button data-narrow-send="${currentSignal}" class="btn" style="background:linear-gradient(135deg,#9B8AFB,#6938EF);color:#fff;height:40px;width:40px;flex-shrink:0;border-radius:11px;font-weight:600;padding:0;display:grid;place-items:center;box-shadow:0 3px 10px rgba(105,56,239,.25)">${ic('send',16)}</button>
    </div>`;})()
-  :`<div style="text-align:center;padding:28px 24px;background:linear-gradient(135deg,rgba(5,186,150,.08),rgba(5,186,150,.04));border-radius:16px;border:1px solid rgba(5,186,150,.15)">
-    <div style="width:56px;height:56px;border-radius:99px;background:var(--ok-bg);color:var(--ok);display:grid;place-items:center;margin:0 auto 16px;box-shadow:0 4px 12px rgba(5,186,150,.2)">${ic('checkC',26)}</div>
-    <div class="serif" style="font-size:18px;font-weight:700;margin-bottom:8px;color:var(--ink)">Excellent — I have a clear picture now</div>
-    <div style="font-size:13.5px;color:var(--ink-3);margin-bottom:22px;line-height:1.65">Based on everything you've shared, here are the pathways that genuinely fit — the main route and real alternatives built on your actual profile.</div>
-    <button class="btn" style="background:linear-gradient(135deg,#9B8AFB,#6938EF);color:#fff;padding:12px 26px;border-radius:12px;font-weight:600;box-shadow:0 4px 12px rgba(105,56,239,.3);font-size:14px" data-see-pathways="1">${ic('route',16)} See your possible paths</button>
+  :`<div style="text-align:center;padding:20px 18px;background:linear-gradient(135deg,rgba(5,186,150,.08),rgba(5,186,150,.04));border-radius:13px;border:1px solid rgba(5,186,150,.15)">
+    <div style="width:44px;height:44px;border-radius:99px;background:var(--ok-bg);color:var(--ok);display:grid;place-items:center;margin:0 auto 12px;box-shadow:0 3px 10px rgba(5,186,150,.2)">${ic('checkC',22)}</div>
+    <div style="font-size:13.5px;font-weight:700;margin-bottom:6px;color:var(--ink)">Great — I have a clear picture now</div>
+    <div style="font-size:12px;color:var(--ink-3);margin-bottom:16px;line-height:1.55">Based on everything you've shared, here are the paths that fit — main route plus real alternatives.</div>
+    <button class="btn" style="background:linear-gradient(135deg,#9B8AFB,#6938EF);color:#fff;padding:10px 22px;border-radius:11px;font-weight:600;box-shadow:0 3px 10px rgba(105,56,239,.25);font-size:13px" data-see-pathways="1">${ic('route',14)} See your paths</button>
    </div>`}
  </div>`;
 }
@@ -3253,6 +3289,31 @@ function vGamifiedRoadmap(){
         ${stepDone?`<span class="chip" style="background:${a.color}18;color:${a.color};flex-shrink:0">+150 XP</span>`:''}
        </div></div>
      </div>`;}).join('')}
+  </div>
+
+  <div style="margin-top:28px;padding:20px;background:linear-gradient(135deg,${a.color}08,${a.color}04);border:1px solid ${a.color}20;border-radius:14px">
+   <div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:${a.color};margin-bottom:14px">${ic('book',13)} Essential courses</div>
+   <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
+    ${(a.courses||[]).map(course=>`<div style="background:#fff;border:1px solid ${a.color}30;border-radius:10px;padding:10px 12px;font-size:11.5px;font-weight:600;color:var(--ink);line-height:1.35">${course}</div>`).join('')}
+   </div>
+  </div>
+
+  <div style="margin-top:18px;padding:20px;background:linear-gradient(135deg,${a.color}08,${a.color}04);border:1px solid ${a.color}20;border-radius:14px">
+   <div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:${a.color};margin-bottom:14px">${ic('users',13)} Clubs & activities</div>
+   <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
+    ${(a.clubs||[]).map(club=>`<div style="background:#fff;border:1px solid ${a.color}30;border-radius:10px;padding:10px 12px;font-size:11.5px;font-weight:600;color:var(--ink);line-height:1.35">${club}</div>`).join('')}
+   </div>
+  </div>
+
+  <div style="margin-top:18px;padding:20px;background:linear-gradient(135deg,${a.color}08,${a.color}04);border:1px solid ${a.color}20;border-radius:14px">
+   <div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:${a.color};margin-bottom:14px">${ic('trend',13)} Top companies & organizations</div>
+   <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
+    ${(a.companies||[]).slice(0,6).map(company=>`<div style="background:#fff;border:1px solid ${a.color}30;border-radius:10px;padding:10px 12px;font-size:11.5px;font-weight:600;color:var(--ink);line-height:1.35">${company}</div>`).join('')}
+   </div>
+  </div>
+
+  <div class="card" style="padding:16px;margin-top:18px;background:linear-gradient(135deg,${a.color}06,${a.color}02);border-color:${a.color}15">
+   <div style="font-size:11.5px;color:var(--ink-2);line-height:1.6"><b style="color:var(--ink)">Reality check:</b> The courses above are not optional — they're what universities and employers specifically look for on applications. Clubs show genuine interest (not just padding). Companies are realistic targets for internships/jobs.</div>
   </div>
   ${alts.length?`<div style="margin-top:24px">
    <button data-toggle-alts="1" style="width:100%;text-align:left;font-family:inherit;cursor:pointer;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:9px">
