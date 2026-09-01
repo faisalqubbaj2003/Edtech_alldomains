@@ -2919,32 +2919,66 @@ function vStuACSSelector(){
 /* View: Teacher's class approval dashboard */
 function vTClassApprovals(){
  const pending=CLASS_APPROVALS_PENDING.filter(a=>a.status==="pending");
- return `<div class="arrive" style="max-width:900px">
+ return `<div class="arrive" style="max-width:1100px">
   <div style="padding:24px 0">
    <div class="serif" style="font-size:24px;font-weight:600;margin-bottom:8px">Course Selections to Review</div>
-   <div style="font-size:13.5px;color:var(--ink-2)">Students in your classes have submitted course selections. Review and approve each one.</div>
+   <div style="font-size:13.5px;color:var(--ink-2)">Review readiness, timetable fit, and the courses you teach before recording your decision.</div>
   </div>
 
-  ${pending.length?pending.map((a,i)=>`<div class="card" style="padding:16px;margin-bottom:12px;border-left:3px solid var(--info)">
-   <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px">
-    <div>
-     <div style="font-weight:600;color:var(--ink);font-size:14px">${a.student}</div>
-     <div style="font-size:12px;color:var(--ink-2)">Submitted ${a.when}</div>
+  ${pending.length?pending.map(a=>{
+   const student=g(a.sid)||{};
+   const catalog=COURSES_BY_GRADE[student.grade]||[];
+   const requested=(a.courses||[]).map(name=>catalog.find(course=>course.name===name)||{name,subject:"Course",teacher:"Assigned after review",pathway:"Standard",period:"TBD"});
+   const periods=requested.reduce((all,course)=>{all[course.period]=(all[course.period]||0)+1;return all;},{});
+   const conflicts=Object.entries(periods).filter(([,count])=>count>1);
+   const teacherCourses=requested.filter(course=>course.teacher===TEACHER.name).length;
+   return `<div class="card" style="padding:0;margin-bottom:18px;overflow:hidden;border-left:3px solid var(--info)">
+    <div style="padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;align-items:flex-start">
+     <div style="display:flex;gap:12px;align-items:center">
+      ${av(a.av||student.av||"ST","student",40,11)}
+      <div>
+       <div style="font-weight:650;color:var(--ink);font-size:15px">${a.student}</div>
+       <div style="font-size:12px;color:var(--ink-3);margin-top:3px">Grade ${student.grade||"-"} · ${student.goal||"Pathway exploration"} · Submitted ${a.when}</div>
+      </div>
+     </div>
+     <span style="background:var(--info-bg);color:var(--info);padding:5px 10px;border-radius:var(--r-pill);font-size:10px;font-weight:700;letter-spacing:.04em">PENDING REVIEW</span>
     </div>
-    <span style="background:var(--info-bg);color:var(--info);padding:4px 10px;border-radius:var(--r-pill);font-size:10px;font-weight:600">PENDING</span>
-   </div>
-  <div style="background:var(--surface);padding:12px;border-radius:var(--r);margin-bottom:12px;font-size:12px;color:var(--ink-2)">
-   <div style="margin-bottom:8px"><b>${a.courseCount||a.courses?.length||0} courses selected:</b></div>
-   ${a.courses?`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px">
-    ${a.courses.map(c=>`<div style="background:white;padding:8px;border-radius:var(--r);font-size:11px;color:var(--ink)">${c}</div>`).join("")}
-   </div>`:a.path?`<div><b>Path:</b> ${a.path}</div>`:"No courses listed"}
-  </div>
-   <div style="display:flex;gap:8px">
-    <button data-classapprove="${i}" style="flex:1;padding:10px;background:var(--ok);color:white;border:none;border-radius:var(--r);font-weight:600;cursor:pointer;font-size:12px">Approve</button>
-    <button data-classreject="${i}" style="flex:1;padding:10px;background:var(--crit);color:white;border:none;border-radius:var(--r);font-weight:600;cursor:pointer;font-size:12px">Reject</button>
-    <button data-classrequest="${i}" style="flex:1;padding:10px;background:var(--warn);color:white;border:none;border-radius:var(--r);font-weight:600;cursor:pointer;font-size:12px">Chat with Student</button>
-   </div>
-  </div>`).join(''):`<div class="card" style="padding:40px;text-align:center;color:var(--ink-3)">No pending approvals</div>`}
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) 280px">
+     <div style="padding:18px 20px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px">
+       <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3)">Requested courses</div>
+       <div style="font-size:12px;color:var(--ink-2)">${requested.length} courses · ${teacherCourses} taught by you</div>
+      </div>
+      <div style="display:grid;gap:7px">
+       ${requested.length?requested.map(course=>`<div style="display:grid;grid-template-columns:minmax(0,1fr) 92px 62px;gap:10px;align-items:center;padding:10px 11px;border:1px solid var(--line);border-radius:var(--r);font-size:12px">
+        <div><div style="font-weight:600;color:var(--ink)">${course.name}</div><div style="font-size:11px;color:var(--ink-3);margin-top:2px">${course.subject} · ${course.teacher}${course.teacher===TEACHER.name?" · Your class":""}</div></div>
+        <span style="color:${course.pathway==="IB"?"var(--ok)":course.pathway==="AP"?"var(--info)":"var(--warn)"};font-weight:700;font-size:11px">${course.pathway}</span>
+        <span style="color:${periods[course.period]>1?"var(--crit)":"var(--ink-2)"};font-size:11px;font-weight:600">${course.period}</span>
+       </div>`).join(""):`<div style="font-size:12px;color:var(--ink-3)">No individual courses were included in this request.</div>`}
+      </div>
+      ${conflicts.length?`<div style="margin-top:12px;padding:10px 12px;background:var(--crit-bg);border:1px solid var(--crit-line);border-radius:var(--r);font-size:12px;color:var(--crit)"><b>Timetable conflict:</b> ${conflicts.map(([period,count])=>`${count} courses in ${period}`).join(", ")}. Request changes before approving.</div>`:`<div style="margin-top:12px;font-size:12px;color:var(--ok);font-weight:600">No timetable conflicts detected.</div>`}
+     </div>
+     <aside style="padding:18px;border-left:1px solid var(--line);background:var(--surface)">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);margin-bottom:12px">Readiness snapshot</div>
+      <div style="display:grid;gap:11px;font-size:12px">
+       <div><div style="font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em">Current pathway</div><div style="font-weight:600;color:var(--ink);margin-top:3px">${student.track||"Undecided"}</div></div>
+       <div><div style="font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em">Academic record</div><div style="font-weight:600;color:var(--ink);margin-top:3px">GPA ${student.gpa||"Not available"}</div></div>
+       <div><div style="font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em">Your decision scope</div><div style="font-weight:600;color:var(--ink);margin-top:3px">${teacherCourses?`${teacherCourses} requested course${teacherCourses>1?"s":""}`:"No assigned course yet"}</div></div>
+      </div>
+     </aside>
+    </div>
+    <div style="padding:14px 20px;border-top:1px solid var(--line);background:white">
+     <label style="display:block;font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Decision note for student and counselor</label>
+     <textarea data-approvalnote="${a.id}" placeholder="Add a reason, prerequisite, or suggested alternative..." style="width:100%;box-sizing:border-box;min-height:54px;resize:vertical;padding:9px 10px;border:1px solid var(--line);border-radius:var(--r);margin-bottom:10px"></textarea>
+     <div style="display:flex;gap:8px">
+      <button data-classapprove="${a.id}" style="flex:1;padding:10px;background:var(--ok);color:white;border:none;border-radius:var(--r);font-weight:600;cursor:pointer;font-size:12px">Approve selection</button>
+      <button data-classchanges="${a.id}" style="flex:1;padding:10px;background:var(--warn);color:white;border:none;border-radius:var(--r);font-weight:600;cursor:pointer;font-size:12px">Request changes</button>
+      <button data-classreject="${a.id}" style="flex:1;padding:10px;background:var(--crit);color:white;border:none;border-radius:var(--r);font-weight:600;cursor:pointer;font-size:12px">Decline</button>
+      <button data-classrequest="${a.id}" class="btn btn-g btn-sm" title="Message student">${ic("msg",15)}</button>
+     </div>
+    </div>
+   </div>`;
+  }).join(''):`<div class="card" style="padding:40px;text-align:center;color:var(--ink-3)">No pending approvals</div>`}
  </div>`;}
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -5438,14 +5472,21 @@ function bind(){
    toast("Sent to "+c.name.split(" ")[0]+"'s counselor");});
  q("[data-tnav]",e=>e.onclick=()=>{S.tv=e.dataset.tnav;S.navOpen=false;draw();});
  /* ── teacher: class approvals workflow ── */
+ const approvalNote=id=>{
+   const field=document.querySelector(`[data-approvalnote="${id}"]`);
+   return field?field.value.trim():"";
+ };
  q("[data-classapprove]",e=>e.onclick=()=>{
-   const idx=+e.dataset.classapprove;const a=CLASS_APPROVALS_PENDING[idx];if(a){a.status="approved";
+   const id=e.dataset.classapprove;const a=CLASS_APPROVALS_PENDING.find(request=>request.id===id);if(a){a.status="approved";a.decisionNote=approvalNote(id);a.reviewedBy=TEACHER.name;
    toast(a.student+"'s course selection approved");}draw();});
  q("[data-classreject]",e=>e.onclick=()=>{
-   const idx=+e.dataset.classreject;const a=CLASS_APPROVALS_PENDING[idx];if(a){a.status="rejected";
+   const id=e.dataset.classreject;const a=CLASS_APPROVALS_PENDING.find(request=>request.id===id);if(a){a.status="rejected";a.decisionNote=approvalNote(id);a.reviewedBy=TEACHER.name;
    toast(a.student+"'s course selection rejected");}draw();});
+ q("[data-classchanges]",e=>e.onclick=()=>{
+   const id=e.dataset.classchanges;const a=CLASS_APPROVALS_PENDING.find(request=>request.id===id);if(a){a.status="changes_requested";a.decisionNote=approvalNote(id)||"Please revise your course selection.";a.reviewedBy=TEACHER.name;
+   toast("Changes requested from "+a.student);}draw();});
  q("[data-classrequest]",e=>e.onclick=()=>{
-   const idx=+e.dataset.classrequest;S.modal={type:"classrequest",id:idx};S.chatMsg="";draw();});
+   const id=e.dataset.classrequest;const a=CLASS_APPROVALS_PENDING.find(request=>request.id===id);if(a)toast("Message draft opened for "+a.student);});
   /* ── course selection ── */
   q("[data-coursechk]",e=>e.onchange=()=>{
     const courseId=e.dataset.coursechk;
