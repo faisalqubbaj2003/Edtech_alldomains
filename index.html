@@ -749,6 +749,11 @@ function pchip(p){const P=PRIO[p];return chip(P.short,P.c,P.bg,p==="urgent"?"ale
 function spin(sz,c){return `<span class="spin" style="width:${sz||16}px;height:${sz||16}px;border:2.5px solid var(--line);border-top-color:${c||'var(--teal)'};border-radius:50%"></span>`;}
 function dots(){return '<span class="dots"><span></span><span></span><span></span></span>';}
 function meter(v,c){return `<div class="meter"><div style="width:${v}%;background:${c||'var(--teal)'}"></div></div>`;}
+function mcloseBtn(variant){
+ const v={default:{bg:"var(--surface-3)",bd:"1px solid var(--line-2)",right:"18px",color:""},
+  panel:{bg:"var(--panel)",bd:"1px solid var(--line)",right:"16px",color:""},
+  dark:{bg:"rgba(255,255,255,.14)",bd:"none",right:"16px",color:"color:#fff;"}}[variant||"default"];
+ return `<button data-mclose="1" aria-label="Close" style="position:absolute;top:9px;right:${v.right};background:${v.bg};border:${v.bd};width:44px;height:44px;border-radius:8px;cursor:pointer;display:grid;place-items:center;${v.color}">${ic('x',14)}</button>`;}
 
 /* ═══════════ BASELINE DEVIATION CHART ═══════════
    The doc's core principle: deviation from the student's OWN normal.
@@ -1087,7 +1092,7 @@ function vThresholds(){
    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px"><b style="font-size:13px">${t}</b>
    <span class="mono" style="font-size:13px;font-weight:600;color:var(--teal)">${v}${u}</span></div>
    <div style="font-size:11.5px;color:var(--inkMute);margin-bottom:11px;line-height:1.5">${d}</div>
-   <input type="range" min="${mn}" max="${mx}" value="${v}" data-th="${k}">
+   <input type="range" aria-label="${t} threshold" min="${mn}" max="${mx}" value="${v}" data-th="${k}">
    <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--inkMute);margin-top:4px"><span>More sensitive (${mn}${u})</span><span>Fewer alerts (${mx}${u})</span></div>
   </div>`).join('')}
   <div style="display:flex;gap:10px;margin-top:16px;align-items:center">
@@ -1400,7 +1405,7 @@ function vCopilot(){
  ${head("AI Co-pilot","Interrogate the cohort in plain language","Ask across your assigned students. Every answer shows its evidence, and every draft is labelled and editable. No external message is ever sent without your confirmation.","var(--teal)","spark")}
  <div class="card" style="padding:20px;margin-bottom:16px">
   <div style="display:flex;gap:10px;margin-bottom:14px">
-   <input id="cpin" placeholder="Ask about your cohort…" value="${S.cpQ||''}" style="flex:1;border:1px solid var(--line);border-radius:11px;padding:12px 14px;font-size:13px;color:var(--ink)">
+   <input id="cpin" aria-label="Ask about your cohort" placeholder="Ask about your cohort…" value="${S.cpQ||''}" style="flex:1;border:1px solid var(--line);border-radius:11px;padding:12px 14px;font-size:13px;color:var(--ink)">
    <button class="btn btn-d" data-cpask="1">${ic('send',15)} Ask</button></div>
   <div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--inkMute);font-weight:700;margin-bottom:9px">Try one of these</div>
   ${CPQ.map((x,i)=>`<div class="lift" data-cpq="${i}" style="border:1px solid var(--line);border-radius:10px;padding:11px 14px;margin-bottom:7px;font-size:12.5px;color:var(--inkSoft);cursor:pointer;background:var(--panel)">${x.q}</div>`).join('')}
@@ -2156,8 +2161,8 @@ function vCohort(){
    <div style="font-size:13px;color:var(--inkSoft);margin-bottom:16px;line-height:1.6">Your ${S.cases.length} students, Grades 9 to 12. Search by name, goal or university — any row opens the full 360° file.</div>
    <div class="card" style="padding:14px 17px;margin-bottom:14px">
     <div style="display:flex;align-items:center;gap:9px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 13px">
-     ${ic('search',15)}<input id="cq" value="${(S.q||"").replace(/"/g,'&quot;')}" placeholder="Search name, goal or university…" style="border:none;background:none;font-size:13px;width:100%;color:var(--ink)">
-     ${q?`<button data-q="" style="border:none;background:none;cursor:pointer;color:var(--inkMute);display:flex;padding:0">${ic('x',14)}</button>`:''}</div>
+     ${ic('search',15)}<input id="cq" aria-label="Search students by name, goal, or university" value="${(S.q||"").replace(/"/g,'&quot;')}" placeholder="Search name, goal or university…" style="border:none;background:none;font-size:13px;width:100%;color:var(--ink)">
+     ${q?`<button data-q="" aria-label="Clear search" style="border:none;background:none;cursor:pointer;color:var(--inkMute);display:flex;padding:0">${ic('x',14)}</button>`:''}</div>
     <div style="display:flex;gap:7px;margin-top:11px;flex-wrap:wrap">
      ${chips.map(([k,l,n,c])=>`<button data-cfilter="${k}" style="display:flex;align-items:center;gap:7px;border:1px solid ${filt===k?c:'var(--line)'};background:${filt===k?c:'#fff'};color:${filt===k?'#fff':'var(--inkSoft)'};border-radius:20px;padding:6px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s">
       ${k!=="all"?`<span style="width:7px;height:7px;border-radius:50%;background:${filt===k?'#fff':c}"></span>`:''}${l}<span style="opacity:.7">${n}</span></button>`).join('')}</div>
@@ -2296,7 +2301,7 @@ function tflagModal(){
  const picked=S.tTags||[];
  return `<div class="modalbg" data-mbg="1"><div class="modal">
   <div style="padding:20px 22px 0;position:sticky;top:0;background:var(--surface);z-index:2;border-radius:16px 16px 0 0">
-   <button data-mclose="1" style="position:absolute;top:16px;right:18px;background:var(--surface-3);border:1px solid var(--line-2);width:30px;height:30px;border-radius:8px;cursor:pointer;display:grid;place-items:center">${ic('x',14)}</button>
+   ${mcloseBtn()}
    <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px">${av(c.av,"monitor",42,11)}
     <div><b style="font-size:15.5px">${c.name}</b><div style="font-size:11.5px;color:var(--ink-3)">Grade 12 Mathematics · after P2</div></div></div>
    <div style="display:flex;gap:6px;background:var(--surface-3);padding:4px;border-radius:10px;margin-bottom:4px">
@@ -2307,7 +2312,7 @@ function tflagModal(){
    <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px">
     ${K.tags.map(t=>{const on=picked.includes(t);
      return `<button data-ttag="${t}" style="font-size:12px;font-weight:500;padding:7px 12px;border-radius:99px;cursor:pointer;font-family:inherit;border:1px solid ${on?K.c:'var(--line-2)'};background:${on?K.c:'var(--surface)'};color:${on?'#fff':'var(--ink-2)'};transition:all .14s">${on?'✓ ':''}${t}</button>`;}).join('')}</div>
-   <div style="font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">In your words <span style="font-weight:400;text-transform:none;letter-spacing:0">Optional but valuable</span></div>
+   <label for="tnote" style="display:block;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">In your words <span style="font-weight:400;text-transform:none;letter-spacing:0">Optional but valuable</span></label>
    <textarea id="tnote" placeholder="What you saw, in a sentence. Describe behaviour, not a diagnosis." style="width:100%;min-height:88px;border:1px solid var(--line-2);border-radius:10px;padding:12px;font-size:13px;line-height:1.55;resize:vertical">${S.tNote||''}</textarea>
    <div style="display:flex;gap:9px;background:var(--brand-3);border-radius:10px;padding:12px 14px;margin-top:14px;font-size:11.5px;color:var(--brand-2);line-height:1.5">
     ${ic('shield',16)}<div>This goes to <b>${c.name.split(' ')[0]}'s counselor only</b> — not to the student, not to parents. You will be told what happened with it.</div></div>
@@ -3324,12 +3329,12 @@ function vOnboardQuiz(){
   </div>`:''}
 
   ${q.type==="slider"?`<div style="padding:10px 4px">
-   <input type="range" min="0" max="100" value="${ans[q.id]!==undefined?ans[q.id]:50}" data-onb-slider="${q.id}" style="width:100%">
+   <input type="range" aria-label="${q.text}" min="0" max="100" value="${ans[q.id]!==undefined?ans[q.id]:50}" data-onb-slider="${q.id}" style="width:100%">
    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink-3);margin-top:10px;line-height:1.4">
     <span style="max-width:45%">${q.low}</span><span style="max-width:45%;text-align:right">${q.high}</span></div>
   </div>`:''}
 
-  ${q.type==="text"?`<textarea data-onb-text="${q.id}" placeholder="Type as much or as little as you want…" style="width:100%;min-height:110px;border:1.5px solid var(--line-2);border-radius:13px;padding:16px;font-size:14px;line-height:1.6;resize:vertical">${ans[q.id]||''}</textarea>`:''}
+  ${q.type==="text"?`<textarea data-onb-text="${q.id}" aria-label="${q.text}" placeholder="Type as much or as little as you want…" style="width:100%;min-height:110px;border:1.5px solid var(--line-2);border-radius:13px;padding:16px;font-size:14px;line-height:1.6;resize:vertical">${ans[q.id]||''}</textarea>`:''}
 
   <div style="display:flex;gap:10px;margin-top:30px">
    ${step>0?`<button class="btn btn-g" data-onb-back="1">${ic('arrowL',15)} Back</button>`:''}
@@ -4728,7 +4733,7 @@ function vParent(){
   </div>
   <div style="padding:16px 20px;border-top:1px solid var(--line);background:var(--surface-2)">
    <div style="display:flex;gap:9px;align-items:flex-end">
-    <textarea id="pmsg" placeholder="Write a message to Ms. Haddad…" style="flex:1;min-height:52px;max-height:120px;border:1px solid var(--line-2);border-radius:11px;padding:12px 14px;font-size:13px;line-height:1.5;resize:vertical;background:var(--surface)"></textarea>
+    <textarea id="pmsg" aria-label="Message to Ms. Haddad" placeholder="Write a message to Ms. Haddad…" style="flex:1;min-height:52px;max-height:120px;border:1px solid var(--line-2);border-radius:11px;padding:12px 14px;font-size:13px;line-height:1.5;resize:vertical;background:var(--surface)"></textarea>
     <button class="btn" data-psend="1" style="background:var(--rose);color:#fff;height:44px;flex-shrink:0">${ic('send',15)} Send</button>
    </div>
    <div style="font-size:10.5px;color:var(--ink-4);margin-top:8px;line-height:1.4">Messages here go directly to the counselor and are logged to ${c.name.split(" ")[0]}'s support history. For anything urgent, please call the school office.</div>
@@ -4866,7 +4871,7 @@ function vParent(){
      <span><b style="font-size:12.8px;color:${on?'#8A2247':'var(--ink)'}">${t[1]}</b>
       <div style="font-size:11.5px;color:var(--ink-3);margin-top:2px">${t[2]}</div></span></button>`;}).join('')}
   </div>
-  <div style="font-size:11.5px;font-weight:600;color:var(--ink-2);margin-bottom:8px">Briefly, what would you like to cover?</div>
+  <label for="pmnote" style="display:block;font-size:11.5px;font-weight:600;color:var(--ink-2);margin-bottom:8px">Briefly, what would you like to cover?</label>
   <textarea id="pmnote" placeholder="For example: we would like to better understand the requirements for the courses and universities being considered." style="width:100%;min-height:92px;border:1px solid var(--line-2);border-radius:11px;padding:13px 14px;font-size:13px;line-height:1.6;resize:vertical;background:var(--surface)">${S.pmNote||""}</textarea>
   <div style="font-size:11.5px;font-weight:600;color:var(--ink-2);margin:16px 0 8px">Preferred time</div>
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
@@ -4946,20 +4951,20 @@ function meetModal(){
  const preId=S.modal.id||"s1";
  return `<div class="modalbg" data-mbg="1"><div class="modal">
   <div style="padding:20px 22px 0;position:sticky;top:0;background:var(--surface);z-index:2;border-radius:16px 16px 0 0">
-   <button data-mclose="1" style="position:absolute;top:16px;right:18px;background:var(--surface-3);border:1px solid var(--line-2);width:30px;height:30px;border-radius:8px;cursor:pointer;display:grid;place-items:center">${ic('x',14)}</button>
+   ${mcloseBtn()}
    <div class="serif" style="font-size:19px;font-weight:600;margin-bottom:3px">Record a meeting</div>
    <div style="font-size:12.3px;color:var(--ink-3);margin-bottom:16px">Two minutes now saves reconstructing it in March.</div></div>
   <div style="padding:0 22px 22px">
-   <div style="font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);margin-bottom:7px">Student</div>
+   <label for="mstu" style="display:block;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);margin-bottom:7px">Student</label>
    <select id="mstu" style="width:100%;border:1px solid var(--line-2);border-radius:10px;padding:11px 12px;margin-bottom:14px">
     ${S.cases.slice(0,20).map(c=>`<option value="${c.id}" ${c.id===preId?'selected':''}>${c.name}</option>`).join('')}</select>
    <div style="font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);margin-bottom:7px">Type</div>
    <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px">
     ${MEET_KINDS.map(k=>{const on=(S.mKind||"Check-in")===k;
      return `<button data-mkind="${k}" style="font-size:12px;font-weight:500;padding:7px 12px;border-radius:99px;cursor:pointer;font-family:inherit;border:1px solid ${on?'var(--brand)':'var(--line-2)'};background:${on?'var(--brand)':'var(--surface)'};color:${on?'#fff':'var(--ink-2)'}">${k}</button>`;}).join('')}</div>
-   <div style="font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);margin-bottom:7px">What was discussed</div>
+   <label for="mnotes" style="display:block;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);margin-bottom:7px">What was discussed</label>
    <textarea id="mnotes" placeholder="What the student said, what you observed, what you agreed…" style="width:100%;min-height:96px;border:1px solid var(--line-2);border-radius:10px;padding:12px;font-size:13px;line-height:1.55;resize:vertical"></textarea>
-   <div style="font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);margin:14px 0 7px">Agreed action <span style="font-weight:400;text-transform:none;letter-spacing:0">Optional</span></div>
+   <label for="maction" style="display:block;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);margin:14px 0 7px">Agreed action <span style="font-weight:400;text-transform:none;letter-spacing:0">Optional</span></label>
    <input id="maction" placeholder="e.g. Sara to revise her statement by 18 Nov" style="width:100%;border:1px solid var(--line-2);border-radius:10px;padding:11px 12px">
    <div style="font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);margin:14px 0 7px">Where does this leave the case?</div>
    <div style="display:flex;gap:7px;flex-wrap:wrap">
@@ -5005,7 +5010,7 @@ function vStuProgress(){
    <div style="font-size:12.5px;color:var(--ink);line-height:1.55">${r.txt}</div>
    <div style="font-size:10.5px;color:var(--ink-3);margin-top:6px">${r.when} · ${r.seen?'Read by Ms. Haddad':'Not read yet'}</div></div>`).join('')}
   <div style="display:flex;gap:9px;align-items:flex-end;margin-top:10px">
-   <textarea id="sref" placeholder="What would help right now?" style="flex:1;min-height:64px;border:1px solid var(--line-2);border-radius:10px;padding:11px;font-size:13px;resize:vertical"></textarea>
+   <textarea id="sref" aria-label="Message to your counselor" placeholder="What would help right now?" style="flex:1;min-height:64px;border:1px solid var(--line-2);border-radius:10px;padding:11px;font-size:13px;resize:vertical"></textarea>
    <button class="btn" data-sref="1" style="background:var(--violet);color:#fff">${ic('send',15)} Send</button></div>
  </div></div>`;}
 
@@ -5084,7 +5089,7 @@ function mergeModal(){
  const flags=TFLAGS.filter(f=>f.sid===c.id);
  const pick=S.mergePick;
  return `<div class="modalbg" data-mbg="1"><div class="modal">
-  <div style="padding:20px 22px 0"><button data-mclose="1" style="position:absolute;top:16px;right:18px;background:var(--surface-3);border:1px solid var(--line-2);width:30px;height:30px;border-radius:8px;cursor:pointer;display:grid;place-items:center">${ic('x',14)}</button>
+  <div style="padding:20px 22px 0">${mcloseBtn()}
    <div class="serif" style="font-size:19px;font-weight:600">Merge this concern</div>
    <div style="font-size:12.3px;color:var(--ink-3);margin:4px 0 16px;line-height:1.5">Choose exactly what to merge <b>${c.name}</b>'s case with. Nothing is merged until you confirm, and you can undo it from the case history.</div></div>
   <div style="padding:0 22px 22px">
@@ -5102,7 +5107,7 @@ function assignModal(){
  if(!S.modal||S.modal.type!=="assign")return "";
  const c=g(S.modal.id);const pick=S.assignPick;
  return `<div class="modalbg" data-mbg="1"><div class="modal">
-  <div style="padding:20px 22px 0"><button data-mclose="1" style="position:absolute;top:16px;right:18px;background:var(--surface-3);border:1px solid var(--line-2);width:30px;height:30px;border-radius:8px;cursor:pointer;display:grid;place-items:center">${ic('x',14)}</button>
+  <div style="padding:20px 22px 0">${mcloseBtn()}
    <div class="serif" style="font-size:19px;font-weight:600">Reassign this case</div>
    <div style="font-size:12.3px;color:var(--ink-3);margin:4px 0 16px;line-height:1.5">Currently owned by <b>${c.owner}</b>. Choose a new owner — they are notified and the change is logged. Nothing moves until you confirm.</div></div>
   <div style="padding:0 22px 22px">
@@ -5248,7 +5253,7 @@ function modalEl(){
  const m=S.modal;
  if(m.type==="ctx"){const c=g(m.id);
   return `<div class="modalbg" data-mbg="1"><div class="modal pop" style="padding:24px">
-   <button data-mclose="1" style="position:absolute;top:16px;right:16px;background:var(--panel);border:1px solid var(--line);width:30px;height:30px;border-radius:8px;cursor:pointer;display:grid;place-items:center">${ic('x',14)}</button>
+   ${mcloseBtn('panel')}
    <div class="serif" style="font-size:19px;font-weight:600;margin-bottom:5px">Add context you know about</div>
    <div style="font-size:12.5px;color:var(--inkSoft);line-height:1.55;margin-bottom:16px">You hold information the systems do not. Adding it recalculates signal strength and may downgrade this case automatically — this is how the engine learns your school.</div>
    ${[["Authorised medical absence on file","Suppresses attendance signals for the period",-22],["Known family circumstance (staff aware)","Routes to pastoral rather than academic follow-up",-14],["Assessment was a timed mock in a heavy week","Applies contextual suppression to the academic signal",-18],["Already spoke with the student informally","Records contact and resets the response window",-9]]
@@ -5259,7 +5264,7 @@ function modalEl(){
  if(m.type==="brief"){const c=g(m.id);
   return `<div class="modalbg" data-mbg="1"><div class="modal pop" style="padding:0;overflow:hidden">
    <div style="background:var(--navy);color:#fff;padding:20px 24px">
-    <button data-mclose="1" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,.14);border:none;width:30px;height:30px;border-radius:8px;cursor:pointer;color:#fff;display:grid;place-items:center">${ic('x',14)}</button>
+    ${mcloseBtn('dark')}
     <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#6FE0CC;font-weight:700;margin-bottom:7px">60-second meeting brief · AI-generated</div>
     <div class="serif" style="font-size:21px;font-weight:600">${c.name}</div>
     <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:3px">${c.yr} · ${c.goal} · Predicted ${c.pred}</div></div>
@@ -5276,7 +5281,7 @@ function modalEl(){
    </div></div></div>`;}
  if(m.type==="book"){const mt=MENTORS.find(x=>x.id===m.id);const slots=["Wed 3:00pm","Wed 5:00pm","Thu 4:00pm","Thu 6:00pm","Sat 11:00am","Sat 2:00pm"];
   return `<div class="modalbg" data-mbg="1"><div class="modal pop" style="padding:24px">
-   <button data-mclose="1" style="position:absolute;top:16px;right:16px;background:var(--panel);border:1px solid var(--line);width:30px;height:30px;border-radius:8px;cursor:pointer;display:grid;place-items:center">${ic('x',14)}</button>
+   ${mcloseBtn('panel')}
    <div style="display:flex;gap:13px;margin-bottom:16px">${av(mt.av,"mentor",46,13)}
     <div><div style="display:flex;align-items:center;gap:6px"><b style="font-size:15.5px">${mt.n}</b>${ic('checkC',14)}</div>
     <div style="font-size:12.2px;color:var(--inkSoft)">${mt.role} · ${mt.uni}</div></div></div>
@@ -5358,7 +5363,7 @@ function draw(){
        <span style="color:var(--ink-4);display:flex">${ic('search',15)}</span>
        <input placeholder="Search students…" style="border:none;background:none;font-size:13px;width:100%;height:100%">
        <kbd style="font-family:inherit;font-size:10px;color:var(--ink-4);background:var(--surface-3);border:1px solid var(--line-2);border-radius:4px;padding:1px 5px;flex-shrink:0">⌘K</kbd></div>
-      <button class="btn btn-g btn-sm" style="height:36px;padding:0 11px" data-toast="Notifications are up to date">${ic('inbox',15)}</button>
+      <button class="btn btn-g btn-sm" aria-label="Notifications" style="height:36px;padding:0 11px" data-toast="Notifications are up to date">${ic('inbox',15)}</button>
      </div>
     </div>
     <div style="padding:26px 28px 72px;max-width:1180px">${body2}</div></main></div>`;
@@ -5913,19 +5918,6 @@ draw();
   role:{c:"var(--aud-role)",label:"Fake control — missing role/aria-checked/keyboard"},
   label:{c:"var(--aud-label)",label:"Form field — no <label>/aria-label"}};
  var LIVE=[
-  {cat:"icon",sel:'button[data-toast="Notifications are up to date"]',loc:"index.html:3837",msg:"Notification bell — icon only, no aria-label"},
-  {cat:"icon",sel:'button[data-q=""]',loc:"index.html:2211",msg:"Clear-search button — icon only, no aria-label"},
-  {cat:"icon",sel:"button[data-mclose]",loc:"index.html:2312 (+6 more modals)",msg:"Modal close button — icon only, no aria-label, repeats on every modal"},
-  {cat:"label",sel:'input[type="range"]',loc:"index.html:1201",msg:"Threshold slider — no label/aria-label"},
-  {cat:"label",sel:"#cpin",loc:"index.html:1509",msg:"Co-pilot question input — placeholder only, no label"},
-  {cat:"label",sel:"#cq",loc:"index.html:2210",msg:"Cohort search input — placeholder only, no label"},
-  {cat:"label",sel:"#tnote",loc:"index.html:2324",msg:"Teacher-flag note — placeholder only, no label"},
-  {cat:"label",sel:"#pmsg",loc:"index.html:3022",msg:"Parent message textarea — placeholder only, no label"},
-  {cat:"label",sel:"#pmnote",loc:"index.html:3174",msg:"Parent meeting-request note — placeholder only, no label"},
-  {cat:"label",sel:"#mstu",loc:"index.html:3258",msg:"Mentor-session student select — preceding text is a <div>, not a <label for>"},
-  {cat:"label",sel:"#mnotes",loc:"index.html:3265",msg:"Mentor-session notes — placeholder only, no label"},
-  {cat:"label",sel:"#maction",loc:"index.html:3267",msg:"Mentor-session action input — placeholder only, no label"},
-  {cat:"label",sel:"#sref",loc:"index.html:3312",msg:"Student mentor-request textarea — placeholder only, no label"}
  ];
  var GLOBAL=[
   {loc:"index.html:164",msg:"textarea:focus,input:focus,select:focus uses :focus not :focus-visible — ring shows on mouse click, not just keyboard nav"},
