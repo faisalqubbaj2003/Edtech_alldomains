@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#0C111D">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='32' y2='32'%3E%3Cstop offset='0' stop-color='%231FC7A8'/%3E%3Cstop offset='1' stop-color='%23087B68'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-weight='700' font-size='20' fill='white' text-anchor='middle'%3EC%3C/text%3E%3C/svg%3E">
 <title>CAROS · Counselor OS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -152,9 +154,9 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
 
 /* ══════════ SECTION LABEL ══════════ */
 .sechead{
- display:flex;align-items:center;gap:7px;
+ display:flex;align-items:center;gap:7px;margin:0 0 12px;
  font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
- color:var(--ink-3);margin-bottom:12px;
+ color:var(--ink-3);
 }
 .sechead svg{width:13px;height:13px;opacity:.8}
 
@@ -167,7 +169,7 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
  padding:11px 0;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--ink-2)}
 .evd:last-child{border-bottom:none}
 .meter{height:6px;border-radius:99px;background:var(--line-2);overflow:hidden}
-.meter>div{height:100%;border-radius:99px;transition:width .7s cubic-bezier(.22,1,.36,1)}
+.meter>div{height:100%;width:100%;border-radius:99px;transition:clip-path .7s cubic-bezier(.22,1,.36,1)}
 
 /* ══════════ STEPPER ══════════ */
 .stepper{display:flex;align-items:center;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
@@ -748,7 +750,7 @@ function chip(txt,c,bg,icn){return `<span class="chip" style="background:${bg};c
 function pchip(p){const P=PRIO[p];return chip(P.short,P.c,P.bg,p==="urgent"?"alert":p==="good"?"trend":null);}
 function spin(sz,c){return `<span class="spin" style="width:${sz||16}px;height:${sz||16}px;border:2.5px solid var(--line);border-top-color:${c||'var(--teal)'};border-radius:50%"></span>`;}
 function dots(){return '<span class="dots"><span></span><span></span><span></span></span>';}
-function meter(v,c){return `<div class="meter"><div style="width:${v}%;background:${c||'var(--teal)'}"></div></div>`;}
+function meter(v,c){return `<div class="meter"><div style="clip-path:inset(0 ${100-v}% 0 0);background:${c||'var(--teal)'}"></div></div>`;}
 function mcloseBtn(variant){
  const v={default:{bg:"var(--surface-3)",bd:"1px solid var(--line-2)",right:"18px",color:""},
   panel:{bg:"var(--panel)",bd:"1px solid var(--line)",right:"16px",color:""},
@@ -925,7 +927,7 @@ function shell(theme,nav,active,attr,footAv,footN,footR,title,sub,body){
 
 function head(eb,ti,de,ac,icn){return `<div style="margin-bottom:22px;max-width:760px">
  <div style="display:flex;align-items:center;gap:6px;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:${ac||'var(--brand)'};font-weight:600;margin-bottom:8px">${icn?ic(icn,12):''}${eb}</div>
- <div class="serif" style="font-size:27px;font-weight:600;line-height:1.15;color:var(--ink)">${ti}</div>
+ <h1 class="serif" style="margin:0;font-size:27px;font-weight:600;line-height:1.15;color:var(--ink)">${ti}</h1>
  ${de?`<div style="font-size:13.5px;color:var(--ink-3);margin-top:8px;line-height:1.6;letter-spacing:-.004em">${de}</div>`:''}</div>`;}
 /* ═══════════ COMMAND CENTRE (doc §03.2) ═══════════ */
 function vCommand(){
@@ -1031,7 +1033,7 @@ function vIntel(){
  </div>
 
  <div class="card" style="padding:20px;margin-bottom:18px">
-  <div class="sechead">${ic('layers',13)} Cohort signal matrix · who is showing what</div>
+  <h3 class="sechead">${ic('layers',13)} Cohort signal matrix · who is showing what</h3>
   <div style="font-size:12px;color:var(--inkSoft);margin-bottom:14px;line-height:1.5">A single signal is usually noise. The engine escalates when independent domains corroborate each other — that correlation is what separates a real concern from a bad week.</div>
   <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">
    <thead><tr><th style="text-align:left;padding:9px 10px;font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--inkMute);border-bottom:1px solid var(--line)">Student</th>
@@ -1059,7 +1061,7 @@ function vIntel(){
 
  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
   <div class="card" style="padding:20px">
-   <div class="sechead">${ic('alert',13)} Detection methods currently firing</div>
+   <h3 class="sechead">${ic('alert',13)} Detection methods currently firing</h3>
    ${[["Personal baseline deviation","An A-grade student receives an F. Significant even where the cohort average is lower.","3 active"],
       ["Trend detection","Attendance declining 98% → 96% → 92% → 87% across successive periods.","4 active"],
       ["Seen over detection","One late arrival is noise. Repeated lateness across three weeks warrants attention.","3 active"],
@@ -1071,7 +1073,7 @@ function vIntel(){
       <div style="font-size:11.5px;color:var(--inkMute);margin-top:3px;line-height:1.5">${d}</div></div>`).join('')}
   </div>
   <div class="card" style="padding:20px">
-   <div class="sechead">${ic('lock',13)} What this engine will never do</div>
+   <h3 class="sechead">${ic('lock',13)} What this engine will never do</h3>
    ${["Present a mental-health or safeguarding diagnosis","Assign a permanent risk label to a child","Take disciplinary action or remove an opportunity","Send external communication without human confirmation","Show sensitive notes outside an authorised role","Generate a safeguarding conclusion from a language model"]
      .map(x=>`<div style="display:flex;gap:9px;align-items:flex-start;padding:9px 0;font-size:12.3px;color:var(--inkSoft);border-bottom:1px solid var(--lineSoft)">${ic('x',15)}<span>${x}</span></div>`).join('')}
    <div style="background:var(--urgentSoft);border-radius:10px;padding:13px 15px;margin-top:13px;font-size:11.5px;color:#8A1F2E;line-height:1.55">
@@ -1153,7 +1155,7 @@ function vCase(c){
  </div>
 
  <div class="card" style="padding:16px 20px;margin-bottom:16px">
-  <div class="sechead" style="margin-bottom:11px">${ic('route',13)} Intervention loop · current position</div>
+  <h3 class="sechead" style="margin-bottom:11px">${ic('route',13)} Intervention loop · current position</h3>
   <div class="stepper">${stages.map((s,i)=>`${i?'<span class="steparr">'+ic('arrowR',13)+'</span>':''}<span class="step ${i<si?'done':i===si?'now':''}">${i<si?ic('check',12):''}${s[1]}</span>`).join('')}</div>
  </div>
 
@@ -1163,7 +1165,7 @@ function vCase(c){
     ${tabs.map(([k,l])=>`<button class="tab ${S.tab===k?'on':''}" data-tab="${k}">${l}</button>`).join('')}</div>
 
    ${S.tab==="evidence"?`<div class="card pop" style="padding:20px">
-    <div class="sechead">${ic('list',13)} Contributing signals · source-linked and time-stamped</div>
+    <h3 class="sechead">${ic('list',13)} Contributing signals · source-linked and time-stamped</h3>
     <div style="font-size:11.5px;color:var(--inkMute);margin-bottom:14px;line-height:1.5">Weight shows each signal's contribution to the current priority. Negative weights are protective or positive signals that pull the priority down.</div>
     ${c.evidence.map((e,i)=>`<div class="evd" style="animation:rise .35s ${i*.05}s backwards">
      <div><div style="display:flex;align-items:center;gap:5px;color:${DOMAINS[e.dom].c};font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em">${ic(DOMAINS[e.dom].ic,11)}${DOMAINS[e.dom].label}</div>
@@ -1174,14 +1176,14 @@ function vCase(c){
      <div style="width:44px;margin-top:4px">${meter(Math.min(Math.abs(e.w)*2,100),e.w>0?'var(--urgent)':'var(--good)')}</div></div>
     </div>`).join('')}
     <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line)">
-     <div class="sechead" style="margin-bottom:9px">${ic('eye',13)} Known contextual factors</div>
+     <h3 class="sechead" style="margin-bottom:9px">${ic('eye',13)} Known contextual factors</h3>
      ${c.context.map(x=>`<div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;font-size:12.2px;color:var(--inkSoft)">${ic('checkC',14)}<span>${x}</span></div>`).join('')}
      <button class="btn btn-g btn-sm" data-addctx="${c.id}" style="margin-top:10px">${ic('plus',13)} Add context I know about</button>
      <div style="font-size:10.5px;color:var(--inkMute);margin-top:7px;line-height:1.45">Adding context you hold — a known family situation, an authorised absence — recalculates signal strength and may downgrade the case automatically.</div>
     </div></div>`:''}
 
    ${S.tab==="baseline"?`<div class="card pop" style="padding:20px">
-    <div class="sechead">${ic('trend',13)} Deviation from this student's own normal</div>
+    <h3 class="sechead">${ic('trend',13)} Deviation from this student's own normal</h3>
     <div style="font-size:11.5px;color:var(--inkMute);margin-bottom:6px;line-height:1.5">The shaded band is ${c.name.split(' ')[0]}'s established personal range. Red points sit outside it. This is the engine's central principle — a student's deviation from their own baseline matters more than their position against a cohort average.</div>
     ${Object.entries(c.baselines).map(([k,b],i)=>`<div style="margin-top:18px;animation:rise .4s ${i*.08}s backwards">
      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
@@ -1193,7 +1195,7 @@ function vCase(c){
     </div>`).join('')}</div>`:''}
 
    ${S.tab==="uni"?`<div class="card pop" style="padding:20px">
-    <div class="sechead">${ic('grad',13)} University journey · list balance and deadlines</div>
+    <h3 class="sechead">${ic('grad',13)} University journey · list balance and deadlines</h3>
     ${c.uni.targets.map(t=>{const col=t.b==="reach"?'var(--urgent)':t.b==="match"?'var(--good)':'var(--review)';
      return `<div style="padding:12px 0;border-bottom:1px solid var(--lineSoft)">
       <div style="display:flex;justify-content:space-between;align-items:baseline"><div><b style="font-size:13px">${t.u}</b><div style="font-size:11.5px;color:var(--inkMute)">${t.c}</div></div>
@@ -1201,14 +1203,14 @@ function vCase(c){
       <div>${chip(t.b.toUpperCase(),col,t.b==="reach"?'var(--urgentSoft)':t.b==="match"?'var(--goodSoft)':'var(--reviewSoft)')}</div></div></div>
       <div style="margin-top:7px">${meter(t.p,col)}</div></div>`;}).join('')}
     ${c.uni.flags.length?`<div style="margin-top:14px;padding-top:13px;border-top:1px solid var(--line)">
-     <div class="sechead" style="margin-bottom:9px">${ic('flag',13)} Journey flags</div>
+     <h3 class="sechead" style="margin-bottom:9px">${ic('flag',13)} Journey flags</h3>
      ${c.uni.flags.map(f=>`<div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;font-size:12.2px;color:var(--inkSoft)">${ic('alert',14)}<span>${f}</span></div>`).join('')}</div>`:''}
     ${!c.uni.targets.some(t=>t.b==="safety")?`<div style="background:var(--reviewSoft);border-radius:10px;padding:13px 15px;margin-top:14px;font-size:11.8px;color:#7A5504;line-height:1.55">
      <b>Reality-check guidance.</b> This list has no secure floor. Frame the conversation as an <b>addition, not a subtraction</b> — keep the ambition, add a match-level option that still leads to the same career. Never deliver a discouraging probability verdict directly to the student.</div>`:''}
    </div>`:''}
 
    ${S.tab==="history"?`<div class="card pop" style="padding:20px">
-    <div class="sechead">${ic('clock',13)} Case history · complete audit trail</div>
+    <h3 class="sechead">${ic('clock',13)} Case history · complete audit trail</h3>
     ${S.audit.filter(a=>a.obj===c.name).concat([{t:c.opened,who:c.openedBy.includes('System')?'SYSTEM':'R.HADDAD',act:"CASE_OPENED",obj:c.name,det:c.openedBy}]).map(a=>`<div class="audit"><span style="width:88px;flex-shrink:0">${a.t}</span><span style="width:78px;flex-shrink:0;color:${a.who==='SYSTEM'?'var(--teal)':'var(--violet)'};font-weight:500">${a.who}</span><span style="width:120px;flex-shrink:0;font-weight:500">${a.act}</span><span style="flex:1">${a.det}</span></div>`).join('')}
     <div style="font-size:10.5px;color:var(--inkMute);margin-top:12px;line-height:1.5">Every access, AI recommendation and human decision is logged. Original evidence and derived interpretation are stored separately so any past flag remains auditable.</div>
    </div>`:''}
@@ -1223,7 +1225,7 @@ function vCase(c){
    </div>
 
    <div class="card" style="padding:18px">
-    <div class="sechead">${ic('brief',13)} Triage this case</div>
+    <h3 class="sechead">${ic('brief',13)} Triage this case</h3>
     <div style="display:flex;flex-direction:column;gap:7px">
      <button class="btn btn-p" data-act="accept:${c.id}" style="width:100%">${ic('check',15)} Accept & open intervention</button>
      <button class="btn btn-g" data-act="meet:${c.id}" style="width:100%">${ic('brief',15)} Schedule check-in</button>
@@ -1247,7 +1249,7 @@ function vCase(c){
    ${parentCard(c)}
    ${voiceCard(c)}
    <div class="card" style="padding:18px">
-    <div class="sechead">${ic('pencil',13)} Counselor note</div>
+    <h3 class="sechead">${ic('pencil',13)} Counselor note</h3>
     <textarea placeholder="What you observed, what you agreed, what happens next…" style="width:100%;min-height:78px;border:1px solid var(--line);border-radius:10px;padding:11px;font-size:12.3px;line-height:1.55;resize:vertical;color:var(--ink)"></textarea>
     <button class="btn btn-g btn-sm" data-toast="Note saved to the case · visible to counselor role only" style="width:100%;margin-top:8px">Save note</button>
     <div style="font-size:10.3px;color:var(--inkMute);margin-top:7px;line-height:1.45">Staff-only. Not visible to the student, and never used outside its authorised purpose.</div>
@@ -1312,7 +1314,7 @@ function vUni(){
  </div>
 
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <div class="sechead">${ic('clock',13)} Deadline radar</div>
+  <h3 class="sechead">${ic('clock',13)} Deadline radar</h3>
   ${deadlines.sort((a,b)=>a.d-b.d).map((d,i)=>{
    const urgent=d.d<=10&&!d.ok;const col=d.ok?'var(--good)':d.d<=10?'var(--urgent)':'var(--review)';
    return `<div style="display:grid;grid-template-columns:auto 1fr 130px auto;gap:13px;align-items:center;padding:11px 0;border-bottom:1px solid var(--lineSoft);animation:rise .35s ${i*.04}s backwards">
@@ -1335,7 +1337,7 @@ function vUni(){
  </div>`:''}
 
  <div class="card" style="padding:20px">
-  <div class="sechead">${ic('list',13)} List balance by student</div>
+  <h3 class="sechead">${ic('list',13)} List balance by student</h3>
   ${all.map(c=>{const r=c.uni.targets.filter(t=>t.b==="reach").length,m=c.uni.targets.filter(t=>t.b==="match").length,s=c.uni.targets.filter(t=>t.b==="safety").length;
    return `<div class="lift" data-open="${c.id}" style="display:grid;grid-template-columns:auto 1fr 190px auto;gap:13px;align-items:center;padding:12px 0;border-bottom:1px solid var(--lineSoft);cursor:pointer">
     ${av(c.av,c.prio,34,10)}
@@ -1386,9 +1388,9 @@ function vLetter(){
     <div class="serif" style="font-size:16px;font-weight:600;margin-bottom:6px">It never invents</div>
     <div style="font-size:12px;color:rgba(255,255,255,.7);line-height:1.55;margin-bottom:14px">Every claim is drawn from a dated entry in Sara's record. If the evidence is not there, the sentence is not written.</div>
     <button class="btn" data-letter="${S.letter==='done'?'reset':'go'}" ${S.letter==='gen'?'disabled':''} style="width:100%;background:rgba(255,255,255,.14);color:#fff">${S.letter==='done'?ic('refresh',15)+' Regenerate':'Generate draft'}</button></div>
-   ${S.letter==='done'?`<div class="card pop" style="padding:18px"><div class="sechead">${ic('checkC',13)} Evidence used</div>
+   ${S.letter==='done'?`<div class="card pop" style="padding:18px"><h3 class="sechead">${ic('checkC',13)} Evidence used</h3>
     ${ev.map(e=>`<div style="display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--lineSoft);font-size:11.8px;color:var(--inkSoft);line-height:1.5">${ic('checkC',14)}<span>${e}</span></div>`).join('')}</div>`:''}
-   <div class="card" style="padding:18px"><div class="sechead">Time returned this season</div>
+   <div class="card" style="padding:18px"><h3 class="sechead">Time returned this season</h3>
     <div class="serif" style="font-size:32px;font-weight:600;color:var(--teal);line-height:1">190 hrs</div>
     <div style="font-size:12px;color:var(--inkSoft);margin-top:5px">84 letters at 60 minutes of writing each, reduced to 10 minutes of review.</div></div>
   </div></div></div>`;}
@@ -1421,7 +1423,7 @@ function vCopilot(){
    <button class="btn btn-sm" data-toast="Evidence trail opened" style="background:rgba(255,255,255,.14);color:#fff">${ic('eye',13)} Show evidence</button></div>
  </div>`:''}
  <div class="card" style="padding:18px 20px;margin-top:16px">
-  <div class="sechead">${ic('lock',13)} Automation boundaries</div>
+  <h3 class="sechead">${ic('lock',13)} Automation boundaries</h3>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 22px">
   ${["No external communication without human confirmation","No safeguarding conclusion generated by the model","No student automatically disciplined or denied an opportunity","Sensitive notes never used outside their purpose","Every AI draft visibly labelled and editable","Retrieval limited to your permission scope"]
    .map(x=>`<div style="display:flex;gap:8px;align-items:flex-start;padding:7px 0;font-size:12px;color:var(--inkSoft)">${ic('checkC',14)}<span>${x}</span></div>`).join('')}</div>
@@ -1434,7 +1436,7 @@ function vProve(){
  ${head("Reporting & prove-it layer","Evidence that students are noticed earlier","The question a head of school actually asks is whether this changed anything. These are the metrics that answer it — detection quality, time returned, and whether students recovered.","var(--teal)","chart")}
  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
  ${fam.map(([t,i,rows],ix)=>`<div class="card" style="padding:20px;animation:rise .4s ${ix*.06}s backwards">
-  <div class="sechead">${ic(i,13)} ${t}</div>
+  <h3 class="sechead">${ic(i,13)} ${t}</h3>
   ${rows.map(([l,v,s])=>`<div style="padding:11px 0;border-bottom:1px solid var(--lineSoft)">
    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><span style="font-size:12.3px;color:var(--inkSoft)">${l}</span>
    <b class="serif" style="font-size:19px;font-weight:600">${v}</b></div>
@@ -1442,13 +1444,13 @@ function vProve(){
  </div>`).join('')}
  </div>
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <div class="sechead">${ic('lock',13)} Trust & safety monitoring</div>
+  <h3 class="sechead">${ic('lock',13)} Trust & safety monitoring</h3>
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
   ${[["Access violations","0","role scope enforced"],["Unexplained alerts","0","every flag traces to evidence"],["Overturned recommendations","6","counselor downgraded — thresholds retuned"],["Disproportionate flagging","None detected","monitored across student groups"]]
    .map(([l,v,s])=>`<div style="background:var(--panel);border-radius:11px;padding:14px 15px"><div class="serif" style="font-size:22px;font-weight:600;color:${v==="0"||v==="None detected"?'var(--good)':'var(--review)'};line-height:1.1">${v}</div><div style="font-size:11.5px;font-weight:600;margin-top:5px">${l}</div><div style="font-size:10.3px;color:var(--inkMute);margin-top:2px;line-height:1.4">${s}</div></div>`).join('')}</div>
  </div>
  <div class="card" style="padding:20px">
-  <div class="sechead">${ic('list',13)} Live audit log</div>
+  <h3 class="sechead">${ic('list',13)} Live audit log</h3>
   ${S.audit.slice(0,9).map(a=>`<div class="audit"><span style="width:90px;flex-shrink:0">${a.t}</span><span style="width:80px;flex-shrink:0;color:${a.who==='SYSTEM'?'var(--teal)':'var(--violet)'};font-weight:500">${a.who}</span><span style="width:128px;flex-shrink:0;font-weight:500">${a.act}</span><span style="width:130px;flex-shrink:0">${a.obj}</span><span style="flex:1">${a.det}</span></div>`).join('')}
  </div></div>`;}
 
@@ -1525,23 +1527,23 @@ function vFileOne(c){
     ["Engagement & wellbeing","gauge",[["Platform engagement",c.baselines.engagement?(c.baselines.engagement.series[7]<30?"Withdrawn":"Active"):"Active"],["Teacher concerns",c.evidence.some(e=>e.dom==="teacher")?"1 this term":"None"],["Last seen",c.lastActive||c.lastContact],["Positive signals",c.evidence.filter(e=>e.w<0).length]]],
     ["University journey","grad",[["Target career",c.goal],["Universities listed",c.uni.targets.length],["List balance",c.uni.targets.some(t=>t.b==="safety")?"Balanced":"No safety school"],["Journey flags",c.uni.flags.length||"None"]]]
    ].map(([t,i,rows],ix)=>`<div class="card" style="padding:18px 20px;animation:rise .4s ${ix*.06}s backwards">
-    <div class="sechead">${ic(i,13)} ${t}</div>
+    <h3 class="sechead">${ic(i,13)} ${t}</h3>
     ${rows.map(([l,v])=>`<div class="kv"><span style="color:var(--inkMute)">${l}</span><b>${v}</b></div>`).join('')}</div>`).join('')}
   <div class="card" style="padding:18px 20px;grid-column:span 2">
-   <div class="sechead">${ic('trend',13)} Verified activities & evidence base</div>
+   <h3 class="sechead">${ic('trend',13)} Verified activities & evidence base</h3>
    <div style="font-size:11.5px;color:var(--inkMute);margin-bottom:11px;line-height:1.5">This is what the Letter Engine draws on. Nothing is written that does not appear here.</div>
    ${acts.map(a=>`<div style="display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--lineSoft);font-size:12.5px;color:var(--inkSoft)">${ic('checkC',14)}<span>${a}</span></div>`).join('')}</div>
  </div>`:''}
 
  ${ft==="signals"?`<div class="card pop" style="padding:20px">
-  <div class="sechead">${ic('radar',13)} All signal domains · against this student's own baseline</div>
+  <h3 class="sechead">${ic('radar',13)} All signal domains · against this student's own baseline</h3>
   ${Object.entries(c.baselines).map(([k,b],i)=>`<div style="margin-top:${i?20:8}px;animation:rise .4s ${i*.07}s backwards">
    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="color:${DOMAINS[k].c}">${ic(DOMAINS[k].ic,14)}</span>
     <b style="font-size:12.5px">${b.label}</b>
     ${b.anomalyFrom<b.series.length?`<span class="chip" style="background:var(--urgentSoft);color:var(--urgent)">${b.series.length-b.anomalyFrom} outside band</span>`:`<span class="chip" style="background:var(--goodSoft);color:var(--good)">Within baseline</span>`}</div>
    ${baseChart(b)}</div>`).join('')}
   <div style="margin-top:18px;padding-top:15px;border-top:1px solid var(--line)">
-   <div class="sechead">${ic('list',13)} Every event on file this term</div>
+   <h3 class="sechead">${ic('list',13)} Every event on file this term</h3>
    ${c.evidence.map(e=>`<div class="evd">
     <div><div style="display:flex;align-items:center;gap:5px;color:${DOMAINS[e.dom].c};font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em">${ic(DOMAINS[e.dom].ic,11)}${DOMAINS[e.dom].label}</div>
     <div class="mono" style="font-size:10px;color:var(--inkMute);margin-top:3px">${e.date}</div></div>
@@ -1550,7 +1552,7 @@ function vFileOne(c){
  </div>`:''}
 
  ${ft==="uni"?`<div class="card pop" style="padding:20px">
-  <div class="sechead">${ic('grad',13)} Goal → path → programmes</div>
+  <h3 class="sechead">${ic('grad',13)} Goal → path → programmes</h3>
   <div style="background:var(--panel);border-radius:11px;padding:15px 17px;margin-bottom:16px">
    <div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--inkMute);font-weight:700;margin-bottom:5px">Stated long-term goal</div>
    <div class="serif" style="font-size:18px;font-weight:600">${c.goal}</div>
@@ -1566,7 +1568,7 @@ function vFileOne(c){
 
  ${ft==="support"?`<div class="pop" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
   <div class="card" style="padding:20px">
-   <div class="sechead">${ic('brief',13)} Interventions</div>
+   <h3 class="sechead">${ic('brief',13)} Interventions</h3>
    ${ivs.length?ivs.map(i=>`<div style="padding:12px 0;border-bottom:1px solid var(--lineSoft)">
     <div style="display:flex;justify-content:space-between;gap:9px;align-items:baseline"><b style="font-size:12.5px">${i.type}</b>
     ${i.status==="resolved"?chip("Resolved","var(--good)","var(--goodSoft)"):chip("Open","var(--checkin)","var(--checkinSoft)")}</div>
@@ -1575,7 +1577,7 @@ function vFileOne(c){
    :`<div style="font-size:12.5px;color:var(--inkMute);padding:10px 0">No interventions on file. This student has not required formal support this year.</div>`}
   </div>
   <div class="card" style="padding:20px">
-   <div class="sechead">${ic('clock',13)} Contact & support log</div>
+   <h3 class="sechead">${ic('clock',13)} Contact & support log</h3>
    ${log.map((l,i)=>`<div class="tlrow"><div style="display:flex;flex-direction:column;align-items:center"><span class="tldot" style="background:${l.k==="met"?'var(--teal)':'var(--inkMute)'}"></span>${i<log.length-1?'<span class="tlline"></span>':''}</div>
     <div><div style="font-size:10.5px;color:var(--inkMute);font-weight:600">${l.d} · ${l.w}</div><div style="font-size:12.3px;color:var(--inkSoft);line-height:1.45">${l.t}</div></div></div>`).join('')}
    <div style="font-size:10.5px;color:var(--inkMute);margin-top:8px;line-height:1.45">Response-time and coverage metrics in Reporting are calculated from this log.</div>
@@ -1583,7 +1585,7 @@ function vFileOne(c){
  </div>`:''}
 
  ${ft==="access"?`<div class="card pop" style="padding:20px">
-  <div class="sechead">${ic('lock',13)} Minimum necessary visibility · who can see what in this file</div>
+  <h3 class="sechead">${ic('lock',13)} Minimum necessary visibility · who can see what in this file</h3>
   <div style="font-size:12px;color:var(--inkSoft);margin-bottom:14px;line-height:1.55">Sensitive information is shown only to staff whose role requires it, with an audit trail of access and action. This panel is what you show a parent or a regulator who asks.</div>
   <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">
    <thead><tr>${["Role","Signals & baselines","Concern notes","University journey","Safeguarding record"].map((h,i)=>`<th style="text-align:${i?'center':'left'};padding:9px 8px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--inkMute);border-bottom:1px solid var(--line)">${h}</th>`).join('')}</tr></thead>
@@ -1592,7 +1594,7 @@ function vFileOne(c){
      <td style="padding:10px 8px;font-weight:600;white-space:nowrap">${r[0]}</td>
      ${r.slice(1).map(v=>`<td style="padding:10px 8px;text-align:center;color:${v==="No"?'var(--inkMute)':v==="Yes"?'var(--good)':'var(--inkSoft)'};font-weight:${v==="Yes"?600:400}">${v}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
   <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line)">
-   <div class="sechead">${ic('list',13)} Access audit for this file</div>
+   <h3 class="sechead">${ic('list',13)} Access audit for this file</h3>
    ${[["13 Nov 07:04","SYSTEM","Signal evaluation · automated sweep"],["12 Nov 16:22","R.HADDAD","File access · purpose: case review"],["11 Nov 14:07","M.DAVIES","Concern submitted · no file read access granted"],["2 Oct 09:40","R.HADDAD","File access · purpose: scheduled meeting prep"]]
     .map(a=>`<div class="audit"><span style="width:96px;flex-shrink:0">${a[0]}</span><span style="width:86px;flex-shrink:0;color:${a[1]==='SYSTEM'?'var(--teal)':'var(--violet)'};font-weight:500">${a[1]}</span><span style="flex:1">${a[2]}</span></div>`).join('')}</div>
  </div>`:''}
@@ -1626,7 +1628,7 @@ function vFlow(){
  </div>
 
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <div class="sechead">${ic('doc',13)} Document & reference status · per student, per application</div>
+  <h3 class="sechead">${ic('doc',13)} Document & reference status · per student, per application</h3>
   <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">
    <thead><tr>${["Student","Platform","Transcript","Counselor ref","Teacher references","School forms"].map((h,i)=>`<th style="text-align:left;padding:9px 8px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--inkMute);border-bottom:1px solid var(--line)">${h}</th>`).join('')}</tr></thead>
    <tbody>${DOCS.map(d=>`<tr style="border-bottom:1px solid var(--lineSoft)">
@@ -1645,7 +1647,7 @@ function vFlow(){
 
  <div style="display:grid;grid-template-columns:1.15fr 1fr;gap:14px">
   <div class="card" style="padding:20px">
-   <div class="sechead">${ic('list',13)} Task list · generated from your cases</div>
+   <h3 class="sechead">${ic('list',13)} Task list · generated from your cases</h3>
    ${TASKS.map((t,i)=>`<div style="display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:11px 0;border-bottom:${i<TASKS.length-1?'1px solid var(--lineSoft)':'none'}">
     <div data-task="${i}" style="width:22px;height:22px;border-radius:6px;border:2px solid ${t.done?'var(--good)':'var(--line)'};background:${t.done?'var(--good)':'#fff'};display:grid;place-items:center;color:#fff;cursor:pointer">${t.done?ic('check',13):''}</div>
     <div><div style="font-size:12.5px;font-weight:${t.done?400:600};color:${t.done?'var(--inkMute)':'var(--ink)'};text-decoration:${t.done?'line-through':'none'}">${t.t}</div>
@@ -1654,7 +1656,7 @@ function vFlow(){
    <div style="font-size:10.5px;color:var(--inkMute);margin-top:11px;line-height:1.45">Tasks marked <b>Automated</b> run themselves — reminders, form chases and scheduled reports. You only see them so nothing is invisible.</div>
   </div>
   <div class="card" style="padding:20px">
-   <div class="sechead">${ic('refresh',13)} What runs without you</div>
+   <h3 class="sechead">${ic('refresh',13)} What runs without you</h3>
    ${[["Deadline nudges to students","Fires at T-21, T-14, T-7 and T-2 days per application","23 sent"],
       ["Teacher reference requests","Initial request plus two escalating reminders","11 sent"],
       ["Transcript & form packaging","Assembled per student per university, status tracked","6 active"],
@@ -1684,7 +1686,7 @@ function vArch(){
  return `<div class="fade">
  ${head("Signal architecture","From raw school data to an explainable signal","Nothing in this system is a black box. Original evidence and derived interpretation are stored separately, so any flag from any past date can still be explained.","var(--teal)","layers")}
  <div class="card" style="padding:22px;margin-bottom:16px">
-  <div class="sechead">${ic('refresh',13)} The pipeline</div>
+  <h3 class="sechead">${ic('refresh',13)} The pipeline</h3>
   <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:0;align-items:stretch">
   ${pipe.map(([n,t,d,i],ix)=>`<div style="position:relative;padding:0 9px;animation:rise .4s ${ix*.08}s backwards">
    <div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 14px;height:100%">
@@ -1698,7 +1700,7 @@ function vArch(){
  </div>
 
  <div class="card" style="padding:22px;margin-bottom:16px">
-  <div class="sechead">${ic('zap',13)} Worked example · one event through the pipeline</div>
+  <h3 class="sechead">${ic('zap',13)} Worked example · one event through the pipeline</h3>
   <div style="font-size:12px;color:var(--inkSoft);margin-bottom:14px;line-height:1.5">Ahmed's Mathematics result on 12 November, traced end to end. This is the trace a head of school or a regulator can ask for at any time.</div>
   ${[["1 · Data source","iSAMS gradebook webhook fired. Raw payload: student s1, subject MATH, assessment ASM-4471, score 41, recorded 12 Nov 09:14.","mono"],
     ["2 · Normalisation","Identity matched to student profile s1. Subject mapped to canonical MATHEMATICS. Timestamp normalised. Source quality: authoritative (SIS).",""],
@@ -1712,12 +1714,12 @@ function vArch(){
 
  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
   <div class="card" style="padding:20px">
-   <div class="sechead">${ic('layers',13)} Core data objects</div>
+   <h3 class="sechead">${ic('layers',13)} Core data objects</h3>
    ${objs.map(([t,d])=>`<div style="padding:10px 0;border-bottom:1px solid var(--lineSoft)">
     <b style="font-size:12.3px">${t}</b><div style="font-size:11.3px;color:var(--inkMute);margin-top:3px;line-height:1.5">${d}</div></div>`).join('')}
   </div>
   <div class="card" style="padding:20px">
-   <div class="sechead">${ic('shield',13)} Processing guarantees</div>
+   <h3 class="sechead">${ic('shield',13)} Processing guarantees</h3>
    ${["Event-driven — every new grade, absence or concern is evaluated immediately, not in a nightly batch",
       "Deterministic rules kept separate from probabilistic AI — urgent school rules never depend on a language model alone",
       "Original evidence and derived interpretation stored separately, so every flag stays auditable",
@@ -1758,7 +1760,7 @@ function vPilot(){
     .map(x=>`<div style="display:flex;gap:8px;align-items:flex-start;padding:4px 0;font-size:12px;color:#7A5504;line-height:1.5">${ic('check',13)}<span>${x}</span></div>`).join('')}</div></div></div>
  </div>
  <div class="card" style="padding:20px;margin-top:16px">
-  <div class="sechead">${ic('brief',13)} The five design principles this is built on</div>
+  <h3 class="sechead">${ic('brief',13)} The five design principles this is built on</h3>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 20px">
   ${[["Relief before complexity","Every feature must remove work or surface something important. It must not create another dashboard staff have to remember to check."],
      ["Change detection before static judgment","A student's deviation from their own baseline is usually more meaningful than their position against a cohort average."],
@@ -2029,7 +2031,7 @@ function vToday(){
  return `<div class="fade" style="max-width:920px">
   <div style="margin-bottom:22px">
    <div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);font-weight:700;margin-bottom:7px">Monday · 24 November</div>
-   <div class="serif" style="font-size:29px;font-weight:600;letter-spacing:-.02em">Good morning, Reem.</div>
+   <h1 class="serif" style="margin:0;font-size:29px;font-weight:600;letter-spacing:-.02em">Good morning, Reem.</h1>
    <div style="font-size:13.5px;color:var(--inkSoft);margin-top:7px;line-height:1.6">${meets} meetings, ${due.length} follow-ups due, and three students changed priority overnight. Everything below is ordered the way your day actually runs.</div>
   </div>
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px">
@@ -2040,7 +2042,7 @@ function vToday(){
      <div style="font-size:11.5px;color:var(--inkSoft);margin-top:2px">${l}</div></div></div>`).join('')}
   </div>
   <div class="card" style="padding:20px 22px;margin-bottom:20px">
-   <div class="sechead">${ic('radar',13)} What changed overnight</div>
+   <h3 class="sechead">${ic('radar',13)} What changed overnight</h3>
    ${moved.map((m,i)=>`<div class="lift" data-file="${m.id}" style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:11px 0;border-bottom:${i<moved.length-1?'1px solid var(--lineSoft)':'none'};cursor:pointer">
     <div><div style="font-size:13px;font-weight:600">${m.n}</div>
      <div style="font-size:11.8px;color:var(--inkMute);margin-top:2px">${m.r}</div></div>
@@ -2049,7 +2051,7 @@ function vToday(){
      <span style="font-weight:700;color:${m.t==="Urgent"?'var(--urgent)':m.t==="Recovered"?'var(--good)':'var(--checkin)'}">${m.t}</span></div>
    </div>`).join('')}
   </div>
-  <div class="sechead" style="margin-bottom:14px">${ic('clock',13)} Your day</div>
+  <h3 class="sechead" style="margin-bottom:14px">${ic('clock',13)} Your day</h3>
   <div style="position:relative">
    <div style="position:absolute;left:58px;top:8px;bottom:8px;width:1px;background:var(--line)"></div>
    ${AGENDA.map((a,i)=>{const K=KIND[a.k];
@@ -2099,7 +2101,7 @@ function agendaBlock(){
   <div style="font-size:13px;color:var(--inkSoft);margin-bottom:16px;line-height:1.6">${meets} meetings, ${due} follow-ups due, and three students changed priority overnight.</div>
 
   <div class="card" style="padding:18px 20px;margin-bottom:14px">
-   <div class="sechead">${ic('radar',13)} Changed overnight</div>
+   <h3 class="sechead">${ic('radar',13)} Changed overnight</h3>
    ${[["Ahmed Khalifa","s1","Monitor","Urgent","Teacher concern corroborated the Maths and attendance signals"],
       ["Layla Haddad","s2","Review","Check-in","Engagement silence passed the 14-day threshold"],
       ["Maryam Al Suwaidi","s5","Check-in","Recovered","Attendance held inside her personal band for three weeks"]]
@@ -2111,7 +2113,7 @@ function agendaBlock(){
       <span style="font-weight:700;color:${m[3]==="Urgent"?'var(--urgent)':m[3]==="Recovered"?'var(--good)':'var(--checkin)'}">${m[3]}</span></div></div>`).join('')}
   </div>
 
-  <div class="sechead" style="margin-bottom:12px">${ic('clock',13)} What needs doing today</div>
+  <h3 class="sechead" style="margin-bottom:12px">${ic('clock',13)} What needs doing today</h3>
   <div style="position:relative">
    <div style="position:absolute;left:56px;top:10px;bottom:10px;width:1px;background:var(--line)"></div>
    ${AGENDA.map((a,i)=>{const K=KIND[a.k];
@@ -2164,7 +2166,7 @@ function vCohort(){
      ${ic('search',15)}<input id="cq" aria-label="Search students by name, goal, or university" value="${(S.q||"").replace(/"/g,'&quot;')}" placeholder="Search name, goal or university…" style="border:none;background:none;font-size:13px;width:100%;color:var(--ink)">
      ${q?`<button data-q="" aria-label="Clear search" style="border:none;background:none;cursor:pointer;color:var(--inkMute);display:flex;padding:0">${ic('x',14)}</button>`:''}</div>
     <div style="display:flex;gap:7px;margin-top:11px;flex-wrap:wrap">
-     ${chips.map(([k,l,n,c])=>`<button data-cfilter="${k}" style="display:flex;align-items:center;gap:7px;border:1px solid ${filt===k?c:'var(--line)'};background:${filt===k?c:'#fff'};color:${filt===k?'#fff':'var(--inkSoft)'};border-radius:20px;padding:6px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s">
+     ${chips.map(([k,l,n,c])=>`<button data-cfilter="${k}" style="display:flex;align-items:center;gap:7px;border:1px solid ${filt===k?c:'var(--line)'};background:${filt===k?c:'#fff'};color:${filt===k?'#fff':'var(--inkSoft)'};border-radius:20px;padding:6px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:border-color .15s,background-color .15s,color .15s">
       ${k!=="all"?`<span style="width:7px;height:7px;border-radius:50%;background:${filt===k?'#fff':c}"></span>`:''}${l}<span style="opacity:.7">${n}</span></button>`).join('')}</div>
    </div>
    <div class="card" style="padding:0;overflow:hidden">
@@ -2234,7 +2236,7 @@ function vTMyClasses(){
   </div>
 
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px">
-   ${TEACHER.classes.map((cls,i)=>`<div class="card arrive" style="padding:20px;border-left:3px solid var(--brand);animation:rise .35s ${i*.05}s backwards">
+   ${TEACHER.classes.map((cls,i)=>`<div class="card arrive" style="padding:20px;animation:rise .35s ${i*.05}s backwards">
     <div style="font-weight:600;color:var(--ink);font-size:14px;margin-bottom:2px">${cls.label}</div>
     <div style="font-size:11px;color:var(--ink-3);margin-bottom:14px">${cls.period} · ${cls.code}</div>
     
@@ -2281,7 +2283,7 @@ function vTClass(){
    <span class="btn btn-g btn-sm" style="pointer-events:none">${ic('plus',13)} Log</span>
   </div>`;}).join('')}</div>
  <div class="card" style="padding:16px 18px;margin-top:16px">
-  <div class="sechead">${ic('list',13)} What you have logged</div>
+  <h3 class="sechead">${ic('list',13)} What you have logged</h3>
   ${TFLAGS.filter(f=>f.by.indexOf("Davies")>-1).map(f=>{
    var K=FLAG_KINDS.find(function(k){return k.k===f.kind;});
    var routed=f.routed?'<div style="font-size:11px;color:var(--ok);margin-top:5px;display:flex;align-items:center;gap:5px">'+ic('checkC',12)+' '+f.routed+'</div>':'';
@@ -2311,7 +2313,7 @@ function tflagModal(){
    <div style="font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);margin-bottom:9px">What did you notice? <span style="font-weight:400;text-transform:none;letter-spacing:0">Tap any that apply</span></div>
    <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px">
     ${K.tags.map(t=>{const on=picked.includes(t);
-     return `<button data-ttag="${t}" style="font-size:12px;font-weight:500;padding:7px 12px;border-radius:99px;cursor:pointer;font-family:inherit;border:1px solid ${on?K.c:'var(--line-2)'};background:${on?K.c:'var(--surface)'};color:${on?'#fff':'var(--ink-2)'};transition:all .14s">${on?'✓ ':''}${t}</button>`;}).join('')}</div>
+     return `<button data-ttag="${t}" style="font-size:12px;font-weight:500;padding:7px 12px;border-radius:99px;cursor:pointer;font-family:inherit;border:1px solid ${on?K.c:'var(--line-2)'};background:${on?K.c:'var(--surface)'};color:${on?'#fff':'var(--ink-2)'};transition:border-color .14s,background-color .14s,color .14s">${on?'✓ ':''}${t}</button>`;}).join('')}</div>
    <label for="tnote" style="display:block;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">In your words <span style="font-weight:400;text-transform:none;letter-spacing:0">Optional but valuable</span></label>
    <textarea id="tnote" placeholder="What you saw, in a sentence. Describe behaviour, not a diagnosis." style="width:100%;min-height:88px;border:1px solid var(--line-2);border-radius:10px;padding:12px;font-size:13px;line-height:1.55;resize:vertical">${S.tNote||''}</textarea>
    <div style="display:flex;gap:9px;background:var(--brand-3);border-radius:10px;padding:12px 14px;margin-top:14px;font-size:11.5px;color:var(--brand-2);line-height:1.5">
@@ -2815,7 +2817,7 @@ function vStuClasses(){
   ${grade===9?`<div style="margin-bottom:24px">
    <div style="font-weight:600;color:var(--ink);font-size:14px;margin-bottom:12px">Available AP courses for Grade 10+</div>
    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:16px">
-    ${coursesByPathway.AP.slice(0,6).map((c,i)=>`<div class="card" style="padding:14px;border-left:3px solid var(--info)">
+    ${coursesByPathway.AP.slice(0,6).map((c,i)=>`<div class="card" style="padding:14px">
      <div style="font-weight:600;color:var(--ink);font-size:13px;margin-bottom:2px">${c.name}</div>
      <div style="font-size:11px;color:var(--ink-3);margin-bottom:8px">${c.teacher} · Period ${c.period}</div>
      <div style="font-size:11px;color:var(--info);font-weight:600">AP Pathway</div>
@@ -2827,7 +2829,7 @@ function vStuClasses(){
    <div style="font-weight:600;color:var(--ink);font-size:14px;margin-bottom:12px">Entry requirements for your target universities</div>
    ${unis.map(uni=>{
     const req=UNI_COURSE_REQUIREMENTS[uni.u]||{ib:"Not specified",ap:"Not specified",standard:"Not specified"};
-    return `<div class="card" style="padding:16px;margin-bottom:10px;border-left:3px solid var(--violet)">
+    return `<div class="card" style="padding:16px;margin-bottom:10px">
      <div style="font-weight:600;color:var(--ink);font-size:13px;margin-bottom:6px">${uni.u}</div>
      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;font-size:12px">
       <div>
@@ -2905,7 +2907,7 @@ function vStuACSSelector(){
     ${courses.map((course,i)=>{
        const courseId=`${pathway}_${i}`;
      const isSelected=selected.includes(courseId);
-       return `<div class="card" style="padding:14px;border-left:3px solid ${pathwayColors[pathway]};cursor:pointer;opacity:${isSelected?1:0.85};transition:all .2s" data-course="${courseId}">
+       return `<div class="card" style="padding:14px;cursor:pointer;opacity:${isSelected?1:0.85};transition:opacity .2s" data-course="${courseId}">
       <div style="display:flex;gap:10px">
          <input type="checkbox" data-coursechk="${courseId}" style="margin-top:2px;cursor:pointer" ${isSelected?"checked":""}>
        <div style="flex:1">
@@ -2942,7 +2944,7 @@ function vTClassApprovals(){
    const periods=requested.reduce((all,course)=>{all[course.period]=(all[course.period]||0)+1;return all;},{});
    const conflicts=Object.entries(periods).filter(([,count])=>count>1);
    const teacherCourses=requested.filter(course=>course.teacher===TEACHER.name).length;
-   return `<div class="card" style="padding:0;margin-bottom:18px;overflow:hidden;border-left:3px solid var(--info)">
+   return `<div class="card" style="padding:0;margin-bottom:18px;overflow:hidden">
     <div style="padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;align-items:flex-start">
      <div style="display:flex;gap:12px;align-items:center">
       ${av(a.av||student.av||"ST","student",40,11)}
@@ -3316,14 +3318,14 @@ function vOnboardQuiz(){
 
   ${q.type==="single"?`<div style="display:flex;flex-direction:column;gap:10px">
    ${q.opts.map(([v,label])=>{const on=ans[q.id]===v;
-    return `<button data-onb-single="${q.id}:${v}" style="text-align:left;font-family:inherit;cursor:pointer;padding:16px 18px;border-radius:13px;border:1.5px solid ${on?'var(--violet)':'var(--line-2)'};background:${on?'var(--violet-bg)':'var(--surface)'};display:flex;align-items:center;gap:12px;transition:all .15s">
+    return `<button data-onb-single="${q.id}:${v}" style="text-align:left;font-family:inherit;cursor:pointer;padding:16px 18px;border-radius:13px;border:1.5px solid ${on?'var(--violet)':'var(--line-2)'};background:${on?'var(--violet-bg)':'var(--surface)'};display:flex;align-items:center;gap:12px;transition:border-color .15s,background-color .15s">
      <span style="width:20px;height:20px;border-radius:99px;border:2px solid ${on?'var(--violet)':'var(--line-3)'};background:${on?'var(--violet)':'#fff'};flex-shrink:0;display:grid;place-items:center">${on?'<span style="width:7px;height:7px;border-radius:99px;background:#fff"></span>':''}</span>
      <span style="font-size:14px;color:${on?'var(--violetDeep)':'var(--ink)'};font-weight:${on?600:500}">${label}</span></button>`;}).join('')}
   </div>`:''}
 
   ${q.type==="multi"?`<div style="display:flex;flex-direction:column;gap:10px">
    ${q.opts.map(([v,label])=>{const on=(ans[q.id]||[]).includes(v);
-    return `<button data-onb-multi="${q.id}:${v}" style="text-align:left;font-family:inherit;cursor:pointer;padding:16px 18px;border-radius:13px;border:1.5px solid ${on?'var(--violet)':'var(--line-2)'};background:${on?'var(--violet-bg)':'var(--surface)'};display:flex;align-items:center;gap:12px;transition:all .15s">
+    return `<button data-onb-multi="${q.id}:${v}" style="text-align:left;font-family:inherit;cursor:pointer;padding:16px 18px;border-radius:13px;border:1.5px solid ${on?'var(--violet)':'var(--line-2)'};background:${on?'var(--violet-bg)':'var(--surface)'};display:flex;align-items:center;gap:12px;transition:border-color .15s,background-color .15s">
      <span style="width:20px;height:20px;border-radius:6px;border:2px solid ${on?'var(--violet)':'var(--line-3)'};background:${on?'var(--violet)':'#fff'};flex-shrink:0;display:grid;place-items:center">${on?ic('check',13):''}</span>
      <span style="font-size:14px;color:${on?'var(--violetDeep)':'var(--ink)'};font-weight:${on?600:500}">${label}</span></button>`;}).join('')}
   </div>`:''}
@@ -3568,7 +3570,7 @@ function vDiscoveryChat(){
      <div style="font-size:12.5px;color:var(--ink-3);font-weight:500">${chatDone?'Analyzing your profile and interests':'Question '+(step+1)+' of ~8–10 · thoughtful pace'}</div>
     </div>
    </div>
-   ${!chatDone?`<div style="height:3px;background:var(--line-2);border-radius:99px;margin-top:16px;overflow:hidden"><div style="height:100%;width:${Math.min(90,Math.round((step/MIN_QUESTIONS)*70))}%;background:linear-gradient(90deg,#9B8AFB,#6938EF);border-radius:99px;transition:width .3s ease"></div></div>`:''}
+   ${!chatDone?`<div style="height:3px;background:var(--line-2);border-radius:99px;margin-top:16px;overflow:hidden"><div style="height:100%;width:100%;background:linear-gradient(90deg,#9B8AFB,#6938EF);border-radius:99px;clip-path:inset(0 ${100-Math.min(90,Math.round((step/MIN_QUESTIONS)*70))}% 0 0);transition:clip-path .3s ease"></div></div>`:''}
   </div>
 
   <div id="chatlog" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;max-height:420px;overflow-y:auto;padding-right:4px">
@@ -3695,7 +3697,7 @@ function vGamifiedRoadmap(){
     :gf&&gf.focus==="both"?`<div style="display:inline-flex;align-items:center;gap:6px;background:var(--violet-bg);color:var(--violetDeep);padding:6px 16px;border-radius:99px;font-size:11.5px;font-weight:700">${ic('spark',13)} University + industry, both fixed</div>`
     :`<div style="display:inline-flex;align-items:center;gap:6px;background:var(--surface-3);color:var(--ink-3);padding:6px 16px;border-radius:99px;font-size:11.5px;font-weight:700">${ic('route',13)} Industry-focused — university is flexible</div>`}
    </div>
-   <div class="serif" style="font-size:25px;font-weight:600;margin-bottom:6px">${roadmapTitle}</div>
+   <h2 class="serif" style="margin:0 0 6px;font-size:25px;font-weight:600">${roadmapTitle}</h2>
    <div style="font-size:12.5px;color:var(--ink-3)">${a.blurb}</div>
   </div>
 
@@ -3775,7 +3777,7 @@ function vGamifiedRoadmap(){
   </button>
   ${S.showWhy?(()=>{const reasons=explainMatch(key,S.onbAnswers||{},S.chatAnswers||{});
    return `<div style="margin-top:14px;display:flex;flex-direction:column;gap:10px">
-    ${reasons.length?reasons.map(r=>`<div style="border-left:3px solid ${a.color};background:var(--surface-2);border-radius:0 9px 9px 0;padding:10px 14px">
+    ${reasons.length?reasons.map(r=>`<div style="background:var(--surface-2);border-radius:9px;padding:10px 14px">
      <div style="font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:${a.color}">${r.from}</div>
      <div style="font-size:12.3px;color:var(--ink-2);margin-top:3px;line-height:1.5;font-style:italic">"${(r.quote||'').slice(0,140)}${(r.quote||'').length>140?'…':''}"</div>
     </div>`).join(''):'<div style="font-size:12px;color:var(--ink-3)">Based on the overall shape of your answers rather than any single one.</div>'}
@@ -3786,7 +3788,7 @@ function vGamifiedRoadmap(){
  ${(()=>{const precedent=pathwayPrecedent(key);const matches=alumniForArchetype(key);
   if(!precedent)return'';
   return `<div class="card" style="padding:22px;margin-top:16px">
-   <div class="sechead">${ic('users',13)} Real precedent from this school</div>
+   <h3 class="sechead">${ic('users',13)} Real precedent from this school</h3>
    <div style="font-size:12.3px;color:var(--ink-3);margin-bottom:14px;line-height:1.6">${precedent.total} student${precedent.total>1?'s':''} from Al Bateen Academy took a route like this, reaching ${precedent.universities} different universit${precedent.universities>1?'ies':'y'} across ${precedent.countries} countr${precedent.countries>1?'ies':'y'} — this isn't a hypothetical path.</div>
    ${matches.slice(0,3).map(m=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)">
     ${av(m.name.split(' ').map(w=>w[0]).join(''),"student",26,8)}
@@ -3837,7 +3839,7 @@ function vDiscoverFlow(){
  return `<div class="fade" style="max-width:680px;margin:0 auto;padding-top:24px">
   <div style="text-align:center;margin-bottom:32px">
    <div style="width:72px;height:72px;border-radius:20px;background:linear-gradient(145deg,#9B8AFB,#6938EF);display:grid;place-items:center;margin:0 auto 24px;box-shadow:0 8px 28px rgba(105,56,239,.35)">${ic('spark',36)}</div>
-   <div class="serif" style="font-size:28px;font-weight:700;margin-bottom:12px">Your Pathway Discovery</div>
+   <h1 class="serif" style="margin:0 0 12px;font-size:28px;font-weight:700">Your Pathway Discovery</h1>
    <div style="font-size:15px;color:var(--ink-2);line-height:1.75;max-width:560px;margin:0 auto">${passionSnippet}We'll have a genuine conversation about what you're working toward — not a form, but a back-and-forth that goes as deep as it actually needs to.</div>
   </div>
   
@@ -3873,7 +3875,7 @@ function vPathExplorer(navAttr,uniTab,contactTab){
  const c=g(PARENT_ME);
  return `
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <div class="sechead">${ic('route',13)} What ${c.name.split(' ')[0]} is doing now</div>
+  <h3 class="sechead">${ic('route',13)} What ${c.name.split(' ')[0]} is doing now</h3>
   ${c.track==="IB"?`<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--ok-bg);border:1px solid var(--ok-line);border-radius:12px;padding:16px">
    <span style="color:var(--ok);display:flex">${ic('checkC',22)}</span>
    <div style="flex:1;min-width:220px"><b style="font-size:14px;color:#05603A">${c.name.split(' ')[0]} is on the full IB Diploma.</b>
@@ -3895,7 +3897,7 @@ function vPathExplorer(navAttr,uniTab,contactTab){
   </div>`}
  </div>
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <div class="sechead">${ic('layers',13)} IB and AP, side by side</div>
+  <h3 class="sechead">${ic('layers',13)} IB and AP, side by side</h3>
   <div style="overflow-x:auto"><table class="ibap" style="width:100%;border-collapse:collapse;font-size:12.5px">
    <thead><tr>
     <th style="text-align:left;padding:10px;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-4);border-bottom:1px solid var(--line);width:130px"></th>
@@ -3907,7 +3909,7 @@ function vPathExplorer(navAttr,uniTab,contactTab){
     <td style="padding:12px 10px;line-height:1.6;color:var(--ink-2);vertical-align:top">${r[2]}</td></tr>`).join('')}</tbody></table></div>
  </div>
 <div class="card" style="padding:20px;margin-bottom:16px">
-  <div class="sechead">${ic('trend',13)} Where these choices have led</div>
+  <h3 class="sechead">${ic('trend',13)} Where these choices have led</h3>
   <div style="font-size:12.3px;color:var(--ink-3);line-height:1.6;margin-bottom:18px">Every family faces the same question before finalising subject choices: which combination actually leads where? Pick a country to see real students from this school — what they took, IB or AP, and which university they now attend.</div>
 
   <div style="font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);margin-bottom:9px">Which country is she considering?</div>
@@ -3915,7 +3917,7 @@ function vPathExplorer(navAttr,uniTab,contactTab){
    ${COUNTRY_OPTIONS.map(cn=>{const on=(S.pathCountry||"UK")===cn;
     const stats=(()=>{const all=PATH_ALUMNI.filter(a=>a.country===cn);return{n:all.length,u:[...new Set(all.map(a=>a.uni))].length};})();
     const flagBg={UK:"linear-gradient(135deg,#3B5FE0,#1A3AA8)",US:"linear-gradient(135deg,#E0473B,#A82A1A)",UAE:"linear-gradient(135deg,#1FA97E,#0B7D5C)"}[cn];
-    return `<button data-pcty="${cn}" style="text-align:left;font-family:inherit;cursor:pointer;border-radius:13px;padding:14px 15px;border:1.5px solid ${on?'var(--rose)':'var(--line)'};background:${on?'var(--rose-bg)':'var(--surface)'};box-shadow:${on?'0 0 0 3px var(--rose-line)':'none'};transition:all .15s">
+    return `<button data-pcty="${cn}" style="text-align:left;font-family:inherit;cursor:pointer;border-radius:13px;padding:14px 15px;border:1.5px solid ${on?'var(--rose)':'var(--line)'};background:${on?'var(--rose-bg)':'var(--surface)'};box-shadow:${on?'0 0 0 3px var(--rose-line)':'none'};transition:border-color .15s,background-color .15s,box-shadow .15s">
      <div style="width:34px;height:34px;border-radius:9px;background:${flagBg};color:#fff;display:grid;place-items:center;font-size:11px;font-weight:700;margin-bottom:10px;box-shadow:inset 0 1px 0 rgba(255,255,255,.25)">${cn}</div>
      <div style="font-size:13.5px;font-weight:700;color:${on?'var(--rose-2)':'var(--ink)'}">${cn==="UK"?"United Kingdom":cn==="US"?"United States":"United Arab Emirates"}</div>
      <div style="font-size:11px;color:var(--ink-3);margin-top:2px">${stats.u} universities · ${stats.n} students tracked</div>
@@ -3928,7 +3930,7 @@ function vPathExplorer(navAttr,uniTab,contactTab){
     const goalMap={"Investment Banking":"Economics"};
     const goalMatch=goalMap[c.goal]||DEGREE_OPTIONS.find(d=>c.goal.includes(d))||"";
     const isGoal=val===goalMatch&&goalMatch!=="";
-    return `<button data-pdeg="${val}" style="font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:99px;cursor:pointer;font-family:inherit;border:1px solid ${on?'var(--rose)':'var(--line-2)'};background:${on?'var(--rose)':'var(--surface)'};color:${on?'#fff':'var(--ink-2)'};transition:all .15s">${label}${isGoal?` <span style="opacity:.7">· their goal</span>`:''}</button>`;}).join('')}
+    return `<button data-pdeg="${val}" style="font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:99px;cursor:pointer;font-family:inherit;border:1px solid ${on?'var(--rose)':'var(--line-2)'};background:${on?'var(--rose)':'var(--surface)'};color:${on?'#fff':'var(--ink-2)'};transition:border-color .15s,background-color .15s,color .15s">${label}${isGoal?` <span style="opacity:.7">· their goal</span>`:''}</button>`;}).join('')}
   </div>
 
   ${(()=>{
@@ -4019,7 +4021,7 @@ Universities in ${cty==="UK"?"the United Kingdom":cty==="US"?"the United States"
    `;})()}
  </div>
  <div class="card" style="padding:20px">
-  <div class="sechead">${ic('alert',13)} The confusion we hear most often</div>
+  <h3 class="sechead">${ic('alert',13)} The confusion we hear most often</h3>
   ${[["\u201cIs IB harder than AP?\u201d","They are difficult in different ways. IB is broader and more sustained across two years. AP is deeper in fewer subjects and concentrated around exams. Universities do not treat one as automatically stronger."],
      ["\u201cWill AP hurt her chances in the UK?\u201d","Not automatically, but UK universities usually ask for a specific number of APs at specific scores, and the requirement is less standardised. The IB maps more cleanly onto a UK offer."],
      ["\u201cCan she switch now?\u201d","In Grade 12, no. Switching pathway is a Year 11 decision at this school. This page exists so that families with younger children can make that choice with the full picture."],
@@ -4034,7 +4036,7 @@ function vApExamsStandalone(navAttr,contactTab){
  const c=g(PARENT_ME);
  return `
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <div class="sechead">${ic('clock',13)} AP exam schedule</div>
+  <h3 class="sechead">${ic('clock',13)} AP exam schedule</h3>
   <div style="font-size:12.3px;color:var(--ink-3);margin-bottom:16px;line-height:1.6">Unlike the IB Diploma, which is examined once at the end of two years, AP courses are examined individually — and can fall in either Grade 11 or Grade 12. This tracks registration deadlines, exam dates, and when scores are released, for every AP course ${c.name.split(' ')[0]} is taking this year.</div>
   ${AP_EXAMS.map((e,i)=>{const col=e.status==="registered"?"var(--ok)":e.status==="registration open"?"var(--warn)":"var(--crit)";
     const bg=e.status==="registered"?"var(--ok-bg)":e.status==="registration open"?"var(--warn-bg)":"var(--crit-bg)";
@@ -4055,13 +4057,13 @@ function vApExamsStandalone(navAttr,contactTab){
 
 function vHSGuide(){
  return `<div class="card" style="padding:20px;margin-bottom:16px">
-  <div class="sechead">${ic('spark',13)} Welcome to Al Bateen Academy's senior school</div>
+  <h3 class="sechead">${ic('spark',13)} Welcome to Al Bateen Academy's senior school</h3>
   <div style="font-size:12.5px;color:var(--ink-3);line-height:1.65;margin-bottom:8px">Grade 9 is orientation, not application. Nothing here is being tracked toward a university yet — the goal this year is simply understanding how the system works, so that the real decision in Grade 10 (IB or AP) is an informed one rather than a guess.</div>
   <div style="font-size:12.5px;color:var(--ink-3);line-height:1.65">This portal will grow with your child. Right now it explains how grading works and what is on offer. From Grade 10 it becomes a tool for choosing a path. From Grade 11 it starts tracking real progress. By Grade 12 it is centred entirely on applications, offers, and what it takes to keep them.</div>
  </div>
 
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <div class="sechead">${ic('trend',13)} How GPA and weighting actually work</div>
+  <h3 class="sechead">${ic('trend',13)} How GPA and weighting actually work</h3>
   <div style="display:flex;flex-direction:column;gap:14px">
    <div style="border:1px solid var(--line);border-radius:11px;padding:14px 16px">
     <b style="font-size:13px">Unweighted GPA</b>
@@ -4079,7 +4081,7 @@ function vHSGuide(){
  </div>
 
  <div class="card" style="padding:20px">
-  <div class="sechead">${ic('book',13)} Every subject offered at this school</div>
+  <h3 class="sechead">${ic('book',13)} Every subject offered at this school</h3>
   <div style="font-size:12.2px;color:var(--ink-3);margin-bottom:14px;line-height:1.6">This is the full catalogue across Grades 9 through 12. Not every combination is available at every level — the IB Diploma requires one subject from most groups, while AP allows any combination. Grade 10 is when this turns into an actual choice.</div>
   ${COURSE_CATALOG.map(d=>`<div style="margin-bottom:14px">
    <div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--rose-2);margin-bottom:7px">${d.dept}</div>
@@ -4098,7 +4100,7 @@ ${(()=>{const stats=discoveryCohortStats();
    if(!stats.studentsWithDiscovery)return'';
    const archColors={finance:'var(--brand)',tech:'var(--info)',medicine:'var(--crit)',venture:'var(--ok)',design:'var(--rose)'};
    return `<div class="card" style="padding:22px;margin-bottom:20px;background:var(--surface-2)">
-    <div class="sechead">${ic('trend',13)} This year's discovery trends</div>
+    <h3 class="sechead">${ic('trend',13)} This year's discovery trends</h3>
     <div style="font-size:12px;color:var(--ink-3);margin-bottom:16px">${stats.studentsWithDiscovery} student${stats.studentsWithDiscovery>1?'s':''} have been through discovery so far.</div>
     <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
      ${stats.archetypeCounts.map(a=>`<div style="display:flex;align-items:center;gap:10px">
@@ -4378,7 +4380,7 @@ function vPSResults(c,rec){
  </div>
 
  <div class="card" style="padding:22px;margin-bottom:16px">
-  <div class="sechead">${ic('trend',13)} Section-by-section breakdown</div>
+  <h3 class="sechead">${ic('trend',13)} Section-by-section breakdown</h3>
   <div style="display:flex;flex-direction:column;gap:12px">
    ${a.sections.map((s,i)=>{const prevSection=versions.length>1&&versions[versions.length-2].analysis.sections[i]&&versions[versions.length-2].analysis.sections[i].name===s.name?versions[versions.length-2].analysis.sections[i]:null;
      const sDelta=prevSection?s.score-prevSection.score:null;
@@ -4394,7 +4396,7 @@ function vPSResults(c,rec){
  </div>
 
  <div class="card" style="padding:22px;margin-bottom:16px">
-  <div class="sechead">${ic('checkC',13)} What actually gets students in through ${bm.label}</div>
+  <h3 class="sechead">${ic('checkC',13)} What actually gets students in through ${bm.label}</h3>
   <div style="font-size:12px;color:var(--ink-3);margin-bottom:12px;line-height:1.5">Patterns seen across successful ${bm.region} applications — not rules, but consistent signals.</div>
   ${a.benchmarkFocus.map(f=>`<div style="display:flex;gap:9px;padding:7px 0;border-top:1px solid var(--line)">
    <span style="color:var(--ok);flex-shrink:0;margin-top:1px">${ic('checkC',14)}</span>
@@ -4402,14 +4404,14 @@ function vPSResults(c,rec){
  </div>
 
  <div class="card" style="padding:22px;margin-bottom:16px">
-  <div class="sechead">${ic('alert',13)} Common mistakes with ${bm.label} applications</div>
+  <h3 class="sechead">${ic('alert',13)} Common mistakes with ${bm.label} applications</h3>
   ${a.benchmarkWeak.map(f=>`<div style="display:flex;gap:9px;padding:7px 0;border-top:1px solid var(--line)">
    <span style="color:var(--warn);flex-shrink:0;margin-top:1px">${ic('alert',14)}</span>
    <div style="font-size:12.3px;color:var(--ink-2);line-height:1.5">${f}</div></div>`).join('')}
  </div>
 
  ${a.uniNotes&&a.uniNotes.length?`<div class="card" style="padding:22px;margin-bottom:16px">
-  <div class="sechead">${ic('grad',13)} Specific to each university this statement reaches</div>
+  <h3 class="sechead">${ic('grad',13)} Specific to each university this statement reaches</h3>
   <div style="font-size:12px;color:var(--ink-3);margin-bottom:12px;line-height:1.5">Even though it's one shared statement, here's what each individual admissions team specifically tends to weigh more heavily.</div>
   ${a.uniNotes.map(n=>`<div style="padding:9px 0;border-top:1px solid var(--line)">
    <b style="font-size:12.5px">${n.uni}</b>
@@ -4417,7 +4419,7 @@ function vPSResults(c,rec){
  </div>`:''}
 
  ${alumniAtTheseUnis.length?`<div class="card" style="padding:22px;margin-bottom:16px">
-  <div class="sechead">${ic('users',13)} Real students from this school in this group</div>
+  <h3 class="sechead">${ic('users',13)} Real students from this school in this group</h3>
   <div style="font-size:12px;color:var(--ink-3);margin-bottom:12px;line-height:1.5">${alumniAtTheseUnis.length} student${alumniAtTheseUnis.length>1?'s':''} from Al Bateen Academy are already at one of these universities.</div>
   ${alumniAtTheseUnis.slice(0,3).map(al=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--line)">
    ${av(al.name.split(' ').map(w=>w[0]).join(''),"student",24,7)}
@@ -4479,7 +4481,7 @@ function vPSReviews(){
 ${(()=>{const stats=psCohortStats();
    if(!stats)return'';
    return `<div class="card" style="padding:22px;margin-bottom:20px;background:var(--surface-2)">
-    <div class="sechead">${ic('trend',13)} This year's personal statement patterns</div>
+    <h3 class="sechead">${ic('trend',13)} This year's personal statement patterns</h3>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">
      <div style="background:var(--surface);border-radius:10px;padding:12px 14px">
       <div style="font-size:22px;font-weight:700" class="serif">${stats.total}</div>
@@ -4654,7 +4656,7 @@ function vParent(){
 
  <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:14px;margin-bottom:16px;align-items:start">
   <div class="card" style="padding:20px">
-   <div class="sechead">${ic('clock',13)} Attendance this month</div>
+   <h3 class="sechead">${ic('clock',13)} Attendance this month</h3>
    <div style="font-size:12px;color:var(--ink-3);margin-bottom:14px;line-height:1.5">Sun–Thu school week. ${(()=>{const days=buildNovemberCalendar();const lateN=days.filter(x=>x.status==="late").length;return c.name.split(" ")[0]+(lateN?" has attended every school day this month except "+lateN+", both with a short late arrival.":" has attended every school day this month.");})()}</div>
    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center;margin-bottom:10px">
     ${["S","M","T","W","T","F","S"].map(d=>`<div style="font-size:9.5px;font-weight:700;color:var(--ink-4);letter-spacing:.04em;padding:3px 0">${d}</div>`).join('')}
@@ -4677,7 +4679,7 @@ function vParent(){
    </div>
   </div>
   <div class="card" style="padding:20px">
-   <div class="sechead">${ic('users',13)} Mentor</div>
+   <h3 class="sechead">${ic('users',13)} Mentor</h3>
    ${c.id==="s3"?`<div style="display:flex;gap:11px;align-items:flex-start;margin-bottom:12px">
     ${av("HR","mentor",42,12)}
     <div style="min-width:0"><b style="font-size:13.5px">${PARENT_MENTOR.name}</b>
@@ -4691,7 +4693,7 @@ function vParent(){
  </div>
 
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <div class="sechead">${ic('star',13)} What ${c.name.split(" ")[0]} has been achieving</div>
+  <h3 class="sechead">${ic('star',13)} What ${c.name.split(" ")[0]} has been achieving</h3>
   ${(()=>{const achList=PARENT_ACHIEVEMENTS_BY_GRADE[S.previewGrade||12]||PARENT_ACHIEVEMENTS_BY_GRADE[12];
    return achList.map((a,i)=>`<div style="display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:${i<achList.length-1?'1px solid var(--line)':'none'}">
    <div style="width:30px;height:30px;border-radius:9px;background:var(--rose-bg);color:var(--rose);display:grid;place-items:center;flex-shrink:0">${ic(a.icon,15)}</div>
@@ -4701,14 +4703,14 @@ function vParent(){
  </div>
 
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <div class="sechead">${ic('clock',13)} What is coming up</div>
+  <h3 class="sechead">${ic('clock',13)} What is coming up</h3>
   ${(pg===12?[["UCAS submission","18 days","var(--warn)"],["Personal statement final draft","This week","var(--warn)"],["Semester 1 transcript issued","20 January","var(--ink-3)"],["Parents' evening","5 December","var(--ink-3)"]]
      :pg===11?[["Semester 1 transcript issued","20 January","var(--ink-3)"],["Parents' evening","5 December","var(--ink-3)"],["University shortlist review with counselor","Next scheduled meeting","var(--ink-3)"]]
      :[["Semester 1 transcript issued","20 January","var(--ink-3)"],["Parents' evening","5 December","var(--ink-3)"],["Subject confirmation deadline","End of this term","var(--warn)"]])
    .map(x=>`<div class="kv"><span>${x[0]}</span><b style="color:${x[2]}">${x[1]}</b></div>`).join('')}
   <button class="btn btn-p btn-sm" style="margin-top:14px" data-pv="meetings">${ic('brief',13)} Book a meeting with Ms. Haddad</button></div>
  <div class="card" style="padding:20px">
-  <div class="sechead">${ic('shield',13)} What you can and cannot see</div>
+  <h3 class="sechead">${ic('shield',13)} What you can and cannot see</h3>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 20px">
    <div>${["Attendance and punctuality","Working and predicted grades","Semesterly transcripts","University list, requirements and deadlines","Messages from the counselor"].map(x=>`<div style="display:flex;gap:8px;padding:7px 0;font-size:12.3px;color:var(--ink-2)">${ic('checkC',14)}<span>${x}</span></div>`).join('')}</div>
    <div>${["Private counseling notes","Teacher concern wording","Internal signal analysis","Other students' information"].map(x=>`<div style="display:flex;gap:8px;padding:7px 0;font-size:12.3px;color:var(--ink-4)">${ic('x',14)}<span>${x}</span></div>`).join('')}</div>
@@ -4745,7 +4747,7 @@ function vParent(){
 
  ${pv==="grades"?(c.track==="IB"?`
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <div class="sechead">${ic('doc',13)} Transcripts</div>
+  <h3 class="sechead">${ic('doc',13)} Transcripts</h3>
   <div style="font-size:12.3px;color:var(--ink-3);margin-bottom:14px;line-height:1.55">Issued every semester and available here permanently. The current transcript includes the predicted grades teachers have released for university applications.</div>
   ${TRANSCRIPTS.map(t=>`<div style="display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line)">
    <div><b style="font-size:13px">${t.term}</b>
@@ -4758,7 +4760,7 @@ function vParent(){
   </div>`).join('')}
  </div>
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <div class="sechead">${ic('book',13)} Subjects, working grades and predictions</div>
+  <h3 class="sechead">${ic('book',13)} Subjects, working grades and predictions</h3>
   <div style="font-size:12.3px;color:var(--ink-3);margin-bottom:14px;line-height:1.55">The working grade is where ${c.name.split(' ')[0]} is now. The predicted grade is what a teacher has formally submitted to universities. Universities make their offers against the prediction.</div>
   <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12.5px">
    <thead><tr>${["Subject","Level","Working","Predicted","Teacher"].map((x,i)=>`<th style="text-align:${i>1&&i<4?'center':'left'};padding:9px 10px;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-4);border-bottom:1px solid var(--line)">${x}</th>`).join('')}</tr></thead>
@@ -4775,11 +4777,11 @@ function vParent(){
    <b>Predicted total: 39 points out of 45.</b> Every university on ${c.name.split(' ')[0]}'s list asks for 38 or fewer, so on current predictions ${c.name.split(' ')[0]} is eligible everywhere applied.</div>`:''}
  </div>`:`
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <div class="sechead">${ic('doc',13)} Transcripts</div>
+  <h3 class="sechead">${ic('doc',13)} Transcripts</h3>
   <div style="font-size:12.3px;color:var(--ink-3);line-height:1.6">Issued every semester and available here permanently once formal reporting periods begin.</div>
  </div>
  <div class="card" style="padding:20px">
-  <div class="sechead">${ic('book',13)} Subjects and course grades</div>
+  <h3 class="sechead">${ic('book',13)} Subjects and course grades</h3>
   <div style="font-size:12.3px;color:var(--ink-3);line-height:1.65;margin-bottom:12px">${c.name.split(' ')[0]} is on the AP route, where each course is graded and examined individually rather than as a single diploma total — there is no combined predicted score the way there is on the IB Diploma.</div>
   <div style="display:flex;gap:10px;align-items:flex-start;background:var(--info-bg);border:1px solid #B2DDFF;border-radius:10px;padding:13px 15px">
    ${ic('alert',15)}<div style="font-size:12px;color:#0B4A8F;line-height:1.55">For exam dates, registration deadlines and score release for each AP course, see the AP Exams tab.</div></div>
@@ -4861,7 +4863,7 @@ function vParent(){
 
  ${pv==="meetings"?`
  <div class="card" style="padding:22px;margin-bottom:16px">
-  <div class="sechead">${ic('brief',13)} Request a meeting with Ms. Haddad</div>
+  <h3 class="sechead">${ic('brief',13)} Request a meeting with Ms. Haddad</h3>
   <div style="font-size:12.5px;color:var(--ink-3);line-height:1.6;margin-bottom:16px">${"Choose what you would like to discuss and add a sentence or two. The counselor receives that note together with everything relevant about "+c.name.split(" ")[0]+" before the meeting, so no one spends the first ten minutes looking things up."}</div>
   <div style="font-size:11.5px;font-weight:600;color:var(--ink-2);margin-bottom:8px">What would you like to discuss?</div>
   <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
@@ -4882,7 +4884,7 @@ function vParent(){
  </div>
 
  ${S.pmTopic?`<div class="card" style="padding:20px;margin-bottom:16px;background:var(--surface-2)">
-  <div class="sechead">${ic('spark',13)} What Ms. Haddad will receive before the meeting</div>
+  <h3 class="sechead">${ic('spark',13)} What Ms. Haddad will receive before the meeting</h3>
   <div style="font-size:12.3px;color:var(--ink-3);line-height:1.6;margin-bottom:14px">This is assembled automatically. She will not need to open a single other document.</div>
   ${(()=>{const t=(MEETING_TOPICS.find(x=>x[0]===S.pmTopic)||[])[1];
    const fn=c.name.split(" ")[0];
@@ -4900,7 +4902,7 @@ function vParent(){
  </div>`:''}
 
  <div class="card" style="padding:20px">
-  <div class="sechead">${ic('clock',13)} Previous meetings</div>
+  <h3 class="sechead">${ic('clock',13)} Previous meetings</h3>
   ${PARENT_MEETINGS.map(m=>`<div style="padding:13px 0;border-bottom:1px solid var(--line)">
    <div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap">
     <b style="font-size:13px">${m.topic}</b><span style="font-size:11.5px;color:var(--ink-3)">${m.when} · ${m.who}</span></div>
@@ -4986,7 +4988,7 @@ function vStuProgress(){
    .map(x=>`<div class="card" style="padding:16px 18px"><div class="serif" style="font-size:24px;font-weight:600;color:${x[2]};line-height:1">${x[1]}</div>
    <div style="font-size:11.5px;color:var(--ink-3);margin-top:4px">${x[0]}</div></div>`).join('')}</div>
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <div class="sechead">${ic('book',13)} My subjects</div>
+  <h3 class="sechead">${ic('book',13)} My subjects</h3>
   ${c.track==="IB"?
    SUBJECTS.map(s=>`<div style="display:grid;grid-template-columns:1fr 60px 90px;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)">
     <b style="font-size:13px">${s.s}<span style="font-weight:400;color:var(--ink-3)"> · ${s.lv}</span></b><span style="font-size:15px;font-weight:600;color:${s.pred>=6?'var(--ok)':s.pred>=5?'var(--warn)':'var(--crit)'}">${s.pred}</span>
@@ -5000,11 +5002,11 @@ function vStuProgress(){
   :`<div style="font-size:12.3px;color:var(--ink-3);line-height:1.6">No subject track chosen yet — this fills in once IB or AP is decided.</div>`}
  </div>
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <div class="sechead">${ic('trend',13)} My attendance</div>
+  <h3 class="sechead">${ic('trend',13)} My attendance</h3>
   ${c.baselines.attendance?baseChart(c.baselines.attendance):''}
   <div style="font-size:11.5px;color:var(--ink-3);margin-top:8px">The band is your own usual range — you are inside it.</div></div>
  <div class="card" style="padding:20px">
-  <div class="sechead">${ic('msg',13)} Tell your counselor something</div>
+  <h3 class="sechead">${ic('msg',13)} Tell your counselor something</h3>
   <div style="font-size:12.3px;color:var(--ink-3);margin-bottom:12px;line-height:1.5">Anything you want Ms. Haddad to know before your next meeting. Only she sees this — not your teachers, not your parents.</div>
   ${SREFLECT.map(r=>`<div style="background:var(--violet-bg);border-radius:10px;padding:12px 14px;margin-bottom:9px">
    <div style="font-size:12.5px;color:var(--ink);line-height:1.55">${r.txt}</div>
@@ -5052,7 +5054,7 @@ function vFlagInbox(){
 function parentCard(c){
  const p=parentOf(c.id);
  return `<div class="card" style="padding:18px 20px">
-  <div class="sechead">${ic('heart',13)} Parent / guardian</div>
+  <h3 class="sechead">${ic('heart',13)} Parent / guardian</h3>
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:13px">
    ${av(p.name.split(' ').slice(-1)[0].slice(0,2).toUpperCase(),"parent",38,11)}
    <div style="min-width:0"><b style="font-size:13.5px">${p.name}</b>
@@ -5071,7 +5073,7 @@ function parentCard(c){
 function voiceCard(c){
  if(c.id!=="s3")return "";
  return `<div class="card" style="padding:18px 20px;border-color:#DDD6FE;background:linear-gradient(180deg,#FDFCFF,#fff)">
-  <div class="sechead" style="color:var(--violet)">${ic('msg',13)} From the student</div>
+  <h3 class="sechead" style="color:var(--violet)">${ic('msg',13)} From the student</h3>
   ${SREFLECT.map(r=>`<div style="font-size:12.8px;color:var(--ink);line-height:1.6;font-style:italic">"${r.txt}"</div>
    <div style="font-size:10.8px;color:var(--ink-3);margin-top:7px">${r.when} · written by ${c.name.split(' ')[0]} in her own portal</div>`).join('')}
  </div>`;}
@@ -5147,7 +5149,7 @@ function vStuPath(){
     <div style="font-size:12.5px;color:var(--inkSoft)">Started at ${STU.prob}% · ${p>STU.prob?`<b style="color:var(--good)">+${p-STU.prob} points from your completed moves</b>`:'tick a move below to see it climb'}</div></div>
   </div>
   ${STU.steps.map((s,i)=>`<div style="display:grid;grid-template-columns:auto 1fr auto;gap:15px;align-items:center;padding:15px 0;border-bottom:${i<STU.steps.length-1?'1px solid var(--lineSoft)':'none'}">
-   <div data-step="${i}" style="width:26px;height:26px;border-radius:50%;border:2px solid ${S.pathDone[i]?'var(--good)':'var(--line)'};background:${S.pathDone[i]?'var(--good)':'#fff'};display:grid;place-items:center;color:#fff;cursor:pointer;transition:all .2s">${S.pathDone[i]?ic('check',14):''}</div>
+   <div data-step="${i}" style="width:26px;height:26px;border-radius:50%;border:2px solid ${S.pathDone[i]?'var(--good)':'var(--line)'};background:${S.pathDone[i]?'var(--good)':'#fff'};display:grid;place-items:center;color:#fff;cursor:pointer;transition:border-color .2s,background-color .2s">${S.pathDone[i]?ic('check',14):''}</div>
    <div><div style="font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:8px">${s.t}<span class="chip" style="background:var(--panel);color:var(--inkMute);border:1px solid var(--line)">${s.when}</span></div>
    <div style="font-size:11.8px;color:var(--inkMute);margin-top:2px">${s.d}</div></div>
    <span class="serif" style="font-size:16px;font-weight:600;color:var(--good);flex-shrink:0">+${s.imp}%</span></div>`).join('')}
@@ -5243,7 +5245,7 @@ function vMentorMentees(){
    <div style="flex:1"><b style="font-size:12.3px">${m.next}</b><div style="font-size:9.5px;color:var(--inkMute);text-transform:uppercase">next focus</div></div>
    <button class="btn btn-p btn-sm" data-toast="Opening session workspace">Message</button></div></div>`).join('')}
  </div>
- <div class="card" style="padding:20px"><div class="sechead">${ic('trend',13)} Your impact</div>
+ <div class="card" style="padding:20px"><h3 class="sechead">${ic('trend',13)} Your impact</h3>
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
   ${[["34","Sessions delivered"],["4.9","Average rating"],["$4,080","Earned to date"]].map(([v,l])=>`<div><div class="serif" style="font-size:27px;font-weight:600;color:var(--teal)">${v}</div><div style="font-size:12px;color:var(--inkSoft)">${l}</div></div>`).join('')}</div></div>
  </div>`;}
@@ -5921,12 +5923,10 @@ draw();
  ];
  var GLOBAL=[
   {loc:"index.html:164",msg:"textarea:focus,input:focus,select:focus uses :focus not :focus-visible — ring shows on mouse click, not just keyboard nav"},
-  {loc:"index.html:1–4091",msg:"No <h1>–<h6> anywhere in the document — every title (“Good morning, Reem.”, section heads) is a styled <div>, no heading hierarchy"},
   {loc:"index.html:1023",msg:"No skip-to-main-content link before <main class=\"mainpane\">"},
   {loc:"index.html:1–9",msg:"No <meta name=\"theme-color\"> in <head> — mobile browser chrome won’t match the page background"},
   {loc:"index.html:140",msg:".btn has no touch-action:manipulation — double-tap-zoom delay on mobile, app-wide"},
   {loc:"index.html:453",msg:"-webkit-tap-highlight-color only set on .tabitem, not on .btn or the clickable divs — inconsistent"},
-  {loc:"index.html:2213, 2322, 2665, 2678, 3449",msg:"transition:all used instead of explicit properties (5 spots: filter chips, tag pills, pcty/pdeg buttons, pathway step)"},
   {loc:"index.html:1147",msg:"Cohort signal matrix table renders all 87 students into <tbody>, no virtualization"},
   {loc:"index.html:1582",msg:"vFiles() renders all 87 student-file cards, no virtualization or pagination"},
   {loc:"index.html:2089",msg:"vDim() RAG groups render every matching student uncapped, except “good” (soft-capped at 6)"},
