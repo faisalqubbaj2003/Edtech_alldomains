@@ -4087,5 +4087,189 @@ document.addEventListener("keydown",ev=>{
 draw();
 
 </script>
+
+<!-- ═══════════ UX AUDIT OVERLAY — dev tool, not part of the product ═══════════
+     Findings from a Web Interface Guidelines review. Toggle with the button,
+     bottom-right. Flagged elements get a live colour-coded outline (pure CSS
+     attribute selectors — they re-match automatically after every draw(), no
+     hook into draw()/bind() needed); a side panel lists every finding with
+     file:line and a "Locate" jump for anything on the current screen. Global
+     issues that aren't tied to one element (missing headings, no skip link…)
+     are listed with no outline — there's nothing to circle. Safe to delete
+     this whole block; nothing else in the file references it. -->
+<style>
+ :root{--aud-icon:#D92D20;--aud-kbd:#DC6803;--aud-role:#6938EF;--aud-label:#175CD3}
+ html.audit-on button[data-toast="Notifications are up to date"],
+ html.audit-on button[data-q=""],
+ html.audit-on button[data-mclose]{outline:2px dashed var(--aud-icon)!important;outline-offset:2px!important}
+ html.audit-on tr[data-open],html.audit-on div[data-open],html.audit-on div[data-file],
+ html.audit-on div[data-tflag],html.audit-on div[data-cpq],html.audit-on div[data-ctxpick]{
+  outline:2px dashed var(--aud-kbd)!important;outline-offset:-2px!important}
+ html.audit-on div[data-slot],html.audit-on div[data-step],
+ html.audit-on div[data-task],html.audit-on div[data-earlystart]{
+  outline:2px dashed var(--aud-role)!important;outline-offset:-2px!important}
+ html.audit-on input[type="range"],html.audit-on #cpin,html.audit-on #cq,html.audit-on #tnote,
+ html.audit-on #pmsg,html.audit-on #pmnote,html.audit-on #mnotes,html.audit-on #maction,
+ html.audit-on #sref,html.audit-on #mstu{outline:2px dashed var(--aud-label)!important;outline-offset:2px!important}
+ .audit-flash{animation:auditFlash 1s ease}
+ @keyframes auditFlash{0%,100%{box-shadow:none}25%,55%{box-shadow:0 0 0 4px #fff,0 0 0 7px #111}}
+ @media (prefers-reduced-motion:reduce){.audit-flash{animation-duration:.01ms}}
+
+ #auditBtn{position:fixed;right:18px;bottom:18px;z-index:999997;display:flex;align-items:center;gap:7px;
+  font:600 12.5px/1 'Inter',system-ui,sans-serif;letter-spacing:-.006em;color:#fff;background:#111;
+  border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:11px 16px;cursor:pointer;
+  box-shadow:0 8px 20px rgba(0,0,0,.28);touch-action:manipulation}
+ #auditBtn:hover{background:#242424}
+ #auditBtn:focus-visible{outline:2px solid #fff;outline-offset:2px}
+ #auditBtn .n{background:var(--aud-icon);border-radius:999px;padding:1px 7px;font-weight:700}
+ @media (max-width:820px),(max-height:540px) and (max-width:1000px){
+  #auditBtn{bottom:calc(78px + env(safe-area-inset-bottom))}
+ }
+
+ #auditPanel{position:fixed;top:0;right:0;bottom:0;width:400px;max-width:92vw;z-index:999998;
+  background:#fff;border-left:1px solid #E4E7EC;box-shadow:-12px 0 32px rgba(16,24,40,.18);
+  display:flex;flex-direction:column;transform:translateX(100%);transition:transform .22s cubic-bezier(.22,1,.36,1);
+  font:13px/1.5 'Inter',system-ui,sans-serif;color:#0C111D}
+ #auditPanel.open{transform:none}
+ @media (prefers-reduced-motion:reduce){#auditPanel{transition-duration:.01ms}}
+ #auditPanel header{padding:16px 18px;border-bottom:1px solid #EAECF0;display:flex;align-items:center;gap:10px;flex-shrink:0}
+ #auditPanel header h2{font-size:15px;font-weight:700;letter-spacing:-.012em;flex:1;min-width:0}
+ #auditPanel header p{font-size:11.5px;color:#667085;margin-top:2px}
+ #auditClose{background:#F2F4F7;border:1px solid #E4E7EC;border-radius:8px;width:28px;height:28px;
+  cursor:pointer;display:grid;place-items:center;flex-shrink:0;touch-action:manipulation}
+ #auditClose:hover{background:#E4E7EC}
+ #auditClose:focus-visible{outline:2px solid #0E9384;outline-offset:2px}
+ #auditBody{flex:1;overflow-y:auto;padding:6px 0 24px}
+ .audit-sec{padding:14px 18px 4px}
+ .audit-sec h3{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#98A2B3;margin-bottom:9px}
+ .audit-row{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #F2F4F7;align-items:flex-start}
+ .audit-sw{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:4px}
+ .audit-row b{font-size:12.5px;font-weight:600;display:block}
+ .audit-row .loc{font:500 11px/1.4 'JetBrains Mono',ui-monospace,monospace;color:#667085;margin-top:2px}
+ .audit-row .msg{font-size:12px;color:#475467;margin-top:3px;line-height:1.45}
+ .audit-locate{margin-left:auto;flex-shrink:0;background:#fff;border:1px solid #D0D5DD;border-radius:6px;
+  padding:4px 9px;font:600 11px/1 inherit;color:#344054;cursor:pointer;touch-action:manipulation}
+ .audit-locate:hover{background:#F9FAFB}
+ .audit-locate:focus-visible{outline:2px solid #0E9384;outline-offset:1px}
+ .audit-miss{font-size:11px;color:#DC6803;margin-top:4px}
+ #auditTotals{padding:12px 18px;border-top:1px solid #EAECF0;font-size:11.5px;color:#667085;flex-shrink:0}
+</style>
+<script>
+(function(){
+ "use strict";
+ var CATS={icon:{c:"var(--aud-icon)",label:"Icon buttons — missing aria-label"},
+  kbd:{c:"var(--aud-kbd)",label:"Clickable div/tr — not keyboard-accessible"},
+  role:{c:"var(--aud-role)",label:"Fake control — missing role/aria-checked/keyboard"},
+  label:{c:"var(--aud-label)",label:"Form field — no <label>/aria-label"}};
+ var LIVE=[
+  {cat:"icon",sel:'button[data-toast="Notifications are up to date"]',loc:"index.html:3837",msg:"Notification bell — icon only, no aria-label"},
+  {cat:"icon",sel:'button[data-q=""]',loc:"index.html:2211",msg:"Clear-search button — icon only, no aria-label"},
+  {cat:"icon",sel:"button[data-mclose]",loc:"index.html:2312 (+6 more modals)",msg:"Modal close button — icon only, no aria-label, repeats on every modal"},
+  {cat:"kbd",sel:"tr[data-open]",loc:"index.html:1151",msg:"Cohort signal matrix row — <tr> with no keyboard handler"},
+  {cat:"kbd",sel:"div[data-open]",loc:"index.html:1092, 1441",msg:"Case card / balance row — <div> not <button>, unreachable by keyboard"},
+  {cat:"kbd",sel:"div[data-file]",loc:"index.html:1583, 2089, 2145, 2221",msg:"Student file / RAG / overnight / cohort row — <div> not <button>, no keyboard access"},
+  {cat:"kbd",sel:"div[data-tflag]",loc:"index.html:2281",msg:"Teacher roster row — <div> not <button>, no keyboard access"},
+  {cat:"kbd",sel:"div[data-cpq]",loc:"index.html:1512",msg:"Co-pilot suggested question — <div> not <button>, no keyboard access"},
+  {cat:"kbd",sel:"div[data-ctxpick]",loc:"index.html:3559",msg:"Add-context picker option — <div> not <button>, no keyboard access"},
+  {cat:"role",sel:"div[data-slot]",loc:"index.html:3590",msg:"Mentor booking time slot acts as a radio — no role=radio, no keyboard access"},
+  {cat:"role",sel:"div[data-step]",loc:"index.html:3449",msg:"Pathway-step toggle acts as a checkbox — no role/aria-checked/keyboard; also inline transition:all"},
+  {cat:"role",sel:"div[data-task]",loc:"index.html:1751",msg:"Task checkbox — no role=checkbox/aria-checked/keyboard handler"},
+  {cat:"role",sel:"div[data-earlystart]",loc:"index.html:2920",msg:"“Getting a head start” switch — no role=switch/aria-checked/keyboard. Also: .tog/.tog.on has no CSS anywhere in the file — this toggle is visually dead"},
+  {cat:"label",sel:'input[type="range"]',loc:"index.html:1201",msg:"Threshold slider — no label/aria-label"},
+  {cat:"label",sel:"#cpin",loc:"index.html:1509",msg:"Co-pilot question input — placeholder only, no label"},
+  {cat:"label",sel:"#cq",loc:"index.html:2210",msg:"Cohort search input — placeholder only, no label"},
+  {cat:"label",sel:"#tnote",loc:"index.html:2324",msg:"Teacher-flag note — placeholder only, no label"},
+  {cat:"label",sel:"#pmsg",loc:"index.html:3022",msg:"Parent message textarea — placeholder only, no label"},
+  {cat:"label",sel:"#pmnote",loc:"index.html:3174",msg:"Parent meeting-request note — placeholder only, no label"},
+  {cat:"label",sel:"#mstu",loc:"index.html:3258",msg:"Mentor-session student select — preceding text is a <div>, not a <label for>"},
+  {cat:"label",sel:"#mnotes",loc:"index.html:3265",msg:"Mentor-session notes — placeholder only, no label"},
+  {cat:"label",sel:"#maction",loc:"index.html:3267",msg:"Mentor-session action input — placeholder only, no label"},
+  {cat:"label",sel:"#sref",loc:"index.html:3312",msg:"Student mentor-request textarea — placeholder only, no label"}
+ ];
+ var GLOBAL=[
+  {loc:"index.html:164",msg:"textarea:focus,input:focus,select:focus uses :focus not :focus-visible — ring shows on mouse click, not just keyboard nav"},
+  {loc:"index.html:1–4091",msg:"No <h1>–<h6> anywhere in the document — every title (“Good morning, Reem.”, section heads) is a styled <div>, no heading hierarchy"},
+  {loc:"index.html:1023",msg:"No skip-to-main-content link before <main class=\"mainpane\">"},
+  {loc:"index.html:1–9",msg:"No <meta name=\"theme-color\"> in <head> — mobile browser chrome won’t match the page background"},
+  {loc:"index.html:140",msg:".btn has no touch-action:manipulation — double-tap-zoom delay on mobile, app-wide"},
+  {loc:"index.html:453",msg:"-webkit-tap-highlight-color only set on .tabitem, not on .btn or the clickable divs — inconsistent"},
+  {loc:"index.html:2213, 2322, 2665, 2678, 3449",msg:"transition:all used instead of explicit properties (5 spots: filter chips, tag pills, pcty/pdeg buttons, pathway step)"},
+  {loc:"index.html:1147",msg:"Cohort signal matrix table renders all 87 students into <tbody>, no virtualization"},
+  {loc:"index.html:1582",msg:"vFiles() renders all 87 student-file cards, no virtualization or pagination"},
+  {loc:"index.html:2089",msg:"vDim() RAG groups render every matching student uncapped, except “good” (soft-capped at 6)"},
+  {loc:"index.html:2221",msg:"vCohort() roster renders up to 87 rows, no virtualization"}
+ ];
+
+ function svgEsc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+
+ function buildPanel(){
+  var byCat={icon:[],kbd:[],role:[],label:[]};
+  LIVE.forEach(function(f){byCat[f.cat].push(f)});
+  var sections=Object.keys(CATS).map(function(k){
+   var rows=byCat[k].map(function(f,i){
+    return '<div class="audit-row" data-audit-idx="'+i+'" data-audit-cat="'+k+'">'+
+     '<span class="audit-sw" style="background:'+CATS[k].c+'"></span>'+
+     '<div style="flex:1;min-width:0"><b>'+svgEsc(f.msg)+'</b>'+
+     '<div class="loc">'+svgEsc(f.loc)+'</div></div>'+
+     '<button class="audit-locate" data-audit-locate="'+svgEsc(f.sel)+'">Locate</button></div>';
+   }).join("");
+   return '<div class="audit-sec"><h3 style="color:'+CATS[k].c+'">'+svgEsc(CATS[k].label)+' · '+byCat[k].length+'</h3>'+rows+'</div>';
+  }).join("");
+  var globalRows=GLOBAL.map(function(f){
+   return '<div class="audit-row"><span class="audit-sw" style="background:#98A2B3"></span>'+
+    '<div style="flex:1;min-width:0"><b>'+svgEsc(f.msg)+'</b><div class="loc">'+svgEsc(f.loc)+'</div></div></div>';
+  }).join("");
+  return sections+'<div class="audit-sec"><h3 style="color:#98A2B3">Structural / global · '+GLOBAL.length+'</h3>'+globalRows+'</div>';
+ }
+
+ function locate(sel){
+  var el=document.querySelector(sel);
+  var row=document.querySelector('[data-audit-locate="'+sel.replace(/"/g,'\\"')+'"]').closest(".audit-row");
+  var old=row.querySelector(".audit-miss");if(old)old.remove();
+  if(!el){
+   var m=document.createElement("div");m.className="audit-miss";
+   m.textContent="Not on the current screen — navigate there, then Locate again.";
+   row.appendChild(m);return;
+  }
+  el.scrollIntoView({behavior:"smooth",block:"center"});
+  el.classList.remove("audit-flash");void el.offsetWidth;el.classList.add("audit-flash");
+ }
+
+ function toggle(on){
+  document.documentElement.classList.toggle("audit-on",on);
+  document.getElementById("auditPanel").classList.toggle("open",on);
+  document.getElementById("auditBtn").setAttribute("aria-expanded",String(on));
+ }
+
+ document.addEventListener("DOMContentLoaded",init);
+ if(document.readyState!=="loading")init();
+ function init(){
+  if(document.getElementById("auditBtn"))return;
+  var btn=document.createElement("button");
+  btn.id="auditBtn";btn.type="button";btn.setAttribute("aria-expanded","false");
+  btn.setAttribute("aria-controls","auditPanel");
+  btn.innerHTML='UX Audit <span class="n">'+(LIVE.length+GLOBAL.length)+'</span>';
+  document.body.appendChild(btn);
+
+  var panel=document.createElement("aside");
+  panel.id="auditPanel";panel.setAttribute("role","region");panel.setAttribute("aria-label","UX audit findings");
+  panel.innerHTML='<header><div><h2>UX Audit</h2><p>Web Interface Guidelines · '+(LIVE.length+GLOBAL.length)+' findings</p></div>'+
+   '<button id="auditClose" type="button" aria-label="Close audit panel">✕</button></header>'+
+   '<div id="auditBody">'+buildPanel()+'</div>'+
+   '<div id="auditTotals">Outlined = live on the page right now (if on this screen). Grey = structural, not tied to one element.</div>';
+  document.body.appendChild(panel);
+
+  btn.addEventListener("click",function(){toggle(!document.documentElement.classList.contains("audit-on"))});
+  document.getElementById("auditClose").addEventListener("click",function(){toggle(false)});
+  document.addEventListener("keydown",function(ev){
+   if(ev.key==="Escape"&&document.documentElement.classList.contains("audit-on"))toggle(false);
+  });
+  document.addEventListener("click",function(ev){
+   var t=ev.target.closest("[data-audit-locate]");
+   if(t)locate(t.getAttribute("data-audit-locate"));
+  });
+ }
+})();
+</script>
 </body>
 </html>
