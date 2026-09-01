@@ -121,7 +121,7 @@ textarea:focus,input:focus,select:focus{outline:none;border-color:var(--brand)!i
 select{cursor:pointer;-webkit-appearance:none;appearance:none;
  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23667085' stroke-width='2.5' stroke-linecap='round'><path d='M6 9l6 6 6-6'/></svg>");
  background-repeat:no-repeat;background-position:right 11px center;padding-right:30px!important}
-input[type=range]{-webkit-appearance:none;width:100%;height:6px;border-radius:99px;background:var(--line-2);outline:none}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:99px;background:var(--line-2);outline:none}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;
  background:var(--surface);cursor:pointer;border:1.5px solid var(--brand);box-shadow:var(--sh-sm)}
 input[type=range]::-webkit-slider-thumb:hover{box-shadow:0 0 0 4px var(--brand-3),var(--sh-sm)}
@@ -2617,10 +2617,26 @@ const COURSES_BY_GRADE={
   {name:"AP English Language & Composition",subject:"English",teacher:"Mr. Adeyemi",pathway:"AP",period:"P4",current:null},
   {name:"AP Spanish Language & Culture",subject:"Languages",teacher:"Ms. Garcia",pathway:"AP",period:"P5",current:null},
   {name:"AP Psychology",subject:"Social Science",teacher:"Ms. Johnson",pathway:"AP",period:"P6",current:null},
+   {name:"AP Statistics",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"AP",period:"P1",current:null},
+   {name:"AP Environmental Science",subject:"Science",teacher:"Dr. Reid",pathway:"AP",period:"P2",current:null},
+   {name:"AP Computer Science Principles",subject:"Technology",teacher:"Mr. Patel",pathway:"AP",period:"P3",current:null},
+   {name:"AP Human Geography",subject:"Humanities",teacher:"Ms. Sharma",pathway:"AP",period:"P4",current:null},
+   {name:"AP French Language & Culture",subject:"Languages",teacher:"Ms. Laurent",pathway:"AP",period:"P5",current:null},
+   {name:"AP Art and Design",subject:"Arts",teacher:"Ms. Wilson",pathway:"AP",period:"P6",current:null},
   {name:"Mathematics Grade 9 Fundamentals",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"Standard",period:"P1",current:null},
   {name:"English Grade 9",subject:"English",teacher:"Mr. Adeyemi",pathway:"Standard",period:"P4",current:null},
   {name:"Science Grade 9",subject:"Science",teacher:"Dr. Reid",pathway:"Standard",period:"P2",current:null},
-  {name:"Social Studies Grade 9",subject:"Humanities",teacher:"Ms. Sharma",pathway:"Standard",period:"P3",current:null}
+   {name:"Social Studies Grade 9",subject:"Humanities",teacher:"Ms. Sharma",pathway:"Standard",period:"P3",current:null},
+   {name:"Algebra I",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"Standard",period:"P1",current:null},
+   {name:"Geometry",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"Standard",period:"P1",current:null},
+   {name:"Biology Grade 9",subject:"Science",teacher:"Dr. Reid",pathway:"Standard",period:"P2",current:null},
+   {name:"Chemistry Foundations",subject:"Science",teacher:"Dr. Chen",pathway:"Standard",period:"P2",current:null},
+   {name:"World Geography",subject:"Humanities",teacher:"Ms. Sharma",pathway:"Standard",period:"P3",current:null},
+   {name:"Introduction to Economics",subject:"Social Science",teacher:"Ms. Fahri",pathway:"Standard",period:"P4",current:null},
+   {name:"Computer Science Foundations",subject:"Technology",teacher:"Mr. Patel",pathway:"Standard",period:"P3",current:null},
+   {name:"Visual Arts Grade 9",subject:"Arts",teacher:"Ms. Wilson",pathway:"Standard",period:"P6",current:null},
+   {name:"French Grade 9",subject:"Languages",teacher:"Ms. Laurent",pathway:"Standard",period:"P5",current:null},
+   {name:"Spanish Grade 9",subject:"Languages",teacher:"Ms. Garcia",pathway:"Standard",period:"P5",current:null}
  ],
  10:[
   {name:"IB Mathematics: Analysis & Approaches SL",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"IB",period:"P1",current:85},
@@ -2629,16 +2645,39 @@ const COURSES_BY_GRADE={
   {name:"IB English Literature SL",subject:"English",teacher:"Mr. Adeyemi",pathway:"IB",period:"P4",current:86},
   {name:"IB Spanish B SL",subject:"Languages",teacher:"Ms. Garcia",pathway:"IB",period:"P5",current:84},
   {name:"IB Chemistry SL",subject:"Science",teacher:"Dr. Chen",pathway:"IB",period:"P6",current:79},
+   {name:"IB Biology SL",subject:"Science",teacher:"Dr. Reid",pathway:"IB",period:"P2",current:null},
+   {name:"IB Business Management SL",subject:"Social Science",teacher:"Mr. Haddad",pathway:"IB",period:"P3",current:null},
+   {name:"IB Economics SL",subject:"Social Science",teacher:"Ms. Fahri",pathway:"IB",period:"P4",current:null},
+   {name:"IB Psychology SL",subject:"Social Science",teacher:"Ms. Johnson",pathway:"IB",period:"P5",current:null},
+   {name:"IB Visual Arts SL",subject:"Arts",teacher:"Ms. Wilson",pathway:"IB",period:"P6",current:null},
+   {name:"IB Design Technology SL",subject:"Technology",teacher:"Mr. Patel",pathway:"IB",period:"P1",current:null},
+   {name:"IB French B SL",subject:"Languages",teacher:"Ms. Laurent",pathway:"IB",period:"P5",current:null},
   {name:"AP Calculus AB",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"AP",period:"P1",current:null},
   {name:"AP Biology",subject:"Science",teacher:"Dr. Reid",pathway:"AP",period:"P2",current:null},
   {name:"AP World History",subject:"Humanities",teacher:"Ms. Sharma",pathway:"AP",period:"P3",current:null},
   {name:"AP English Language & Composition",subject:"English",teacher:"Mr. Adeyemi",pathway:"AP",period:"P4",current:null},
   {name:"AP Spanish Language & Culture",subject:"Languages",teacher:"Ms. Garcia",pathway:"AP",period:"P5",current:null},
   {name:"AP Chemistry",subject:"Science",teacher:"Dr. Chen",pathway:"AP",period:"P6",current:null},
+   {name:"AP Statistics",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"AP",period:"P1",current:null},
+   {name:"AP Environmental Science",subject:"Science",teacher:"Dr. Reid",pathway:"AP",period:"P2",current:null},
+   {name:"AP Computer Science Principles",subject:"Technology",teacher:"Mr. Patel",pathway:"AP",period:"P3",current:null},
+   {name:"AP Psychology",subject:"Social Science",teacher:"Ms. Johnson",pathway:"AP",period:"P4",current:null},
+   {name:"AP Microeconomics",subject:"Social Science",teacher:"Ms. Fahri",pathway:"AP",period:"P5",current:null},
+   {name:"AP Art and Design",subject:"Arts",teacher:"Ms. Wilson",pathway:"AP",period:"P6",current:null},
+   {name:"AP French Language & Culture",subject:"Languages",teacher:"Ms. Laurent",pathway:"AP",period:"P5",current:null},
   {name:"Mathematics Grade 10",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"Standard",period:"P1",current:null},
   {name:"English Grade 10",subject:"English",teacher:"Mr. Adeyemi",pathway:"Standard",period:"P4",current:null},
   {name:"Science Grade 10",subject:"Science",teacher:"Dr. Reid",pathway:"Standard",period:"P2",current:null},
-  {name:"History Grade 10",subject:"Humanities",teacher:"Ms. Sharma",pathway:"Standard",period:"P3",current:null}
+   {name:"History Grade 10",subject:"Humanities",teacher:"Ms. Sharma",pathway:"Standard",period:"P3",current:null},
+   {name:"World Literature Grade 10",subject:"English",teacher:"Mr. Adeyemi",pathway:"Standard",period:"P4",current:null},
+   {name:"Biology Grade 10",subject:"Science",teacher:"Dr. Reid",pathway:"Standard",period:"P2",current:null},
+   {name:"Chemistry Grade 10",subject:"Science",teacher:"Dr. Chen",pathway:"Standard",period:"P6",current:null},
+   {name:"Economics and Business Grade 10",subject:"Social Science",teacher:"Ms. Fahri",pathway:"Standard",period:"P3",current:null},
+   {name:"Psychology Grade 10",subject:"Social Science",teacher:"Ms. Johnson",pathway:"Standard",period:"P5",current:null},
+   {name:"Computer Science Grade 10",subject:"Technology",teacher:"Mr. Patel",pathway:"Standard",period:"P1",current:null},
+   {name:"Visual Arts Grade 10",subject:"Arts",teacher:"Ms. Wilson",pathway:"Standard",period:"P6",current:null},
+   {name:"French Grade 10",subject:"Languages",teacher:"Ms. Laurent",pathway:"Standard",period:"P5",current:null},
+   {name:"Spanish Grade 10",subject:"Languages",teacher:"Ms. Garcia",pathway:"Standard",period:"P5",current:null}
  ],
  11:[
   {name:"IB Mathematics: Analysis & Approaches HL",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"IB",period:"P1",current:87},
@@ -2710,12 +2749,12 @@ function getStudentClasses(sid){
   ];
  } else if(grade===10){
   return [
-   {code:"Ma3",name:"IB Mathematics: Analysis & Approaches SL",teacher:"Mr. Yilmaz",period:"P1",grade:85,avg:84,pathway:"IB",required:{}},
-   {code:"Ph3",name:"IB Physics SL",teacher:"Dr. Reid",period:"P2",grade:82,avg:81,pathway:"IB",required:{}},
-   {code:"Hi3",name:"IB History HL",teacher:"Ms. Sharma",period:"P3",grade:88,avg:87,pathway:"IB",required:{}},
-   {code:"En3",name:"IB English Literature SL",teacher:"Mr. Adeyemi",period:"P4",grade:86,avg:85,pathway:"IB",required:{}},
-   {code:"Sp3",name:"IB Spanish B SL",teacher:"Ms. Garcia",period:"P5",grade:84,avg:83,pathway:"IB",required:{}},
-   {code:"Ch3",name:"IB Chemistry SL",teacher:"Dr. Chen",period:"P6",grade:79,avg:78,pathway:"IB",required:{}}
+   {code:"Ma3",name:"Mathematics Grade 10",teacher:"Mr. Yilmaz",period:"P1",grade:85,avg:84,pathway:"Standard",required:{}},
+   {code:"Bi3",name:"Biology Grade 10",teacher:"Dr. Reid",period:"P2",grade:82,avg:81,pathway:"Standard",required:{}},
+   {code:"Hi3",name:"History Grade 10",teacher:"Ms. Sharma",period:"P3",grade:88,avg:87,pathway:"Standard",required:{}},
+   {code:"En3",name:"English Grade 10",teacher:"Mr. Adeyemi",period:"P4",grade:86,avg:85,pathway:"Standard",required:{}},
+   {code:"Fr3",name:"French Grade 10",teacher:"Ms. Laurent",period:"P5",grade:84,avg:83,pathway:"Standard",required:{}},
+   {code:"Cs3",name:"Computer Science Grade 10",teacher:"Mr. Patel",period:"P6",grade:79,avg:78,pathway:"Standard",required:{}}
   ];
  } else {
   // Grade 9 - show all available courses for selection
@@ -2828,10 +2867,10 @@ function vStuACSSelector(){
  return `<div class="arrive" style="max-width:1200px">
   <div style="padding:24px 0">
    <div class="serif" style="font-size:24px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:10px">
-    ${ic('arrow-left',20)} Select Your Courses
+  ${ic('arrow-left',20)} ${grade===9?"AP Courses Available for Grade 9":"Select Your Courses"}
    </div>
    <div style="font-size:13.5px;color:var(--ink-2);line-height:1.6">
-    Browse all available courses for Grade ${grade}. Select the courses you want to pursue and submit for your counselor and teachers to review and approve.
+  ${grade===9?"Explore the AP courses available in Grade 9. Select the courses you want to request, then send them to your counselor and teachers for review.":`Browse all available courses for Grade ${grade}. Select the courses you want to pursue and submit for your counselor and teachers to review and approve.`}
    </div>
   </div>
 
@@ -2850,22 +2889,22 @@ function vStuACSSelector(){
   <div style="margin-bottom:24px">
    <div style="font-weight:600;color:var(--ink);font-size:14px;margin-bottom:12px;display:flex;align-items:center;gap:8px">
     <span style="width:10px;height:10px;background:${pathwayColors[pathway]};border-radius:50%"></span>
-    ${pathway} Courses (${courses.length})
+    ${grade===9&&pathway==="AP"?"AP Courses Available for Grade 9":`${pathway} Courses (${courses.length})`}
    </div>
    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
     ${courses.map((course,i)=>{
-     const courseId=\`\${pathway}_\${i}\`;
+       const courseId=`${pathway}_${i}`;
      const isSelected=selected.includes(courseId);
-     return \`<div class="card" style="padding:14px;border-left:3px solid \${pathwayColors[pathway]};cursor:pointer;opacity:\${isSelected?1:0.85};transition:all .2s" data-course="\${courseId}">
+       return `<div class="card" style="padding:14px;border-left:3px solid ${pathwayColors[pathway]};cursor:pointer;opacity:${isSelected?1:0.85};transition:all .2s" data-course="${courseId}">
       <div style="display:flex;gap:10px">
-       <input type="checkbox" data-coursechk="\${courseId}" style="margin-top:2px;cursor:pointer" \${isSelected?"checked":""}>
+         <input type="checkbox" data-coursechk="${courseId}" style="margin-top:2px;cursor:pointer" ${isSelected?"checked":""}>
        <div style="flex:1">
-        <div style="font-weight:600;color:var(--ink);font-size:13px;margin-bottom:2px">\${course.name}</div>
-        <div style="font-size:11px;color:var(--ink-3);margin-bottom:6px">\${course.subject} · \${course.teacher}</div>
-        <div style="font-size:11px;color:\${pathwayColors[pathway]};font-weight:600">\${pathway} · Period \${course.period}</div>
+          <div style="font-weight:600;color:var(--ink);font-size:13px;margin-bottom:2px">${course.name}</div>
+          <div style="font-size:11px;color:var(--ink-3);margin-bottom:6px">${course.subject} · ${course.teacher}</div>
+          <div style="font-size:11px;color:${pathwayColors[pathway]};font-weight:600">${pathway} · Period ${course.period}</div>
        </div>
       </div>
-     </div>\`;
+       </div>`;
     }).join("")}
    </div>
   </div>
@@ -2873,7 +2912,7 @@ function vStuACSSelector(){
 
   <div style="display:flex;gap:12px">
    <button data-snav="stuclass" style="flex:1;padding:12px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:var(--r);font-weight:600;cursor:pointer">Back</button>
-   <button data-sendapproval style="flex:1;padding:12px;background:var(--violet);color:white;border:none;border-radius:var(--r);font-weight:600;cursor:pointer;opacity:\${selected.length>0?1:0.5};pointer-events:\${selected.length>0?"auto":"none"}">Send \${selected.length} Courses for Approval</button>
+    <button data-sendapproval style="flex:1;padding:12px;background:var(--violet);color:white;border:none;border-radius:var(--r);font-weight:600;cursor:pointer;opacity:${selected.length>0?1:0.5};pointer-events:${selected.length>0?"auto":"none"}">Send ${selected.length} Courses for Approval</button>
   </div>
  </div>`;}
 
@@ -5320,7 +5359,7 @@ function draw(){
   if(pg>=11)nav.splice(nav.findIndex(x=>x[0]==="mentors")>=0?nav.findIndex(x=>x[0]==="mentors"):nav.length,0,["pslab","Personal Statement Lab","doc"]);
   if(pg>=11&&pt==="AP")nav.splice(nav.findIndex(x=>x[0]==="mentors"),0,["apexams","AP Exams","clock"]);
   nav.unshift(["discover","My Pathway","spark"]);
-  const validSv=nav.map(x=>x[0]);
+  const validSv=[...nav.map(x=>x[0]),"stuacs"];
   const sv=validSv.includes(S.sv)?S.sv:nav[0][0];
   let body;
   if(sv==="discover")body=vDiscoverFlow();
@@ -5417,7 +5456,8 @@ function bind(){
       S.selectedCourses=S.selectedCourses.filter(x=>x!==courseId);
     }
     draw();});
-  q("[data-course]",e=>e.onclick=()=>{
+  q("[data-course]",e=>e.onclick=event=>{
+    if(event.target.matches("input[type='checkbox']"))return;
     const courseId=e.dataset.course;
     const chk=e.querySelector("input[type='checkbox']");
     if(chk){chk.checked=!chk.checked;chk.dispatchEvent(new Event('change'));}});
