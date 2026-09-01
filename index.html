@@ -2608,17 +2608,119 @@ const UNI_COURSE_REQUIREMENTS={
  "NYU Stern":{ib:"Maths HL + Economics HL + business/social science",ap:"Calc BC (4+) + Economics (4+) + 2 business/social",standard:"A grades in Maths + Economics"}};
 
 /* Student's current classes (dynamic per student) */
+/* Available courses by grade — all students can see and select from their grade's offerings */
+const COURSES_BY_GRADE={
+ 9:[
+  {name:"AP Calculus AB",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"AP",period:"P1",current:null},
+  {name:"AP Biology",subject:"Science",teacher:"Dr. Reid",pathway:"AP",period:"P2",current:null},
+  {name:"AP United States History",subject:"Humanities",teacher:"Ms. Sharma",pathway:"AP",period:"P3",current:null},
+  {name:"AP English Language & Composition",subject:"English",teacher:"Mr. Adeyemi",pathway:"AP",period:"P4",current:null},
+  {name:"AP Spanish Language & Culture",subject:"Languages",teacher:"Ms. Garcia",pathway:"AP",period:"P5",current:null},
+  {name:"AP Psychology",subject:"Social Science",teacher:"Ms. Johnson",pathway:"AP",period:"P6",current:null},
+  {name:"Mathematics Grade 9 Fundamentals",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"Standard",period:"P1",current:null},
+  {name:"English Grade 9",subject:"English",teacher:"Mr. Adeyemi",pathway:"Standard",period:"P4",current:null},
+  {name:"Science Grade 9",subject:"Science",teacher:"Dr. Reid",pathway:"Standard",period:"P2",current:null},
+  {name:"Social Studies Grade 9",subject:"Humanities",teacher:"Ms. Sharma",pathway:"Standard",period:"P3",current:null}
+ ],
+ 10:[
+  {name:"IB Mathematics: Analysis & Approaches SL",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"IB",period:"P1",current:85},
+  {name:"IB Physics SL",subject:"Science",teacher:"Dr. Reid",pathway:"IB",period:"P2",current:82},
+  {name:"IB History HL",subject:"Humanities",teacher:"Ms. Sharma",pathway:"IB",period:"P3",current:88},
+  {name:"IB English Literature SL",subject:"English",teacher:"Mr. Adeyemi",pathway:"IB",period:"P4",current:86},
+  {name:"IB Spanish B SL",subject:"Languages",teacher:"Ms. Garcia",pathway:"IB",period:"P5",current:84},
+  {name:"IB Chemistry SL",subject:"Science",teacher:"Dr. Chen",pathway:"IB",period:"P6",current:79},
+  {name:"AP Calculus AB",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"AP",period:"P1",current:null},
+  {name:"AP Biology",subject:"Science",teacher:"Dr. Reid",pathway:"AP",period:"P2",current:null},
+  {name:"AP World History",subject:"Humanities",teacher:"Ms. Sharma",pathway:"AP",period:"P3",current:null},
+  {name:"AP English Language & Composition",subject:"English",teacher:"Mr. Adeyemi",pathway:"AP",period:"P4",current:null},
+  {name:"AP Spanish Language & Culture",subject:"Languages",teacher:"Ms. Garcia",pathway:"AP",period:"P5",current:null},
+  {name:"AP Chemistry",subject:"Science",teacher:"Dr. Chen",pathway:"AP",period:"P6",current:null},
+  {name:"Mathematics Grade 10",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"Standard",period:"P1",current:null},
+  {name:"English Grade 10",subject:"English",teacher:"Mr. Adeyemi",pathway:"Standard",period:"P4",current:null},
+  {name:"Science Grade 10",subject:"Science",teacher:"Dr. Reid",pathway:"Standard",period:"P2",current:null},
+  {name:"History Grade 10",subject:"Humanities",teacher:"Ms. Sharma",pathway:"Standard",period:"P3",current:null}
+ ],
+ 11:[
+  {name:"IB Mathematics: Analysis & Approaches HL",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"IB",period:"P1",current:87},
+  {name:"IB Physics HL",subject:"Science",teacher:"Dr. Reid",pathway:"IB",period:"P2",current:84},
+  {name:"IB Chemistry SL",subject:"Science",teacher:"Dr. Chen",pathway:"IB",period:"P3",current:86},
+  {name:"IB History HL",subject:"Humanities",teacher:"Ms. Sharma",pathway:"IB",period:"P4",current:89},
+  {name:"IB English Literature HL",subject:"English",teacher:"Mr. Adeyemi",pathway:"IB",period:"P5",current:85},
+  {name:"IB Spanish B SL",subject:"Languages",teacher:"Ms. Garcia",pathway:"IB",period:"P6",current:88},
+  {name:"IB Economics SL",subject:"Social Science",teacher:"Ms. Fahri",pathway:"IB",period:"P1",current:91},
+  {name:"AP Calculus BC",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"AP",period:"P1",current:null},
+  {name:"AP Physics C: Mechanics",subject:"Science",teacher:"Dr. Reid",pathway:"AP",period:"P2",current:null},
+  {name:"AP Chemistry",subject:"Science",teacher:"Dr. Chen",pathway:"AP",period:"P3",current:null},
+  {name:"AP United States History",subject:"Humanities",teacher:"Ms. Sharma",pathway:"AP",period:"P4",current:null},
+  {name:"AP English Literature & Composition",subject:"English",teacher:"Mr. Adeyemi",pathway:"AP",period:"P5",current:null},
+  {name:"AP Spanish Language & Culture",subject:"Languages",teacher:"Ms. Garcia",pathway:"AP",period:"P6",current:null},
+  {name:"AP Microeconomics",subject:"Social Science",teacher:"Ms. Fahri",pathway:"AP",period:"P1",current:null},
+  {name:"AP Macroeconomics",subject:"Social Science",teacher:"Ms. Fahri",pathway:"AP",period:"P2",current:null},
+  {name:"Mathematics Grade 11 Advanced",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"Standard",period:"P1",current:null},
+  {name:"English Grade 11 Advanced",subject:"English",teacher:"Mr. Adeyemi",pathway:"Standard",period:"P5",current:null},
+  {name:"Science Grade 11 Advanced",subject:"Science",teacher:"Dr. Reid",pathway:"Standard",period:"P2",current:null}
+ ],
+ 12:[
+  {name:"IB Mathematics: Analysis & Approaches HL",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"IB",period:"P2",current:88},
+  {name:"IB Physics SL",subject:"Science",teacher:"Dr. Reid",pathway:"IB",period:"P5",current:81},
+  {name:"IB Chemistry HL",subject:"Science",teacher:"Dr. Chen",pathway:"IB",period:"P3",current:85},
+  {name:"IB History HL",subject:"Humanities",teacher:"Ms. Sharma",pathway:"IB",period:"P1",current:90},
+  {name:"IB English Literature HL",subject:"English",teacher:"Mr. Adeyemi",pathway:"IB",period:"P6",current:84},
+  {name:"IB Economics HL",subject:"Social Science",teacher:"Ms. Fahri",pathway:"IB",period:"P4",current:92},
+  {name:"IB Business Management SL",subject:"Social Science",teacher:"Mr. Haddad",pathway:"IB",period:"P1",current:89},
+  {name:"IB Arabic B SL",subject:"Languages",teacher:"Ms. Nasser",pathway:"IB",period:"P3",current:85},
+  {name:"AP Calculus BC",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"AP",period:"P1",current:null},
+  {name:"AP Physics C: Mechanics",subject:"Science",teacher:"Dr. Reid",pathway:"AP",period:"P2",current:null},
+  {name:"AP Chemistry",subject:"Science",teacher:"Dr. Chen",pathway:"AP",period:"P3",current:null},
+  {name:"AP United States History",subject:"Humanities",teacher:"Ms. Sharma",pathway:"AP",period:"P4",current:null},
+  {name:"AP English Literature & Composition",subject:"English",teacher:"Mr. Adeyemi",pathway:"AP",period:"P5",current:null},
+  {name:"AP Microeconomics",subject:"Social Science",teacher:"Ms. Fahri",pathway:"AP",period:"P1",current:null},
+  {name:"AP Macroeconomics",subject:"Social Science",teacher:"Ms. Fahri",pathway:"AP",period:"P2",current:null},
+  {name:"AP Spanish Language & Culture",subject:"Languages",teacher:"Ms. Garcia",pathway:"AP",period:"P6",current:null},
+  {name:"Advanced Calculus Standard",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"Standard",period:"P1",current:null},
+  {name:"Advanced English Composition",subject:"English",teacher:"Mr. Adeyemi",pathway:"Standard",period:"P5",current:null}
+ ]
+};
+
 function getStudentClasses(sid){
  const student=g(sid);
  if(!student) return [];
- return [
-  {code:"Ma1",name:"IB Mathematics: Analysis & Approaches HL",teacher:"Mr. Yilmaz",period:"P2",grade:88,avg:87,required:{lse:true,imperial:true,cambridge:true}},
-  {code:"Ec1",name:"IB Economics HL",teacher:"Ms. Fahri",period:"P4",grade:92,avg:90,required:{lse:true,nyu:true}},
-  {code:"En1",name:"IB English Literature HL",teacher:"Mr. Adeyemi",period:"P6",grade:84,avg:86,required:{lse:true,ucl:false}},
-  {code:"Bu1",name:"IB Business Management SL",teacher:"Mr. Haddad",period:"P1",grade:89,avg:88,required:{lse:false,nyu:true}},
-  {code:"Ar1",name:"Arabic B SL",teacher:"Ms. Nasser",period:"P3",grade:85,avg:85,required:{}},
-  {code:"Ph1",name:"IB Physics SL",teacher:"Dr. Reid",period:"P5",grade:81,avg:82,required:{imperial:true}}
- ];
+ const grade=student.grade||12;
+ const courses=COURSES_BY_GRADE[grade]||[];
+ 
+ // For grades 10-12 that currently have classes, show their current classes
+ // For grade 9, show available options
+ if(grade===12){
+  return [
+   {code:"Ma1",name:"IB Mathematics: Analysis & Approaches HL",teacher:"Mr. Yilmaz",period:"P2",grade:88,avg:87,pathway:"IB",required:{lse:true,imperial:true,cambridge:true}},
+   {code:"Ec1",name:"IB Economics HL",teacher:"Ms. Fahri",period:"P4",grade:92,avg:90,pathway:"IB",required:{lse:true,nyu:true}},
+   {code:"En1",name:"IB English Literature HL",teacher:"Mr. Adeyemi",period:"P6",grade:84,avg:86,pathway:"IB",required:{lse:true,ucl:false}},
+   {code:"Bu1",name:"IB Business Management SL",teacher:"Mr. Haddad",period:"P1",grade:89,avg:88,pathway:"IB",required:{lse:false,nyu:true}},
+   {code:"Ar1",name:"Arabic B SL",teacher:"Ms. Nasser",period:"P3",grade:85,avg:85,pathway:"IB",required:{}},
+   {code:"Ph1",name:"IB Physics SL",teacher:"Dr. Reid",period:"P5",grade:81,avg:82,pathway:"IB",required:{imperial:true}}
+  ];
+ } else if(grade===11){
+  return [
+   {code:"Ma2",name:"IB Mathematics: Analysis & Approaches HL",teacher:"Mr. Yilmaz",period:"P1",grade:87,avg:86,pathway:"IB",required:{lse:true,imperial:true}},
+   {code:"Ph2",name:"IB Physics HL",teacher:"Dr. Reid",period:"P2",grade:84,avg:83,pathway:"IB",required:{imperial:true}},
+   {code:"Ch2",name:"IB Chemistry SL",teacher:"Dr. Chen",period:"P3",grade:86,avg:85,pathway:"IB",required:{ucl:true}},
+   {code:"Hi2",name:"IB History HL",teacher:"Ms. Sharma",period:"P4",grade:89,avg:88,pathway:"IB",required:{lse:true}},
+   {code:"En2",name:"IB English Literature HL",teacher:"Mr. Adeyemi",period:"P5",grade:85,avg:84,pathway:"IB",required:{lse:true}},
+   {code:"Sp2",name:"IB Spanish B SL",teacher:"Ms. Garcia",period:"P6",grade:88,avg:87,pathway:"IB",required:{}}
+  ];
+ } else if(grade===10){
+  return [
+   {code:"Ma3",name:"IB Mathematics: Analysis & Approaches SL",teacher:"Mr. Yilmaz",period:"P1",grade:85,avg:84,pathway:"IB",required:{}},
+   {code:"Ph3",name:"IB Physics SL",teacher:"Dr. Reid",period:"P2",grade:82,avg:81,pathway:"IB",required:{}},
+   {code:"Hi3",name:"IB History HL",teacher:"Ms. Sharma",period:"P3",grade:88,avg:87,pathway:"IB",required:{}},
+   {code:"En3",name:"IB English Literature SL",teacher:"Mr. Adeyemi",period:"P4",grade:86,avg:85,pathway:"IB",required:{}},
+   {code:"Sp3",name:"IB Spanish B SL",teacher:"Ms. Garcia",period:"P5",grade:84,avg:83,pathway:"IB",required:{}},
+   {code:"Ch3",name:"IB Chemistry SL",teacher:"Dr. Chen",period:"P6",grade:79,avg:78,pathway:"IB",required:{}}
+  ];
+ } else {
+  // Grade 9 - show all available courses for selection
+  return courses.map((c,i)=>({...c,code:`${c.pathway[0]}${i}`,grade:null,avg:null}));
+ }
 }
 
 /* Pending class approvals workflow */
@@ -2628,38 +2730,52 @@ let CLASS_APPROVALS_PENDING=[];
 function vStuClasses(){
  const c=g(S.open||PARENT_ME);
  if(!c) return `<div style="padding:40px;text-align:center;color:var(--ink-3)">No student selected</div>`;
+ const grade=c.grade||12;
  const classes=getStudentClasses(c.id);
  const unis=c.uni?.targets||[];
+ const hasGrades=grade>=10 && classes.length>0 && classes[0].grade;
+ const coursesByPathway={IB:classes.filter(x=>x.pathway==="IB"),AP:classes.filter(x=>x.pathway==="AP"),Standard:classes.filter(x=>x.pathway==="Standard")};
+ 
  return `<div class="arrive" style="max-width:1000px">
   <div style="padding:24px 0">
    <div class="serif" style="font-size:24px;font-weight:600;margin-bottom:8px">My Classes</div>
    <div style="font-size:13.5px;color:var(--ink-2);line-height:1.6;max-width:680px">
-    Your current classes, grades, and what your target universities are looking for. 
-    Select your AP, IB, or Standard combination to send to your counselor and teachers for approval.
+    ${grade===9?"Explore available AP courses for your future academics. Select courses you want to pursue starting next year to send to your counselor and teachers for guidance.":"Your current classes, grades, and what your target universities are looking for. Select your AP, IB, or Standard combination to send to your counselor and teachers for approval."}
    </div>
   </div>
 
-  <div class="card" style="padding:0;overflow:hidden;margin-bottom:24px">
+  ${hasGrades?`<div class="card" style="padding:0;overflow:hidden;margin-bottom:24px">
    <div style="background:linear-gradient(135deg, var(--violet-bg) 0%, rgba(155,140,255,.04) 100%);padding:18px;border-bottom:1px solid var(--line)">
-    <div style="font-weight:600;color:var(--violet-2);font-size:12px;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px">Current courses (Grade 12)</div>
-    <div style="font-size:13px;color:var(--ink)">6 courses taken · Average: ${Math.round(classes.reduce((a,b)=>a+b.avg,0)/classes.length)}%</div>
+    <div style="font-weight:600;color:var(--violet-2);font-size:12px;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px">Current courses (Grade ${grade})</div>
+    <div style="font-size:13px;color:var(--ink)">${classes.length} courses taken · Average: ${Math.round(classes.reduce((a,b)=>a+(b.avg||0),0)/classes.length)}%</div>
    </div>
-   <div style="display:grid;grid-template-columns:1fr 1fr 1fr 120px;gap:1px;background:var(--line)">
-    ${classes.map((cl,i)=>`<div style="background:white;padding:14px;border:${i%2===0?'none':'1px solid var(--line)'};border-bottom:${i<classes.length-1?'none':'1px solid var(--line)'}">
+   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1px;background:var(--line)">
+    ${classes.map((cl,i)=>`<div style="background:white;padding:14px;border-bottom:${i<classes.length-1?'1px solid var(--line)':'none'}">
      <div style="font-weight:600;font-size:13px;color:var(--ink);margin-bottom:4px">${cl.name}</div>
      <div style="font-size:11px;color:var(--ink-3);margin-bottom:8px">${cl.teacher} · Period ${cl.period}</div>
-     <div style="display:flex;gap:12px;align-items:center">
+     ${cl.grade?`<div style="display:flex;gap:12px;align-items:center">
       <div style="display:flex;align-items:center;gap:6px">
        <div style="font-size:18px;font-weight:700;color:var(--violet)">${cl.grade}%</div>
        <div style="font-size:10px;color:var(--ink-3)">avg ${cl.avg}%</div>
       </div>
-     </div>
+     </div>`:""}
     </div>`).join('')}
    </div>
-  </div>
+  </div>`:""}
 
-  <div style="margin-bottom:24px">
-   <div style="font-weight:600;color:var(--ink);font-size:14px;margin-bottom:12px">Entry requirements for your universities</div>
+  ${grade===9?`<div style="margin-bottom:24px">
+   <div style="font-weight:600;color:var(--ink);font-size:14px;margin-bottom:12px">Available AP courses for Grade 10+</div>
+   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:16px">
+    ${coursesByPathway.AP.slice(0,6).map((c,i)=>`<div class="card" style="padding:14px;border-left:3px solid var(--info)">
+     <div style="font-weight:600;color:var(--ink);font-size:13px;margin-bottom:2px">${c.name}</div>
+     <div style="font-size:11px;color:var(--ink-3);margin-bottom:8px">${c.teacher} · Period ${c.period}</div>
+     <div style="font-size:11px;color:var(--info);font-weight:600">AP Pathway</div>
+    </div>`).join("")}
+   </div>
+  </div>`:""}
+
+  ${unis.length>0?`<div style="margin-bottom:24px">
+   <div style="font-weight:600;color:var(--ink);font-size:14px;margin-bottom:12px">Entry requirements for your target universities</div>
    ${unis.map(uni=>{
     const req=UNI_COURSE_REQUIREMENTS[uni.u]||{ib:"Not specified",ap:"Not specified",standard:"Not specified"};
     return `<div class="card" style="padding:16px;margin-bottom:10px;border-left:3px solid var(--violet)">
@@ -2679,12 +2795,12 @@ function vStuClasses(){
       </div>
      </div>
     </div>`;
-   }).join('')}
+   }).join('')}`:""}
   </div>
 
   <div style="display:flex;gap:12px">
    <button data-snav="stuacs" style="flex:1;padding:12px;background:var(--violet);color:white;border:none;border-radius:var(--r);font-weight:600;cursor:pointer;font-size:14px">
-    Select My Courses
+    ${grade===9?"Explore AP Courses":"Select My Courses"}
    </button>
    <button style="flex:1;padding:12px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:var(--r);font-weight:600;cursor:pointer;font-size:14px">
     View Approvals
@@ -2696,15 +2812,31 @@ function vStuClasses(){
 function vStuACSSelector(){
  const c=g(S.open||PARENT_ME);
  if(!c) return `<div style="padding:40px">No student selected</div>`;
+ const grade=c.grade||12;
  const unis=c.uni?.targets||[];
  const classes=getStudentClasses(c.id);
  const selected=S.selectedCourses||{};
  
- const paths=[
-  {name:"Full IB Diploma",courses:["Maths AA HL","Economics HL","English HL","Business SL","Arabic SL","Physics SL"],color:"var(--ok)"},
-  {name:"AP Focus (Economics)",courses:["AP Calculus BC","AP Micro/Macro","AP English Lang","AP World History","AP Spanish","AP Statistics"],color:"var(--info)"},
-  {name:"Mixed Track",courses:["IB Maths AA HL","AP Economics","IB English HL","AP Psychology","IB Arabic SL","AP Statistics"],color:"var(--warn)"},
- ];
+ let paths=[];
+ if(grade===9){
+  paths=[
+   {name:"AP Pathway",courses:["AP Calculus AB","AP Biology","AP US History","AP English Language","AP Spanish","AP Psychology"],color:"var(--info)"},
+   {name:"Mixed AP/IB Intro",courses:["AP Calculus AB","AP Biology","AP US History","IB English Lit","IB Spanish","Standard Science"],color:"var(--warn)"},
+   {name:"Standard Academic Path",courses:["Mathematics Grade 9","English Grade 9","Science Grade 9","Social Studies Grade 9","Spanish","Art"],color:"var(--ok)"}
+  ];
+ } else if(grade===10){
+  paths=[
+   {name:"Full IB Diploma Path",courses:["IB Mathematics SL","IB Physics SL","IB History HL","IB English Lit SL","IB Spanish SL","IB Chemistry SL"],color:"var(--ok)"},
+   {name:"AP Focus",courses:["AP Calculus AB","AP Biology","AP World History","AP English Language","AP Spanish","AP Chemistry"],color:"var(--info)"},
+   {name:"Mixed IB/AP Track",courses:["IB Mathematics SL","AP Biology","IB History HL","AP English Language","IB Spanish SL","AP Chemistry"],color:"var(--warn)"}
+  ];
+ } else {
+  paths=[
+   {name:"Full IB Diploma",courses:["Maths AA HL","Economics HL","English HL","Business SL","Arabic SL","Physics SL"],color:"var(--ok)"},
+   {name:"AP Focus (Economics)",courses:["AP Calculus BC","AP Micro/Macro","AP English Lang","AP World History","AP Spanish","AP Statistics"],color:"var(--info)"},
+   {name:"Mixed Track",courses:["IB Maths AA HL","AP Economics","IB English HL","AP Psychology","IB Arabic SL","AP Statistics"],color:"var(--warn)"}
+  ];
+ }
 
  return `<div class="arrive" style="max-width:1000px">
   <div style="padding:24px 0">
@@ -5175,9 +5307,8 @@ function draw(){
     </div></div>`;
   }
  else {
-  let nav=pg===9?[["guide","High School Guide","book"]]:[["explore","Choosing IB or AP","route"],["mentors","Find a Mentor","users",2]];
+  let nav=pg===9?[["guide","High School Guide","book"],["stuclass","My Classes","book"]]:[["stuclass","My Classes","book"],["explore","Choosing IB or AP","route"],["mentors","Find a Mentor","users",2]];
   if(pg>=11)nav.unshift(["progress","My progress","trend"]);
-  if(pg>=11)nav.unshift(["stuclass","My Classes","book"]);
   if(pg===12){nav.splice(1,0,["targets","University Targets","target"]);nav.push(["network","My Network","brief"]);}
   if(pg>=11)nav.splice(nav.findIndex(x=>x[0]==="mentors")>=0?nav.findIndex(x=>x[0]==="mentors"):nav.length,0,["pslab","Personal Statement Lab","doc"]);
   if(pg>=11&&pt==="AP")nav.splice(nav.findIndex(x=>x[0]==="mentors"),0,["apexams","AP Exams","clock"]);
