@@ -2808,68 +2808,72 @@ function vStuClasses(){
   </div>
  </div>`;}
 
-/* View: ACS (Advanced Course Selection) — student chooses AP/IB/Standard combinations */
+/* View: ACS (Advanced Course Selection) — student picks individual courses */
 function vStuACSSelector(){
  const c=g(S.open||PARENT_ME);
  if(!c) return `<div style="padding:40px">No student selected</div>`;
  const grade=c.grade||12;
- const unis=c.uni?.targets||[];
- const classes=getStudentClasses(c.id);
- const selected=S.selectedCourses||{};
+ const allCourses=COURSES_BY_GRADE[grade]||[];
+ const selected=S.selectedCourses||[];
  
- let paths=[];
- if(grade===9){
-  paths=[
-   {name:"AP Pathway",courses:["AP Calculus AB","AP Biology","AP US History","AP English Language","AP Spanish","AP Psychology"],color:"var(--info)"},
-   {name:"Mixed AP/IB Intro",courses:["AP Calculus AB","AP Biology","AP US History","IB English Lit","IB Spanish","Standard Science"],color:"var(--warn)"},
-   {name:"Standard Academic Path",courses:["Mathematics Grade 9","English Grade 9","Science Grade 9","Social Studies Grade 9","Spanish","Art"],color:"var(--ok)"}
-  ];
- } else if(grade===10){
-  paths=[
-   {name:"Full IB Diploma Path",courses:["IB Mathematics SL","IB Physics SL","IB History HL","IB English Lit SL","IB Spanish SL","IB Chemistry SL"],color:"var(--ok)"},
-   {name:"AP Focus",courses:["AP Calculus AB","AP Biology","AP World History","AP English Language","AP Spanish","AP Chemistry"],color:"var(--info)"},
-   {name:"Mixed IB/AP Track",courses:["IB Mathematics SL","AP Biology","IB History HL","AP English Language","IB Spanish SL","AP Chemistry"],color:"var(--warn)"}
-  ];
- } else {
-  paths=[
-   {name:"Full IB Diploma",courses:["Maths AA HL","Economics HL","English HL","Business SL","Arabic SL","Physics SL"],color:"var(--ok)"},
-   {name:"AP Focus (Economics)",courses:["AP Calculus BC","AP Micro/Macro","AP English Lang","AP World History","AP Spanish","AP Statistics"],color:"var(--info)"},
-   {name:"Mixed Track",courses:["IB Maths AA HL","AP Economics","IB English HL","AP Psychology","IB Arabic SL","AP Statistics"],color:"var(--warn)"}
-  ];
- }
-
- return `<div class="arrive" style="max-width:1000px">
+ // Group courses by pathway
+ const coursesByPath={
+  IB:allCourses.filter(x=>x.pathway==="IB"),
+  AP:allCourses.filter(x=>x.pathway==="AP"),
+  Standard:allCourses.filter(x=>x.pathway==="Standard")
+ };
+ 
+ const pathwayColors={IB:"var(--ok)",AP:"var(--info)",Standard:"var(--warn)"};
+ 
+ return `<div class="arrive" style="max-width:1200px">
   <div style="padding:24px 0">
    <div class="serif" style="font-size:24px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:10px">
-    ${ic('arrow-left',20)} Course Selection
+    ${ic('arrow-left',20)} Select Your Courses
    </div>
    <div style="font-size:13.5px;color:var(--ink-2);line-height:1.6">
-    Choose your pathway combination. You'll see all possible course mixes for your target universities,
-    and your selections will be sent to your counselor and relevant teachers for approval.
+    Browse all available courses for Grade ${grade}. Select the courses you want to pursue and submit for your counselor and teachers to review and approve.
    </div>
   </div>
 
-  <div style="margin-bottom:20px">
-   <div style="font-weight:600;color:var(--ink);margin-bottom:12px">Recommended pathways based on your goals</div>
-   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:16px">
-    ${paths.map(p=>`<div class="card" style="padding:16px;border-left:3px solid ${p.color}">
-     <div style="font-weight:600;color:var(--ink);margin-bottom:8px;display:flex;align-items:center;gap:8px">
-      <span style="width:8px;height:8px;background:${p.color};border-radius:50%"></span>
-      ${p.name}
-     </div>
-     <div style="font-size:12px;color:var(--ink-2);line-height:1.6;margin-bottom:12px">
-      ${p.courses.join(" · ")}
-     </div>
-     <button data-path="${p.name}" style="width:100%;padding:8px;background:${p.color};color:white;border:none;border-radius:var(--r);font-weight:600;cursor:pointer;font-size:12px">
-      Select This Path
-     </button>
-    </div>`).join('')}
+  <div style="background:var(--surface);padding:14px;border-radius:var(--r);margin-bottom:20px;display:flex;justify-content:space-between;align-items:center">
+   <div style="font-size:13px;color:var(--ink)">
+    <b style="color:var(--violet);font-weight:700">${selected.length} courses selected</b>
+   </div>
+   <div style="display:flex;gap:8px;font-size:11px;color:var(--ink-2)">
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--ok);border-radius:50%"></span> IB</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--info);border-radius:50%"></span> AP</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--warn);border-radius:50%"></span> Standard</span>
    </div>
   </div>
+
+  ${Object.entries(coursesByPath).map(([pathway,courses])=>courses.length>0?`
+  <div style="margin-bottom:24px">
+   <div style="font-weight:600;color:var(--ink);font-size:14px;margin-bottom:12px;display:flex;align-items:center;gap:8px">
+    <span style="width:10px;height:10px;background:${pathwayColors[pathway]};border-radius:50%"></span>
+    ${pathway} Courses (${courses.length})
+   </div>
+   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
+    ${courses.map((course,i)=>{
+     const courseId=\`\${pathway}_\${i}\`;
+     const isSelected=selected.includes(courseId);
+     return \`<div class="card" style="padding:14px;border-left:3px solid \${pathwayColors[pathway]};cursor:pointer;opacity:\${isSelected?1:0.85};transition:all .2s" data-course="\${courseId}">
+      <div style="display:flex;gap:10px">
+       <input type="checkbox" data-coursechk="\${courseId}" style="margin-top:2px;cursor:pointer" \${isSelected?"checked":""}>
+       <div style="flex:1">
+        <div style="font-weight:600;color:var(--ink);font-size:13px;margin-bottom:2px">\${course.name}</div>
+        <div style="font-size:11px;color:var(--ink-3);margin-bottom:6px">\${course.subject} · \${course.teacher}</div>
+        <div style="font-size:11px;color:\${pathwayColors[pathway]};font-weight:600">\${pathway} · Period \${course.period}</div>
+       </div>
+      </div>
+     </div>\`;
+    }).join("")}
+   </div>
+  </div>
+  `:"").join("")}
 
   <div style="display:flex;gap:12px">
    <button data-snav="stuclass" style="flex:1;padding:12px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:var(--r);font-weight:600;cursor:pointer">Back</button>
-   <button data-sendapproval style="flex:1;padding:12px;background:var(--violet);color:white;border:none;border-radius:var(--r);font-weight:600;cursor:pointer">Send for Approval</button>
+   <button data-sendapproval style="flex:1;padding:12px;background:var(--violet);color:white;border:none;border-radius:var(--r);font-weight:600;cursor:pointer;opacity:\${selected.length>0?1:0.5};pointer-events:\${selected.length>0?"auto":"none"}">Send \${selected.length} Courses for Approval</button>
   </div>
  </div>`;}
 
@@ -2890,9 +2894,12 @@ function vTClassApprovals(){
     </div>
     <span style="background:var(--info-bg);color:var(--info);padding:4px 10px;border-radius:var(--r-pill);font-size:10px;font-weight:600">PENDING</span>
    </div>
-   <div style="background:var(--surface);padding:12px;border-radius:var(--r);margin-bottom:12px;font-size:12px;color:var(--ink-2)">
-    Selected path: <b>${a.path}</b>
-   </div>
+  <div style="background:var(--surface);padding:12px;border-radius:var(--r);margin-bottom:12px;font-size:12px;color:var(--ink-2)">
+   <div style="margin-bottom:8px"><b>${a.courseCount||a.courses?.length||0} courses selected:</b></div>
+   ${a.courses?`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px">
+    ${a.courses.map(c=>`<div style="background:white;padding:8px;border-radius:var(--r);font-size:11px;color:var(--ink)">${c}</div>`).join("")}
+   </div>`:a.path?`<div><b>Path:</b> ${a.path}</div>`:"No courses listed"}
+  </div>
    <div style="display:flex;gap:8px">
     <button data-classapprove="${i}" style="flex:1;padding:10px;background:var(--ok);color:white;border:none;border-radius:var(--r);font-weight:600;cursor:pointer;font-size:12px">Approve</button>
     <button data-classreject="${i}" style="flex:1;padding:10px;background:var(--crit);color:white;border:none;border-radius:var(--r);font-weight:600;cursor:pointer;font-size:12px">Reject</button>
@@ -5400,19 +5407,45 @@ function bind(){
    toast(a.student+"'s course selection rejected");}draw();});
  q("[data-classrequest]",e=>e.onclick=()=>{
    const idx=+e.dataset.classrequest;S.modal={type:"classrequest",id:idx};S.chatMsg="";draw();});
- /* ── pathway selection and submission ── */
- q("[data-path]",e=>e.onclick=()=>{
-   const pathName=e.dataset.path;S.selectedPath=pathName;S.sv="stuacs";draw();});
- q("[data-sendapproval]",e=>e.onclick=()=>{
-   const student=g(S.open||PARENT_ME);
-   if(!student) return;
-   CLASS_APPROVALS_PENDING.unshift({
-     student:student.name,av:student.av,path:S.selectedPath||"Full IB Diploma",
-     status:"pending",when:"Today",sid:student.id,counselor_reviewed:false,
-     teachers:["Mr. Yilmaz","Ms. Fahri","Mr. Adeyemi"]
-   });
-   S.sv="stuclass";S.selectedPath=null;
-   toast("Course selection sent to your counselor and teachers");draw();});
+  /* ── course selection ── */
+  q("[data-coursechk]",e=>e.onchange=()=>{
+    const courseId=e.dataset.coursechk;
+    S.selectedCourses=S.selectedCourses||[];
+    if(e.checked){
+      if(!S.selectedCourses.includes(courseId))S.selectedCourses.push(courseId);
+    } else {
+      S.selectedCourses=S.selectedCourses.filter(x=>x!==courseId);
+    }
+    draw();});
+  q("[data-course]",e=>e.onclick=()=>{
+    const courseId=e.dataset.course;
+    const chk=e.querySelector("input[type='checkbox']");
+    if(chk){chk.checked=!chk.checked;chk.dispatchEvent(new Event('change'));}});
+  q("[data-sendapproval]",e=>e.onclick=()=>{
+    const student=g(S.open||PARENT_ME);
+    const grade=student.grade||12;
+    const allCourses=COURSES_BY_GRADE[grade]||[];
+    const selected=S.selectedCourses||[];
+    if(!student||!selected.length) return;
+    
+    // Build course list from selections
+    const selectedCourses=[];
+    selected.forEach(courseId=>{
+      const[pathway,idx]=courseId.split("_");
+      const courses=allCourses.filter(x=>x.pathway===pathway);
+      if(courses[+idx])selectedCourses.push(courses[+idx].name);
+    });
+    
+    CLASS_APPROVALS_PENDING.unshift({
+      student:student.name,av:student.av,
+      courses:selectedCourses,
+      courseCount:selected.length,
+      status:"pending",when:"Today",sid:student.id,
+      counselor_reviewed:false,
+      teachers:["Mr. Yilmaz","Ms. Fahri","Mr. Adeyemi"]
+    });
+    S.sv="stuclass";S.selectedCourses=[];
+    toast("Course selection ("+selected.length+" courses) sent to your counselor and teachers");draw();});
  q("[data-mergeopen]",e=>e.onclick=()=>{S.modal={type:"merge",id:e.dataset.mergeopen};S.mergePick=null;draw();});
  q("[data-mergepick]",e=>e.onclick=()=>{S.mergePick=e.dataset.mergepick;draw();});
  q("[data-mergego]",e=>e.onclick=()=>{const c=g(e.dataset.mergego);const p=(S.mergePick||"").split(":");
