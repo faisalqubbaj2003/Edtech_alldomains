@@ -5177,6 +5177,7 @@ function draw(){
  else {
   let nav=pg===9?[["guide","High School Guide","book"]]:[["explore","Choosing IB or AP","route"],["mentors","Find a Mentor","users",2]];
   if(pg>=11)nav.unshift(["progress","My progress","trend"]);
+  if(pg>=11)nav.unshift(["stuclass","My Classes","book"]);
   if(pg===12){nav.splice(1,0,["targets","University Targets","target"]);nav.push(["network","My Network","brief"]);}
   if(pg>=11)nav.splice(nav.findIndex(x=>x[0]==="mentors")>=0?nav.findIndex(x=>x[0]==="mentors"):nav.length,0,["pslab","Personal Statement Lab","doc"]);
   if(pg>=11&&pt==="AP")nav.splice(nav.findIndex(x=>x[0]==="mentors"),0,["apexams","AP Exams","clock"]);
