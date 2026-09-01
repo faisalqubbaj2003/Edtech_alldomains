@@ -2641,7 +2641,7 @@ function vStuClasses(){
   </div>
 
   <div style="display:flex;gap:12px">
-   <button data-nav="stuacs" style="flex:1;padding:12px;background:var(--violet);color:white;border:none;border-radius:var(--r);font-weight:600;cursor:pointer;font-size:14px">
+   <button data-snav="stuacs" style="flex:1;padding:12px;background:var(--violet);color:white;border:none;border-radius:var(--r);font-weight:600;cursor:pointer;font-size:14px">
     Select My Courses
    </button>
    <button style="flex:1;padding:12px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:var(--r);font-weight:600;cursor:pointer;font-size:14px">
@@ -2678,7 +2678,7 @@ function vStuACSSelector(){
   <div style="margin-bottom:20px">
    <div style="font-weight:600;color:var(--ink);margin-bottom:12px">Recommended pathways based on your goals</div>
    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:16px">
-    ${paths.map(p=>`<div class="card" style="padding:16px;border-left:3px solid ${p.color};cursor:pointer" data-path="${p.name}">
+    ${paths.map(p=>`<div class="card" style="padding:16px;border-left:3px solid ${p.color}">
      <div style="font-weight:600;color:var(--ink);margin-bottom:8px;display:flex;align-items:center;gap:8px">
       <span style="width:8px;height:8px;background:${p.color};border-radius:50%"></span>
       ${p.name}
@@ -2686,7 +2686,7 @@ function vStuACSSelector(){
      <div style="font-size:12px;color:var(--ink-2);line-height:1.6;margin-bottom:12px">
       ${p.courses.join(" · ")}
      </div>
-     <button style="width:100%;padding:8px;background:${p.color};color:white;border:none;border-radius:var(--r);font-weight:600;cursor:pointer;font-size:12px">
+     <button data-path="${p.name}" style="width:100%;padding:8px;background:${p.color};color:white;border:none;border-radius:var(--r);font-weight:600;cursor:pointer;font-size:12px">
       Select This Path
      </button>
     </div>`).join('')}
@@ -2694,8 +2694,8 @@ function vStuACSSelector(){
   </div>
 
   <div style="display:flex;gap:12px">
-   <button data-nav="stuclass" style="flex:1;padding:12px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:var(--r);font-weight:600;cursor:pointer">Back</button>
-   <button style="flex:1;padding:12px;background:var(--violet);color:white;border:none;border-radius:var(--r);font-weight:600;cursor:pointer">Send for Approval</button>
+   <button data-snav="stuclass" style="flex:1;padding:12px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:var(--r);font-weight:600;cursor:pointer">Back</button>
+   <button data-sendapproval style="flex:1;padding:12px;background:var(--violet);color:white;border:none;border-radius:var(--r);font-weight:600;cursor:pointer">Send for Approval</button>
   </div>
  </div>`;}
 
@@ -5217,8 +5217,6 @@ function bind(){
    S.modal=null;S.tTags=[];S.tNote="";
    toast("Sent to "+c.name.split(" ")[0]+"'s counselor");});
  q("[data-tnav]",e=>e.onclick=()=>{S.tv=e.dataset.tnav;S.navOpen=false;draw();});
- /* ── student: my classes navigation ── */
- q("[data-snav]",e=>e.onclick=()=>{const nav=e.dataset.snav;if(nav==="stuclass"||nav==="stuacs"){S.sv=nav;S.navOpen=false;draw();}});
  /* ── teacher: class approvals workflow ── */
  q("[data-classapprove]",e=>e.onclick=()=>{
    const idx=+e.dataset.classapprove;const a=CLASS_APPROVALS_PENDING[idx];if(a){a.status="approved";
@@ -5231,7 +5229,7 @@ function bind(){
  /* ── pathway selection and submission ── */
  q("[data-path]",e=>e.onclick=()=>{
    const pathName=e.dataset.path;S.selectedPath=pathName;S.sv="stuacs";draw();});
- q(".arrive button:has-text('Send for Approval')",e=>e.onclick=()=>{
+ q("[data-sendapproval]",e=>e.onclick=()=>{
    const student=g(S.open||PARENT_ME);
    if(!student) return;
    CLASS_APPROVALS_PENDING.unshift({
