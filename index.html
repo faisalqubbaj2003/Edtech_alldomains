@@ -5455,13 +5455,14 @@ function draw(){
 /* ═══════════ BIND ═══════════ */
 function bind(){
  const q=(s,f)=>document.querySelectorAll(s).forEach(f);
+ const kb=(e,role,checked)=>{e.tabIndex=0;e.setAttribute("role",role);if(checked!==undefined)e.setAttribute("aria-checked",String(checked));};
  q("[data-role]",e=>e.onclick=()=>{S.role=e.dataset.role;S.open=null;S.navOpen=false;draw();});
  q("[data-palclose]",e=>e.onclick=()=>{S.palOpen=false;S.palQuery="";S.palActiveIndex=0;draw();});
  q("[data-palcmd]",e=>e.onclick=()=>{const action=e.dataset.palcmd;const m=(action||"").match(/^nav:(.+)$/);if(m){const key=m[1];if(S.role==="counselor")S.cv=key;else if(S.role==="student")S.sv=key;else if(S.role==="parent")S.pv=key;else if(S.role==="teacher")S.tv=key;else if(S.role==="mentor")S.mv=key;S.palOpen=false;S.palQuery="";S.palActiveIndex=0;draw();return;}if(action==="role:counselor"){S.role="counselor";S.palOpen=false;S.palQuery="";draw();return;}if(action==="role:teacher"){S.role="teacher";S.palOpen=false;S.palQuery="";draw();return;}if(action==="role:student"){S.role="student";S.palOpen=false;S.palQuery="";draw();return;}if(action==="role:parent"){S.role="parent";S.palOpen=false;S.palQuery="";draw();return;}if(action==="role:mentor"){S.role="mentor";S.palOpen=false;S.palQuery="";draw();return;}});
  q("[data-cnav]",e=>e.onclick=()=>{S.cv=e.dataset.cnav;S.open=null;S.fileId=null;S.ragFilter="all";S.navOpen=false;draw();});
  q("[data-cat]",e=>e.onclick=()=>{const k=e.dataset.cat;S.cat[k]=!S.cat[k];draw();});
  /* ── teacher flag flow ── */
- q("[data-tflag]",e=>e.onclick=()=>{S.modal={type:"tflag",id:e.dataset.tflag};S.tKind="concern";S.tTags=[];S.tNote="";draw();});
+ q("[data-tflag]",e=>{kb(e,"button");e.onclick=()=>{S.modal={type:"tflag",id:e.dataset.tflag};S.tKind="concern";S.tTags=[];S.tNote="";draw();};});
  q("[data-tkind]",e=>e.onclick=()=>{S.tKind=e.dataset.tkind;S.tTags=[];draw();});
  q("[data-ttag]",e=>e.onclick=()=>{const t=e.dataset.ttag;const i=S.tTags.indexOf(t);
    if(i>-1)S.tTags.splice(i,1);else S.tTags.push(t);
@@ -5679,7 +5680,7 @@ function bind(){
   if(approved.length<2){toast("Only one path approved so far — ask your counselor about exploring another");return;}
   const idx=approved.indexOf(S.activeArchetype);S.activeArchetype=approved[(idx+1)%approved.length];draw();});
 
- q("[data-earlystart]",e=>e.onclick=()=>{S.earlyStart=!S.earlyStart;draw();});
+ q("[data-earlystart]",e=>{kb(e,"switch",!!S.earlyStart);e.onclick=()=>{S.earlyStart=!S.earlyStart;draw();};});
  q("[data-pcty]",e=>e.onclick=()=>{S.pathCountry=e.dataset.pcty;draw();});
  q("[data-pmtopic]",e=>e.onclick=()=>{const t=document.getElementById("pmnote");if(t)S.pmNote=t.value;S.pmTopic=e.dataset.pmtopic;draw();});
  q("[data-pmslot]",e=>e.onclick=()=>{const t=document.getElementById("pmnote");if(t)S.pmNote=t.value;S.pmSlot=+e.dataset.pmslot;draw();});
@@ -5736,24 +5737,24 @@ function bind(){
   const none=document.getElementById("rnone");if(none)none.style.display=n?"none":"block";};}
  q("[data-snav]",e=>e.onclick=()=>{S.sv=e.dataset.snav;S.navOpen=false;draw();});
  q("[data-mnav]",e=>e.onclick=()=>{S.mv=e.dataset.mnav;S.navOpen=false;draw();});
- q("[data-open]",e=>e.onclick=()=>{S.open=e.dataset.open;S.tab="evidence";S.cv="command";draw();});
+ q("[data-open]",e=>{kb(e,"button");e.onclick=()=>{S.open=e.dataset.open;S.tab="evidence";S.cv="command";draw();};});
  q("[data-prio]",e=>e.onclick=(ev)=>{ev.stopPropagation();S.prioFilter=e.dataset.prio;draw();});
  q("[data-tab]",e=>e.onclick=()=>{S.tab=e.dataset.tab;draw();});
- q("[data-file]",e=>e.onclick=()=>{const v=e.dataset.file;if(v==="_back"){S.fileId=null;if(!DIMS[S.cv]&&S.cv!=="files")S.cv="files";}else{S.fileId=v;S.fileTab="synth";}draw();});
+ q("[data-file]",e=>{kb(e,"button");e.onclick=()=>{const v=e.dataset.file;if(v==="_back"){S.fileId=null;if(!DIMS[S.cv]&&S.cv!=="files")S.cv="files";}else{S.fileId=v;S.fileTab="synth";}draw();};});
  q("[data-ftab]",e=>e.onclick=()=>{S.fileTab=e.dataset.ftab;draw();});
- q("[data-task]",e=>e.onclick=()=>{const i=+e.dataset.task;TASKS[i].done=!TASKS[i].done;if(TASKS[i].done)toast("Task completed");draw();});
+ q("[data-task]",e=>{kb(e,"checkbox",!!TASKS[+e.dataset.task].done);e.onclick=()=>{const i=+e.dataset.task;TASKS[i].done=!TASKS[i].done;if(TASKS[i].done)toast("Task completed");draw();};});
  q("[data-toast]",e=>e.onclick=(ev)=>{ev.stopPropagation();toast(e.dataset.toast);});
  q("[data-addctx]",e=>e.onclick=()=>{S.modal={type:"ctx",id:e.dataset.addctx};draw();});
  q("[data-mclose]",e=>e.onclick=()=>{S.modal=null;S.selSlot=null;draw();});
  const bg=document.querySelector("[data-mbg]");if(bg)bg.onclick=(ev)=>{if(ev.target===bg){S.modal=null;S.selSlot=null;draw();}};
- q("[data-ctxpick]",e=>e.onclick=()=>{
+ q("[data-ctxpick]",e=>{kb(e,"button");e.onclick=()=>{
   const [i,id,w]=e.dataset.ctxpick.split(":");const c=g(id);
   c.signal=Math.max(12,c.signal+parseInt(w));
   c.context.push(["Authorised medical absence confirmed by counselor","Family circumstance noted — pastoral route","Contextual suppression: timed mock in heavy week","Informal contact already made"][+i]);
   if(c.signal<45&&c.prio==="urgent"){c.prio="checkin";logAudit("R.HADDAD","PRIORITY_CHANGE",c.name,"urgent → check-in · counselor added context");}
   else if(c.signal<40&&c.prio==="checkin"){c.prio="review";logAudit("R.HADDAD","PRIORITY_CHANGE",c.name,"check-in → review · counselor added context");}
   logAudit("R.HADDAD","CONTEXT_ADDED",c.name,"Signal strength recalculated to "+c.signal+"%");
-  S.modal=null;toast("Context saved · signal strength recalculated to "+c.signal+"%");});
+  S.modal=null;toast("Context saved · signal strength recalculated to "+c.signal+"%");};});
  q("[data-act]",e=>e.onclick=()=>{
   const [a,id]=e.dataset.act.split(":");const c=g(id);
   if(a==="accept"){if(c)c.stage="act";
@@ -5779,17 +5780,17 @@ function bind(){
  q("[data-letter]",e=>e.onclick=()=>{
   if(e.dataset.letter==="reset"){S.letter="idle";draw();return;}
   S.letter="gen";draw();setTimeout(()=>{S.letter="done";logAudit("SYSTEM","AI_DRAFT","Sara Al Mansoori","Letter drafted · labelled · pending human review");draw();},2200);});
- q("[data-cpq]",e=>e.onclick=()=>{const x=CPQ[+e.dataset.cpq];S.cpQ=x.q;S.cpA=null;S.cpLoad=true;draw();
-  setTimeout(()=>{S.cpLoad=false;S.cpA=x.a;logAudit("R.HADDAD","COPILOT_QUERY","Cohort","Scope: assigned students only");draw();},1300);});
+ q("[data-cpq]",e=>{kb(e,"button");e.onclick=()=>{const x=CPQ[+e.dataset.cpq];S.cpQ=x.q;S.cpA=null;S.cpLoad=true;draw();
+  setTimeout(()=>{S.cpLoad=false;S.cpA=x.a;logAudit("R.HADDAD","COPILOT_QUERY","Cohort","Scope: assigned students only");draw();},1300);};});
  q("[data-cpask]",e=>e.onclick=()=>{const v=document.getElementById("cpin").value.trim();if(!v)return;
   S.cpQ=v;S.cpLoad=true;S.cpA=null;draw();
   setTimeout(()=>{S.cpLoad=false;
    const hit=CPQ.find(x=>x.q.toLowerCase().includes(v.toLowerCase().slice(0,12)))||null;
    S.cpA=hit?hit.a:"I searched your assigned cohort for that. Nothing matched precisely — try one of the suggested questions below, or ask about a specific student, signal domain or deadline. I only return what sits inside your permission scope.";
    draw();},1300);});
- q("[data-step]",e=>e.onclick=()=>{const i=+e.dataset.step;S.pathDone[i]=!S.pathDone[i];if(S.pathDone[i])toast("Nice move — your probability went up");draw();});
+ q("[data-step]",e=>{kb(e,"checkbox",!!S.pathDone[+e.dataset.step]);e.onclick=()=>{const i=+e.dataset.step;S.pathDone[i]=!S.pathDone[i];if(S.pathDone[i])toast("Nice move — your probability went up");draw();};});
  q("[data-book]",e=>e.onclick=()=>{S.modal={type:"book",id:e.dataset.book};S.selSlot=null;draw();});
- q("[data-slot]",e=>e.onclick=()=>{S.selSlot=+e.dataset.slot;draw();});
+ q("[data-slot]",e=>{kb(e,"radio",S.selSlot===+e.dataset.slot);e.onclick=()=>{S.selSlot=+e.dataset.slot;draw();};});
  q("[data-confirm]",e=>e.onclick=()=>{const m=MENTORS.find(x=>x.id===e.dataset.confirm);
   if(!STU.net.find(n=>n.n===m.n))STU.net.unshift({n:m.n,r:"Mentor · "+m.firm,w:true});
   S.modal=null;S.selSlot=null;toast("Session booked with "+m.n.split(' ')[0]+" · your counselor can see it");});
@@ -5797,6 +5798,11 @@ function bind(){
 }
 
 document.addEventListener("keydown",ev=>{
+ if((ev.key==="Enter"||ev.key===" ")&&document.activeElement&&document.activeElement.matches("[data-open],[data-file],[data-tflag],[data-cpq],[data-ctxpick],[data-slot],[data-step],[data-task],[data-earlystart]")){
+  ev.preventDefault();
+  document.activeElement.click();
+  return;
+ }
  if((ev.metaKey||ev.ctrlKey)&&ev.key.toLowerCase()==="k"){
   ev.preventDefault();
   S.palOpen=true;S.palQuery="";S.palActiveIndex=0;draw();
@@ -5832,8 +5838,10 @@ draw();
 </script>
 
 <!-- ═══════════ UX AUDIT OVERLAY — dev tool, not part of the product ═══════════
-     Findings from a Web Interface Guidelines review. Toggle with the button,
-     bottom-right. Flagged elements get a live colour-coded outline (pure CSS
+     Findings from a Web Interface Guidelines review. Only initializes on
+     localhost/127.0.0.1 or with a ?debug query param — never for a real
+     visitor on the deployed domain. Toggle with the button, bottom-right
+     (once gated in). Flagged elements get a live colour-coded outline (pure CSS
      attribute selectors — they re-match automatically after every draw(), no
      hook into draw()/bind() needed); a side panel lists every finding with
      file:line and a "Locate" jump for anything on the current screen. Global
@@ -5908,16 +5916,6 @@ draw();
   {cat:"icon",sel:'button[data-toast="Notifications are up to date"]',loc:"index.html:3837",msg:"Notification bell — icon only, no aria-label"},
   {cat:"icon",sel:'button[data-q=""]',loc:"index.html:2211",msg:"Clear-search button — icon only, no aria-label"},
   {cat:"icon",sel:"button[data-mclose]",loc:"index.html:2312 (+6 more modals)",msg:"Modal close button — icon only, no aria-label, repeats on every modal"},
-  {cat:"kbd",sel:"tr[data-open]",loc:"index.html:1151",msg:"Cohort signal matrix row — <tr> with no keyboard handler"},
-  {cat:"kbd",sel:"div[data-open]",loc:"index.html:1092, 1441",msg:"Case card / balance row — <div> not <button>, unreachable by keyboard"},
-  {cat:"kbd",sel:"div[data-file]",loc:"index.html:1583, 2089, 2145, 2221",msg:"Student file / RAG / overnight / cohort row — <div> not <button>, no keyboard access"},
-  {cat:"kbd",sel:"div[data-tflag]",loc:"index.html:2281",msg:"Teacher roster row — <div> not <button>, no keyboard access"},
-  {cat:"kbd",sel:"div[data-cpq]",loc:"index.html:1512",msg:"Co-pilot suggested question — <div> not <button>, no keyboard access"},
-  {cat:"kbd",sel:"div[data-ctxpick]",loc:"index.html:3559",msg:"Add-context picker option — <div> not <button>, no keyboard access"},
-  {cat:"role",sel:"div[data-slot]",loc:"index.html:3590",msg:"Mentor booking time slot acts as a radio — no role=radio, no keyboard access"},
-  {cat:"role",sel:"div[data-step]",loc:"index.html:3449",msg:"Pathway-step toggle acts as a checkbox — no role/aria-checked/keyboard; also inline transition:all"},
-  {cat:"role",sel:"div[data-task]",loc:"index.html:1751",msg:"Task checkbox — no role=checkbox/aria-checked/keyboard handler"},
-  {cat:"role",sel:"div[data-earlystart]",loc:"index.html:2920",msg:"“Getting a head start” switch — no role=switch/aria-checked/keyboard. Also: .tog/.tog.on has no CSS anywhere in the file — this toggle is visually dead"},
   {cat:"label",sel:'input[type="range"]',loc:"index.html:1201",msg:"Threshold slider — no label/aria-label"},
   {cat:"label",sel:"#cpin",loc:"index.html:1509",msg:"Co-pilot question input — placeholder only, no label"},
   {cat:"label",sel:"#cq",loc:"index.html:2210",msg:"Cohort search input — placeholder only, no label"},
@@ -5940,7 +5938,8 @@ draw();
   {loc:"index.html:1147",msg:"Cohort signal matrix table renders all 87 students into <tbody>, no virtualization"},
   {loc:"index.html:1582",msg:"vFiles() renders all 87 student-file cards, no virtualization or pagination"},
   {loc:"index.html:2089",msg:"vDim() RAG groups render every matching student uncapped, except “good” (soft-capped at 6)"},
-  {loc:"index.html:2221",msg:"vCohort() roster renders up to 87 rows, no virtualization"}
+  {loc:"index.html:2221",msg:"vCohort() roster renders up to 87 rows, no virtualization"},
+  {loc:"index.html:4632",msg:"“Getting a head start” switch (.tog/.tog.on) has no CSS rule anywhere in the file — visually dead, gives no on/off indication even though it is now keyboard-operable and announces its state via aria-checked"}
  ];
 
  function svgEsc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
@@ -5984,8 +5983,11 @@ draw();
   document.getElementById("auditBtn").setAttribute("aria-expanded",String(on));
  }
 
- document.addEventListener("DOMContentLoaded",init);
- if(document.readyState!=="loading")init();
+ var DEBUG_ON=location.hostname==="localhost"||location.hostname==="127.0.0.1"||/[?&]debug\b/.test(location.search);
+ if(DEBUG_ON){
+  document.addEventListener("DOMContentLoaded",init);
+  if(document.readyState!=="loading")init();
+ }
  function init(){
   if(document.getElementById("auditBtn"))return;
   var btn=document.createElement("button");
