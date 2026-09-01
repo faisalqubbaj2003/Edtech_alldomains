@@ -892,9 +892,9 @@ function roleBar(){
 
 /* ═══════════ SHELL ═══════════ */
 function shell(theme,nav,active,attr,footAv,footN,footR,title,sub,body){
- const bg={counselor:"#131829",student:"#241D52",mentor:"#0A352F",parent:"#3A1029"}[theme];
- const bar={counselor:"#3FE0BE",student:"#9B8CFF",mentor:"#3FE0BE",parent:"#F472B6"}[theme];
- const nm={counselor:"Counselor OS",student:"Career OS",mentor:"Mentor Hub",parent:"Family Portal"}[theme];
+ const bg={counselor:"#131829",student:"#241D52",mentor:"#0A352F",teacher:"#0A352F",parent:"#3A1029"}[theme];
+ const bar={counselor:"#3FE0BE",student:"#9B8CFF",mentor:"#3FE0BE",teacher:"#3FE0BE",parent:"#F472B6"}[theme];
+ const nm={counselor:"Counselor OS",student:"Career OS",mentor:"Mentor Hub",teacher:"Teacher Portal",parent:"Family Portal"}[theme];
  return `<div class="shell" style="flex:1;display:flex;overflow:hidden">
  <aside class="sidebar" style="width:218px;background:${bg};display:flex;flex-direction:column;padding:18px 0;flex-shrink:0;overflow-y:auto">
   <div style="padding:0 18px 16px;display:flex;align-items:center;gap:10px">
@@ -1227,10 +1227,15 @@ function vCase(c){
      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
       <button class="btn btn-g btn-sm" data-act="down:${c.id}">${ic('down',13)} Lower priority</button>
       <button class="btn btn-g btn-sm" data-act="dismiss:${c.id}">${ic('x',13)} Not a concern</button>
+     </div>
+     <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px;padding-top:9px;border-top:1px solid var(--lineSoft)">
       <button class="btn btn-g btn-sm" data-mergeopen="${c.id}">${ic('merge',13)} Merge…</button>
-      <button class="btn btn-g btn-sm" data-assignopen="${c.id}">${ic('users',13)} Reassign…</button></div>
-     <button class="btn btn-u" data-act="escalate:${c.id}" style="width:100%;margin-top:3px">${ic('shield',15)} Escalate to DSL</button>
-     <div style="font-size:10.3px;color:var(--inkMute);line-height:1.45;margin-top:4px">Escalation routes immediately to ${SCHOOL.dsl} under school safeguarding policy and writes to the audit log. CAROS never makes this decision for you.</div>
+      <button class="btn btn-g btn-sm" data-assignopen="${c.id}">${ic('users',13)} Reassign…</button>
+     </div>
+     <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line)">
+      <button class="btn btn-u" data-act="escalate:${c.id}" style="width:100%">${ic('shield',15)} Escalate to DSL</button>
+      <div style="font-size:10.3px;color:var(--inkMute);line-height:1.45;margin-top:6px">Escalation routes immediately to ${SCHOOL.dsl} under school safeguarding policy and writes to the audit log. CAROS never makes this decision for you.</div>
+     </div>
     </div>
    </div>
 
@@ -5360,7 +5365,7 @@ function draw(){
  } else if(S.role==="teacher"){
   const nav=[["tclasses","My Classes","book"],["class","My Class Register","users"],["classapprovals","Course Approvals","check"],["tlog","What I've logged","list"]];
   const body3=S.tv==="tclasses"?vTMyClasses():S.tv==="tlog"?vTLog():S.tv==="classapprovals"?vTClassApprovals():vTClass();
-  sb=shell("mentor",nav,S.tv,"data-tnav","JD",TEACHER.name,TEACHER.subject,"Teacher portal",TEACHER.name+" · "+TEACHER.subject,body3);
+  sb=shell("teacher",nav,S.tv,"data-tnav","JD",TEACHER.name,TEACHER.subject,"Teacher portal",TEACHER.name+" · "+TEACHER.subject,body3);
  } else if(S.role==="parent"){
   const pg2=S.previewGrade||12,pt2=g(PARENT_ME).track||"IB";
   let nav=[["overview","Overview","home"],["messages","Messages","msg"],["meetings","Meet the counselor","brief"]];
