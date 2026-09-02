@@ -54,6 +54,7 @@
  --f-content:'Libre Franklin',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
  --f-figure:'Spline Sans Mono',ui-monospace,'SF Mono',Menlo,monospace;
  --row:30px;               /* one ruled row. The banding counts in these. */
+ --topbar:60px;            /* the sticky masthead the sheet's column head parks under. */
  /* Paper is cut, not rounded. */
  --r-sm:1px; --r:2px; --r-lg:2px; --r-xl:3px; --r-pill:2px; --r-dot:50%;
  /* Elevation is a rule, not a shadow — a sheet does not float above a desk.
@@ -328,6 +329,130 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--band-2)}
 .sheet td.num,.sheet th.num{font-family:var(--f-figure);font-variant-numeric:tabular-nums;text-align:right;letter-spacing:-.028em}
 /* The red margin rule. One accent, and it only ever runs down the left edge. */
 .marginrule{border-left:2px solid var(--margin)}
+
+/* ══════════ THE CASELOAD SHEET ══════════
+   Full bleed: the sheet is the page, so it opts the shell's own gutter out
+   rather than sitting inside it as one more card on a desk. */
+.pagewrap:has(>.sheetpage){padding:0;max-width:none}
+.sheetpage{display:grid;grid-template-columns:minmax(0,1fr) 274px;align-items:stretch}
+.sheetmain{min-width:0;padding:18px 0 52px}
+.sheetcap{padding:0 22px 15px}
+.sheetcap h1{font-family:var(--f-apparatus);font-size:14px;font-weight:700;letter-spacing:.13em;
+ text-transform:uppercase;color:var(--ink-2);margin:0}
+.sheetcap p{font-size:12px;color:var(--ink-3);margin:5px 0 0;line-height:1.55;max-width:66ch}
+/* The rail. The counselor's day, beside the sheet rather than on top of it. */
+.sheetrail{position:sticky;top:var(--topbar,60px);align-self:start;
+ max-height:calc(100vh - var(--topbar,60px));overflow-y:auto;
+ padding:20px 20px 44px;border-left:1px solid var(--rule);background:var(--stock-2)}
+@media(max-width:1180px){
+ .sheetpage{grid-template-columns:minmax(0,1fr)}
+ .sheetrail{position:static;max-height:none;overflow:visible;border-left:none;border-top:1.5px solid var(--rule-3)}
+}
+.sheetscroll{min-width:0}
+@media(max-width:980px){
+ /* Below this the eight weeks stop fitting. The stub and the margin are what
+    must survive, so the run scrolls sideways under a head that does not: a
+    sticky head inside a horizontal scroller resolves against that scroller
+    and parks itself over the first row. */
+ .sheetscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+ .ledger{min-width:830px}
+ .lg-grplab{white-space:nowrap}
+}
+/* The tier filters. Real buttons — this is the counselor's primary control and
+   it was five plain divs, unreachable from a keyboard. */
+.tierbar{display:flex;flex-wrap:wrap;gap:0;padding:0 22px 12px;align-items:stretch}
+.tierbtn{display:inline-flex;align-items:center;gap:7px;font-family:var(--f-apparatus);
+ font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+ padding:8px 13px;min-height:44px;border:1px solid var(--rule-2);border-right-width:0;
+ background:var(--stock);color:var(--ink-2);cursor:pointer;border-radius:0}
+.tierbtn:last-child{border-right-width:1px}
+.tierbtn:hover{background:var(--band)}
+.tierbtn[aria-pressed="true"]{background:var(--ink);color:var(--stock);border-color:var(--ink)}
+.tierbtn[aria-pressed="true"] .tierbtn-n{color:var(--stock)}
+.tierbtn-n{font-family:var(--f-figure);font-size:12px;letter-spacing:-.03em;color:var(--ink)}
+.tierbtn svg{flex-shrink:0}
+
+/* ── The ledger table ── */
+.ledger{table-layout:fixed}
+.ledger th{padding:7px 6px;vertical-align:bottom}
+.ledger td{padding:0 6px;height:calc(var(--row)*1.75)}
+.ledger th.lg-sel,.ledger td.lg-sel{width:34px;padding:0 0 0 15px}
+.ledger th.lg-mgn,.ledger td.lg-mgn{width:40px;padding:0 9px 0 5px;border-right:2px solid var(--margin)}
+.ledger th.lg-stub,.ledger td.lg-stub{padding-left:14px;width:322px}
+/* The weeks take whatever is left and divide it evenly, so the run is ruled
+   across the sheet rather than crowded into the right margin. Vertical
+   hairlines make them columns rather than a row of marks. */
+.ledger th.lg-wk,.ledger td.lg-wk{padding:0;text-align:center;border-right:1px solid var(--rule)}
+.ledger th.lg-wk:first-of-type,.ledger td.lg-wk:first-of-type{border-left:1px solid var(--rule)}
+.ledger td.lg-wk svg{margin:0 auto}
+.ledger th.lg-wk{font-size:9.5px;letter-spacing:.06em;text-align:center;color:var(--ink-4)}
+/* The column head stays put while 87 names scroll under it. */
+.ledger thead th{position:sticky;top:var(--topbar,60px);z-index:8}
+/* Except once the table has its own horizontal scroller: sticky then resolves
+   against that scroller instead of the page, and parks the head over row one. */
+@media(max-width:980px){.ledger thead th{position:static}}
+.ledger th.lg-now,.ledger td.lg-now{width:88px;text-align:center;padding:0 7px;
+ border-left:1.5px solid var(--rule-3)}
+.ledger th.lg-last,.ledger td.lg-last{width:112px;text-align:right;padding-right:22px}
+/* The stub. Two printed lines: who, and what is being asked. */
+.lg-open{display:block;width:100%;text-align:left;background:none;border:none;padding:0;
+ font-family:inherit;color:inherit;cursor:pointer;min-width:0}
+.lg-name{display:block;font-size:13.2px;font-weight:600;color:var(--ink);line-height:1.25;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lg-name .lg-yr{font-family:var(--f-apparatus);font-size:10px;font-weight:600;letter-spacing:.07em;
+ text-transform:uppercase;color:var(--ink-3);margin-left:7px}
+.lg-sub{display:block;font-size:11.4px;color:var(--ink-3);line-height:1.35;margin-top:2px;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lg-open:hover .lg-name{text-decoration:underline;text-underline-offset:2px;
+ text-decoration-color:var(--school-primary)}
+/* Selection. A tick box in the margin, the way names get marked off. */
+.lg-box{width:16px;height:16px;border:1.5px solid var(--rule-3);background:var(--stock);
+ cursor:pointer;padding:0;display:grid;place-items:center;color:var(--ink)}
+.lg-box[aria-checked="true"]{background:var(--ink);border-color:var(--ink);color:var(--stock)}
+.lg-selhit{background:none;border:none;padding:9px 8px 9px 0;cursor:pointer;display:block}
+.ledger tbody tr.on>td{background:var(--band);box-shadow:inset 0 -1.5px 0 var(--ink),inset 0 1.5px 0 var(--ink)}
+/* The overnight column. */
+.lg-mv{display:inline-flex;align-items:center;gap:3px;font-family:var(--f-apparatus);
+ font-size:11px;font-weight:700;letter-spacing:.04em;white-space:nowrap}
+.lg-new{font-family:var(--f-apparatus);font-size:9.5px;font-weight:700;letter-spacing:.09em;
+ text-transform:uppercase;color:var(--margin)}
+/* A printed rule across the sheet where the tier changes. Not a card, not a
+   gap — the sheet stays continuous and the label sits in the ruling. */
+.ledger tr.lg-grp>td{height:auto;padding-top:17px;padding-bottom:5px;background:var(--stock);
+ border-bottom:1.5px solid var(--rule-3)}
+.ledger tr.lg-grp>td.lg-mgn,.ledger tr.lg-grp>td.lg-sel{background:var(--stock)}
+.lg-grplab{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+ font-family:var(--f-apparatus);font-size:11px;font-weight:700;letter-spacing:.11em;
+ text-transform:uppercase}
+.lg-grpsla{font-weight:600;letter-spacing:.045em;color:var(--ink-3)}
+.lg-grpn{margin-left:auto;font-family:var(--f-figure);letter-spacing:-.03em;color:var(--ink-3);
+ font-size:11px;text-transform:none}
+/* The 72. */
+.lg-more{width:100%;text-align:left;background:none;border:none;font-family:var(--f-apparatus);
+ font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);
+ cursor:pointer;padding:13px 0;display:flex;align-items:center;gap:10px;min-height:44px}
+.lg-more:hover{color:var(--ink)}
+.lg-more .lg-morerule{flex:1;height:1px;background:var(--rule-2)}
+/* Bulk actions. Appears only with a selection, and prints what it did. */
+.lg-bulk{position:sticky;bottom:0;z-index:15;display:flex;align-items:center;gap:11px;
+ flex-wrap:wrap;background:var(--ink);color:var(--stock);padding:11px 22px;
+ border-top:1.5px solid var(--rule-3)}
+.lg-bulk .lg-bulkn{font-family:var(--f-apparatus);font-size:12px;font-weight:600;
+ letter-spacing:.06em;text-transform:uppercase}
+.lg-bulk button{font-family:var(--f-apparatus);font-size:12px;font-weight:600;letter-spacing:.04em;
+ padding:9px 14px;min-height:44px;border:1px solid rgba(255,255,255,.28);background:transparent;
+ color:var(--stock);cursor:pointer;border-radius:var(--r-sm);display:inline-flex;align-items:center;gap:6px}
+.lg-bulk button:hover{background:rgba(255,255,255,.12)}
+.lg-bulk button.pri{background:var(--stock);color:var(--ink);border-color:var(--stock)}
+.lg-bulk button.pri:hover{background:var(--band)}
+/* The rail's own small parts. */
+.railh{font-family:var(--f-apparatus);font-size:10.5px;font-weight:700;letter-spacing:.12em;
+ text-transform:uppercase;color:var(--ink-3);margin:0 0 9px;
+ padding-bottom:6px;border-bottom:1px solid var(--rule-2)}
+.railrow{display:block;width:100%;text-align:left;background:none;border:none;font-family:inherit;
+ cursor:pointer;padding:8px 0;border-bottom:1px solid var(--rule);color:inherit}
+.railrow:last-child{border-bottom:none}
+.railrow:hover{background:var(--band)}
 
 /* ══════════ CHIP ══════════ */
 .chip{
@@ -822,6 +947,29 @@ function liftForDark(hex,against){
  return '#FFFFFF';
 }
 try{ applySchool(new URLSearchParams(location.search).get('school')||'acs'); }catch(e){ applySchool('acs'); }
+/* ══════════ THE RUN AND THE BREAK ══════════
+   The product's thesis, reduced to the one primitive the sheet is built from.
+   A week is KEPT when every baseline that student has sits inside that
+   student's own band; SOFT when exactly one leaves it; a BREAK when two or
+   more do. Derived from the same series the case page charts, so a mark on
+   the sheet and the trace inside the file can never disagree — which is the
+   failure mode a second, view-time calculation would have introduced.
+   Records with no baselines carry a stored `weeks` run instead. */
+const WEEKS=["W1","W2","W3","W4","W5","W6","W7","W8"];
+function weekRun(c){
+ if(c.weeks)return c.weeks;
+ const bs=Object.values(c.baselines||{});
+ if(!bs.length)return WEEKS.map(()=>"none");
+ return WEEKS.map((_,i)=>{
+  let out=0,seen=0;
+  bs.forEach(b=>{const v=b.series[i];if(v==null)return;seen++;
+   if(v<b.band[0]||v>b.band[1])out++;});
+  if(!seen)return "none";
+  return out>=2?"break":out===1?"soft":"kept";});
+}
+/* The count that answers "how long has this been true?" without opening the file. */
+function runBreaks(c){return weekRun(c).filter(w=>w==="break").length;}
+
 /* The five tiers are product logic, not decoration: they carry real SLA text
    and they order the counselor's day. Each one now also carries a `mark` — the
    ink density of its margin stamp — so the tier survives greyscale, a data
@@ -844,7 +992,7 @@ teacher:{label:"Teacher concern",ic:"users",c:"var(--dom-teacher)"},
 university:{label:"University journey",ic:"grad",c:"var(--dom-university)"},
 positive:{label:"Positive change",ic:"trend",c:"var(--dom-positive)"}};
 const STUDENTS=[
-{id:"s1",name:"Ahmed Khalifa",yr:"Grade 12",av:"AK",prio:"urgent",owner:"Ms. Haddad",goal:"Mechanical Engineering",gpa:"3.7",pred:"AAB",
+{id:"s1",name:"Ahmed Khalifa",yr:"Grade 12",av:"AK",prio:"urgent",prev:"monitor",movedWhy:"Mr. Davies' concern corroborated the Mathematics and attendance signals",owner:"Ms. Haddad",goal:"Mechanical Engineering",gpa:"3.7",pred:"AAB",
  headline:"Mathematics moved from a sustained A/A* range to F; three late arrivals in ten school days; one teacher concern noting unusual withdrawal.",
  plain:"Ahmed's pattern has changed across three independent domains within a two-week window. Each signal alone would sit in Monitor. Together, and against his own stable two-year baseline, they meet the threshold for a private check-in.",
  signal:86,window:"14 days",severity:"High",nocause:true,
@@ -863,7 +1011,7 @@ const STUDENTS=[
   flags:["No match or safety school on list","Personal statement not started","UCAS deadline in 18 days"]},
  stage:"triage",lastContact:"None this term",openedBy:"System · anomaly engine",opened:"13 Nov, 07:04"},
 
-{id:"s2",name:"Layla Haddad",yr:"Grade 12",av:"LH",prio:"checkin",owner:"Ms. Haddad",goal:"Medicine",gpa:"3.95",pred:"A*A*A",
+{id:"s2",name:"Layla Haddad",yr:"Grade 12",av:"LH",prio:"checkin",prev:"review",movedWhy:"Engagement silence passed the 14-day threshold",owner:"Ms. Haddad",goal:"Medicine",gpa:"3.95",pred:"A*A*A",
  headline:"Engagement fell to zero across 21 days during her application window; the strongest academic profile in the cohort is unchanged.",
  plain:"This is a disengagement pattern, not an ability pattern. Layla's grades and attendance are unchanged and excellent. The signal is entirely withdrawal from the university journey at the exact point her medicine deadlines fall.",
  signal:74,window:"21 days",severity:"Medium",nocause:true,
@@ -914,7 +1062,7 @@ const STUDENTS=[
  uni:{targets:[{u:"University of Edinburgh",c:"BSc CS",p:76,b:"match"},{u:"University of Manchester",c:"BSc CS",p:84,b:"match"},{u:"University of Bath",c:"BSc CS",p:89,b:"safety"}],flags:["Statement could be more differentiated"]},
  stage:"monitor",lastContact:"2 weeks ago",openedBy:"System · baseline deviation",opened:"10 Nov, 07:04"},
 
-{id:"s5",name:"Maryam Al Suwaidi",yr:"Grade 12",av:"MA",prio:"good",owner:"Ms. Haddad",goal:"Architecture",gpa:"3.8",pred:"AAB",
+{id:"s5",name:"Maryam Al Suwaidi",yr:"Grade 12",av:"MA",prio:"good",prev:"checkin",movedWhy:"Attendance held inside her personal band for a third week",owner:"Ms. Haddad",goal:"Architecture",gpa:"3.8",pred:"AAB",
  headline:"Full recovery after the October intervention: attendance rebounded to baseline and the portfolio is complete.",
  plain:"Closing evidence for the case opened on 2 October. Attendance returned to her personal band within three weeks of the agreed plan, and the university journey is now complete and on time.",
  signal:93,window:"Resolved",severity:"Resolved",nocause:false,
@@ -974,7 +1122,119 @@ const STUDENTS=[
  evidence:[{dom:"positive",src:"Gradebook · iSAMS",date:"Rolling",txt:"Strong and stable attainment across AP courses this term.",w:-9}],
  action:{what:"No action required",when:"—",why:"Routine monitoring only."},
  uni:{targets:[{u:"Georgia Tech",c:"BS Computer Science",p:70,b:"match"}],flags:[]},
- stage:"monitor",lastContact:"5 days ago",openedBy:"System · routine",opened:"—"}];
+ stage:"monitor",lastContact:"5 days ago",openedBy:"System · routine",opened:"—"},
+/* ── The six cases authored in P3. Each one teaches a mechanism the other
+   fourteen do not: a referral that leaves the counselor's hands, a relapse
+   inside a closed case's monitoring window, a pattern built only from good
+   signals, a secured place being lost, an obligation that sits with staff
+   rather than the student, and a recovery still in flight. `prev` records
+   the tier this student held before the 07:04 sweep — the movement, not the
+   position, is what the fresh column at the right edge is for. ── */
+
+{id:"s12",name:"Tariq Al Balushi",yr:"Grade 11",av:"TB",grade:11,track:"IB",prio:"urgent",owner:"Ms. Haddad",goal:"Law",gpa:"3.4",pred:"—",
+ headline:"Three separate teachers logged the same change in four days; two note a peer conflict he has not reported himself.",
+ plain:"The signals here are behavioural and they corroborate each other across staff who do not share a room. That combination sits above the counselor's own threshold: school policy routes it to the Designated Safeguarding Lead first, and the counselor's role is to refer rather than to interview.",
+ signal:88,window:"4 days",severity:"High",nocause:true,
+ context:["No safeguarding record open on Tariq before this week","Three reporting staff share no class and no free period","Referral threshold under the school's policy is two independent staff within seven days"],
+ baselines:{behaviour:{label:"Conduct points (rolling 2-week)",band:[0,2],series:[0,0,1,0,0,1,4,7],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"",anomalyFrom:6},
+  attendance:{label:"Attendance",band:[94,100],series:[99,98,100,97,99,96,89,84],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:6},
+  academic:{label:"Overall attainment",band:[74,88],series:[80,82,79,81,78,80,77,79],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:99}},
+ evidence:[
+  {dom:"teacher",src:"Teacher concern · Ms. Bianchi",date:"20 Nov",txt:"Left the lesson twice without asking. Declined to say why. Not a pattern she has seen from him in two years of teaching him.",w:31},
+  {dom:"teacher",src:"Teacher concern · Mr. Osei",date:"22 Nov",txt:"Named a specific ongoing conflict with two students in the year group. Tariq asked him not to pass it on.",w:29},
+  {dom:"teacher",src:"Teacher concern · Ms. Iqbal",date:"23 Nov",txt:"Sitting apart from his usual group at lunch for the second week. Flat affect, declined to talk.",w:18},
+  {dom:"behaviour",src:"Conduct log · iSAMS",date:"18–23 Nov",txt:"Seven conduct points in two weeks against a two-year baseline of zero to two.",w:22},
+  {dom:"attendance",src:"Attendance · iSAMS",date:"Rolling 2w",txt:"Attendance 84% this week, from a sustained 96–100%. Two afternoons unaccounted for.",w:17}],
+ action:{what:"Refer to the Designated Safeguarding Lead",when:"Route now under school policy",why:"Three independent staff reports inside seven days, one naming a peer conflict Tariq asked to be kept confidential. This is above the counselor's threshold to hold. Refer first; a pastoral conversation follows the DSL's direction, it does not precede it."},
+ uni:{targets:[],flags:[]},
+ stage:"triage",lastContact:"None this term",openedBy:"System · corroboration rule",opened:"24 Nov, 07:04"},
+
+{id:"s13",name:"Hana Ozturk",yr:"Grade 12",av:"HO",prio:"urgent",prev:"good",movedWhy:"Attendance broke her band again inside the post-closure monitoring window",owner:"Ms. Haddad",goal:"Veterinary Medicine",gpa:"3.6",pred:"AAB",
+ headline:"Attendance has fallen back below her personal band five weeks after a case closed as recovered; the same domain, the same slope.",
+ plain:"Hana's case was closed on 14 October with three weeks of sustained recovery behind it. The engine kept her inside the 90-day monitoring window, and the same domain has broken again along the same slope. A relapse inside a closed case is a stronger signal than a first occurrence — the intervention that worked once has stopped working, and the reason it stopped is not on file.",
+ signal:81,window:"12 days",severity:"High",nocause:true,
+ context:["Case i4 closed 14 Oct with a documented outcome","Still inside the 90-day post-closure monitoring window","The agreed morning-routine plan was never formally reviewed"],
+ baselines:{attendance:{label:"Attendance",band:[92,100],series:[76,84,95,97,96,92,86,79],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:6},
+  engagement:{label:"Platform engagement",band:[50,95],series:[38,62,74,71,68,55,41,29],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"",anomalyFrom:6},
+  academic:{label:"Overall attainment",band:[78,92],series:[84,86,88,87,85,86,84,83],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:99}},
+ evidence:[
+  {dom:"attendance",src:"Attendance · iSAMS",date:"Rolling 2w",txt:"Attendance 79%, thirteen points below her personal floor. The decline is the same week-on-week slope recorded before the October intervention.",w:38},
+  {dom:"attendance",src:"Case history · CAROS",date:"14 Oct",txt:"Prior case closed as resolved after attendance held at 96% for three weeks. Recovery lasted five weeks before reversing.",w:27},
+  {dom:"engagement",src:"CAROS platform",date:"Rolling 14d",txt:"Engagement fell from 68 to 29 across the same fortnight as the attendance decline.",w:19},
+  {dom:"positive",src:"Gradebook · iSAMS",date:"Rolling",txt:"Attainment still inside her band — the academic work has not yet followed.",w:-11}],
+ action:{what:"Reopen the case and contact the family the same day",when:"Route now under school policy",why:"A repeat inside the monitoring window means the first plan addressed the symptom and not the cause. Do not restate the October plan — the conversation is about what changed five weeks ago."},
+ uni:{targets:[{u:"Royal Veterinary College",c:"BVetMed",p:52,b:"reach"},{u:"University of Nottingham",c:"BVMedSci",p:71,b:"match"},{u:"University of Surrey",c:"BVMSci",p:83,b:"safety"}],
+  flags:["Reference deadline in 12 days","Attendance may affect the school reference"]},
+ stage:"triage",lastContact:"5 weeks ago",openedBy:"System · relapse rule",opened:"24 Nov, 07:04"},
+
+{id:"s14",name:"Priya Raghunathan",yr:"Grade 12",av:"PR",prio:"checkin",owner:"Ms. Haddad",goal:"Biomedical Science",gpa:"4.0",pred:"A*A*A*",
+ headline:"Every individual signal is healthy. The pattern across them is not: eleven consecutive nights of platform activity after 01:00, and punctuality fraying in first period only.",
+ plain:"Nothing here would raise a flag on its own, which is exactly why it is worth a conversation. Priya's grades are the strongest in the year and rising. The engine is reading the cost of holding them — work displaced into the night, and the first lesson of the day paying for it. There is no crisis and no failure to point at, so this is a check-in, not an intervention.",
+ signal:69,window:"11 days",severity:"Medium",nocause:true,
+ context:["Attainment at or above personal band in every subject","Late arrivals confined to first period; none after 09:00","Carrying four HL subjects, the Extended Essay and the student council"],
+ baselines:{engagement:{label:"Platform activity after 01:00 (nights per week)",band:[0,2],series:[0,1,0,2,1,4,6,7],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"",anomalyFrom:5},
+  attendance:{label:"First-period punctuality (on-time %)",band:[95,100],series:[100,100,98,100,96,90,84,80],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:5},
+  academic:{label:"Overall attainment",band:[88,100],series:[94,95,96,96,97,97,98,98],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:99}},
+ evidence:[
+  {dom:"engagement",src:"CAROS platform",date:"Rolling 11d",txt:"Eleven consecutive nights with activity logged after 01:00. Her own baseline is zero to two nights per week.",w:33},
+  {dom:"attendance",src:"Attendance · iSAMS",date:"Rolling 3w",txt:"First-period punctuality fell from 100% to 80%. No lateness recorded to any later lesson.",w:26},
+  {dom:"teacher",src:"Teacher comment · Dr. Reid",date:"19 Nov",txt:"Volunteered that she had not slept before a practical. Work was still the best in the class.",w:14},
+  {dom:"positive",src:"Gradebook · iSAMS",date:"Rolling",txt:"Attainment rising across all six subjects; predicted grades revised upward this term.",w:-13}],
+ action:{what:"Low-key check-in — workload, not performance",when:"Within 2 school days",why:"Every signal is individually within tolerance, so there is nothing to correct and nothing to warn her about. Open on the timetable and the Extended Essay deadline, not on the grades."},
+ uni:{targets:[{u:"University of Oxford",c:"BA Biomedical Sciences",p:44,b:"reach"},{u:"Imperial College London",c:"BSc Biomedical",p:63,b:"match"},{u:"University of Edinburgh",c:"BSc Biomedical",p:86,b:"safety"}],
+  flags:["Extended Essay due in 16 days"]},
+ stage:"triage",lastContact:"4 weeks ago",openedBy:"System · combined weak-signal rule",opened:"24 Nov, 07:04"},
+
+{id:"s15",name:"Daniel Adeyemi",yr:"Grade 12",av:"DA",prio:"checkin",owner:"Ms. Haddad",goal:"Economics",gpa:"3.55",pred:"AAB",
+ headline:"Holding a conditional offer of AAB from Manchester and has submitted no work in three weeks; the offer is the thing now at risk.",
+ plain:"Daniel has what most of this cohort is still chasing — a place, conditional on the grades he is currently predicted. The pattern since the offer landed is a steady withdrawal from the work that has to hold those grades up. Nothing about this reads as distress. It reads as a student who believes the hard part is over.",
+ signal:72,window:"19 days",severity:"Medium",nocause:false,
+ context:["Conditional offer received 4 November: AAB including Mathematics","Attendance and conduct unchanged and normal","Two coursework deadlines missed since the offer"],
+ baselines:{academic:{label:"Coursework submitted (rolling %)",band:[80,100],series:[95,92,96,90,94,71,48,33],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:5},
+  engagement:{label:"Platform engagement",band:[45,90],series:[72,68,75,70,66,50,38,31],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"",anomalyFrom:6},
+  attendance:{label:"Attendance",band:[93,100],series:[97,98,96,99,97,98,96,97],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:99}},
+ evidence:[
+  {dom:"academic",src:"Gradebook · iSAMS",date:"Rolling 3w",txt:"Coursework submission fell from 94% to 33%. Two Mathematics deadlines missed — the exact subject the offer names.",w:36},
+  {dom:"university",src:"University Journey OS",date:"4 Nov",txt:"Conditional offer logged: University of Manchester, BSc Economics, AAB including Mathematics.",w:24},
+  {dom:"engagement",src:"CAROS platform",date:"Rolling 19d",txt:"Engagement halved in the fortnight following the offer.",w:18},
+  {dom:"positive",src:"Attendance · iSAMS",date:"Rolling",txt:"Attendance unchanged at 97%; he is in the building and in lessons.",w:-12}],
+  action:{what:"Check-in on what the conditional offer actually requires",when:"Within 2 school days",why:"He is not disengaged from school, only from the work the offer is conditional on. The conversation is the offer letter itself — the grades are not banked, and Mathematics is the named condition."},
+ uni:{targets:[{u:"University of Manchester",c:"BSc Economics",p:84,b:"match",offer:"Conditional · AAB incl. Mathematics"},{u:"University of Leeds",c:"BSc Economics",p:88,b:"match"},{u:"University of Reading",c:"BSc Economics",p:93,b:"safety"}],
+  flags:["Conditional offer at risk — AAB including Mathematics"]},
+ stage:"triage",lastContact:"3 weeks ago",openedBy:"System · post-offer decay rule",opened:"24 Nov, 07:04"},
+
+{id:"s16",name:"Noor Bin Hamad",yr:"Grade 12",av:"NH",prio:"review",owner:"Ms. Haddad",goal:"Architecture",gpa:"3.8",pred:"A*AB",
+ headline:"Two teacher references outstanding at eleven days to deadline. Nothing here is Noor's to fix.",
+ plain:"Every part of this application that belongs to Noor is finished and on time. The gap is the school's: two of the three references she needs have not been written, and one has been chased twice. This sits in Review because it is genuinely not urgent yet — but it is the school's obligation, not hers, and it will become urgent without anyone doing anything wrong.",
+ signal:58,window:"Ongoing",severity:"Low",nocause:false,
+ context:["Statement complete and in final review since 8 November","All wellbeing domains inside baseline","Mr. Yilmaz has been chased twice; Ms. Fahri once"],
+ baselines:{university:{label:"Application completeness",band:[60,100],series:[42,55,68,78,86,90,90,90],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:99},
+  academic:{label:"Overall attainment",band:[82,96],series:[89,91,88,92,90,91,89,92],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:99}},
+ evidence:[
+  {dom:"university",src:"Documents & references",date:"Live",txt:"Two of three references outstanding. Mr. Yilmaz chased 8 and 17 November; Ms. Fahri chased 15 November. No response logged.",w:34},
+  {dom:"university",src:"Deadline radar",date:"Live",txt:"UCAS deadline in 11 days. School policy asks for all references filed by T-14.",w:21},
+  {dom:"positive",src:"Essay workspace",date:"8 Nov",txt:"Personal statement complete and in final review; portfolio submitted.",w:-16},
+  {dom:"positive",src:"Gradebook · iSAMS",date:"Rolling",txt:"Attainment stable and inside her band across all subjects.",w:-10}],
+ action:{what:"Escalate the two outstanding references to the Head of Sixth Form",when:"This week",why:"Chasing the same two teachers a third time has not worked. Noor cannot act on this and should not be asked to — the next step is a line manager, not a student meeting."},
+ uni:{targets:[{u:"The Bartlett, UCL",c:"BSc Architecture",p:59,b:"reach"},{u:"University of Sheffield",c:"BA Architecture",p:80,b:"match"},{u:"American University of Sharjah",c:"BArch",p:92,b:"safety"}],
+  flags:["Two references outstanding at T-11 days"]},
+ stage:"triage",lastContact:"1 week ago",openedBy:"System · reference SLA rule",opened:"22 Nov, 07:04"},
+
+{id:"s17",name:"Ivan Petrov",yr:"Grade 11",av:"IP",grade:11,track:"IB",prio:"good",prev:"checkin",movedWhy:"Third consecutive week inside his band since the October plan",owner:"Ms. Haddad",goal:"Mathematics",gpa:"3.65",pred:"—",
+ headline:"Four weeks into the agreed plan, engagement is back inside his band and holding. The case is working and is not finished.",
+ plain:"This is a recovery in progress, not a resolved one. The plan agreed on 27 October has produced three consecutive weeks inside his personal band — enough to acknowledge, not enough to close. The engine surfaces it so the mid-point gets recorded while the evidence is fresh, which is the part schools reliably lose.",
+ signal:77,window:"3 weeks",severity:"Low",nocause:false,
+ context:["Plan agreed 27 Oct after a check-in on isolation in a new year group","Peer-group placement in the Mathematics extension set was the agreed change","90-day monitoring window closes 25 January"],
+ baselines:{engagement:{label:"Platform engagement",band:[55,95],series:[68,52,38,29,34,58,71,76],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"",anomalyFrom:99},
+  attendance:{label:"Attendance",band:[92,100],series:[96,93,88,85,90,95,97,98],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:99},
+  academic:{label:"Overall attainment",band:[76,92],series:[84,81,78,74,77,82,85,87],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:99}},
+ evidence:[
+  {dom:"positive",src:"CAROS platform",date:"Rolling 3w",txt:"Engagement recovered from 29 to 76 and has held inside his band for three consecutive weeks.",w:-34},
+  {dom:"positive",src:"Attendance · iSAMS",date:"Rolling 3w",txt:"Attendance back to 98% from a low of 85%.",w:-25},
+  {dom:"positive",src:"Teacher comment · Mr. Yilmaz",date:"18 Nov",txt:"Working with the extension group rather than alone. Volunteered an answer in class for the first time this year.",w:-19}],
+ action:{what:"Record the mid-point outcome and let the plan run",when:"Acknowledge",why:"Three weeks of recovery is evidence, not a conclusion. Closing now would end the monitoring window ten weeks early — the relapse rule exists because of exactly that."},
+ uni:{targets:[],flags:[]},
+ stage:"measure",lastContact:"1 week ago",openedBy:"Ms. Haddad · manual",opened:"27 Oct, 09:40"}];
 
 const INTERVENTIONS=[
 {id:"i1",sid:"s5",student:"Maryam Al Suwaidi",av:"MA",type:"Action plan + weekly check-in",owner:"Ms. Haddad",opened:"4 Oct",due:"Closed 7 Nov",status:"resolved",
@@ -1000,10 +1260,17 @@ intervention:[["Time to first review","0.9 days","target 2 days or less"],["Foll
 student:[["Attendance recovery after check-in","74%","returned to personal band"],["Application completion","96%","on or before deadline"],["Balanced lists with a safety","89%","was 61%"]]};
 
 
-/* ═══════════ FULL COHORT ROSTER (84) ═══════════
-   6 detailed cases above + 78 generated to a realistic distribution:
-   61 on track · 17 needing a look · 6 off track (matches cohortStats). */
+/* ═══════════ THE REST OF THE ROSTER ═══════════
+   15 authored cases above, and the 72 generated below to fill the sheet out
+   to a real caseload of 87. Every tier belongs to an authored case; nobody
+   generated carries an open signal, which is what lets one number answer
+   "how many students need me today?" without qualification. */
 const EXTRA_APP={};
+/* The 72. Everyone the 07:04 sweep looked at and had nothing to say about.
+   They are not filler: the sheet only reads as a ledger because most rows
+   hold an unbroken run, and a break is only legible against them. They carry
+   a real week run and open to a real file — they just never compete for the
+   counselor's morning. */
 (function(){
  const first=["Aaliyah","Rashid","Noor","Zayd","Mariam","Hamdan","Salma","Faris","Dana","Khalid","Reem","Tariq","Hessa","Adam","Latifa","Omar","Shaikha","Yasin","Amna","Bilal","Fatima","Saeed","Layan","Idris","Huda","Nasser","Mira","Jamal","Rania","Kareem","Sofia","Malek","Aisha","Zaid","Lina","Hadi","Yara","Sultan","Nadia","Faisal","Leen","Majid","Rana","Anas","Dima","Waleed","Sana","Basel","Hala","Ziad","Maya","Karim","Joud","Samir","Tala","Fahad","Ruba","Ammar","Nour","Ibrahim","Salwa","Marwan","Lamia","Hussein","Zeina","Ali","Farida","Rayan","Mona","Tamer","Iman","Saif","Dalia","Munir","Amal","Nabil","Rima","Jad"];
  const last=["Al Marri","Rahman","Al Zaabi","Haddad","Nasser","Al Hashimi","Khoury","Bin Rashid","Saleh","Al Ameri","Farouk","Mensah","Al Suwaidi","Darwish","Al Balushi","Kassem","Al Nuaimi","Habib","Al Dhaheri","Younis","Al Qasimi","Barakat","Al Falasi","Shamsi","Al Kaabi","Odeh","Al Mazrouei","Sabbagh"];
@@ -1013,8 +1280,9 @@ const EXTRA_APP={};
  // deterministic pseudo-random so the roster is stable between reloads
  let seed=20261124;const rnd=()=>{seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;};
  const pick=a=>a[Math.floor(rnd()*a.length)];
- // distribution: 4 more critical, 15 more watch, 59 on track = 78
- const plan=[].concat(Array(4).fill("critical"),Array(15).fill("watch"),Array(59).fill("good"));
+ // 72 students with no open signal. A handful carry a single soft week —
+ // an unbroken sheet of 72 identical runs would be the lie, not the detail.
+ const plan=[].concat(Array(11).fill("watch"),Array(61).fill("good"));
  // shuffle deterministically
  for(let i=plan.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[plan[i],plan[j]]=[plan[j],plan[i]];}
  const used=new Set(STUDENTS.map(s=>s.name));
@@ -1032,21 +1300,27 @@ const EXTRA_APP={};
   else if(band==="watch")targets=shuffled.filter(u=>u[1]==="reach").slice(0,1).concat(shuffled.filter(u=>u[1]==="safety").slice(0,1));
   else targets=shuffled.filter(u=>u[1]==="reach").slice(0,1).concat(shuffled.filter(u=>u[1]==="match").slice(0,1),shuffled.filter(u=>u[1]==="safety").slice(0,1));
   if(!targets.length)targets=[["University of Leeds","match"],["Middlesex Dubai","safety"]];
-  const prio=band==="critical"?(rnd()<.4?"urgent":"checkin"):band==="watch"?"review":(rnd()<.12?"good":"monitor");
-  const stmt=band==="critical"?Math.floor(rnd()*25):band==="watch"?40+Math.floor(rnd()*35):85+Math.floor(rnd()*15);
+  // Every authored case sits in a tier. Nobody generated does — that is what
+  // makes "who needs me today?" answerable with one number.
+  const prio="monitor";
+  const stmt=band==="watch"?40+Math.floor(rnd()*35):85+Math.floor(rnd()*15);
+  // The run. `watch` students drop one week inside their own band; the rest
+  // hold it. Stored, not derived, because these records carry no baselines.
+  const weeks=WEEKS.map(()=>"kept");
+  if(band==="watch")weeks[3+Math.floor(rnd()*5)]="soft";
   const days=[9,18,18,24][Math.floor(rnd()*4)];
   const trefCount=1+Math.floor(rnd()*2);
   const trefs=Array(trefCount).fill(0).map((_,k)=>({n:["Ms. Fahri","Mr. Yilmaz","Dr. Reid","Ms. Iqbal","Mr. Osei","Ms. Bianchi"][Math.floor(rnd()*6)],
     st:band==="good"?"received":(rnd()<.5?"received":"chased")}));
   EXTRA_APP[id]={stmt,stmtLabel:stmt===0?"Not started":stmt<50?"Draft 1":stmt<90?"Draft 2":"Final review",days,offers:band==="good"&&rnd()<.3?1:0,subm:0,tot:targets.length,
-   tr:band==="critical"&&rnd()<.5?"pending":"sent",cref:stmt===0?"none":stmt>=90?"final":"draft",trefs,forms:band==="critical"&&rnd()<.5?"missing":"complete",beh:0};
-  STUDENTS.push({id,name:nm,yr:"Grade 12",av,prio,owner:"Ms. Haddad",goal,
+   tr:"sent",cref:stmt===0?"none":stmt>=90?"final":"draft",trefs,forms:"complete",beh:0};
+  STUDENTS.push({id,name:nm,yr:"Grade 12",av,prio,weeks,owner:"Ms. Haddad",goal,
    gpa:(2.9+rnd()*1.1).toFixed(1),pred:pick(preds),
-   headline:band==="critical"?"Application pack materially behind with the deadline approaching.":band==="watch"?"Progressing, but items outstanding against the deadline.":"On track across application and wellbeing signals.",
-   plain:"Generated roster record. Full signal history is available for students with an open case.",
-   signal:band==="critical"?72:band==="watch"?48:22,window:"Ongoing",severity:band==="critical"?"High":band==="watch"?"Medium":"Low",
-   context:[],nocause:true,baselines:{},evidence:[],
-   action:{what:band==="critical"?"Review application pack":"No action required",when:band==="critical"?"This week":"—",why:"Derived from application-side signals."},
+   headline:band==="watch"?"One week outside the personal band this term, since recovered. Nothing open.":"Every tracked domain held inside the personal band this term.",
+   plain:band==="watch"?"A single week outside the personal band, with no second domain and no repeat. The engine recorded it and closed it — it is here so the run is honest, not because anything is being asked of you.":"No signal has crossed a threshold this term. This file exists so the record is complete and so a change would have somewhere to land.",
+   signal:band==="watch"?31:14,window:"Ongoing",severity:"Low",
+   context:[],nocause:false,baselines:{},evidence:[],
+   action:{what:"No action required",when:"—",why:"No threshold crossed this term."},
    uni:{targets:targets.map(t=>({u:t[0],c:goal,p:t[1]==="reach"?45+Math.floor(rnd()*20):t[1]==="match"?72+Math.floor(rnd()*14):86+Math.floor(rnd()*9),b:t[1]})),
         flags:band==="critical"?["Application pack behind schedule"]:[]},
    stage:"monitor",lastContact:["Today","Yesterday","3 days ago","1 week ago","2 weeks ago","1 month ago"][Math.floor(rnd()*6)],
@@ -1055,7 +1329,7 @@ const EXTRA_APP={};
 })();
 /* ═══════════ STATE ═══════════ */
 const S={role:"counselor",cv:"cohort-schedule",sv:"progress",mv:"requests",
-open:null,tab:"evidence",domFilter:"all",prioFilter:"all",
+open:null,tab:"evidence",domFilter:"all",
 cases:JSON.parse(JSON.stringify(STUDENTS)),
 ivs:JSON.parse(JSON.stringify(INTERVENTIONS)),
 audit:JSON.parse(JSON.stringify(AUDIT)),
@@ -1066,7 +1340,8 @@ uniOpen:"",pmTopic:"",pmSlot:null,pmNote:"",pathDegree:"",pathCountry:"UK",previ
 discoverStage:null,onbStep:0,onbAnswers:{},chatLog:[],chatStep:0,rankedArchetypes:null,selectedArchetypes:[],pathwaysSubmitted:false,activeArchetype:null,roadmapProgress:{},
 fileId:null,fileTab:"synth",
 cat:{cohort:true,uni:false,si:false,sys:false},ragFilter:"all",
-navOpen:false,q:"",pv:"overview",tKind:"concern",tTags:[],tNote:"",mKind:"Check-in",mOut:"Ongoing",mergePick:null,assignPick:null,tv:"class",cohortFilter:"all",cohortSort:"attention",
+sheetTier:"all",sheetRoster:false,sel:[],
+navOpen:false,q:"",pv:"overview",tKind:"concern",tTags:[],tNote:"",mKind:"Check-in",mOut:"Ongoing",mergePick:null,assignPick:null,tv:"class",
 rQ:"",rSort:"priority",rFilt:"all",
 pathDone:{},lettered:false,
 palOpen:false,palQuery:"",palActiveIndex:0,palResults:[]};
@@ -1136,6 +1411,23 @@ function tierMark(kind,c,sz){
  }[kind]||box;
  return `<svg viewBox="0 0 ${s} ${s}" width="${s}" height="${s}" aria-hidden="true" style="display:block;flex-shrink:0">${inner}</svg>`;
 }
+/* The mark in a week cell. A deliberately different vocabulary from tierMark:
+   a tier is a coloured stamp with a letter, a week is a mark made in ink. The
+   only colour that ever enters this run is --margin on a break, which is the
+   same red as the rule down the left edge — the single accent, spent on the
+   one cell that is the whole reason the sheet exists. */
+function runMark(kind,sz){
+ const s=sz||11,h=(s/2).toFixed(2);
+ const g={
+  kept :`<rect x="${(s*.22).toFixed(2)}" y="${(s*.22).toFixed(2)}" width="${(s*.56).toFixed(2)}" height="${(s*.56).toFixed(2)}" fill="var(--ink-3)"/>`,
+  soft :`<rect x="${(s*.235).toFixed(2)}" y="${(s*.235).toFixed(2)}" width="${(s*.53).toFixed(2)}" height="${(s*.53).toFixed(2)}" fill="none" stroke="var(--ink-4)" stroke-width="1.2"/>`,
+  brk  :`<path d="M${(s*.18).toFixed(2)} ${(s*.18).toFixed(2)}L${(s*.82).toFixed(2)} ${(s*.82).toFixed(2)}M${(s*.82).toFixed(2)} ${(s*.18).toFixed(2)}L${(s*.18).toFixed(2)} ${(s*.82).toFixed(2)}" stroke="var(--margin)" stroke-width="1.8" stroke-linecap="square"/>`,
+  none :`<line x1="${(s*.28).toFixed(2)}" y1="${h}" x2="${(s*.72).toFixed(2)}" y2="${h}" stroke="var(--rule-2)" stroke-width="1.2"/>`
+ }[kind==="break"?"brk":kind]||'';
+ return `<svg viewBox="0 0 ${s} ${s}" width="${s}" height="${s}" aria-hidden="true" style="display:block">${g}</svg>`;
+}
+const RUNLABEL={kept:"inside band",soft:"one domain outside band",break:"outside band",none:"no data"};
+
 /* The stamp as it prints in the margin: mark plus letter, no fill behind it. */
 function tierStamp(p,sz){
  const P=PRIO[p], s=sz||14;
@@ -1191,6 +1483,16 @@ function moment(o){
    <div style="font-size:11.8px;color:var(--ink-3);line-height:1.6;margin-top:4px">${o.body}</div>
    ${o.action?`<div style="margin-top:10px">${o.action}</div>`:''}
   </div></div>`;}
+/* A section with nothing in it still owes the reader a reason. `moment()` is
+   for a surface worth illustrating; this is the flat, in-place version for a
+   panel inside a case file, where an illustration would outweigh the section
+   it is explaining. */
+function empty(title,why,action){
+ return `<div style="border:1px dashed var(--rule-2);background:var(--stock-3);padding:15px 17px">
+  <div class="stamp" style="font-size:12.5px;font-weight:600;color:var(--ink-2);line-height:1.4">${title}</div>
+  <div style="font-size:11.8px;color:var(--ink-3);line-height:1.6;margin-top:4px;max-width:62ch">${why}</div>
+  ${action?`<div style="margin-top:11px">${action}</div>`:''}</div>`;}
+
 function mcloseBtn(variant){
  const v={default:{bg:"var(--surface-3)",bd:"1px solid var(--line-2)",right:"18px",color:""},
   panel:{bg:"var(--panel)",bd:"1px solid var(--line)",right:"16px",color:""},
@@ -1236,6 +1538,11 @@ function domainStats(){
  }));
  return out;}
 function prioCounts(){const o={urgent:0,checkin:0,review:0,monitor:0,good:0};S.cases.forEach(c=>o[c.prio]++);return o;}
+/* The single caseload number. Eight places in this file used to compute their
+   own answer to "how many students need me today?" from four different rules;
+   they all read this now. Urgent and Check-in are the two tiers whose SLA text
+   names a deadline — Review is "this week", and the rest ask for nothing. */
+function needToday(){const p=prioCounts();return p.urgent+p.checkin;}
 
 /* ═══════════ ROLE BAR ═══════════ */
 function roleNav(role){
@@ -1270,13 +1577,13 @@ function roleNav(role){
  }
  if(role==="teacher")return [{id:"tclasses",label:"My Classes",icon:"book"},{id:"class",label:"My Class Register",icon:"users"},{id:"tlog",label:"What I've logged",icon:"list"},{id:"classapprovals",label:"Course Approvals",icon:"check"}];
  if(role==="mentor")return [{id:"requests",label:"Session requests",icon:"inbox"},{id:"mentees",label:"My mentees",icon:"users"}];
- return [{id:"cohort-schedule",label:"Today",icon:"clock"},{id:"cohort-all",label:"Cohort",icon:"users"},{id:"si-cases",label:"Priority",icon:"alert"},{id:"meetings",label:"Meetings",icon:"brief"},{id:"flags",label:"Flags",icon:"inbox"}];
+ return [{id:"cohort-schedule",label:"Caseload",icon:"users"},{id:"si-cases",label:"Priority",icon:"alert"},{id:"meetings",label:"Meetings",icon:"brief"},{id:"flags",label:"Flags",icon:"inbox"}];
 }
 
 function palCommands(role){
  const nav=roleNav(role);
  const base=nav.map(x=>({id:x.id,label:`Open ${x.label}`,icon:x.icon,action:`nav:${x.id}`}));
- if(role==="counselor"){base.push({id:"cohort-schedule",label:"Open today view",icon:"clock",action:"nav:cohort-schedule"},{id:"flags",label:"Open teacher flags",icon:"inbox",action:"nav:flags"},{id:"meetings",label:"Open meetings",icon:"brief",action:"nav:meetings"},{id:"thresholds",label:"Tune thresholds",icon:"gauge",action:"nav:thresholds"});}
+ if(role==="counselor"){base.push({id:"cohort-schedule",label:"Open the caseload sheet",icon:"users",action:"nav:cohort-schedule"},{id:"flags",label:"Open teacher flags",icon:"inbox",action:"nav:flags"},{id:"meetings",label:"Open meetings",icon:"brief",action:"nav:meetings"},{id:"thresholds",label:"Tune thresholds",icon:"gauge",action:"nav:thresholds"});}
  else if(role==="teacher"){base.push({id:"class",label:"Open my class",icon:"users",action:"nav:class"},{id:"tlog",label:"Open logged concerns",icon:"list",action:"nav:tlog"});}
  else if(role==="student"){base.push({id:"discover",label:"Restart my pathway",icon:"spark",action:"nav:discover"},{id:"progress",label:"Open my progress",icon:"trend",action:"nav:progress"});}
  else if(role==="parent"){base.push({id:"overview",label:"Open family overview",icon:"home",action:"nav:overview"},{id:"messages",label:"Open messages",icon:"msg",action:"nav:messages"});}
@@ -1390,7 +1697,7 @@ function shell(theme,nav,active,attr,footAv,footN,footR,title,sub,body){
    <div style="flex:1;min-width:0"><div class="stamp" style="font-size:18px;font-weight:600">${title}</div><div style="font-size:11.5px;color:var(--inkMute);margin-top:1px">${sub}</div></div>
    <div style="display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:7px 12px;width:210px">${ic('search',14)}<input placeholder="Search students…" style="border:none;background:none;font-size:12.5px;width:100%;color:var(--ink)"></div>
   </div>
-  <div style="padding:24px 30px 70px;max-width:1140px">${body}</div>
+  <div class="pagewrap" style="padding:24px 30px 70px;max-width:1140px">${body}</div>
  </main></div>`;}
 
 function head(eb,ti,de,ac,icn){return `<div style="margin-bottom:22px;max-width:760px">
@@ -1402,7 +1709,7 @@ function vCommand(){
  const pc=prioCounts();
  const tiers=[["urgent","Urgent escalation","Route now under school policy"],["checkin","Check-in recommended","Within 2 school days"],["review","Review queue","This week"],["monitor","Monitoring","No action required"],["good","Positive change","Acknowledge & close"]];
  let cases=[...S.cases];
- if(S.prioFilter!=="all")cases=cases.filter(c=>c.prio===S.prioFilter);
+ if(S.sheetTier!=="all")cases=cases.filter(c=>c.prio===S.sheetTier);
  const byTier=t=>cases.filter(c=>c.prio===t);
  const stats=[
   ["urgent",pc.urgent,"Urgent","Cross-domain, corroborated"],
@@ -1411,18 +1718,9 @@ function vCommand(){
   ["monitor",pc.monitor,"Monitor","Isolated, low signal strength"],
   ["good",pc.good,"Recovered","Positive change detected"]];
  return `<div class="fade">
- ${head("Monday · 24 November · 07:04 sweep","Good morning, Reem.","Your cohort of 84 was evaluated at 07:04 this morning. Three students moved priority overnight. Nothing here is a diagnosis — each card shows what changed, the evidence behind it, and a proportionate next step.","var(--teal)","radar")}
+ ${head("Triage · "+DAY.long+" · "+DAY.sweep+" sweep","Cases in tier order","All "+S.cases.length+" students were evaluated at "+DAY.sweep+" this morning; "+needToday()+" carry a deadline today. Nothing here is a diagnosis — each card shows what changed, the evidence behind it, and a proportionate next step.","var(--school-primary)","radar")}
 
- <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:20px">
- ${stats.map(([k,n,l,s],i)=>{const P=PRIO[k];const on=S.prioFilter===k;
-  return `<div class="card lift" data-prio="${k}" style="padding:15px 16px;cursor:pointer;position:relative;overflow:hidden;border-color:${on?P.c:'var(--line)'};box-shadow:${on?'0 0 0 2px '+P.bg:'none'};animation:rise .4s ${i*0.05}s backwards">
-  <span style="position:absolute;left:0;top:0;bottom:0;width:3px;background:${P.c}"></span>
-  <div class="stamp" style="font-size:29px;font-weight:600;color:${P.c};line-height:1">${n}</div>
-  <div style="font-size:11.5px;font-weight:600;margin-top:4px">${l}</div>
-  <div style="font-size:10px;color:var(--inkMute);margin-top:2px;line-height:1.35">${s}</div></div>`;}).join('')}
- </div>
-
- ${S.prioFilter!=="all"?`<div style="margin-bottom:14px;display:flex;align-items:center;gap:9px"><span style="font-size:12px;color:var(--inkMute)">Filtered to ${PRIO[S.prioFilter].label}</span><button class="btn btn-g btn-sm" data-prio="all">${ic('x',12)} Clear</button></div>`:''}
+ <div style="margin:0 -30px 20px">${tierBar()}</div>
 
  <div style="display:flex;gap:11px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:14px 17px;margin-bottom:18px">
   <div style="width:36px;height:36px;border-radius:var(--r);background:var(--tealSoft);display:grid;place-items:center;color:var(--tealDeep);flex-shrink:0">${ic('layers',18)}</div>
@@ -1580,7 +1878,17 @@ function vCase(c){
  const P=PRIO[c.prio];
  const stages=[["detect","Detect"],["explain","Explain"],["triage","Triage"],["act","Act"],["follow","Follow up"],["measure","Measure"],["learn","Learn"]];
  const si=stages.findIndex(s=>s[0]===c.stage);
+ /* What this case actually holds. Everything below discloses against it, so a
+    heading never stands over nothing and a tab is never offered as a peer of
+    three others when there is nothing behind it. */
+ const has={evidence:c.evidence.length>0,baseline:Object.keys(c.baselines||{}).length>0,
+  uni:(c.uni.targets||[]).length>0,history:true};
+ /* Open, meaning the counselor is being asked for something today. */
+ const open=c.prio==="urgent"||c.prio==="checkin"||c.prio==="review";
  const tabs=[["evidence","Evidence chain"],["baseline","Baseline deviation"],["uni","University journey"],["history","Case history"]];
+ /* S.tab persists across cases, so a tab chosen on a full file would land on
+    an empty one in the next. Fall through to the first tab this case can fill. */
+ const tab=has[S.tab]?S.tab:(has.evidence?"evidence":has.baseline?"baseline":has.uni?"uni":"history");
  return `<div class="fade">
  <button class="btn btn-g btn-sm" data-cnav="command" style="margin-bottom:16px">${ic('arrowL',13)} Back to Command Centre</button>
 
@@ -1590,7 +1898,7 @@ function vCase(c){
    <div style="flex:1">
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
      <span class="stamp" style="font-size:22px;font-weight:600">${c.name}</span>${pchip(c.prio)}
-     <span style="font-size:11.5px;color:var(--inkSoft)">${c.yr} · ${c.goal} · Predicted ${c.pred}</span></div>
+     <span style="font-size:11.5px;color:var(--inkSoft)">${c.yr} · ${c.goal}${c.pred&&c.pred!=="—"?` · Predicted ${c.pred}`:''}</span></div>
     <div style="font-size:11.5px;color:${P.c};font-weight:600;margin-top:4px">${P.label} · ${P.sla}</div></div>
    <div style="text-align:right;flex-shrink:0">
     <div style="font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--inkMute)">Case owner</div>
@@ -1606,35 +1914,40 @@ function vCase(c){
    ${c.nocause?`<div style="display:flex;gap:8px;align-items:center;margin-top:13px;background:var(--panel);border-radius:var(--r);padding:10px 13px;font-size:11.5px;color:var(--inkSoft)">${ic('alert',15)}<span><b>The system does not infer a cause.</b> It has detected that a pattern changed and surfaced the evidence. Interpretation is yours.</span></div>`:''}
   </div>
 
+  ${!has.evidence?`<div style="padding:0 22px 18px">
+   <div style="border-top:1px solid var(--line);padding-top:13px;font-size:12.3px;color:var(--ink-3);line-height:1.6">
+    Signal strength, duration and severity are all measurements of a threshold crossing. Nothing has crossed one, so there is nothing to measure${c.roster?'':' — the engine is watching, and will open a case if that changes'}.</div></div>`:`
   <div style="padding:0 22px 18px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
    <div style="background:var(--surface-3);border-radius:var(--r);padding:13px 15px">
     <div style="font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px;display:flex;align-items:center;gap:5px">Signal strength
      <span title="How much evidence currently supports this flag. Higher means more corroborating signals across more domains. It is not a judgement about the student." style="cursor:help;color:var(--ink-4)">${ic('alert',11)}</span></div>
     <div style="display:flex;align-items:center;gap:9px"><span class="stamp" style="font-size:22px;font-weight:600;color:${c.signal>=75?'var(--crit)':c.signal>=55?'var(--warn)':'var(--mute)'}">${c.signal>=75?'Strong':c.signal>=55?'Moderate':'Weak'}</span>
     <div style="flex:1">${meter(c.signal,c.signal>=75?'var(--crit)':c.signal>=55?'var(--warn)':'var(--mute)')}</div></div>
-    <div style="font-size:10.8px;color:var(--ink-3);margin-top:6px;line-height:1.4">${c.signal>=75?'Multiple domains corroborate each other':c.signal>=55?'More than one signal, not yet conclusive':'Isolated signal — watching for persistence'}</div></div></div>
+    <div style="font-size:10.8px;color:var(--ink-3);margin-top:6px;line-height:1.4">${c.signal>=75?'Multiple domains corroborate each other':c.signal>=55?'More than one signal, not yet conclusive':'Isolated signal — watching for persistence'}</div></div>
    <div style="background:var(--panel);border-radius:var(--r);padding:13px 15px">
     <div style="font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">How long it has persisted</div>
     <div class="stamp" style="font-size:22px;font-weight:600">${c.window}</div></div>
    <div style="background:var(--panel);border-radius:var(--r);padding:13px 15px">
     <div style="font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--inkMute);margin-bottom:6px">Severity</div>
     <div class="stamp" style="font-size:22px;font-weight:600;color:${P.c}">${c.severity}</div></div>
-  </div>
+  </div>`}
  </div>
 
- <div class="card" style="padding:16px 20px;margin-bottom:16px">
+ ${has.evidence?`<div class="card" style="padding:16px 20px;margin-bottom:16px">
   <h3 class="sechead" style="margin-bottom:11px">${ic('route',13)} Intervention loop · current position</h3>
   <div class="stepper">${stages.map((s,i)=>`${i?'<span class="steparr">'+ic('arrowR',13)+'</span>':''}<span class="step ${i<si?'done':i===si?'now':''}">${i<si?ic('check',12):''}${s[1]}</span>`).join('')}</div>
- </div>
+ </div>`:''}
 
  <div style="display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:start">
   <div>
    <div style="display:flex;gap:6px;margin-bottom:14px;background:var(--panel);padding:4px;border-radius:var(--r);width:fit-content">
-    ${tabs.map(([k,l])=>`<button class="tab ${S.tab===k?'on':''}" data-tab="${k}">${l}</button>`).join('')}</div>
+    ${tabs.map(([k,l])=>`<button class="tab ${tab===k?'on':''}" data-tab="${k}"${has[k]?'':' title="Nothing recorded here for '+c.name.split(' ')[0]+' yet"'}>${l}${has[k]?'':`<span class="sr"> — empty</span>`}</button>`).join('')}</div>
 
-   ${S.tab==="evidence"?`<div class="card pop" style="padding:20px">
+   ${tab==="evidence"?`<div class="card pop" style="padding:20px">
     <h3 class="sechead">${ic('list',13)} Contributing signals · source-linked and time-stamped</h3>
     <div style="font-size:11.5px;color:var(--inkMute);margin-bottom:14px;line-height:1.5">Weight shows each signal's contribution to the current priority. Negative weights are protective or positive signals that pull the priority down.</div>
+    ${!c.evidence.length?empty("No contributing signals",
+      `Nothing has been recorded against ${c.name.split(' ')[0]} this term across attendance, attainment, engagement, behaviour or teacher concern. An evidence chain is built from threshold crossings, and none has happened — so this is a complete record of an uneventful term, not a gap in the data.`):''}
     ${c.evidence.map((e,i)=>`<div class="evd" style="animation:rise .35s ${i*.05}s backwards">
      <div><div style="display:flex;align-items:center;gap:5px;color:${DOMAINS[e.dom].c};font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em">${ic(DOMAINS[e.dom].ic,11)}${DOMAINS[e.dom].label}</div>
      <div class="fig" style="font-size:10px;color:var(--inkMute);margin-top:3px">${e.date}</div></div>
@@ -1645,14 +1958,17 @@ function vCase(c){
     </div>`).join('')}
     <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line)">
      <h3 class="sechead" style="margin-bottom:9px">${ic('eye',13)} Known contextual factors</h3>
-     ${c.context.map(x=>`<div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;font-size:12.2px;color:var(--inkSoft)">${ic('checkC',14)}<span>${x}</span></div>`).join('')}
+     ${c.context.length?c.context.map(x=>`<div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;font-size:12.2px;color:var(--inkSoft)">${ic('checkC',14)}<span>${x}</span></div>`).join('')
+      :empty("No context on file","Nothing has been added that would explain or qualify what the signals show. If you know something the school's data cannot see, adding it here recalculates the case.")}
      <button class="btn btn-g btn-sm" data-addctx="${c.id}" style="margin-top:10px">${ic('plus',13)} Add context I know about</button>
      <div style="font-size:10.5px;color:var(--inkMute);margin-top:7px;line-height:1.45">Adding context you hold — a known family situation, an authorised absence — recalculates signal strength and may downgrade the case automatically.</div>
     </div></div>`:''}
 
-   ${S.tab==="baseline"?`<div class="card pop" style="padding:20px">
+   ${tab==="baseline"?`<div class="card pop" style="padding:20px">
     <h3 class="sechead">${ic('trend',13)} Deviation from this student's own normal</h3>
     <div style="font-size:11.5px;color:var(--inkMute);margin-bottom:6px;line-height:1.5">The shaded band is ${c.name.split(' ')[0]}'s established personal range. Red points sit outside it. This is the engine's central principle — a student's deviation from their own baseline matters more than their position against a cohort average.</div>
+    ${!has.baseline?empty("No baseline established yet",
+      `A personal band needs a run of results in the same measure before it means anything. ${c.name.split(' ')[0]}'s trace appears here once the current term's data is loaded from the school's SIS — until then the sheet shows the weeks as unmarked rather than inventing a band.`):''}
     ${Object.entries(c.baselines).map(([k,b],i)=>`<div style="margin-top:18px;animation:rise .4s ${i*.08}s backwards">
      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
       <span style="color:${DOMAINS[k].c}">${ic(DOMAINS[k].ic,14)}</span>
@@ -1662,22 +1978,26 @@ function vCase(c){
      <div style="font-size:11px;color:var(--inkMute);margin-top:2px">Personal band ${b.band[0]}–${b.band[1]}${b.unit} · latest ${b.series[b.series.length-1]}${b.unit}${b.anomalyFrom<b.series.length?` · <b style="color:var(--urgent)">${(b.series[b.series.length-1]-((b.band[0]+b.band[1])/2)).toFixed(0)}${b.unit} vs personal mean</b>`:''}</div>
     </div>`).join('')}</div>`:''}
 
-   ${S.tab==="uni"?`<div class="card pop" style="padding:20px">
+   ${tab==="uni"?`<div class="card pop" style="padding:20px">
     <h3 class="sechead">${ic('grad',13)} University journey · list balance and deadlines</h3>
+    ${!has.uni?empty(c.grade&&c.grade<12?"No university list yet":"No universities on the list",
+      c.grade&&c.grade<12?`${c.name.split(' ')[0]} is in Grade ${c.grade}. Lists are built in Grade 12, so nothing is missing here and this file is not scored against the list-balance rule.`
+      :`No targets have been added, so there is nothing to check for balance. A list with no floor is a risk worth raising; a list that does not exist yet is not.`):''}
     ${c.uni.targets.map(t=>{const col=t.b==="reach"?'var(--urgent)':t.b==="match"?'var(--good)':'var(--review)';
      return `<div style="padding:12px 0;border-bottom:1px solid var(--lineSoft)">
-      <div style="display:flex;justify-content:space-between;align-items:baseline"><div><b style="font-size:13px">${t.u}</b><div style="font-size:11.5px;color:var(--inkMute)">${t.c}</div></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><div><b style="font-size:13px">${t.u}</b><div style="font-size:11.5px;color:var(--inkMute)">${t.c}</div>
+       ${t.offer?`<div style="display:inline-flex;align-items:center;gap:5px;margin-top:5px;font-family:var(--f-apparatus);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--school-on-accent);background:var(--school-accent);padding:2px 7px">${ic('checkC',11)} Offer held · ${t.offer}</div>`:''}</div>
       <div style="text-align:right"><span class="stamp" style="font-size:19px;font-weight:600;color:${col}">${t.p}%</span>
       <div>${chip(t.b.toUpperCase(),col,t.b==="reach"?'var(--urgentSoft)':t.b==="match"?'var(--goodSoft)':'var(--reviewSoft)')}</div></div></div>
       <div style="margin-top:7px">${meter(t.p,col)}</div></div>`;}).join('')}
     ${c.uni.flags.length?`<div style="margin-top:14px;padding-top:13px;border-top:1px solid var(--line)">
      <h3 class="sechead" style="margin-bottom:9px">${ic('flag',13)} Journey flags</h3>
      ${c.uni.flags.map(f=>`<div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;font-size:12.2px;color:var(--inkSoft)">${ic('alert',14)}<span>${f}</span></div>`).join('')}</div>`:''}
-    ${!c.uni.targets.some(t=>t.b==="safety")?`<div style="background:var(--reviewSoft);border-radius:var(--r);padding:13px 15px;margin-top:14px;font-size:11.8px;color:var(--warn-ink);line-height:1.55">
+    ${has.uni&&!c.uni.targets.some(t=>t.b==="safety")?`<div style="background:var(--reviewSoft);border-radius:var(--r);padding:13px 15px;margin-top:14px;font-size:11.8px;color:var(--warn-ink);line-height:1.55">
      <b>Reality-check guidance.</b> This list has no secure floor. Frame the conversation as an <b>addition, not a subtraction</b> — keep the ambition, add a match-level option that still leads to the same career. Never deliver a discouraging probability verdict directly to the student.</div>`:''}
    </div>`:''}
 
-   ${S.tab==="history"?`<div class="card pop" style="padding:20px">
+   ${tab==="history"?`<div class="card pop" style="padding:20px">
     <h3 class="sechead">${ic('clock',13)} Case history · complete audit trail</h3>
     ${S.audit.filter(a=>a.obj===c.name).concat([{t:c.opened,who:c.openedBy.includes('System')?'SYSTEM':'R.HADDAD',act:"CASE_OPENED",obj:c.name,det:c.openedBy}]).map(a=>`<div class="audit"><span style="width:88px;flex-shrink:0">${a.t}</span><span style="width:78px;flex-shrink:0;color:${a.who==='SYSTEM'?'var(--teal)':'var(--violet)'};font-weight:500">${a.who}</span><span style="width:120px;flex-shrink:0;font-weight:500">${a.act}</span><span style="flex:1">${a.det}</span></div>`).join('')}
     <div style="font-size:10.5px;color:var(--inkMute);margin-top:12px;line-height:1.5">Every access, AI recommendation and human decision is logged. Original evidence and derived interpretation are stored separately so any past flag remains auditable.</div>
@@ -1688,21 +2008,23 @@ function vCase(c){
    <div class="card" style="padding:18px;background:var(--navy);border:none;color:#fff">
     <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#6FE0CC;font-weight:700;margin-bottom:9px;display:flex;align-items:center;gap:6px">${ic('zap',12)} Suggested next action</div>
     <div class="stamp" style="font-size:17px;font-weight:600;margin-bottom:5px">${c.action.what}</div>
-    <div style="font-size:11.5px;color:#6FE0CC;font-weight:600;margin-bottom:10px">${c.action.when}</div>
+    ${c.action.when&&c.action.when!=="—"?`<div style="font-size:11.5px;color:#6FE0CC;font-weight:600;margin-bottom:10px">${c.action.when}</div>`:''}
     <div style="font-size:12px;color:rgba(255,255,255,.72);line-height:1.55">${c.action.why}</div>
    </div>
 
    <div class="card" style="padding:18px">
-    <h3 class="sechead">${ic('brief',13)} Triage this case</h3>
+    <h3 class="sechead">${ic('brief',13)} ${open?"Triage this case":c.prio==="good"?"Close this case":"Nothing is being asked of you"}</h3>
+    ${open?'':`<div style="font-size:11.8px;color:var(--ink-3);line-height:1.55;margin:-3px 0 11px">${c.prio==="good"?"The signals that opened this case have recovered. The only thing outstanding is a documented outcome — the record schools most often lose.":"This case sits in "+P.label+": "+P.sla.toLowerCase()+". These controls are here if your judgement differs from the engine's."}</div>`}
     <div style="display:flex;flex-direction:column;gap:7px">
-     <button class="btn btn-p" data-act="accept:${c.id}" style="width:100%">${ic('check',15)} Accept & open intervention</button>
+     ${c.prio==="good"?`<button class="btn btn-p" data-act="closecase:${c.id}" style="width:100%">${ic('checkC',15)} Record outcome & close</button>`:''}
+     ${open?`<button class="btn btn-p" data-act="accept:${c.id}" style="width:100%">${ic('check',15)} Accept & open intervention</button>
      <button class="btn btn-g" data-act="meet:${c.id}" style="width:100%">${ic('brief',15)} Schedule check-in</button>
-     <button class="btn btn-g" data-newmeet="1" style="width:100%">${ic('brief',15)} Record a meeting</button>
+     <button class="btn btn-g" data-newmeet="1" style="width:100%">${ic('brief',15)} Record a meeting</button>`:''}
      <button class="btn btn-g" data-act="brief:${c.id}" style="width:100%">${ic('spark',15)} Generate 60-second brief</button>
-     <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
-      <button class="btn btn-g btn-sm" data-act="down:${c.id}">${ic('down',13)} Lower priority</button>
+     ${c.prio!=="good"?`<div style="display:grid;grid-template-columns:${c.prio==="monitor"?'1fr':'1fr 1fr'};gap:7px">
+      ${c.prio==="monitor"?'':`<button class="btn btn-g btn-sm" data-act="down:${c.id}">${ic('down',13)} Lower priority</button>`}
       <button class="btn btn-g btn-sm" data-act="dismiss:${c.id}">${ic('x',13)} Not a concern</button>
-     </div>
+     </div>`:''}
      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px;padding-top:9px;border-top:1px solid var(--lineSoft)">
       <button class="btn btn-g btn-sm" data-mergeopen="${c.id}">${ic('merge',13)} Merge…</button>
       <button class="btn btn-g btn-sm" data-assignopen="${c.id}">${ic('users',13)} Reassign…</button>
@@ -1775,7 +2097,7 @@ function ivCard(i,ix){
 /* ═══════════ UNIVERSITY JOURNEY OS (doc §08) ═══════════ */
 function vUni(){
  const all=S.cases;
- const noSafety=all.filter(c=>!c.uni.targets.some(t=>t.b==="safety"));
+ const noSafety=all.filter(c=>c.uni.targets.length&&!c.uni.targets.some(t=>t.b==="safety"));
  const deadlines=[
   {s:"Layla Haddad",av:"LH",p:"checkin",task:"UCAT booking window closes",d:9,ok:false},
   {s:"Sara Al Mansoori",av:"SA",p:"review",task:"UCAS submission",d:18,ok:false},
@@ -2295,6 +2617,21 @@ s9:{stmt:0,stmtLabel:"Not applicable yet",days:0,offers:0,subm:0,tot:0,tr:"none"
 s10:{stmt:0,stmtLabel:"Not applicable yet",days:0,offers:0,subm:0,tot:0,tr:"none",cref:"none",
     trefs:[],forms:"complete",beh:0},
 s11:{stmt:0,stmtLabel:"Not applicable yet",days:0,offers:0,subm:0,tot:1,tr:"none",cref:"none",
+    trefs:[],forms:"complete",beh:0},
+/* The six P3 cases. Noor's two chased references and Daniel's logged offer are
+   the same facts their evidence chains cite — the application side and the
+   case file have to agree, or the evidence chain stops being one. */
+s12:{stmt:0,stmtLabel:"Not applicable yet",days:0,offers:0,subm:0,tot:0,tr:"none",cref:"none",
+    trefs:[],forms:"complete",beh:7},
+s13:{stmt:78,stmtLabel:"Draft 2",days:12,offers:0,subm:0,tot:3,tr:"sent",cref:"draft",
+    trefs:[{n:"Dr. Reid · Biology",st:"received"},{n:"Ms. Iqbal · Chemistry",st:"received"}],forms:"complete",beh:0},
+s14:{stmt:88,stmtLabel:"Draft 2",days:16,offers:0,subm:0,tot:3,tr:"sent",cref:"draft",
+    trefs:[{n:"Dr. Reid · Biology",st:"received"},{n:"Ms. Bianchi · Chemistry",st:"received"}],forms:"complete",beh:0},
+s15:{stmt:100,stmtLabel:"Submitted",days:18,offers:1,subm:3,tot:3,tr:"sent",cref:"final",
+    trefs:[{n:"Ms. Fahri · Economics",st:"received"},{n:"Mr. Yilmaz · Maths",st:"received"}],forms:"complete",beh:0},
+s16:{stmt:90,stmtLabel:"Final review",days:11,offers:0,subm:0,tot:3,tr:"sent",cref:"final",
+    trefs:[{n:"Ms. Bianchi · Art",st:"received"},{n:"Mr. Yilmaz · Maths",st:"chased"},{n:"Ms. Fahri · Design",st:"chased"}],forms:"complete",beh:0},
+s17:{stmt:0,stmtLabel:"Not applicable yet",days:0,offers:0,subm:0,tot:0,tr:"none",cref:"none",
     trefs:[],forms:"complete",beh:0}};
 try{Object.assign(APP,EXTRA_APP);}catch(e){}
 
@@ -2302,6 +2639,10 @@ try{Object.assign(APP,EXTRA_APP);}catch(e){}
 /* per-dimension status engines — each returns {r, v, note} */
 function dimListBalance(c){const t=c.uni.targets;const s=t.filter(x=>x.b==="safety").length,m=t.filter(x=>x.b==="match").length,rc=t.filter(x=>x.b==="reach").length;
  const v=`${rc} reach · ${m} match · ${s} safety`;
+ /* No list yet is not a thin list. Grades 9–11 have not built one, and
+    scoring them against a balance rule they are not subject to was what put
+    students with nothing wrong into every critical count in the product. */
+ if(!t.length)return{r:"good",v:"Not started",note:"No list yet — expected before Grade 12"};
  if(!s&&!m)return{r:"critical",v,note:"No floor at all — every choice is a reach"};
  if(!s)return{r:"critical",v,note:"No safety school on the list"};
  if(m<1)return{r:"watch",v,note:"Thin in the middle of the list"};
@@ -2379,7 +2720,7 @@ function dimCounts(key){const f=DIMS[key].f;const o={critical:0,watch:0,good:0};
 /* ═══════════ CATEGORY NAV ═══════════ */
 const CATS=[
  {id:"cohort",label:"My Cohort",ic:"users",sub:[
-   ["cohort-schedule","Today"],["cohort-all","All students"],["flags","From teachers"],["meetings","Meetings"],["approvals","Pathway approvals"],["psreviews","Personal statements"]]},
+   ["cohort-schedule","Caseload"],["flags","From teachers"],["meetings","Meetings"],["approvals","Pathway approvals"],["psreviews","Personal statements"]]},
  {id:"uni",label:"University Applications",ic:"grad",sub:[
    ["app-progress","Application progress"],["app-list","List balance"],["app-deadlines","Deadlines"],
    ["app-docs","Documents & references"],["app-statement","Personal statements"],["app-letter","Letter Engine"]]},
@@ -2390,18 +2731,17 @@ const CATS=[
 const SYSNAV=[["files","360° student files","layers"],["copilot","AI co-pilot","spark"],["prove","Reporting","chart"],["arch","Signal architecture","layers"],["thresholds","Thresholds","gauge"],["pilot","Pilot & rollout","route"]];
 
 function catCounts(cat){
- if(cat.id==="cohort"){const o={critical:0,watch:0,good:0};S.cases.forEach(c=>o[cohortRag(c)]++);return o;}
+ /* The caseload categories answer with the tier. Only "University
+    Applications" keeps a dimension-derived count, because it is asking a
+    genuinely different question — how many application files have a problem —
+    rather than a second opinion about the same triage. */
+ if(cat.id==="cohort"){const p=prioCounts();return {critical:p.urgent,watch:p.checkin,good:S.cases.length-p.urgent-p.checkin};}
  const keys=cat.sub.map(s=>s[0]).filter(k=>DIMS[k]);
  const o2={critical:0,watch:0,good:0};
  S.cases.forEach(c=>{const rs=keys.map(k=>DIMS[k].f(c).r);
   o2[rs.includes("critical")?"critical":rs.includes("watch")?"watch":"good"]++;});
- if(cat.id==="si"){const p=prioCounts();o2.critical=Math.max(o2.critical,p.urgent);}
- return o2;
- /* legacy path below retained but unreachable */
- const o={critical:0,watch:0,good:0};
- keys.forEach(k=>{const c=dimCounts(k);o.critical+=c.critical;o.watch+=c.watch;});
- if(cat.id==="si"){o.critical+=S.cases.filter(c=>c.prio==="urgent").length;o.watch+=S.cases.filter(c=>c.prio==="checkin").length;}
- return o;}
+ if(cat.id==="si"){const p=prioCounts();return {critical:p.urgent,watch:p.checkin,good:S.cases.length-p.urgent-p.checkin};}
+ return o2;}
 
 function sidebarC(){
  return `<aside class="sidebar" style="width:252px;background:var(--letterhead);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;border-right:1px solid rgba(255,255,255,.06)">
@@ -2432,9 +2772,7 @@ function sidebarC(){
         ${cn.critical?`<span title="Critical" style="width:6px;height:6px;border-radius:var(--r-dot);background:#F04438;box-shadow:0 0 0 2px rgba(240,68,56,.18)"></span>`:''}
         ${cn.watch?`<span title="Take a look" style="width:6px;height:6px;border-radius:var(--r-dot);background:#F79009;box-shadow:0 0 0 2px rgba(247,144,9,.18)"></span>`:''}
         ${!cn.critical&&!cn.watch?`<span title="All on track" style="width:6px;height:6px;border-radius:var(--r-dot);background:#17B26A;opacity:.6"></span>`:''}</span>`;}
-      else if(k==="cohort-all"){badge=`<span class="fig" style="margin-left:auto;font-size:10px;color:var(--nav-txt-2)">${S.cases.length}</span>`;}
-      else if(k==="cohort-schedule"){badge=`<span style="margin-left:auto;font-size:9.5px;font-weight:700;color:var(--school-on-accent);background:var(--school-accent);border-radius:var(--r);padding:1px 6px">${AGENDA.filter(a=>a.k!=="admin").length}</span>`;}
-      else if(k==="si-cases"){const p=prioCounts();badge=`<span style="margin-left:auto;font-size:9.5px;font-weight:700;color:#fff;background:var(--urgent);border-radius:var(--r);padding:1px 6px">${p.urgent+p.checkin}</span>`;}
+      else if(k==="cohort-schedule"||k==="si-cases"){badge=`<span style="margin-left:auto;font-size:9.5px;font-weight:700;color:var(--school-on-accent);background:var(--school-accent);border-radius:var(--r);padding:1px 6px">${needToday()}</span>`;}
       else if(k==="si-interventions"){const n=S.ivs.filter(i=>i.status==="open").length;badge=`<span style="margin-left:auto;font-size:9.5px;font-weight:700;color:#131829;background:#3FE0BE;border-radius:var(--r);padding:1px 6px">${n}</span>`;}
       return `<button class="navitem ${on?'on':''}" data-cnav="${k}" style="padding:7px 10px;font-size:12px;gap:8px">
        ${on?'<span style="position:absolute;left:-11px;top:50%;transform:translateY(-50%);width:2px;height:16px;background:var(--school-accent);border-radius:var(--r-pill);box-shadow:0 0 8px rgba(18,184,166,.55)"></span>':''}
@@ -2517,181 +2855,215 @@ const AGENDA=[
 {t:"13:30",dur:"45 min",k:"meet",title:"Parent meeting — Al Mansoori family",loc:"Meeting Room 2",why:"Sara's list has no floor. Frame the safety school as an addition, keep LSE intact.",sid:"s3"},
 {t:"15:00",dur:"20 min",k:"task",title:"Close Maryam's case with a documented outcome",loc:"",why:"Attendance recovered 79% → 98% and has held for three weeks.",sid:"s5"},
 {t:"16:00",dur:"—",k:"admin",title:"Review Grade 12 parent summaries",loc:"Scheduled to send 22 Nov",why:"Drafted automatically. Nothing leaves until you approve it."}];
-const KIND={meet:{c:"var(--teal)",bg:"var(--tealSoft)",l:"Meeting",i:"users"},task:{c:"var(--checkin)",bg:"var(--checkinSoft)",l:"Action",i:"zap"},
- prep:{c:"var(--violet)",bg:"var(--violetSoft)",l:"Prep",i:"radar"},admin:{c:"var(--monitor)",bg:"var(--monitorSoft)",l:"Admin",i:"doc"}};
+const KIND={meet:{c:"var(--school-primary)",bg:"var(--stock-3)",l:"Meeting",i:"users"},task:{c:"var(--ink)",bg:"var(--band)",l:"Action",i:"zap"},
+ prep:{c:"var(--ink-3)",bg:"var(--stock-3)",l:"Prep",i:"radar"},admin:{c:"var(--ink-4)",bg:"var(--stock-3)",l:"Admin",i:"doc"}};
 
 
 
-function vToday(){
- const moved=[{n:"Ahmed Khalifa",id:"s1",f:"Monitor",t:"Urgent",r:"Teacher concern corroborated the Maths and attendance signals"},
-  {n:"Layla Haddad",id:"s2",f:"Review",t:"Check-in",r:"Engagement silence passed the 14-day threshold"},
-  {n:"Maryam Al Suwaidi",id:"s5",f:"Check-in",t:"Recovered",r:"Attendance held inside her personal band for three weeks"}];
+/* ══════════════════════════════════════════════════════════════════════════
+   THE SHEET — the counselor's first viewport.
+   One continuous ruled sheet, full bleed. The red margin rule down the left
+   carries the tier stamp; names sit in the stub; the eight weeks are ruled
+   columns of marks; the 07:04 sweep lands as a fresh column at the right
+   edge. Everything the counselor is asked to read is one row.
+
+   It replaced a greeting and three stat tiles. Those tiles counted meetings,
+   follow-ups and deadlines — none of which answers the only question she
+   opens this product to ask, which is who to see today. The sheet answers it
+   by showing the runs and where they break, and it absorbs the old separate
+   cohort matrix rather than making her hold two lists in her head.
+   ══════════════════════════════════════════════════════════════════════════ */
+const DAY={long:"Monday 24 November",short:"24 Nov",sweep:"07:04"};
+/* Moved overnight, and opened overnight. Two different facts, both derived —
+   the three-name array this replaced could not be filtered, sorted or counted,
+   and drifted from the tiers it described. */
+function movedToday(){return S.cases.filter(c=>c.prev&&c.prev!==c.prio);}
+function openedToday(){return S.cases.filter(c=>!c.prev&&(c.opened||"").indexOf(DAY.short)===0);}
+
+const TIER_ORDER=["urgent","checkin","review","monitor","good"];
+
+/* The caseload's one filter. Real buttons with a pressed state, shared by the
+   sheet and the priority list so a tier chosen on one holds across the other. */
+function tierBar(){
+ const pc=prioCounts();
+ const tiers=[["all","All",S.cases.length]].concat(TIER_ORDER.map(t=>[t,PRIO[t].short,pc[t]]));
+ return `<div class="tierbar" role="group" aria-label="Filter the caseload by triage tier">
+  ${tiers.map(([k,l,n])=>{const on=S.sheetTier===k;
+   return `<button type="button" class="tierbtn" data-tier="${k}" aria-pressed="${on}">
+    ${k==="all"?'':tierMark(PRIO[k].mark,on?'currentColor':PRIO[k].c,12)}
+    <span>${l}</span><span class="tierbtn-n" style="color:${on?'inherit':'var(--ink)'}">${n}</span>
+    <span class="sr">${k==="all"?`all ${n} students`:`${n} in ${PRIO[k].label}`}</span></button>`;}).join('')}
+ </div>`;}
+
+function sheetList(){
+ let l=S.cases.slice();
+ if(S.sheetTier!=="all")l=l.filter(c=>c.prio===S.sheetTier);
+ const q=(S.q||"").toLowerCase().trim();
+ if(q)l=l.filter(c=>c.name.toLowerCase().includes(q)||(c.goal||"").toLowerCase().includes(q));
+ /* Tier first, then the loudest run, then alphabetical. Within a tier an
+    authored case outranks a quiet one — the quiet ones are collapsed anyway,
+    and this keeps the order stable when they are expanded. */
+ l.sort((a,b)=>PRIO[a.prio].order-PRIO[b.prio].order
+  ||(a.roster?1:0)-(b.roster?1:0)
+  ||runBreaks(b)-runBreaks(a)
+  ||a.name.localeCompare(b.name));
+ return l;}
+
+/* The fresh column. What the sweep did to this row four hours ago. */
+function sweepCell(c){
+ if(c.prev&&c.prev!==c.prio){
+  const F=PRIO[c.prev],T=PRIO[c.prio];
+  return `<span class="lg-mv" style="color:${T.c}" title="Moved from ${F.label} to ${T.label} at the ${DAY.sweep} sweep">
+   <span style="color:var(--ink-4)">${F.letter}</span>${ic('arrowR',10)}${T.letter}
+   <span class="sr">Moved from ${F.label} to ${T.label} at the ${DAY.sweep} sweep</span></span>`;}
+ if((c.opened||"").indexOf(DAY.short)===0)
+  return `<span class="lg-new" title="Case opened at the ${DAY.sweep} sweep this morning">New<span class="sr"> — case opened at the ${DAY.sweep} sweep this morning</span></span>`;
+ return `<span title="No change at the ${DAY.sweep} sweep" style="display:grid;place-items:center">${runMark('none',11)}<span class="sr">No change</span></span>`;}
+
+function sheetRow(c){
+ const on=S.sel.indexOf(c.id)>=0;
+ const run=weekRun(c);
+ const P=PRIO[c.prio];
+ /* The second printed line. For an open case it is the ask; for one of the
+    quiet 72 there is no ask, so it is who they are. */
+ const sub=c.roster?`${c.goal} · ${c.pred}`:c.action.what;
+ return `<tr class="lgrow${on?' on':''}" data-rowfile="${c.id}">
+  <td class="lg-sel"><button class="lg-selhit" data-sel="${c.id}">
+   <span class="lg-box" role="checkbox" aria-checked="${on}" aria-label="Select ${c.name}">${on?ic('check',11):''}</span></button></td>
+  <td class="lg-mgn"><span style="display:flex;align-items:center;gap:3px">${tierStamp(c.prio,13)}${c.seen?`<span title="Marked as seen today" style="color:var(--ink-4);display:flex">${ic('check',10)}<span class="sr">Marked as seen today</span></span>`:''}</span></td>
+  <td class="lg-stub"><button class="lg-open" data-file="${c.id}">
+   <span class="lg-name">${c.name}<span class="lg-yr">${c.yr.replace('Grade ','G')}</span></span>
+   <span class="lg-sub">${sub}</span></button></td>
+  ${run.map((w,i)=>`<td class="lg-wk" title="Week ${i+1} — ${RUNLABEL[w]}">${runMark(w,11)}<span class="sr">Week ${i+1}: ${RUNLABEL[w]}</span></td>`).join('')}
+  <td class="lg-now">${sweepCell(c)}</td>
+  <td class="lg-last"><span class="fig" style="font-size:11px;color:var(--ink-3)">${c.lastContact}</span></td>
+ </tr>`;}
+
+function vSheet(){
+ const pc=prioCounts();
+ const list=sheetList();
+ const open=list.filter(c=>!c.roster), quiet=list.filter(c=>c.roster);
+ const moved=movedToday().length, opened=openedToday().length;
+ const need=pc.urgent+pc.checkin;
+ const grouped=S.sheetTier==="all";
+
+ /* Rows, in one continuous run. When no tier filter is applied the sheet
+    prints a ruled group line where the tier changes; filtered, it does not,
+    because there is only one tier left to announce. */
+ let rows="",last=null;
+ const emit=c=>{
+  if(grouped&&c.prio!==last){
+   last=c.prio;const P=PRIO[c.prio];
+   rows+=`<tr class="lg-grp"><td class="lg-sel"></td><td class="lg-mgn"></td><td colspan="11">
+    <div class="lg-grplab" style="color:${P.c}"><span>${P.label}</span>
+     <span class="lg-grpsla">${P.sla}</span>
+     <span class="lg-grpn">${pc[c.prio]} of ${S.cases.length}</span></div></td></tr>`;}
+  rows+=sheetRow(c);};
+ open.forEach(emit);
+ if(quiet.length){
+  if(grouped&&quiet[0].prio!==last){last=quiet[0].prio;const P=PRIO[quiet[0].prio];
+   rows+=`<tr class="lg-grp"><td class="lg-sel"></td><td class="lg-mgn"></td><td colspan="11">
+    <div class="lg-grplab" style="color:${P.c}"><span>${P.label}</span>
+     <span class="lg-grpsla">${P.sla}</span>
+     <span class="lg-grpn">${pc[quiet[0].prio]} of ${S.cases.length}</span></div></td></tr>`;}
+  rows+=`<tr class="lg-grp" style="background:var(--stock)"><td class="lg-sel"></td><td class="lg-mgn"></td><td colspan="11">
+   <button class="lg-more" data-sheetroster="1" aria-expanded="${S.sheetRoster}">
+    <span style="display:flex;transform:rotate(${S.sheetRoster?90:0}deg);transition:transform .18s cubic-bezier(.22,1,.36,1)">${ic('chevR',13)}</span>
+    <span>${S.sheetRoster?`Hide the ${quiet.length}`:`${quiet.length} more students · no open signal`}</span>
+    <span class="lg-morerule"></span></button></td></tr>`;
+  if(S.sheetRoster)quiet.forEach(c=>{rows+=sheetRow(c);});}
+
+ const railBody=sheetRail();
+
+ return `<div class="sheetpage fade">
+ <div class="sheetmain">
+  <div class="sheetcap">
+   <h1>Caseload · ${DAY.long}</h1>
+   <p>The engine swept ${S.cases.length} students at ${DAY.sweep}. ${moved===0&&opened===0?`Nothing moved overnight.`:`${moved} moved tier${opened?` and ${opened} opened`:''} overnight.`}
+    <b style="color:var(--ink)">${need} need you today.</b>
+    Each row is one student's last eight weeks against their own band — a mark for a week held, a cross for a week outside it.</p>
+  </div>
+
+  ${tierBar()}
+
+  ${list.length?`<div class="sheetscroll"><table class="sheet ledger">
+   <caption class="sr">The caseload, one row per student: triage tier, name, the last eight weeks measured against that student's own baseline band, and what the ${DAY.sweep} sweep changed this morning.</caption>
+   <thead><tr>
+    <th class="lg-sel"><span class="sr">Select</span></th>
+    <th class="lg-mgn"><span class="sr">Triage tier</span></th>
+    <th class="lg-stub">Student</th>
+    ${WEEKS.map(w=>`<th class="lg-wk" scope="col">${w}</th>`).join('')}
+    <th class="lg-now" scope="col">${DAY.sweep}</th>
+    <th class="lg-last" scope="col">Last contact</th>
+   </tr></thead>
+   <tbody>${rows}</tbody></table></div>`
+  :empty((S.q||"").trim()?`No student matches “${S.q}”`:`Nobody is in ${PRIO[S.sheetTier].label}`,
+    (S.q||"").trim()
+     ? `No name or goal on the sheet matches that${S.sheetTier==="all"?'':`, within ${PRIO[S.sheetTier].label}`}. All ${S.cases.length} students are still on the register — the search narrowed what is printed, not who is on it.`
+     : `The ${DAY.sweep} sweep ran across all ${S.cases.length} students and put nobody in this tier. An empty tier means the engine found no one there, not that it found nothing.`,
+    `<button class="btn btn-g btn-sm" data-tier="all">Show all ${S.cases.length}</button>`)}
+
+  ${S.sel.length?`<div class="lg-bulk" role="region" aria-label="Actions for the selected students">
+   <span class="lg-bulkn">${S.sel.length} selected</span>
+   <button type="button" class="pri" data-bulkack="1">${ic('check',14)} Mark as seen</button>
+   <button type="button" data-bulkassign="1">${ic('users',14)} Reassign…</button>
+   <button type="button" data-selclear="1">${ic('x',14)} Clear</button>
+   <span style="font-size:11.3px;color:rgba(255,255,255,.62);line-height:1.4;flex:1;min-width:180px">Both actions write a line into every selected student's record.</span>
+  </div>`:''}
+ </div>
+ <aside class="sheetrail" aria-label="Today">${railBody}</aside>
+</div>`;}
+
+/* The day, beside the sheet. It used to be the whole landing screen, opened by
+   a greeting and three tiles measuring nothing. It is real content — meetings,
+   follow-ups and what the sweep changed — so it keeps its place, at the width
+   its job actually needs. */
+function sheetRail(){
  const due=S.ivs.filter(i=>i.status==="open");
- const meets=AGENDA.filter(a=>a.k==="meet").length;
- return `<div class="fade" style="max-width:920px">
-  <div style="margin-bottom:22px">
-   <div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);font-weight:700;margin-bottom:7px">Monday · 24 November</div>
-   <h1 class="stamp" style="margin:0;font-size:29px;font-weight:600;letter-spacing:-.02em">Good morning, Reem.</h1>
-   <div style="font-size:13.5px;color:var(--inkSoft);margin-top:7px;line-height:1.6">${meets} meetings, ${due.length} follow-ups due, and three students changed priority overnight. Everything below is ordered the way your day actually runs.</div>
-  </div>
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px">
-   ${[[meets,"Meetings today","var(--teal)","users"],[due.length,"Follow-ups due","var(--checkin)","brief"],["2","Deadlines this week","var(--urgent)","clock"]]
-    .map(([v,l,c,i])=>`<div class="card" style="padding:15px 17px;display:flex;align-items:center;gap:12px">
-     <span style="color:${c};display:flex">${ic(i,18)}</span>
-     <div><div class="stamp" style="font-size:22px;font-weight:600;line-height:1;color:${c}">${v}</div>
-     <div style="font-size:11.5px;color:var(--inkSoft);margin-top:2px">${l}</div></div></div>`).join('')}
-  </div>
-  <div class="card" style="padding:20px 22px;margin-bottom:20px">
-   <h3 class="sechead">${ic('radar',13)} What changed overnight</h3>
-   ${moved.map((m,i)=>`<div class="lift" data-file="${m.id}" style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:11px 0;border-bottom:${i<moved.length-1?'1px solid var(--lineSoft)':'none'};cursor:pointer">
-    <div><div style="font-size:13px;font-weight:600">${m.n}</div>
-     <div style="font-size:11.8px;color:var(--inkMute);margin-top:2px">${m.r}</div></div>
-    <div style="display:flex;align-items:center;gap:7px;font-size:11px;white-space:nowrap">
-     <span style="color:var(--inkMute)">${m.f}</span>${ic('arrowR',12)}
-     <span style="font-weight:700;color:${m.t==="Urgent"?'var(--urgent)':m.t==="Recovered"?'var(--good)':'var(--checkin)'}">${m.t}</span></div>
-   </div>`).join('')}
-  </div>
-  <h3 class="sechead" style="margin-bottom:14px">${ic('clock',13)} Your day</h3>
-  <div style="position:relative">
-   <div style="position:absolute;left:58px;top:8px;bottom:8px;width:1px;background:var(--line)"></div>
-   ${AGENDA.map((a,i)=>{const K=KIND[a.k];
-    return `<div style="display:grid;grid-template-columns:52px 1fr;gap:18px;margin-bottom:10px;position:relative;animation:rise .4s ${i*.05}s backwards">
-     <div style="text-align:right;padding-top:15px">
-      <div class="fig" style="font-size:12px;font-weight:600;color:var(--ink)">${a.t}</div>
-      <div style="font-size:9.5px;color:var(--inkMute);margin-top:2px">${a.dur}</div></div>
-     <div style="position:relative">
-      <span style="position:absolute;left:-16px;top:19px;width:10px;height:10px;border-radius:var(--r-dot);background:${K.c};border:2.5px solid var(--panel);z-index:2"></span>
-      <div class="card lift" style="padding:15px 17px;border-left:3px solid ${K.c}">
-       <div style="display:flex;align-items:flex-start;gap:11px">
-        <div style="flex:1">
-         <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:3px">
-          <b style="font-size:13.5px">${a.title}</b>
-          <span class="chip" style="background:${K.bg};color:${K.c}">${K.l}</span></div>
-         ${a.loc?`<div style="font-size:11.3px;color:var(--inkMute);margin-bottom:5px">${a.loc}</div>`:''}
-         <div style="font-size:12.3px;color:var(--inkSoft);line-height:1.55">${a.why}</div></div>
-        <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
-         ${a.sid?`<button class="btn btn-g btn-sm" data-act="brief:${a.sid}">${ic('spark',12)} Brief</button>
-          <button class="btn btn-g btn-sm" data-file="${a.sid}">Open file</button>`:''}
-         ${a.go?`<button class="btn btn-g btn-sm" data-cnav="${a.go}">Open ${ic('arrowR',12)}</button>`:''}
-         ${!a.sid&&!a.go?`<button class="btn btn-g btn-sm" data-toast="Approved · sent and logged">Approve</button>`:''}
-        </div></div></div></div></div>`;}).join('')}
-  </div>
-  <div class="card" style="padding:17px 20px;margin-top:18px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-   <div style="width:34px;height:34px;border-radius:var(--r);background:var(--tealSoft);display:grid;place-items:center;color:var(--tealDeep);flex-shrink:0">${ic('checkC',17)}</div>
-   <div style="flex:1;min-width:240px;font-size:12.3px;color:var(--inkSoft);line-height:1.5"><b style="color:var(--ink)">Before you leave.</b> Two cases need an outcome recorded today. Cases closed without a documented outcome are the biggest gap in most schools' support records — and the first thing an inspector asks for.</div>
-   <button class="btn btn-p btn-sm" data-cnav="si-interventions" style="flex-shrink:0">Record outcomes</button>
-  </div>
+ const moved=movedToday(), opened=openedToday();
+ const meets=AGENDA.filter(a=>a.k==="meet");
+ return `
+ <div style="font-family:var(--f-apparatus);font-size:10.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-4)">${SCHOOL.short}</div>
+ <div class="stamp" style="font-size:17px;font-weight:600;color:var(--ink);margin:3px 0 2px">${DAY.long}</div>
+ <div class="fig" style="font-size:11px;color:var(--ink-3);margin-bottom:20px">Engine swept ${DAY.sweep} · ${meets.length} meetings · ${due.length} follow-ups</div>
+
+ ${moved.length||opened.length?`<h2 class="railh">What changed overnight</h2>
+ <div style="margin-bottom:22px">
+  ${moved.map(c=>`<button class="railrow" data-file="${c.id}">
+   <div style="display:flex;align-items:center;gap:7px">
+    <span style="font-size:12.4px;font-weight:600;color:var(--ink);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.name}</span>
+    <span class="lg-mv" style="color:${PRIO[c.prio].c}"><span style="color:var(--ink-4)">${PRIO[c.prev].letter}</span>${ic('arrowR',10)}${PRIO[c.prio].letter}</span></div>
+   <div style="font-size:11.3px;color:var(--ink-3);line-height:1.45;margin-top:2px">${c.movedWhy||PRIO[c.prio].label}</div></button>`).join('')}
+  ${opened.map(c=>`<button class="railrow" data-file="${c.id}">
+   <div style="display:flex;align-items:center;gap:7px">
+    <span style="font-size:12.4px;font-weight:600;color:var(--ink);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.name}</span>
+    <span class="lg-new">New</span></div>
+   <div style="font-size:11.3px;color:var(--ink-3);line-height:1.45;margin-top:2px">Opened at ${DAY.sweep} · ${PRIO[c.prio].label}</div></button>`).join('')}
+ </div>`:''}
+
+ <h2 class="railh">Your day</h2>
+ <div style="margin-bottom:22px">
+  ${AGENDA.map(a=>{const K=KIND[a.k];
+   return `<button class="railrow" ${a.sid?`data-file="${a.sid}"`:a.go?`data-cnav="${a.go}"`:'data-toast="Nothing to open on this block"'} style="display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:start">
+    <span class="fig" style="font-size:11.5px;font-weight:600;color:var(--ink-2);padding-top:1px">${a.t}</span>
+    <span style="min-width:0">
+     <span style="display:block;font-size:12.3px;font-weight:600;color:var(--ink);line-height:1.35">${a.title}</span>
+     <span style="display:block;font-family:var(--f-apparatus);font-size:9.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:${K.c};margin-top:3px">${K.l}${a.loc?` · ${a.loc}`:''}</span></span>
+   </button>`;}).join('')}
+ </div>
+
+ <h2 class="railh">Follow-ups due</h2>
+ ${due.length?due.map(i=>`<button class="railrow" data-file="${i.sid}">
+   <span style="display:block;font-size:12.3px;font-weight:600;color:var(--ink)">${i.student}</span>
+   <span style="display:block;font-size:11.3px;color:var(--ink-3);line-height:1.45;margin-top:2px">${i.type} · due ${i.due}</span></button>`).join('')
+ :empty("Nothing due today","Every open intervention has a follow-up date later in the week.")}
+
+ <div style="margin-top:22px;padding-top:14px;border-top:1px solid var(--rule-2);font-size:11.4px;color:var(--ink-3);line-height:1.55">
+  <b style="color:var(--ink-2)">A tier is temporary.</b> It reflects the evidence on file this morning, not a judgement about a child, and it changes as you add context or the run recovers.
+  <div style="margin-top:10px"><button class="btn btn-g btn-sm" data-cnav="thresholds">${ic('gauge',13)} Tune thresholds</button></div>
  </div>`;}
 
 /* ═══════════ MY COHORT — today's schedule + the caseload ═══════════ */
-function cohortRag(c){
- const keys=["app-progress","app-list","si-attendance","si-punctuality","si-academic","si-engagement"];
- const rs=keys.map(k=>DIMS[k].f(c).r);
- if(rs.includes("critical"))return "critical";
- if(rs.includes("watch"))return "watch";
- return "good";}
-
-function agendaBlock(){
- const due=S.ivs.filter(i=>i.status==="open").length;
- const meets=AGENDA.filter(a=>a.k==="meet").length;
- return `<div style="margin-bottom:26px">
-  <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px">
-   <div class="stamp" style="font-size:23px;font-weight:600;letter-spacing:-.02em">Today</div>
-   <div style="font-size:12.5px;color:var(--inkMute)">Monday · 24 November · engine swept 07:04</div></div>
-  <div style="font-size:13px;color:var(--inkSoft);margin-bottom:16px;line-height:1.6">${meets} meetings, ${due} follow-ups due, and three students changed priority overnight.</div>
-
-  <div class="card" style="padding:18px 20px;margin-bottom:14px">
-   <h3 class="sechead">${ic('radar',13)} Changed overnight</h3>
-   ${[["Ahmed Khalifa","s1","Monitor","Urgent","Teacher concern corroborated the Maths and attendance signals"],
-      ["Layla Haddad","s2","Review","Check-in","Engagement silence passed the 14-day threshold"],
-      ["Maryam Al Suwaidi","s5","Check-in","Recovered","Attendance held inside her personal band for three weeks"]]
-    .map((m,i)=>`<div class="lift" data-file="${m[1]}" style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:10px 0;border-bottom:${i<2?'1px solid var(--lineSoft)':'none'};cursor:pointer">
-     <div><div style="font-size:12.8px;font-weight:600">${m[0]}</div>
-      <div style="font-size:11.5px;color:var(--inkMute);margin-top:2px">${m[4]}</div></div>
-     <div style="display:flex;align-items:center;gap:7px;font-size:11px;white-space:nowrap">
-      <span style="color:var(--inkMute)">${m[2]}</span>${ic('arrowR',12)}
-      <span style="font-weight:700;color:${m[3]==="Urgent"?'var(--urgent)':m[3]==="Recovered"?'var(--good)':'var(--checkin)'}">${m[3]}</span></div></div>`).join('')}
-  </div>
-
-  <h3 class="sechead" style="margin-bottom:12px">${ic('clock',13)} What needs doing today</h3>
-  <div style="position:relative">
-   <div style="position:absolute;left:56px;top:10px;bottom:10px;width:1px;background:var(--line)"></div>
-   ${AGENDA.map((a,i)=>{const K=KIND[a.k];
-    return `<div style="display:grid;grid-template-columns:50px 1fr;gap:18px;margin-bottom:9px;animation:rise .4s ${i*.04}s backwards">
-     <div style="text-align:right;padding-top:14px">
-      <div class="fig" style="font-size:11.5px;font-weight:600">${a.t}</div>
-      <div style="font-size:9px;color:var(--inkMute);margin-top:1px">${a.dur}</div></div>
-     <div style="position:relative">
-      <span style="position:absolute;left:-24px;top:18px;width:10px;height:10px;border-radius:var(--r-dot);background:${K.c};border:2.5px solid var(--panel);z-index:1"></span>
-      <div class="card lift" style="padding:13px 16px;border-left:3px solid ${K.c}">
-       <div style="display:flex;align-items:flex-start;gap:11px">
-        <div style="flex:1">
-         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:2px">
-          <b style="font-size:13px">${a.title}</b>
-          <span class="chip" style="background:${K.bg};color:${K.c}">${K.l}</span></div>
-         ${a.loc?`<div style="font-size:11px;color:var(--inkMute);margin-bottom:4px">${a.loc}</div>`:''}
-         <div style="font-size:12.2px;color:var(--inkSoft);line-height:1.5">${a.why}</div></div>
-        <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0">
-         ${a.sid?`<button class="btn btn-g btn-sm" data-act="brief:${a.sid}">${ic('spark',12)} Brief</button>
-          <button class="btn btn-g btn-sm" data-file="${a.sid}">File</button>`:''}
-         ${a.go?`<button class="btn btn-g btn-sm" data-cnav="${a.go}">Open ${ic('arrowR',12)}</button>`:''}
-         ${!a.sid&&!a.go?`<button class="btn btn-g btn-sm" data-toast="Approved · sent and logged">Approve</button>`:''}
-        </div></div></div></div></div>`;}).join('')}
-  </div>
-
-  <div class="card" style="padding:15px 19px;margin-top:14px;display:flex;gap:12px;align-items:center">
-   <div style="width:32px;height:32px;border-radius:var(--r);background:var(--tealSoft);display:grid;place-items:center;color:var(--tealDeep);flex-shrink:0">${ic('checkC',16)}</div>
-   <div style="flex:1;font-size:12.2px;color:var(--inkSoft);line-height:1.5"><b style="color:var(--ink)">Before you leave.</b> ${due} case${due===1?'':'s'} still need an outcome recorded. Cases closed without one are the first gap an inspector finds.</div>
-   <button class="btn btn-p btn-sm" data-cnav="si-interventions" style="flex-shrink:0">Record outcomes</button>
-  </div>
- </div>`;}
-
-function vCohort(){
- const q=(S.q||"").toLowerCase().trim();
- const filt=S.cohortFilter||"all";
- let list=S.cases.slice();
- if(q)list=list.filter(c=>c.name.toLowerCase().includes(q)||c.goal.toLowerCase().includes(q)||c.uni.targets.some(t=>(t.u||'').toLowerCase().includes(q)));
- if(filt!=="all")list=list.filter(c=>cohortRag(c)===filt);
- const ord={critical:0,watch:1,good:2};
- list.sort((a,b)=>ord[cohortRag(a)]-ord[cohortRag(b)]||a.name.localeCompare(b.name));
- const all=S.cases.map(cohortRag);
- const counts={critical:all.filter(x=>x==="critical").length,watch:all.filter(x=>x==="watch").length,good:all.filter(x=>x==="good").length};
- const chips=[["all","Everyone",S.cases.length,"var(--ink)"],["critical","Critical",counts.critical,"var(--urgent)"],["watch","Take a look",counts.watch,"var(--review)"],["good","On track",counts.good,"var(--good)"]];
- return `<div class="fade" style="max-width:960px">
-  <div style="border-top:1px solid var(--line);padding-top:24px">
-   <div class="stamp" style="font-size:23px;font-weight:600;letter-spacing:-.02em;margin-bottom:4px">My cohort</div>
-   <div style="font-size:13px;color:var(--inkSoft);margin-bottom:16px;line-height:1.6">Your ${S.cases.length} students, Grades 9 to 12. Search by name, goal or university — any row opens the full 360° file.</div>
-   <div class="card" style="padding:14px 17px;margin-bottom:14px">
-    <div style="display:flex;align-items:center;gap:9px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:9px 13px">
-     ${ic('search',15)}<input id="cq" aria-label="Search students by name, goal, or university" value="${(S.q||"").replace(/"/g,'&quot;')}" placeholder="Search name, goal or university…" style="border:none;background:none;font-size:13px;width:100%;color:var(--ink)">
-     ${q?`<button data-q="" aria-label="Clear search" style="border:none;background:none;cursor:pointer;color:var(--inkMute);display:flex;padding:0">${ic('x',14)}</button>`:''}</div>
-    <div style="display:flex;gap:7px;margin-top:11px;flex-wrap:wrap">
-     ${chips.map(([k,l,n,c])=>`<button data-cfilter="${k}" style="display:flex;align-items:center;gap:7px;border:1px solid ${filt===k?c:'var(--line)'};background:${filt===k?c:'#fff'};color:${filt===k?'#fff':'var(--inkSoft)'};border-radius:var(--r-lg);padding:6px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:border-color .15s,background-color .15s,color .15s">
-      ${k!=="all"?`<span style="width:7px;height:7px;border-radius:var(--r-dot);background:${filt===k?'#fff':c}"></span>`:''}${l}<span style="opacity:.7">${n}</span></button>`).join('')}</div>
-   </div>
-   <div class="card" style="padding:0;overflow:hidden">
-    <div class="cohort-head" style="display:grid;grid-template-columns:auto 1fr 120px 170px 110px 92px;gap:14px;padding:11px 18px;background:var(--surface-2);border-bottom:1px solid var(--line);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-4);font-weight:600">
-     <span style="width:36px"></span><span>Student</span><span>Application</span><span>Signals</span><span>Last contact</span><span style="text-align:right">Status</span></div>
-    ${list.length?list.map((c,i)=>{const r=cohortRag(c);const R=RAG[r];const prog=DIMS["app-progress"].f(c);
-     const dots=[["app-list"],["app-statement"],["si-attendance"],["si-punctuality"],["si-academic"],["si-engagement"]];
-     return `<div class="lift" data-file="${c.id}" style="display:grid;grid-template-columns:auto 1fr 120px 170px 110px 92px;gap:14px;padding:13px 18px;align-items:center;border-bottom:${i<list.length-1?'1px solid var(--lineSoft)':'none'};cursor:pointer;content-visibility:auto;contain-intrinsic-size:auto 66px">
-      ${av(c.av,c.prio,36)}
-      <div style="min-width:0"><b style="font-size:13.2px">${c.name}</b>
-       <div style="font-size:11px;color:var(--inkMute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.goal} · ${c.pred}</div></div>
-      <div><div style="height:5px;border-radius:var(--r-sm);background:var(--line);overflow:hidden"><div style="height:100%;width:${parseInt(prog.v)}%;background:${RAG[prog.r].c};border-radius:var(--r-sm)"></div></div>
-       <div style="font-size:10px;color:var(--inkMute);margin-top:3px">${prog.v}</div></div>
-      <div style="display:flex;gap:4px">${dots.map(([k])=>{const rr=DIMS[k].f(c).r;
-        return `<span title="${DIMS[k].t}: ${RAG[rr].l}" style="width:8px;height:18px;border-radius:var(--r-sm);background:${rr==="good"?'var(--lineSoft)':RAG[rr].c}"></span>`;}).join('')}</div>
-      <span style="font-size:11.5px;color:var(--inkMute)">${c.lastContact}</span>
-      <div style="text-align:right">${chip(R.l,R.c,R.bg)}</div></div>`;}).join('')
-    :`<div style="padding:38px;text-align:center;color:var(--inkMute);font-size:13px">No students match “${q}”.</div>`}
-   </div>
-   <div style="display:flex;gap:14px;margin-top:11px;font-size:10.3px;color:var(--inkMute);flex-wrap:wrap;align-items:center">
-    <span><b>Signal strip:</b></span>
-    ${["List balance","Statement","Attendance","Punctuality","Academic","Engagement"].map(l=>`<span>${l}</span>`).join('<span style="opacity:.4">·</span>')}
-    <span style="margin-left:auto;display:flex;align-items:center;gap:5px"><span style="width:8px;height:12px;border-radius:var(--r-sm);background:var(--lineSoft)"></span>inside personal baseline</span></div>
-  </div>
- </div>`;}
 /* ═══════════════ TEACHER PORTAL ═══════════════
    The investor's core ask: after every lesson a teacher can flag or comment
    in seconds, and it lands on the counselor's dashboard. Structured but open. */
@@ -5683,6 +6055,27 @@ function escalateModal(){
    </div>
   </div></div></div>`;}
 
+/* Bulk reassignment. The same staff list and the same confirmation discipline
+   as the single-case modal — it names every student before it moves any. */
+function bulkAssignModal(){
+ if(!S.modal||S.modal.type!=="bulkassign")return "";
+ const picked=S.sel.map(g).filter(Boolean),pick=S.assignPick;
+ return `<div class="modalbg" data-mbg="1"><div class="modal">
+  <div style="padding:20px 22px 0">${mcloseBtn()}
+   <div class="stamp" style="font-size:19px;font-weight:600">Reassign ${picked.length} case${picked.length>1?'s':''}</div>
+   <div style="font-size:12.3px;color:var(--ink-3);margin:4px 0 12px;line-height:1.5">The new owner is notified once and the change is written into each student's record. Nothing moves until you confirm.</div>
+   <div style="border:1px solid var(--rule-2);background:var(--stock-3);padding:10px 12px;margin-bottom:15px;max-height:118px;overflow-y:auto">
+    ${picked.map(c=>`<div style="display:flex;align-items:center;gap:8px;font-size:12px;padding:3px 0;color:var(--ink-2)">
+     ${tierStamp(c.prio,11)}<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.name}</span>
+     <span class="fig" style="font-size:10.5px;color:var(--ink-4)">${c.owner}</span></div>`).join('')}</div></div>
+  <div style="padding:0 22px 22px">
+   ${STAFF.map(st=>`<button data-assignpick="${st.id}" style="width:100%;text-align:left;font-family:inherit;cursor:pointer;border:1px solid ${pick===st.id?'var(--brand)':'var(--line-2)'};background:${pick===st.id?'var(--brand-3)':'var(--surface)'};border-radius:var(--r);padding:13px 15px;margin-bottom:8px;display:flex;gap:11px;align-items:center">
+    ${av(st.n.split(' ').slice(-1)[0].slice(0,2).toUpperCase(),"monitor",34,10)}
+    <div><b style="font-size:13px">${st.n}</b><div style="font-size:11.3px;color:var(--ink-3)">${st.r}</div></div>
+    ${pick===st.id?'<span style="margin-left:auto;color:var(--brand)">'+ic('checkC',17)+'</span>':''}</button>`).join('')}
+   <button class="btn btn-p" data-bulkassigngo="1" ${pick?'':'disabled'} style="width:100%;margin-top:10px">${ic('check',15)} ${pick?`Reassign ${picked.length} case${picked.length>1?'s':''}`:'Choose a colleague'}</button>
+  </div></div></div>`;}
+
 function assignModal(){
  if(!S.modal||S.modal.type!=="assign")return "";
  const c=g(S.modal.id);const pick=S.assignPick;
@@ -5919,9 +6312,11 @@ function draw(){
   if(S.open)body2=vCase(g(S.open));
   else if(S.fileId)body2=vFileOne(g(S.fileId));
   else if(DIMS[S.cv])body2=vDim(S.cv);
-  else if(S.cv==="cohort"||S.cv==="today"||S.cv==="files")body2=vCohort();
-  else if(S.cv==="cohort-schedule")body2=vToday();
-  else if(S.cv==="cohort-all")body2=vCohort();
+  else if(S.cv==="cohort"||S.cv==="today"||S.cv==="files")body2=vSheet();
+  /* "Today" and "All students" were two lists of the same 87 people, and the
+     counselor had to hold both. They are one sheet; the old ids still route so
+     a bookmark, the palette or a stale deep link lands somewhere real. */
+  else if(S.cv==="cohort-schedule"||S.cv==="cohort-all")body2=vSheet();
   else if(S.cv==="flags")body2=vFlagInbox();
   else if(S.cv==="meetings")body2=vMeetings();
   else if(S.cv==="command")body2=vCommand();
@@ -5936,7 +6331,7 @@ function draw(){
   else if(S.cv==="arch")body2=vArch();
   else if(S.cv==="thresholds")body2=vThresholds();
   else if(S.cv==="pilot")body2=vPilot();
-  else body2=vCohort();
+  else body2=vSheet();
   sb=`<div class="shell" style="flex:1;display:flex;overflow:hidden">${sidebarC()}
    <main id="main" tabindex="-1" class="mainpane" style="flex:1;overflow-y:auto;background:var(--panel)">
     <div class="glass" style="position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);padding:0 28px;height:60px;display:flex;align-items:center;gap:16px">
@@ -6029,7 +6424,7 @@ function draw(){
   <div id="palResults" style="padding:8px 8px 10px;max-height:360px;overflow:auto"></div>
  </div></div>` : '';
  const TABSETS={
-  counselor:[["cohort-schedule","Today","clock"],["cohort-all","Cohort","users"],["si-cases","Priority","alert"],["__menu","More","list"]],
+  counselor:[["cohort-schedule","Caseload","users"],["si-cases","Priority","alert"],["meetings","Meetings","brief"],["__menu","More","list"]],
   student:(()=>{const pg=S.previewGrade||12,pt=g(PARENT_ME).track||"IB";
    if(pg===9)return[["discover","My Pathway","spark"],["guide","Guide","book"],["__menu","More","list"]];
    if(pg===10)return[["discover","My Pathway","spark"],["explore","Explore","route"],["__menu","More","list"]];
@@ -6044,7 +6439,7 @@ function draw(){
  const tabbar=`<nav class="tabbar">${TABS.map(t=>{
    const on=t[0]!=="__menu"&&curKey===t[0];
    return `<button class="tabitem ${on?'on':''}" ${t[0]==="__menu"?'data-navopen="1"':navAttr+'="'+t[0]+'"'}>${ic(t[2],20)}<span>${t[1]}</span>${t[0]==="si-cases"&&prioCounts().urgent?`<i class="tabdot"></i>`:''}</button>`;}).join('')}</nav>`;
- R.innerHTML=`<a href="#main" class="skip-link">Skip to main content</a><div class="navscrim" data-navclose="1"></div><div style="height:100vh;display:flex;flex-direction:column">${roleBar()}${sb}</div>${tabbar}${palOpen}${modalEl()}${tflagModal()}${meetModal()}${mergeModal()}${assignModal()}${escalateModal()}${S.toast?`<div class="toastbar pop">${ic('checkC',17)}${S.toast}</div>`:''}`;
+ R.innerHTML=`<a href="#main" class="skip-link">Skip to main content</a><div class="navscrim" data-navclose="1"></div><div style="height:100vh;display:flex;flex-direction:column">${roleBar()}${sb}</div>${tabbar}${palOpen}${modalEl()}${tflagModal()}${meetModal()}${mergeModal()}${assignModal()}${bulkAssignModal()}${escalateModal()}${S.toast?`<div class="toastbar pop">${ic('checkC',17)}${S.toast}</div>`:''}`;
  if(S.palOpen){palPaint(S.palQuery||"",S.role);setTimeout(()=>{const palInput=document.getElementById("palInput");if(palInput){palInput.focus();palInput.selectionStart=palInput.selectionEnd=palInput.value.length;}} ,0);}
  bind();
 }
@@ -6349,7 +6744,6 @@ function bind(){
 
  q("[data-navopen]",e=>e.onclick=()=>{S.navOpen=true;draw();});
  q("[data-navclose]",e=>e.onclick=()=>{S.navOpen=false;draw();});
- q("[data-cfilter]",e=>e.onclick=()=>{S.cohortFilter=e.dataset.cfilter;draw();});
  q("[data-q]",e=>e.onclick=()=>{S.q="";draw();});
  const cq=document.getElementById("cq");
  if(cq){cq.oninput=()=>{S.q=cq.value;const p=cq.selectionStart;draw();const n=document.getElementById("cq");if(n){n.focus();n.setSelectionRange(p,p);}};}
@@ -6367,7 +6761,46 @@ function bind(){
  q("[data-snav]",e=>e.onclick=()=>{S.sv=e.dataset.snav;S.navOpen=false;draw();});
  q("[data-mnav]",e=>e.onclick=()=>{S.mv=e.dataset.mnav;S.navOpen=false;draw();});
  q("[data-open]",e=>{kb(e,"button");e.onclick=()=>{S.open=e.dataset.open;S.tab="evidence";S.cv="command";draw();};});
- q("[data-prio]",e=>e.onclick=(ev)=>{ev.stopPropagation();S.prioFilter=e.dataset.prio;draw();});
+
+ /* ── the sheet ── */
+ q("[data-tier]",e=>e.onclick=(ev)=>{ev.stopPropagation();
+   S.sheetTier=e.dataset.tier;
+   /* A selection made under one filter must not survive into another, or the
+      bulk bar acts on students the counselor can no longer see. */
+   S.sel=[];draw();});
+ /* Mouse convenience across the full width of a row. Not keyboard-exposed:
+    the name inside it is the focusable control, and a second stop per row
+    would double the tab count of the sheet for nothing. */
+ q("[data-rowfile]",e=>e.onclick=(ev)=>{
+   if(ev.target.closest("button,a,input,label"))return;
+   S.fileId=e.dataset.rowfile;S.fileTab="synth";draw();});
+ q("[data-sheetroster]",e=>e.onclick=(ev)=>{ev.stopPropagation();S.sheetRoster=!S.sheetRoster;draw();});
+ q("[data-sel]",e=>e.onclick=(ev)=>{ev.stopPropagation();ev.preventDefault();
+   const id=e.dataset.sel,i=S.sel.indexOf(id);
+   if(i>=0)S.sel.splice(i,1);else S.sel.push(id);
+   draw();});
+ q("[data-selclear]",e=>e.onclick=(ev)=>{ev.stopPropagation();S.sel=[];draw();});
+ q("[data-bulkack]",e=>e.onclick=(ev)=>{ev.stopPropagation();
+   const n=S.sel.length;if(!n)return;
+   /* "Seen" is the honest word. It does not close a case, resolve a signal or
+      change a tier — it records that the counselor read the row, which is the
+      thing a bulk control can truthfully claim to have done. */
+   S.sel.forEach(id=>{const c=g(id);if(!c)return;
+     c.seen=DAY.short;
+     logAudit("R.HADDAD","CASE_ACKNOWLEDGED",c.name,"Marked as seen on the "+DAY.long+" sheet · tier unchanged ("+PRIO[c.prio].short+")");});
+   S.sel=[];
+   toast(n+" student"+(n>1?"s":"")+" marked as seen · a line was written to each record",4200);
+   draw();});
+ q("[data-bulkassign]",e=>e.onclick=(ev)=>{ev.stopPropagation();
+   if(!S.sel.length)return;S.assignPick=null;S.modal={type:"bulkassign"};draw();});
+ q("[data-bulkassigngo]",e=>e.onclick=()=>{
+   const s=STAFF.find(x=>x.id===S.assignPick);
+   if(s){const ids=S.sel.slice();
+     ids.forEach(id=>{const c=g(id);if(!c)return;const prev=c.owner;c.owner=s.n;
+       logAudit("R.HADDAD","CASE_REASSIGNED",c.name,prev+" → "+s.n+" · reassigned in bulk from the "+DAY.long+" sheet");});
+     toast(ids.length+" case"+(ids.length>1?"s":"")+" reassigned to "+s.n+" · they have been notified",4200);
+     S.sel=[];}
+   S.modal=null;S.assignPick=null;draw();});
  q("[data-tab]",e=>e.onclick=()=>{S.tab=e.dataset.tab;draw();});
  q("[data-file]",e=>{kb(e,"button");e.onclick=()=>{const v=e.dataset.file;if(v==="_back"){S.fileId=null;if(!DIMS[S.cv]&&S.cv!=="files")S.cv="files";}else{S.fileId=v;S.fileTab="synth";}draw();};});
  q("[data-ftab]",e=>e.onclick=()=>{S.fileTab=e.dataset.ftab;draw();});
@@ -6397,6 +6830,15 @@ function bind(){
   else if(a==="dismiss"){c.prio="monitor";c.stage="learn";logAudit("R.HADDAD","CASE_DISMISSED",c.name,"Counselor judged not a concern · feeds threshold tuning");toast("Dismissed · this feeds back into threshold tuning");}
   else if(a==="merge"){toast("Merged with the teacher concern from Mr. Davies");}
   else if(a==="assign"){toast("Assigned to the Grade 12 pastoral lead");}
+  else if(a==="closecase"){
+   /* The outcome is the record. Closing without one is the gap an inspector
+      asks about first, so this writes the audit line and the intervention's
+      outcome together, and keeps the student inside the monitoring window. */
+   const iv=S.ivs.find(x=>x.sid===id&&x.status==="open");
+   if(iv){iv.status="resolved";iv.outcome="Signals recovered and held. Closed with a documented outcome.";iv.due="Closed today";}
+   c.stage="learn";
+   logAudit("R.HADDAD","CASE_CLOSED",c.name,"Outcome documented · 90-day monitoring window remains open");
+   toast("Case closed for "+c.name.split(' ')[0]+" · outcome written to the record, monitoring continues");}
   else if(a==="close"){const iv=S.ivs.find(x=>x.id===id);if(iv){iv.status="resolved";iv.outcome="Outcome recorded by counselor. Signals returned toward baseline and the case was closed with documentation.";iv.resolvedIn="4 days";iv.due="Closed today";logAudit("R.HADDAD","CASE_CLOSED",iv.student,"Outcome documented");}toast("Outcome recorded · case closed");}
   else if(a.startsWith("tc")){const t=[].find(x=>x.id===id);
    if(a==="tcopen"){t.status="linked";t.linked="Case opened and enriched with surrounding data";toast("Case opened for "+t.student+" · engine attaching related signals");}
@@ -6555,7 +6997,7 @@ draw();
  var LIVE=[
  ];
  var GLOBAL=[
-  {loc:"index.html:1075",msg:"Cohort signal matrix is a real <table>; content-visibility:auto doesn't reliably apply to table rows (no layout containment on display:table-row), so its 87 <tr> rows are still unvirtualized. vFiles/vDim/vCohort (div-based) got content-visibility:auto — this one needs either restructuring off <table> or a real virtualization library."}
+  {loc:"vSheet",msg:"The caseload sheet is a real <table>; content-visibility:auto doesn't reliably apply to table rows (no layout containment on display:table-row), so the roster rows are unvirtualized when expanded. Mitigated in P3 — the sheet renders 15 rows until the counselor opens the other 72 — but a full expansion still lays out 87 <tr>. Needs restructuring off <table> or real virtualization."}
  ];
 
  function svgEsc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
