@@ -1,3 +1,19 @@
+> # ⚠️ STALE — DO NOT TRUST THIS FILE
+>
+> **Verified 2026-09-02: most of what this document describes does not exist in `main`.**
+>
+> A bad merge destroyed Phases 1–4 of the design work. All thirteen phase branches are merged ancestors of `main`, yet their code is gone: commit `0daf069` overwrote `index.html` with a pre-Phase-1 copy, `9eb55af` restored it, and `c045a6f` clobbered it again. Confirmed **absent at runtime** on `main`: `place()`, `.still`, `art()`, `moment()`, `ILLUS`, `IC_X`, `--disp-1/2/3`, `--r-pill`, `--persona-*`, and the role-scoped command-palette search described below. `--r` is 10px, not the 8px documented here; `--r-xl` is 16px, not an alias.
+>
+> Reading this file as truth has already cost real work. Everything below is **history and intent** — a description of a build that was overwritten, and of a design system now being replaced.
+>
+> **Current authorities instead:**
+> - `../PHASES.md` — the work plan
+> - `PRODUCT.md` — product truth
+> - `.impeccable/surfaces/index-html.md` — the direction contract (the visual world, superseding the colour/type/shape sections below)
+> - `.impeccable/critique/` — the 2026-09-02 audit
+>
+> The lost code is recoverable at commit **`39defe5`**. Phase 8 replaces this file with one written from the built world.
+
 # CAROS — Counselor OS
 
 A single-file prototype (`index.html`, vanilla JS, no build step, no backend) for an AI-native school counseling platform. Five role-based views in one shell: Counselor OS, Parent portal, Student portal ("Career OS"), Teacher portal, Mentor portal. Full product description is in `README.md`.
