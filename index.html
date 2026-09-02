@@ -117,7 +117,16 @@ body{
 .fade{animation:fade .3s ease backwards}
 .spin{animation:spin .7s linear infinite;display:inline-block}
 .pulsedot{animation:ping 2.2s cubic-bezier(.4,0,.6,1) infinite}
-@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* draw() rebuilds the whole tree on every state change, so an entry animation
+   with nothing suppressing it replays on every click, not just on arrival — see
+   place() above. .still lands on #root for anything that is not an arrival;
+   toast, modal and palette are the state change itself, so they stay exempt. */
+.still [style*="animation:rise"],.still [style*="animation:fade"],
+.still [style*="animation:pop"],.still .rise,.still .fade,
+.still .pop:not(.toastbar):not(.modal){animation:none!important}
+.still [style*="animation:drawline"]{animation:none!important;stroke-dashoffset:0!important}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-delay:0ms!important;transition-duration:.01ms!important;transition-delay:0ms!important}}
 
 /* ══════════ SURFACES ══════════ */
 .card{
@@ -808,6 +817,44 @@ function pchip(p){const P=PRIO[p];return chip(P.short,P.c,P.bg,p==="urgent"?"ale
 function spin(sz,c){return `<span class="spin" style="width:${sz||16}px;height:${sz||16}px;border:2.5px solid var(--line);border-top-color:${c||'var(--teal)'};border-radius:50%"></span>`;}
 function dots(){return '<span class="dots"><span></span><span></span><span></span></span>';}
 function meter(v,c){return `<div class="meter"><div style="clip-path:inset(0 ${100-v}% 0 0);background:${c||'var(--teal)'}"></div></div>`;}
+
+/* ═══════════ EMPTY STATES ═══════════
+   A blank section under a heading reads as broken, not as "nothing happened yet" —
+   the failure the old rose/violet character illustrations were built to fix. That
+   figurative style is retired with them (own-world work draws geometry, never a
+   sketched scene), so each empty state here is built from the ledger's own vocabulary
+   — ruled lines, cells, marks — rather than a redrawn character. Every entry still
+   has to say why the emptiness is correct, not just that it's empty. Material, so it
+   takes no persona or school colour — semantic tokens only. */
+const ILLUS={
+ /* a run of consistent marks with no break — the product's own thesis, used
+    wherever "nothing needs you" is itself the finding */
+ steady:()=>`<line x1="10" y1="46" x2="86" y2="46" stroke="var(--line-2)" stroke-width="1.5"/>
+  ${[0,1,2,3,4,5].map(i=>`<line x1="${16+i*13}" y1="37" x2="${16+i*13}" y2="46" stroke="var(--good)" stroke-width="2.5" stroke-linecap="round"/>`).join('')}`,
+ /* one cell filled and linked, one cell still open and dashed — waiting, not missing */
+ open:()=>`<rect x="10" y="20" width="34" height="24" rx="2" fill="var(--surface-3)"/>
+  <line x1="16" y1="28" x2="38" y2="28" stroke="var(--ink-3)" stroke-width="2" stroke-linecap="round"/>
+  <line x1="16" y1="36" x2="30" y2="36" stroke="var(--ink-3)" stroke-width="2" stroke-linecap="round" opacity=".55"/>
+  <path d="M46 32h6" stroke="var(--line-2)" stroke-width="2" stroke-dasharray="1 4" stroke-linecap="round"/>
+  <rect x="54" y="20" width="34" height="24" rx="2" fill="none" stroke="var(--line-2)" stroke-width="2" stroke-dasharray="4 4"/>`,
+ /* two branches of exactly equal weight from one point — undecided, not missing a
+    default. Carried in from the old doctrine: neither route may be drawn heavier. */
+ fork:()=>`<line x1="48" y1="14" x2="48" y2="28" stroke="var(--ink-3)" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="48" y1="28" x2="22" y2="50" stroke="var(--ink-3)" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="48" y1="28" x2="74" y2="50" stroke="var(--ink-3)" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="22" cy="50" r="3" fill="var(--ink-3)"/><circle cx="74" cy="50" r="3" fill="var(--ink-3)"/>
+  <text x="22" y="61" text-anchor="middle" font-size="8" font-weight="700" fill="var(--ink-3)">IB</text>
+  <text x="74" y="61" text-anchor="middle" font-size="8" font-weight="700" fill="var(--ink-3)">AP</text>`};
+function art(n,w){w=w||72;const h=Math.round(w*64/96);
+ return `<svg viewBox="0 0 96 64" style="width:${w}px;height:${h}px;flex-shrink:0;display:block" aria-hidden="true">${(ILLUS[n]||(()=>''))()}</svg>`;}
+function moment(o){
+ return `<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:${o.pad||'6px 2px'}">
+  ${art(o.art,o.w)}
+  <div style="flex:1;min-width:200px">
+   <div style="font-size:12.8px;font-weight:600;color:var(--ink);line-height:1.4">${o.title}</div>
+   <div style="font-size:11.8px;color:var(--ink-3);line-height:1.6;margin-top:4px">${o.body}</div>
+   ${o.action?`<div style="margin-top:10px">${o.action}</div>`:''}
+  </div></div>`;}
 function mcloseBtn(variant){
  const v={default:{bg:"var(--surface-3)",bd:"1px solid var(--line-2)",right:"18px",color:""},
   panel:{bg:"var(--panel)",bd:"1px solid var(--line)",right:"16px",color:""},
@@ -1663,7 +1710,7 @@ function vFileOne(c){
     ${i.status==="resolved"?chip("Resolved","var(--good)","var(--goodSoft)"):chip("Open","var(--checkin)","var(--checkinSoft)")}</div>
     <div style="font-size:11.3px;color:var(--inkMute);margin-top:3px">Opened ${i.opened} · owner ${i.owner} · ${i.status==="resolved"?"closed in "+i.resolvedIn:"due "+i.due}</div>
     ${i.outcome?`<div style="font-size:11.8px;color:#075E45;background:var(--goodSoft);border-radius:8px;padding:9px 11px;margin-top:7px;line-height:1.5"><b>Outcome.</b> ${i.outcome}</div>`:''}</div>`).join('')
-   :`<div style="font-size:12.5px;color:var(--inkMute);padding:10px 0">No interventions on file. This student has not required formal support this year.</div>`}
+   :moment({art:"steady",title:"No interventions on file",body:`${c.name.split(" ")[0]} has not required formal support this year — this is the outcome the caseload sweep exists to protect, not a gap in the record.`})}
   </div>
   <div class="card" style="padding:20px">
    <h3 class="sechead">${ic('clock',13)} Contact & support log</h3>
@@ -4818,7 +4865,7 @@ function vParent(){
    <div style="font-size:11.5px;color:var(--ink-3);background:var(--surface-3);border-radius:9px;padding:9px 11px;margin-bottom:10px;line-height:1.4">${PARENT_MENTOR.path}</div>
    <div style="display:flex;gap:8px;align-items:flex-start;font-size:11.3px;color:var(--brand-2);background:var(--brand-3);border-radius:9px;padding:10px 11px;line-height:1.55">
     ${ic('shield',14)}<span>${c.name.split(" ")[0]} asked to be matched with an alumnus in finance. Every session happens inside the platform and is recorded — the school is in the loop and nothing is exchanged outside CAROS.</span></div>`
-   :`<div style="font-size:12.3px;color:var(--ink-3);line-height:1.6">No mentor matched yet. ${c.name.split(" ")[0]} can request one from the alumni network once ready — every session is safeguarded and happens inside the platform.</div>`}
+   :moment({art:"open",title:"No mentor matched yet",body:`${c.name.split(" ")[0]} can request one from the alumni network once ready — every session is safeguarded and happens inside the platform.`})}
   </div>
  </div>
 
@@ -5133,7 +5180,7 @@ function vStuProgress(){
     <b style="font-size:13px">${e.subject}</b>
     <span class="chip" style="background:${e.status==='registered'?'var(--ok-bg)':e.status==='registration open'?'var(--warn-bg)':'var(--crit-bg)'};color:${e.status==='registered'?'var(--ok)':e.status==='registration open'?'var(--warn)':'var(--crit)'};text-transform:capitalize">${e.status}</span></div>`).join('')
    +`<div style="font-size:11px;color:var(--ink-4);margin-top:10px;line-height:1.5">AP scores (1–5 per exam) are not released until scores come back in July — see the AP Exams tab for exact dates.</div>`
-  :`<div style="font-size:12.3px;color:var(--ink-3);line-height:1.6">No subject track chosen yet — this fills in once IB or AP is decided.</div>`}
+  :moment({art:"fork",title:"No subject track chosen yet",body:"This fills in once IB or AP is decided — there's no wrong choice, only a better-informed one."})}
  </div>
  <div class="card" style="padding:20px;margin-bottom:16px">
   <h3 class="sechead">${ic('trend',13)} My attendance</h3>
@@ -5463,9 +5510,21 @@ function modalEl(){
   </div></div>`;}
  return '';}
 
+/* An "arrival" is anything that REPLACES what you are looking at: a different
+   role, view, student file or grade — and also a panel whose whole contents are
+   new, like the letter finishing its draft, the co-pilot answering, or the
+   Discover My Path / PS Lab flows swapping to a different stage or system.
+   Filtering, sorting, expanding, toggling and typing are not arrivals: you are
+   already there, and re-animating the page around you is noise, not feedback. */
+let LASTPLACE=null;
+function place(){return [S.role,S.cv,S.sv,S.pv,S.tv,S.mv,S.open,S.fileId,S.previewGrade,
+ S.tab,S.fileTab,S.letter,S.cpQ,S.cpLoad,S.discoverStage,S.psActiveSystem].join("|");}
+
 /* ═══════════ RENDER ═══════════ */
 function draw(){
  document.documentElement.dataset.role=S.role;
+ const here=place(),arrived=here!==LASTPLACE;LASTPLACE=here;
+ R.className=arrived?"":"still";
  let body="",sb="";
  PARENT_ME=FAMILY_STUDENT_ID[S.previewGrade||12]||"s3";
  PMSGS=PMSGS_BY_GRADE[S.previewGrade||12]||PMSGS_BY_GRADE[12];
