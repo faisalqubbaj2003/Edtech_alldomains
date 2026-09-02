@@ -87,6 +87,16 @@ body{
 ::-webkit-scrollbar-thumb{background:#D3D8E0;border-radius:99px;border:3px solid transparent;background-clip:content-box}
 ::-webkit-scrollbar-thumb:hover{background:#B6BECB;background-clip:content-box}
 :focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:4px}
+[role="button"],[role="checkbox"],[role="radio"],[role="switch"]{-webkit-tap-highlight-color:transparent}
+
+/* ══════════ SKIP LINK ══════════ */
+.skip-link{
+ position:fixed;top:8px;left:8px;z-index:999996;background:var(--ink);color:#fff;
+ padding:10px 16px;border-radius:8px;font:600 13px/1 'Inter',system-ui,sans-serif;text-decoration:none;
+ transform:translateY(-150%);transition:transform .15s ease;
+}
+.skip-link:focus-visible{transform:none}
+@media (prefers-reduced-motion:reduce){.skip-link{transition-duration:.01ms}}
 
 /* ══════════ TYPE ══════════ */
 .serif{font-family:'Fraunces',Georgia,serif;letter-spacing:-.022em;font-variant-numeric:normal}
@@ -127,7 +137,7 @@ body{
  display:inline-flex;align-items:center;justify-content:center;gap:6px;
  font-family:inherit;font-size:13px;font-weight:600;letter-spacing:-.006em;
  padding:9px 14px;border-radius:var(--r);border:1px solid transparent;
- cursor:pointer;white-space:nowrap;user-select:none;
+ cursor:pointer;white-space:nowrap;user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
  transition:background .15s ease,border-color .15s ease,box-shadow .15s ease,transform .1s ease,color .15s ease;
 }
 .btn:active{transform:scale(.985)}
@@ -147,7 +157,7 @@ body{
 /* ══════════ FORM ══════════ */
 input,textarea,select{font-family:inherit;font-size:13px;color:var(--ink);letter-spacing:-.006em}
 input::placeholder,textarea::placeholder{color:var(--ink-4)}
-textarea:focus,input:focus,select:focus{outline:none;border-color:var(--brand)!important;box-shadow:0 0 0 3px var(--brand-3)}
+textarea:focus-visible,input:focus-visible,select:focus-visible{outline:none;border-color:var(--brand)!important;box-shadow:0 0 0 3px var(--brand-3)}
 select{cursor:pointer;-webkit-appearance:none;appearance:none;
  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23667085' stroke-width='2.5' stroke-linecap='round'><path d='M6 9l6 6 6-6'/></svg>");
  background-repeat:no-repeat;background-position:right 11px center;padding-right:30px!important}
@@ -164,6 +174,20 @@ input[type=range]::-webkit-slider-thumb:hover{box-shadow:0 0 0 4px var(--brand-3
  border:1px solid transparent;font-variant-numeric:tabular-nums;
 }
 .chip svg{width:11px;height:11px}
+
+/* ══════════ TOGGLE ══════════ */
+.tog{
+ position:relative;width:42px;height:24px;border-radius:var(--r-pill);
+ background:var(--line-3);border:1px solid var(--line-3);cursor:pointer;flex-shrink:0;
+ transition:background .15s ease,border-color .15s ease;
+}
+.tog::after{
+ content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;
+ background:#fff;box-shadow:var(--sh-xs);transition:transform .15s cubic-bezier(.22,1,.36,1);
+}
+.tog.on{background:var(--brand);border-color:var(--brand)}
+.tog.on::after{transform:translateX(18px)}
+@media (prefers-reduced-motion:reduce){.tog,.tog::after{transition-duration:.01ms}}
 
 /* ══════════ SIDEBAR ══════════ */
 .navitem{
@@ -944,7 +968,7 @@ function shell(theme,nav,active,attr,footAv,footN,footR,title,sub,body){
    ${av(footAv,theme==="student"?"student":"mentor",32,50)}
    <div><div style="font-size:12px;font-weight:600;color:#fff">${footN}</div><div style="font-size:10px;color:rgba(255,255,255,.42)">${footR}</div></div></div>
  </aside>
- <main class="mainpane" style="flex:1;overflow-y:auto;background:var(--panel)">
+ <main id="main" tabindex="-1" class="mainpane" style="flex:1;overflow-y:auto;background:var(--panel)">
   <div class="glass" style="position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);padding:13px 30px;display:flex;align-items:center;gap:16px">
    <button class="navtoggle" data-navopen="1" aria-label="Menu">${ic('list',18)}</button>
    <div style="flex:1;min-width:0"><div class="serif" style="font-size:18px;font-weight:600">${title}</div><div style="font-size:11.5px;color:var(--inkMute);margin-top:1px">${sub}</div></div>
@@ -1509,7 +1533,7 @@ function vFiles(){
   <div style="flex:1;font-size:12.3px;color:var(--inkSoft);line-height:1.5"><b style="color:var(--ink)">Meeting preparation went from 22 minutes to 4.</b> Previously this meant opening the MIS, the gradebook, your spreadsheet and your email before every conversation. Now it is one screen.</div>
  </div>
  ${S.cases.map((c,i)=>{const P=PRIO[c.prio];const doms=[...new Set(c.evidence.filter(e=>e.w>0).map(e=>e.dom))];
-  return `<div class="card concerncard" data-file="${c.id}" style="padding:15px 18px;margin-bottom:10px;animation:rise .4s ${i*.04}s backwards">
+  return `<div class="card concerncard" data-file="${c.id}" style="padding:15px 18px;margin-bottom:10px;animation:rise .4s ${i*.04}s backwards;content-visibility:auto;contain-intrinsic-size:auto 108px">
   <div style="display:grid;grid-template-columns:auto 1fr auto auto;gap:15px;align-items:center">
    ${av(c.av,c.prio,42,12)}
    <div><div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap"><b style="font-size:14px">${c.name}</b>${pchip(c.prio)}</div>
@@ -2015,7 +2039,7 @@ function vDim(key){
     <span style="width:8px;height:8px;border-radius:50%;background:${R.c}"></span>
     <span style="font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:${R.c}">${R.l}</span>
     <span style="font-size:11px;color:var(--inkMute);margin-left:auto">${list.length} student${list.length>1?'s':''}</span></div>
-   ${list.map((r,i)=>`<div class="card concerncard" data-file="${r.c.id}" style="padding:14px 17px;margin-bottom:9px;position:relative;overflow:hidden;animation:rise .35s ${i*.04}s backwards">
+   ${list.map((r,i)=>`<div class="card concerncard" data-file="${r.c.id}" style="padding:14px 17px;margin-bottom:9px;position:relative;overflow:hidden;animation:rise .35s ${i*.04}s backwards;content-visibility:auto;contain-intrinsic-size:auto 112px">
     <span style="position:absolute;left:0;top:0;bottom:0;width:4px;background:${R.c}"></span>
     <div style="display:grid;grid-template-columns:auto 1fr 150px auto;gap:15px;align-items:center;margin-left:5px">
      ${av(r.c.av,r.c.prio,38,11)}
@@ -2202,7 +2226,7 @@ function vCohort(){
      <span style="width:36px"></span><span>Student</span><span>Application</span><span>Signals</span><span>Last contact</span><span style="text-align:right">Status</span></div>
     ${list.length?list.map((c,i)=>{const r=cohortRag(c);const R=RAG[r];const prog=DIMS["app-progress"].f(c);
      const dots=[["app-list"],["app-statement"],["si-attendance"],["si-punctuality"],["si-academic"],["si-engagement"]];
-     return `<div class="lift" data-file="${c.id}" style="display:grid;grid-template-columns:auto 1fr 120px 170px 110px 92px;gap:14px;padding:13px 18px;align-items:center;border-bottom:${i<list.length-1?'1px solid var(--lineSoft)':'none'};cursor:pointer">
+     return `<div class="lift" data-file="${c.id}" style="display:grid;grid-template-columns:auto 1fr 120px 170px 110px 92px;gap:14px;padding:13px 18px;align-items:center;border-bottom:${i<list.length-1?'1px solid var(--lineSoft)':'none'};cursor:pointer;content-visibility:auto;contain-intrinsic-size:auto 66px">
       ${av(c.av,c.prio,36,10)}
       <div style="min-width:0"><b style="font-size:13.2px">${c.name}</b>
        <div style="font-size:11px;color:var(--inkMute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.goal} · ${c.pred}</div></div>
@@ -5377,7 +5401,7 @@ function draw(){
   else if(S.cv==="pilot")body2=vPilot();
   else body2=vCohort();
   sb=`<div class="shell" style="flex:1;display:flex;overflow:hidden">${sidebarC()}
-   <main class="mainpane" style="flex:1;overflow-y:auto;background:var(--panel)">
+   <main id="main" tabindex="-1" class="mainpane" style="flex:1;overflow-y:auto;background:var(--panel)">
     <div class="glass" style="position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);padding:0 28px;height:60px;display:flex;align-items:center;gap:16px">
      <button class="navtoggle" data-navopen="1" aria-label="Menu">${ic('list',18)}</button>
      <div style="flex:1;min-width:0">
@@ -5483,7 +5507,7 @@ function draw(){
  const tabbar=`<nav class="tabbar">${TABS.map(t=>{
    const on=t[0]!=="__menu"&&curKey===t[0];
    return `<button class="tabitem ${on?'on':''}" ${t[0]==="__menu"?'data-navopen="1"':navAttr+'="'+t[0]+'"'}>${ic(t[2],20)}<span>${t[1]}</span>${t[0]==="si-cases"&&prioCounts().urgent?`<i class="tabdot"></i>`:''}</button>`;}).join('')}</nav>`;
- R.innerHTML=`<div class="navscrim" data-navclose="1"></div><div style="height:100vh;display:flex;flex-direction:column">${roleBar()}${sb}</div>${tabbar}${palOpen}${modalEl()}${tflagModal()}${meetModal()}${mergeModal()}${assignModal()}${S.toast?`<div class="toastbar pop">${ic('checkC',17)}${S.toast}</div>`:''}`;
+ R.innerHTML=`<a href="#main" class="skip-link">Skip to main content</a><div class="navscrim" data-navclose="1"></div><div style="height:100vh;display:flex;flex-direction:column">${roleBar()}${sb}</div>${tabbar}${palOpen}${modalEl()}${tflagModal()}${meetModal()}${mergeModal()}${assignModal()}${S.toast?`<div class="toastbar pop">${ic('checkC',17)}${S.toast}</div>`:''}`;
  if(S.palOpen){palPaint(S.palQuery||"",S.role);setTimeout(()=>{const palInput=document.getElementById("palInput");if(palInput){palInput.focus();palInput.selectionStart=palInput.selectionEnd=palInput.value.length;}} ,0);}
  bind();
 }
@@ -5951,16 +5975,7 @@ draw();
  var LIVE=[
  ];
  var GLOBAL=[
-  {loc:"index.html:164",msg:"textarea:focus,input:focus,select:focus uses :focus not :focus-visible — ring shows on mouse click, not just keyboard nav"},
-  {loc:"index.html:1023",msg:"No skip-to-main-content link before <main class=\"mainpane\">"},
-  {loc:"index.html:1–9",msg:"No <meta name=\"theme-color\"> in <head> — mobile browser chrome won’t match the page background"},
-  {loc:"index.html:140",msg:".btn has no touch-action:manipulation — double-tap-zoom delay on mobile, app-wide"},
-  {loc:"index.html:453",msg:"-webkit-tap-highlight-color only set on .tabitem, not on .btn or the clickable divs — inconsistent"},
-  {loc:"index.html:1147",msg:"Cohort signal matrix table renders all 87 students into <tbody>, no virtualization"},
-  {loc:"index.html:1582",msg:"vFiles() renders all 87 student-file cards, no virtualization or pagination"},
-  {loc:"index.html:2089",msg:"vDim() RAG groups render every matching student uncapped, except “good” (soft-capped at 6)"},
-  {loc:"index.html:2221",msg:"vCohort() roster renders up to 87 rows, no virtualization"},
-  {loc:"index.html:4632",msg:"“Getting a head start” switch (.tog/.tog.on) has no CSS rule anywhere in the file — visually dead, gives no on/off indication even though it is now keyboard-operable and announces its state via aria-checked"}
+  {loc:"index.html:1075",msg:"Cohort signal matrix is a real <table>; content-visibility:auto doesn't reliably apply to table rows (no layout containment on display:table-row), so its 87 <tr> rows are still unvirtualized. vFiles/vDim/vCohort (div-based) got content-visibility:auto — this one needs either restructuring off <table> or a real virtualization library."}
  ];
 
  function svgEsc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
