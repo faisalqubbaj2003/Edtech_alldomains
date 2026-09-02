@@ -44,6 +44,34 @@
  --monitor:var(--mute); --monitorSoft:var(--mute-bg); --navy:var(--nav); --blue:var(--info); --blueSoft:var(--info-bg);
  --violetSoft:var(--violet-bg); --violetDeep:#5925DC;
 }
+/* ══════════ STUDENT DARK MODE ══════════
+   Scoped to the student role only (see draw(): document.documentElement.dataset.role),
+   and only when the OS is in dark mode — no manual toggle. Every value here is a
+   redefinition of an existing token, so every component that already reads the
+   token system (which is all of them, after the tokenization pass) picks this up
+   with no further changes. Base neutrals and the --ink-2/3/4 text ramp reuse the
+   exact grays this file's own sidebar/top-bar chrome already ships (--nav, --nav-2,
+   --nav-line, --nav-txt, --nav-txt-2) for continuity with what's already proven to
+   read well on a dark surface here. */
+@media (prefers-color-scheme:dark){
+ html[data-role="student"]{
+  --bg:#0C111D; --surface:#1E293B; --surface-2:#172033; --surface-3:#111827;
+  --ink:#F1F5F9; --ink-2:#CBD5E1; --ink-3:#94A3B8; --ink-4:#64748B;
+  --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.12); --line-3:rgba(255,255,255,.16);
+  --violet:#A78BFA; --violet-light:#C4B5FD; --violet-bg:#241E42; --violet-bg-2:#1C1830; --violet-line-2:#4C3D80;
+  --rose:#F472B6; --rose-2:#F9A8D4; --rose-bg:#3D1F30; --rose-bg-2:#2E1826; --rose-line:#6B3355; --rose-line-2:#5A2B47;
+  --warn:#FDB022; --warn-bg:#3A2A0A; --warn-line:#7A5D1E; --warn-line-2:#6B5420; --warn-ink:#FDE68A;
+  --ok:#34D399; --ok-bg:#0B2A1F; --ok-line:#1F5F45; --ok-ink:#6EE7B7;
+  --info:#60A5FA; --info-bg:#17253F; --info-line:#2D4A73; --info-ink:#93C5FD;
+  --crit:#F87171; --crit-bg:#3A1518; --crit-line:#7A2E33;
+  --glass-bg:rgba(12,17,29,.86);
+  --sh-xs:0 1px 2px rgba(0,0,0,.3);
+  --sh-sm:0 1px 3px rgba(0,0,0,.4),0 1px 2px rgba(0,0,0,.3);
+  --sh-md:0 4px 8px -2px rgba(0,0,0,.4),0 2px 4px -2px rgba(0,0,0,.3);
+  --sh-lg:0 12px 16px -4px rgba(0,0,0,.4),0 4px 6px -2px rgba(0,0,0,.3);
+  --sh-xl:0 20px 24px -4px rgba(0,0,0,.5),0 8px 8px -4px rgba(0,0,0,.3);
+ }
+}
 *{box-sizing:border-box;margin:0}
 html,body{height:100%}
 body{
@@ -91,7 +119,7 @@ body{
 .concerncard{cursor:pointer;transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .18s ease,border-color .18s ease}
 .concerncard:hover{transform:translateY(-1px);box-shadow:var(--sh-md);border-color:var(--line-3)}
 .concerncard:active{transform:translateY(0);box-shadow:var(--sh-xs)}
-.glass{background:rgba(247,248,250,.86);backdrop-filter:saturate(180%) blur(16px);-webkit-backdrop-filter:saturate(180%) blur(16px)}
+.glass{background:var(--glass-bg,rgba(247,248,250,.86));backdrop-filter:saturate(180%) blur(16px);-webkit-backdrop-filter:saturate(180%) blur(16px)}
 .shadowbar{background:linear-gradient(180deg,#FFFAEB,#FEF6E4);border:1px solid var(--warn-line)!important}
 
 /* ══════════ BUTTONS ══════════ */
@@ -5298,6 +5326,7 @@ function modalEl(){
 
 /* ═══════════ RENDER ═══════════ */
 function draw(){
+ document.documentElement.dataset.role=S.role;
  let body="",sb="";
  PARENT_ME=FAMILY_STUDENT_ID[S.previewGrade||12]||"s3";
  PMSGS=PMSGS_BY_GRADE[S.previewGrade||12]||PMSGS_BY_GRADE[12];
