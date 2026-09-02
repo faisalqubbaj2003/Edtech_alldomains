@@ -19,7 +19,7 @@
  /* brand */
  --brand:#0E9384; --brand-2:#0B7D70; --brand-3:#F0FDF9; --brand-4:#CCFBEF;
  /* semantic */
- --crit:#D92D20; --crit-bg:#FEF3F2; --crit-line:#FECDCA;
+ --crit:#D92D20; --crit-bg:#FEF3F2; --crit-line:#FECDCA; --crit-ink:#912018;
  --warn:#DC6803; --warn-bg:#FFFAEB; --warn-line:#FEDF89; --warn-line-2:#EDD9A6; --warn-ink:#7A5504;
  --ok:#079455;   --ok-bg:#ECFDF3;   --ok-line:#ABEFC6; --ok-ink:#05603A;
  --info:#175CD3; --info-bg:#EFF8FF; --info-line:#B2DDFF; --info-ink:#0B4A8F;
@@ -63,7 +63,7 @@
   --warn:#FDB022; --warn-bg:#3A2A0A; --warn-line:#7A5D1E; --warn-line-2:#6B5420; --warn-ink:#FDE68A;
   --ok:#34D399; --ok-bg:#0B2A1F; --ok-line:#1F5F45; --ok-ink:#6EE7B7;
   --info:#60A5FA; --info-bg:#17253F; --info-line:#2D4A73; --info-ink:#93C5FD;
-  --crit:#F87171; --crit-bg:#3A1518; --crit-line:#7A2E33;
+  --crit:#F87171; --crit-bg:#3A1518; --crit-line:#7A2E33; --crit-ink:#FDA29B;
   --glass-bg:rgba(12,17,29,.86);
   --sh-xs:0 1px 2px rgba(0,0,0,.3);
   --sh-sm:0 1px 3px rgba(0,0,0,.4),0 1px 2px rgba(0,0,0,.3);
@@ -583,12 +583,13 @@ const STUDENTS=[
   flags:["UCAT booking unconfirmed","Personal statement stalled 21 days"]},
  stage:"triage",lastContact:"6 weeks ago",openedBy:"System · engagement decay rule",opened:"12 Nov, 07:04"},
 
-{id:"s3",name:"Sara Al Mansoori",yr:"Grade 12",av:"SA",grade:12,track:"IB",prio:"review",owner:"Ms. Haddad",goal:"Investment Banking",gpa:"3.9",pred:"A*AA",
+{id:"s3",name:"Sara Al Mansoori",yr:"Grade 12",av:"SA",grade:12,track:"IB",prio:"review",owner:"Ms. Haddad",goal:"Investment Banking",gpa:"3.9",pred:"39/45",
  headline:"University list has no safety school with 18 days to the UCAS deadline; personal statement stalled at draft 2.",
  plain:"Sara is academically secure and highly engaged. This is a university-journey structural risk only: her list has no floor. The reality-check rule applies — add, do not subtract.",
  signal:91,window:"11 days",severity:"Medium",nocause:false,
  context:["Academic, attendance and behaviour all within baseline","High platform engagement — active 2 hours ago","Mentor session completed 1 week ago"],
  baselines:{university:{label:"Application completeness",band:[50,100],series:[20,35,48,60,62,62,62,62],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:5},
+  attendance:{label:"Attendance",band:[95,100],series:[99,98,100,98,99,97,98,98],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:99},
   academic:{label:"Overall attainment",band:[85,98],series:[92,90,93,91,94,92,93,93],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:99}},
  evidence:[
   {dom:"university",src:"University Journey OS",date:"Live",txt:"List balance is 1 reach, 3 match, 0 safety. School policy threshold is a minimum of 1 safety by T-21 days.",w:48},
@@ -762,7 +763,7 @@ ivs:JSON.parse(JSON.stringify(INTERVENTIONS)),
 audit:JSON.parse(JSON.stringify(AUDIT)),
 toast:null,modal:null,cpQ:null,cpA:null,cpLoad:false,
 letter:"idle",thresh:{acad:2,att:3,eng:14,persist:3},
-sortBy:"prio",noteDraft:"",selSlot:null,
+sortBy:"prio",noteDraft:{},caseNotes:{},escReason:"",selSlot:null,
 uniOpen:"",pmTopic:"",pmSlot:null,pmNote:"",pathDegree:"",pathCountry:"UK",previewGrade:12,previewTrack:"IB",earlyStart:false,
 discoverStage:null,onbStep:0,onbAnswers:{},chatLog:[],chatStep:0,rankedArchetypes:null,selectedArchetypes:[],pathwaysSubmitted:false,activeArchetype:null,roadmapProgress:{},
 fileId:null,fileTab:"synth",
@@ -773,6 +774,10 @@ pathDone:{},lettered:false,
 palOpen:false,palQuery:"",palActiveIndex:0,palResults:[]};
 const R=document.getElementById("root");
 const g=id=>S.cases.find(c=>c.id===id);
+/* Attendance is quoted to the parent and to the student on separate screens.
+   Both read it here so the same girl cannot be 98% to her father and 97% to
+   herself, which is what two different fallback literals used to produce. */
+function attPct(c){const b=c&&c.baselines&&c.baselines.attendance;return b?b.series[b.series.length-1]:null;}
 function toast(m,ms){S.toast=m;draw();setTimeout(()=>{S.toast=null;draw();},ms||2600);}
 function confettiBurst(){
  const colors=['#0E9384','#6938EF','#F79009','#17B26A','#F04438','#2E90FA'];
@@ -1292,8 +1297,13 @@ function vCase(c){
       <button class="btn btn-g btn-sm" data-assignopen="${c.id}">${ic('users',13)} Reassign…</button>
      </div>
      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line)">
-      <button class="btn btn-u" data-act="escalate:${c.id}" style="width:100%">${ic('shield',15)} Escalate to DSL</button>
-      <div style="font-size:10.3px;color:var(--inkMute);line-height:1.45;margin-top:6px">Escalation routes immediately to ${SCHOOL.dsl} under school safeguarding policy and writes to the audit log. CAROS never makes this decision for you.</div>
+      ${c.escalated?`<div style="border:1px solid var(--crit);border-radius:10px;padding:12px 14px;background:var(--crit-bg)">
+       <div style="display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--crit-ink)">${ic('shield',14)} Escalated to ${c.escalated.to}</div>
+       <div style="font-size:11px;color:var(--crit-ink);margin-top:5px;line-height:1.5">${c.escalated.when} · ${c.escalated.by}</div>
+       <div style="font-size:11.5px;color:var(--crit-ink);margin-top:7px;line-height:1.55">"${c.escalated.reason}"</div>
+       <div style="font-size:10.3px;color:var(--inkMute);margin-top:8px;line-height:1.45">Already routed. A second escalation would duplicate the referral — add anything further as a case note, or contact ${SCHOOL.dsl} directly.</div>
+      </div>`:`<button class="btn btn-u" data-escalateopen="${c.id}" style="width:100%">${ic('shield',15)} Escalate to DSL…</button>
+      <div style="font-size:10.3px;color:var(--inkMute);line-height:1.45;margin-top:6px">Routes to ${SCHOOL.dsl} under school safeguarding policy and writes a permanent audit entry. You will see exactly what is sent before anything leaves this screen. CAROS never makes this decision for you.</div>`}
      </div>
     </div>
    </div>
@@ -1302,8 +1312,13 @@ function vCase(c){
    ${voiceCard(c)}
    <div class="card" style="padding:18px">
     <h3 class="sechead">${ic('pencil',13)} Counselor note</h3>
-    <textarea placeholder="What you observed, what you agreed, what happens next…" style="width:100%;min-height:78px;border:1px solid var(--line);border-radius:10px;padding:11px;font-size:12.3px;line-height:1.55;resize:vertical;color:var(--ink)"></textarea>
-    <button class="btn btn-g btn-sm" data-toast="Note saved to the case · visible to counselor role only" style="width:100%;margin-top:8px">Save note</button>
+    ${(S.caseNotes[c.id]||[]).length?`<div style="margin-bottom:12px;display:flex;flex-direction:column;gap:9px">
+     ${S.caseNotes[c.id].map(n=>`<div style="border-left:1px solid var(--line-3);padding:1px 0 1px 11px">
+      <div style="font-size:12.3px;color:var(--ink);line-height:1.55">${n.txt}</div>
+      <div class="mono" style="font-size:10.3px;color:var(--inkMute);margin-top:4px">${n.when} · ${n.by}</div></div>`).join('')}
+    </div>`:''}
+    <textarea id="casenote" data-casenote="${c.id}" placeholder="What you observed, what you agreed, what happens next…" style="width:100%;min-height:78px;border:1px solid var(--line);border-radius:10px;padding:11px;font-size:12.3px;line-height:1.55;resize:vertical;color:var(--ink);font-family:inherit">${S.noteDraft[c.id]||''}</textarea>
+    <button class="btn btn-g btn-sm" data-casenotesave="${c.id}" ${(S.noteDraft[c.id]||'').trim()?'':'disabled'} style="width:100%;margin-top:8px">${(S.noteDraft[c.id]||'').trim()?'Save note to the case':'Write a note to save'}</button>
     <div style="font-size:10.3px;color:var(--inkMute);margin-top:7px;line-height:1.45">Staff-only. Not visible to the student, and never used outside its authorised purpose.</div>
    </div>
   </div>
@@ -1454,6 +1469,28 @@ const CPQ=[
  {q:"Which Grade 12 students still have no safety university?",a:"<b>Ahmed Khalifa</b> — three reaches, no match or safety. Highest structural risk in the cohort with 18 days to the UCAS deadline.<br><br><b>Sara Al Mansoori</b> — one reach and three matches, but no true safety. Lower risk than Ahmed because her matches sit at 81–88%.<br><br>Recommended framing for both: add a floor, keep the ambition."},
  {q:"Prepare a 60-second briefing before my meeting with Ahmed.",a:"<b>Ahmed Khalifa · Grade 12 · Mechanical Engineering</b><br><br>Three domains moved in two weeks. Maths went from a stable A/A* to 41%. Three lates in ten days against a baseline of nearly none. Mr. Davies submitted a concern on 11 Nov describing him as unusually withdrawn and tired.<br><br>No authorised absence on file, not an exam period, no subject change. He has not asked for help and has not self-reported anything.<br><br><b>Suggested opening:</b> open-ended and low-stakes. Do not lead with the grade. Something like \"I wanted to check in — how have the last couple of weeks been?\"<br><br><b>Do not</b> speculate on cause in the meeting. Separately, his university list has no floor, but that is a second conversation, not this one."},
  {q:"Which interventions from last month have not yet been followed up?",a:"<b>All October interventions are closed.</b> Maryam Al Suwaidi's case, opened 4 Oct, resolved on 7 Nov after 34 days with sustained recovery — attendance came back from 79% to 98% and held for three weeks.<br><br>Currently open: three cases, all opened within the last 48 hours. Ahmed and Layla are due within two school days, Sara by 20 Nov. Follow-up completion this term is 92%."}];
+/* Match a typed question to a prepared answer on real token overlap.
+   The previous version compared the first twelve characters of the query
+   against each canned question, so "Which students are doing well?" matched
+   "Which students have had a major academic anomaly…" and the co-pilot named
+   specific children in answer to a question nobody asked. Answering the wrong
+   question confidently is worse here than answering none, so the bar is
+   deliberately high and a near-miss falls through to the no-match reply. */
+const CPQ_STOP=new Set(["the","a","an","and","or","of","in","on","at","to","for","with","is","are","was","were","be","been","has","have","had","do","does","did","my","me","i","you","your","this","that","these","those","which","what","who","whom","whose","show","list","tell","give","any","all","from","by","about","how","many","much","can","could","would","should","please","up","out","not","no","yet","still","their","there","it","its"]);
+function cpqTokens(t){return (t.toLowerCase().match(/[a-z0-9']+/g)||[]).filter(w=>w.length>2&&!CPQ_STOP.has(w));}
+function cpqMatch(v){
+ const asked=cpqTokens(v);
+ if(asked.length<2)return null;
+ let best=null,bestScore=0;
+ CPQ.forEach(x=>{
+  const known=new Set(cpqTokens(x.q));
+  const hits=asked.filter(w=>known.has(w)).length;
+  const score=hits/asked.length;
+  if(hits>=2&&score>=0.5&&score>bestScore){best=x;bestScore=score;}
+ });
+ return best;
+}
+
 function vCopilot(){
  return `<div class="fade">
  ${head("AI Co-pilot","Interrogate the cohort in plain language","Ask across your assigned students. Every answer shows its evidence, and every draft is labelled and editable. No external message is ever sent without your confirmation.","var(--teal)","spark")}
@@ -2250,7 +2287,7 @@ function vCohort(){
 const TEACHER={name:"Mr. J. Davies",subject:"Mathematics",av:"JD",
  classes:[
   {id:"c1",code:"12A/Ma1",label:"Grade 12 Mathematics: Analysis & Approaches HL",period:"P2",students:["s1","s2","s3","s4","s5","s6"],enrolled:6,avg:87},
-  {id:"c2",code:"11B/Ma2",label:"Grade 11 Mathematics: Analysis & Approaches SL",period:"P4",students:["s9","s10","s11"],enrolled:3,avg:84},
+  {id:"c2",code:"11B/Ma2",label:"Grade 11 Mathematics",period:"P4",students:["s9","s10","s11"],enrolled:3,avg:84},
   {id:"c3",code:"10C/Ma3",label:"Grade 10 Mathematics (Foundation)",period:"P6",students:["s12","s13","s14","s15"],enrolled:4,avg:79}
  ]};
 
@@ -2276,6 +2313,28 @@ let TFLAGS=[
 
 function tflagCounts(){return{concern:TFLAGS.filter(f=>f.kind==="concern").length,
  positive:TFLAGS.filter(f=>f.kind==="positive").length,note:TFLAGS.filter(f=>f.kind==="note").length};}
+
+/* ── Teacher: what I've logged, and what happened next ──
+   Ported from the Phase-4 lineage (39defe5). The teacher nav item routed here
+   with no function defined, so draw() threw before writing R.innerHTML and the
+   whole item was silently dead. Filters on the signed-in teacher rather than a
+   hardcoded surname so it survives TEACHER changing. */
+function vTLog(){
+ const mine=TFLAGS.filter(f=>f.by.indexOf(TEACHER.name.split(" ").slice(-1)[0])>-1);
+ return `<div class="fade">
+ ${head("After you flag something","Every entry, and what happened next","A record of what you have raised this term and how the counselor acted on it — so nothing you flag disappears into a form you never hear back from.","var(--brand)","list")}
+ <div class="card" style="padding:16px 18px">
+  ${mine.length?mine.map(f=>{
+   const K=FLAG_KINDS.find(k=>k.k===f.kind)||FLAG_KINDS[0];
+   const routed=f.routed?`<div style="font-size:11px;color:var(--ok);margin-top:5px;display:flex;align-items:center;gap:5px">${ic('checkC',12)} ${f.routed}</div>`
+    :`<div style="font-size:11px;color:var(--ink-4);margin-top:5px;display:flex;align-items:center;gap:5px">${ic('clock',12)} With the counselor — you will be told what happened with it.</div>`;
+   return `<div style="padding:11px 0;border-bottom:1px solid var(--line)">
+    <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:4px">
+     <b style="font-size:12.5px">${f.student}</b>${chip(K.short,K.c,K.bg)}
+     <span style="font-size:11px;color:var(--ink-4);margin-left:auto">${f.when}</span></div>
+    <div style="font-size:12px;color:var(--ink-2);line-height:1.5">${f.txt}</div>${routed}</div>`;
+  }).join(''):`<div style="font-size:12.3px;color:var(--ink-3);line-height:1.6">Nothing logged yet this term. When you flag something from your register, it appears here with what the counselor did about it.</div>`}
+ </div></div>`;}
 
 /* ── Teacher: my classes overview ── */
 function vTMyClasses(){
@@ -2303,14 +2362,7 @@ function vTMyClasses(){
      </div>
     </div>
 
-    <div style="display:flex;gap:12px">
-     <button data-tnav="class" style="flex:1;padding:10px;background:var(--brand);color:white;border:none;border-radius:var(--r);font-weight:600;cursor:pointer;font-size:12px">
-      Open Register
-     </button>
-     <button style="flex:1;padding:10px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:var(--r);font-weight:600;cursor:pointer;font-size:12px">
-      Grades
-     </button>
-    </div>
+    <button class="btn btn-p btn-sm" data-tnav="class" style="width:100%">${ic('users',14)} Open register</button>
    </div>`).join('')}
   </div>
  </div>`;}
@@ -2387,7 +2439,14 @@ const PARENTS={
  s11:{name:"Mrs. Noor Al Otaibi",av:"NA",rel:"Mother",email:"n.alotaibi@email.ae",phone:"+971 50 998 3315",lang:"Arabic / English",pref:"Phone call",consent:true}};
 function parentOf(id){return PARENTS[id]||{name:"Parent / guardian on file",rel:"Guardian",email:"—",phone:"—",lang:"English",pref:"Email",consent:true};}
 
-const FAMILY_STUDENT_ID={9:"s9",10:"s10",11:"s11",12:"s3"}; const DISCOVER_TRANSIENT={}; const SURVEY_COMPLETE={}; /* each grade is designated to its own real student */
+const FAMILY_STUDENT_ID={9:"s9",10:"s10",11:"s11",12:"s3"}; const DISCOVER_TRANSIENT={}; /* each grade is designated to its own real student */
+/* The four demo students already have accounts, so they are past the intro
+   questions. Without this every grade opens on the quiz and demoing all four
+   costs 36 questions before anyone sees the portal. The questions stay
+   reachable from My Pathway, and any student not listed here still meets the
+   gate on first sign-in. */
+const SURVEY_COMPLETE={s3:true,s9:true,s10:true,s11:true};
+const SURVEY_SKIPPED={};
 let PARENT_ME="s3"; /* resolved dynamically each render based on the selected grade */
 
 /* Each family has its own real conversation, appropriate to their actual stage. */
@@ -2431,7 +2490,7 @@ const PARENT_ACHIEVEMENTS_BY_GRADE={
 /* This week's guidance — specific and actionable, not generic advice */
 const HELP_THIS_WEEK = {
  headline:"Her personal statement could use a calm conversation this weekend",
- detail:"Sara's statement is 62% complete with 18 days to the UCAS deadline. She's strongest when talking about the trade-policy project — asking her to walk you through what she found, out loud, often helps her find the words to write it down.",
+ detail:"Sara's application pack is 62% complete with 18 days to the UCAS deadline, and her personal statement has sat at draft 2 for eleven days. She's strongest when talking about the trade-policy project — asking her to walk you through what she found, out loud, often helps her find the words to write it down.",
  secondary:"She also doesn't have a safety school on her list yet. If it comes up naturally, a gentle nudge to add one alongside LSE would help — she wouldn't be lowering her ambition, just giving herself a floor.",
  topic:"uni"};
 
@@ -2793,32 +2852,46 @@ function getStudentClasses(sid){
  
  // For grades 10-12 that currently have classes, show their current classes
  // For grade 9, show available options
- if(grade===12){
+ /* Courses follow the student's own track, not their grade. The Grade 11
+    list used to be six IB subjects regardless, which handed an AP student a
+    diploma he is not taking. IB subjects are scored 1-7 the way the rest of
+    the product scores them; AP courses carry a school percentage, because
+    Fahad has not sat an AP exam yet. */
+ if(grade===12&&student.track==="IB"){
   return [
-   {code:"Ma1",name:"IB Mathematics: Analysis & Approaches HL",teacher:"Mr. Yilmaz",period:"P2",grade:88,avg:87,pathway:"IB",required:{lse:true,imperial:true,cambridge:true}},
-   {code:"Ec1",name:"IB Economics HL",teacher:"Ms. Fahri",period:"P4",grade:92,avg:90,pathway:"IB",required:{lse:true,nyu:true}},
-   {code:"En1",name:"IB English Literature HL",teacher:"Mr. Adeyemi",period:"P6",grade:84,avg:86,pathway:"IB",required:{lse:true,ucl:false}},
-   {code:"Bu1",name:"IB Business Management SL",teacher:"Mr. Haddad",period:"P1",grade:89,avg:88,pathway:"IB",required:{lse:false,nyu:true}},
-   {code:"Ar1",name:"Arabic B SL",teacher:"Ms. Nasser",period:"P3",grade:85,avg:85,pathway:"IB",required:{}},
-   {code:"Ph1",name:"IB Physics SL",teacher:"Dr. Reid",period:"P5",grade:81,avg:82,pathway:"IB",required:{imperial:true}}
+   {code:"Ma1",name:"IB Mathematics: Analysis & Approaches HL",teacher:"Mr. Yilmaz",period:"P2",grade:6,avg:5,scale:"ib",pathway:"IB",required:{lse:true,imperial:true,cambridge:true}},
+   {code:"Ec1",name:"IB Economics HL",teacher:"Ms. Fahri",period:"P4",grade:7,avg:5,scale:"ib",pathway:"IB",required:{lse:true,nyu:true}},
+   {code:"En1",name:"IB English Literature HL",teacher:"Mr. Adeyemi",period:"P6",grade:6,avg:5,scale:"ib",pathway:"IB",required:{lse:true,ucl:false}},
+   {code:"Bu1",name:"IB Business Management SL",teacher:"Mr. Haddad",period:"P1",grade:6,avg:5,scale:"ib",pathway:"IB",required:{lse:false,nyu:true}},
+   {code:"Ar1",name:"Arabic B SL",teacher:"Ms. Nasser",period:"P3",grade:6,avg:5,scale:"ib",pathway:"IB",required:{}},
+   {code:"Ph1",name:"IB Physics SL",teacher:"Dr. Reid",period:"P5",grade:5,avg:5,scale:"ib",pathway:"IB",required:{imperial:true}}
   ];
- } else if(grade===11){
+ } else if(grade>=11&&student.track==="AP"){
   return [
-   {code:"Ma2",name:"IB Mathematics: Analysis & Approaches HL",teacher:"Mr. Yilmaz",period:"P1",grade:87,avg:86,pathway:"IB",required:{lse:true,imperial:true}},
-   {code:"Ph2",name:"IB Physics HL",teacher:"Dr. Reid",period:"P2",grade:84,avg:83,pathway:"IB",required:{imperial:true}},
-   {code:"Ch2",name:"IB Chemistry SL",teacher:"Dr. Chen",period:"P3",grade:86,avg:85,pathway:"IB",required:{ucl:true}},
-   {code:"Hi2",name:"IB History HL",teacher:"Ms. Sharma",period:"P4",grade:89,avg:88,pathway:"IB",required:{lse:true}},
-   {code:"En2",name:"IB English Literature HL",teacher:"Mr. Adeyemi",period:"P5",grade:85,avg:84,pathway:"IB",required:{lse:true}},
-   {code:"Sp2",name:"IB Spanish B SL",teacher:"Ms. Garcia",period:"P6",grade:88,avg:87,pathway:"IB",required:{}}
+   {code:"Ma2",name:"AP Calculus BC",teacher:"Mr. Yilmaz",period:"P1",grade:88,avg:84,scale:"pct",pathway:"AP",required:{imperial:true}},
+   {code:"Cs2",name:"AP Computer Science A",teacher:"Mr. Patel",period:"P2",grade:91,avg:83,scale:"pct",pathway:"AP",required:{}},
+   {code:"Ph2",name:"AP Physics C: Mechanics",teacher:"Dr. Reid",period:"P3",grade:84,avg:81,scale:"pct",pathway:"AP",required:{imperial:true}},
+   {code:"St2",name:"AP Statistics",teacher:"Ms. Sharma",period:"P4",grade:87,avg:85,scale:"pct",pathway:"AP",required:{}},
+   {code:"En2",name:"AP English Language & Composition",teacher:"Mr. Adeyemi",period:"P5",grade:85,avg:84,scale:"pct",pathway:"AP",required:{}},
+   {code:"Ar2",name:"Arabic B",teacher:"Ms. Nasser",period:"P6",grade:86,avg:85,scale:"pct",pathway:"AP",required:{}}
+  ];
+ } else if(grade>=11){
+  return [
+   {code:"Ma2",name:"IB Mathematics: Analysis & Approaches HL",teacher:"Mr. Yilmaz",period:"P1",grade:6,avg:5,scale:"ib",pathway:"IB",required:{lse:true,imperial:true}},
+   {code:"Ph2",name:"IB Physics HL",teacher:"Dr. Reid",period:"P2",grade:5,avg:5,scale:"ib",pathway:"IB",required:{imperial:true}},
+   {code:"Ch2",name:"IB Chemistry SL",teacher:"Dr. Chen",period:"P3",grade:6,avg:5,scale:"ib",pathway:"IB",required:{ucl:true}},
+   {code:"Hi2",name:"IB History HL",teacher:"Ms. Sharma",period:"P4",grade:6,avg:5,scale:"ib",pathway:"IB",required:{lse:true}},
+   {code:"En2",name:"IB English Literature HL",teacher:"Mr. Adeyemi",period:"P5",grade:6,avg:5,scale:"ib",pathway:"IB",required:{lse:true}},
+   {code:"Sp2",name:"IB Spanish B SL",teacher:"Ms. Garcia",period:"P6",grade:6,avg:5,scale:"ib",pathway:"IB",required:{}}
   ];
  } else if(grade===10){
   return [
-   {code:"Ma3",name:"Mathematics Grade 10",teacher:"Mr. Yilmaz",period:"P1",grade:85,avg:84,pathway:"Standard",required:{}},
-   {code:"Bi3",name:"Biology Grade 10",teacher:"Dr. Reid",period:"P2",grade:82,avg:81,pathway:"Standard",required:{}},
-   {code:"Hi3",name:"History Grade 10",teacher:"Ms. Sharma",period:"P3",grade:88,avg:87,pathway:"Standard",required:{}},
-   {code:"En3",name:"English Grade 10",teacher:"Mr. Adeyemi",period:"P4",grade:86,avg:85,pathway:"Standard",required:{}},
-   {code:"Fr3",name:"French Grade 10",teacher:"Ms. Laurent",period:"P5",grade:84,avg:83,pathway:"Standard",required:{}},
-   {code:"Cs3",name:"Computer Science Grade 10",teacher:"Mr. Patel",period:"P6",grade:79,avg:78,pathway:"Standard",required:{}}
+   {code:"Ma3",name:"Mathematics Grade 10",teacher:"Mr. Yilmaz",period:"P1",grade:85,avg:84,scale:"pct",pathway:"Standard",required:{}},
+   {code:"Bi3",name:"Biology Grade 10",teacher:"Dr. Reid",period:"P2",grade:82,avg:81,scale:"pct",pathway:"Standard",required:{}},
+   {code:"Hi3",name:"History Grade 10",teacher:"Ms. Sharma",period:"P3",grade:88,avg:87,scale:"pct",pathway:"Standard",required:{}},
+   {code:"En3",name:"English Grade 10",teacher:"Mr. Adeyemi",period:"P4",grade:86,avg:85,scale:"pct",pathway:"Standard",required:{}},
+   {code:"Fr3",name:"French Grade 10",teacher:"Ms. Laurent",period:"P5",grade:84,avg:83,scale:"pct",pathway:"Standard",required:{}},
+   {code:"Cs3",name:"Computer Science Grade 10",teacher:"Mr. Patel",period:"P6",grade:79,avg:78,scale:"pct",pathway:"Standard",required:{}}
   ];
  } else {
   // Grade 9 - show all available courses for selection
@@ -2850,7 +2923,7 @@ function vStuClasses(){
   ${hasGrades?`<div class="card" style="padding:0;overflow:hidden;margin-bottom:24px">
    <div style="background:linear-gradient(135deg, var(--violet-bg) 0%, rgba(155,140,255,.04) 100%);padding:18px;border-bottom:1px solid var(--line)">
     <div style="font-weight:600;color:var(--violet-2);font-size:12px;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px">Current courses (Grade ${grade})</div>
-    <div style="font-size:13px;color:var(--ink)">${classes.length} courses taken · Average: ${Math.round(classes.reduce((a,b)=>a+(b.avg||0),0)/classes.length)}%</div>
+    <div style="font-size:13px;color:var(--ink)">${classes.length} courses taken · ${classes[0].scale==="ib"?"Predicted total: "+classes.reduce((a,b)=>a+(b.grade||0),0)+" / 42 subject points":"Average: "+Math.round(classes.reduce((a,b)=>a+(b.avg||0),0)/classes.length)+"%"}</div>
    </div>
    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1px;background:var(--line)">
     ${classes.map((cl,i)=>`<div style="background:white;padding:14px;border-bottom:${i<classes.length-1?'1px solid var(--line)':'none'}">
@@ -2858,8 +2931,8 @@ function vStuClasses(){
      <div style="font-size:11px;color:var(--ink-3);margin-bottom:8px">${cl.teacher} · Period ${cl.period}</div>
      ${cl.grade?`<div style="display:flex;gap:12px;align-items:center">
       <div style="display:flex;align-items:center;gap:6px">
-       <div style="font-size:18px;font-weight:700;color:var(--violet)">${cl.grade}%</div>
-       <div style="font-size:10px;color:var(--ink-3)">avg ${cl.avg}%</div>
+       <div style="font-size:18px;font-weight:700;color:var(--violet)">${cl.scale==="ib"?cl.grade:cl.grade+"%"}</div>
+       <div style="font-size:10px;color:var(--ink-3)">${cl.scale==="ib"?"of 7 · cohort "+cl.avg:"avg "+cl.avg+"%"}</div>
       </div>
      </div>`:""}
     </div>`).join('')}
@@ -3395,6 +3468,8 @@ function vOnboardQuiz(){
    <button class="btn" style="flex:1;background:var(--violet);color:#fff" data-onb-next="1" ${canNext?'':'disabled'}>
     ${step===total-1?'See what this reveals':'Continue'} ${ic('arrowR',15)}</button>
   </div>
+  <button data-onb-skip="1" style="display:block;margin:16px auto 0;background:none;border:none;cursor:pointer;font-family:inherit;font-size:12.5px;color:var(--ink-3);text-decoration:underline;text-underline-offset:3px;padding:6px">Skip for now — I'll answer these later</button>
+  <div style="text-align:center;font-size:11.5px;color:var(--ink-4);margin-top:6px;line-height:1.5">Nothing here is mandatory. Your answers${step>0?' so far':''} are kept, and the questions stay on My Pathway.</div>
  </div>`;}
 
 
@@ -3412,7 +3487,7 @@ const UNIVERSAL_Q=[
  {id:"nomoney",text:()=>"If money genuinely wasn't a factor at all, would your answer change? Be honest either way."},
  {id:"academic",text:(c)=>{
    const strong=c.gpa&&parseFloat(c.gpa)>=3.7?"a genuinely strong academic record":"a solid record";
-   return `I can also see your actual profile here — ${strong}${c.pred&&c.pred!=="—"?", predicted "+c.pred:""}, attendance around ${c.baselines&&c.baselines.attendance?c.baselines.attendance.series[7]:97}%, currently in ${c.yr}. Does that match where your real interest is, or is there a gap between what you're good at and what you actually want?`;}},
+   return `I can also see your actual profile here — ${strong}${c.pred&&c.pred!=="—"?", predicted "+c.pred:""}, attendance around ${attPct(c)!==null?attPct(c):"—"}%, currently in ${c.yr}. Does that match where your real interest is, or is there a gap between what you're good at and what you actually want?`;}},
  {id:"conviction",text:()=>"How sure do you feel about this right now, on a scale from 'just curious' to 'this is really it'? And why that number?"}
 ];
 
@@ -3885,6 +3960,7 @@ function vDiscoverFlow(){
  }
  if(S.discoverStage==="proposals")return `<div class="fade">${vPathwayProposals()}</div>`;
  if(S.discoverStage==="chat")return `<div class="fade">${vDiscoveryChat()}</div>`;
+ const introDone=!SURVEY_SKIPPED[PARENT_ME];
  const passionSnippet=(S.onbAnswers&&S.onbAnswers.passions&&S.onbAnswers.passions.trim().length>8)
    ?`You told me about "${S.onbAnswers.passions.trim().slice(0,90)}${S.onbAnswers.passions.trim().length>90?'…':''}" when you first joined — that's a good starting point, `
    :"";
@@ -3920,6 +3996,8 @@ function vDiscoverFlow(){
   <div style="text-align:center">
    <button class="btn" style="background:linear-gradient(135deg,var(--violet-light),var(--violet));color:#fff;padding:14px 32px;border-radius:12px;font-weight:600;box-shadow:0 4px 16px rgba(105,56,239,.35);font-size:15px" data-start-discover="1">${ic('arrowR',18)} Begin your discovery</button>
    <div style="font-size:12px;color:var(--ink-4);margin-top:14px">There's no rush — come back whenever you're ready. Nothing here is mandatory.</div>
+   <button class="btn btn-g btn-sm" data-onb-restart="1" style="margin-top:18px">${ic('list',14)} ${introDone?'Change your intro answers':'Finish the '+ONBOARD_Q.length+' intro questions'}</button>
+   <div style="font-size:11.5px;color:var(--ink-4);margin-top:8px;line-height:1.5;max-width:420px;margin-left:auto;margin-right:auto">${introDone?'The '+ONBOARD_Q.length+' short questions you answered when you joined. Changing them changes what the conversation starts from.':'You skipped these earlier. They are short, and they give the conversation somewhere to start.'}</div>
   </div>
  </div>`;}
 
@@ -4598,7 +4676,7 @@ function vParent(){
  tabs.sort((a,b)=>{const ord=["overview","messages","guide","grades","uni","pathway","apexams","meetings"];return ord.indexOf(a[0])-ord.indexOf(b[0]);});
  const validKeys=tabs.map(t=>t[0]);
  const pv=validKeys.includes(S.pv)?S.pv:"overview";
- const att=c.baselines.attendance?c.baselines.attendance.series[7]:98;
+ const att=attPct(c),attTxt=att===null?"—":att+"%";
  const T=(n)=>`<button class="tab ${pv===n[0]?'on':''}" data-pv="${n[0]}">${n[1]}${n[0]==='messages'&&PMSGS.length?`<span class="chip" style="background:var(--rose);color:#fff;margin-left:6px;padding:1px 6px">${PMSGS.length}</span>`:''}</button>`;
  return `<div class="fade">
  ${head("Family portal",c.name.split(" ")[0]+"'s progress","Everything the school can share with you: attendance, grades and transcripts, exactly what each university requires, and a direct line to the counselor. Private counseling notes stay between "+c.name.split(" ")[0]+" and the counselor.","var(--rose)","heart")}
@@ -4618,10 +4696,10 @@ function vParent(){
     const trackTile=c.track==="IB"?["Predicted total","39 / 45","var(--ok)"]
       :c.track==="AP"?["AP exams this year","4","var(--ok)"]
       :["Path","Deciding IB or AP","var(--ink)"];
-    if(pg===9)return[["Attendance",att+"%","var(--ok)"],["Subjects this term","7","var(--ink)"]];
-    if(pg===10)return[["Attendance",att+"%","var(--ok)"],trackTile];
-    if(pg===11)return[["Attendance",att+"%","var(--ok)"],trackTile,["Universities researched",c.uni.targets.length,"var(--ink)"]];
-    return[["Attendance",att+"%","var(--ok)"],trackTile,["Universities",c.uni.targets.length,"var(--ink)"],["Eligible for","4 of 4","var(--ok)"]];
+    if(pg===9)return[["Attendance",attTxt,"var(--ok)"],["Subjects this term","7","var(--ink)"]];
+    if(pg===10)return[["Attendance",attTxt,"var(--ok)"],trackTile];
+    if(pg===11)return[["Attendance",attTxt,"var(--ok)"],trackTile,["Universities researched",c.uni.targets.length,"var(--ink)"]];
+    return[["Attendance",attTxt,"var(--ok)"],trackTile,["Universities",c.uni.targets.length,"var(--ink)"],["Eligible for","4 of 4","var(--ok)"]];
    })()
    .map(x=>`<div class="card" style="padding:16px 18px"><div class="serif" style="font-size:24px;font-weight:600;color:${x[2]};line-height:1">${x[1]}</div>
    <div style="font-size:11.5px;color:var(--ink-3);margin-top:4px">${x[0]}</div></div>`).join('')}</div>
@@ -5031,12 +5109,16 @@ function meetModal(){
 let SREFLECT=[{txt:"Struggling to balance the statement with mocks. Would like help prioritising.",when:"2 days ago",seen:true}];
 function vStuProgress(){
  const c=g(PARENT_ME);
- const att=c.baselines.attendance?c.baselines.attendance.series[7]:97;
+ const att=attPct(c),attTxt=att===null?"—":att+"%";
  const predDisplay=c.track==="IB"?"39 / 45":c.track==="AP"?"4 exams":c.pred&&c.pred!=="—"?c.pred:"—";
+ /* Whatever the Personal Statement Lab actually holds for this student — a
+    hardcoded "62%" here is how the tile came to disagree with the Lab. */
+ const psRec=Object.values(S.psStatements||{}).find(r=>r&&r.versions&&r.versions.length);
+ const psTile=psRec?{v:"Draft "+psRec.versions.length,c:"var(--warn)"}:{v:"Not started",c:"var(--ink-3)"};
  return `<div class="fade">
  ${head("My progress","How I'm actually doing","Your grades, attendance and trajectory — the same information your counselor sees, so there are no surprises.","var(--violet)","trend")}
  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">
-  ${[["Attendance",att+"%","var(--ok)"],[c.track==="IB"?"Predicted total":c.track==="AP"?"AP exams this year":"Predicted",predDisplay,"var(--violet)"],["Statement",c.grade===12?"62%":"Not yet started","var(--warn)"]]
+  ${[["Attendance",attTxt,"var(--ok)"],[c.track==="IB"?"Predicted total":c.track==="AP"?"AP exams this year":"Predicted",predDisplay,"var(--violet)"],["Statement",psTile.v,psTile.c]]
    .map(x=>`<div class="card" style="padding:16px 18px"><div class="serif" style="font-size:24px;font-weight:600;color:${x[2]};line-height:1">${x[1]}</div>
    <div style="font-size:11.5px;color:var(--ink-3);margin-top:4px">${x[0]}</div></div>`).join('')}</div>
  <div class="card" style="padding:20px;margin-bottom:16px">
@@ -5155,6 +5237,39 @@ function mergeModal(){
    ${others.map(o=>`<button data-mergepick="case:${o.id}" style="width:100%;text-align:left;font-family:inherit;cursor:pointer;border:1px solid ${pick==='case:'+o.id?'var(--brand)':'var(--line-2)'};background:${pick==='case:'+o.id?'var(--brand-3)':'var(--surface)'};border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;gap:11px;align-items:center">
      ${av(o.av,o.prio,32,9)}<div><b style="font-size:12.5px">${o.name}</b><div style="font-size:11.3px;color:var(--ink-3)">${o.headline.slice(0,64)}…</div></div></button>`).join('')}
    <button class="btn btn-p" data-mergego="${c.id}" ${pick?'':'disabled'} style="width:100%;margin-top:14px">${ic('merge',15)} ${pick?'Confirm merge':'Choose something to merge with'}</button>
+  </div></div></div>`;}
+
+/* ── Escalation to the DSL: the one irreversible action in the counselor's
+   surface. It notifies a named safeguarding lead and writes a permanent audit
+   entry, so it gets a confirm that shows the whole referral, a required reason
+   in the counselor's own words, and a post-state that cannot double-fire. ── */
+function escalateModal(){
+ if(!S.modal||S.modal.type!=="escalate")return "";
+ const c=g(S.modal.id);if(!c)return "";
+ const reason=(S.escReason||"").trim();
+ const ok=reason.length>=12;
+ return `<div class="modalbg" data-mbg="1"><div class="modal">
+  <div style="padding:20px 22px 0">${mcloseBtn()}
+   <div class="serif" style="font-size:19px;font-weight:600">Escalate ${c.name} to the DSL</div>
+   <div style="font-size:12.3px;color:var(--ink-3);margin:4px 0 16px;line-height:1.5">This is a safeguarding referral. It cannot be undone from CAROS, and it is the only action here that reaches someone outside this screen.</div></div>
+  <div style="padding:0 22px 22px">
+   <div style="border:1px solid var(--line-2);border-radius:11px;overflow:hidden;margin-bottom:16px">
+    <div style="background:var(--surface-3);padding:9px 14px;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3)">What will be sent</div>
+    <div style="padding:13px 14px;display:flex;flex-direction:column;gap:9px;font-size:12.3px;line-height:1.5">
+     <div style="display:flex;gap:10px"><span style="width:74px;flex-shrink:0;color:var(--ink-3)">To</span><b>${SCHOOL.dsl}</b></div>
+     <div style="display:flex;gap:10px"><span style="width:74px;flex-shrink:0;color:var(--ink-3)">Student</span><span>${c.name} · ${c.yr}</span></div>
+     <div style="display:flex;gap:10px"><span style="width:74px;flex-shrink:0;color:var(--ink-3)">From</span><span>${SCHOOL.counselor}</span></div>
+     <div style="display:flex;gap:10px"><span style="width:74px;flex-shrink:0;color:var(--ink-3)">Case</span><span style="color:var(--ink-2)">${c.headline}</span></div>
+     <div style="display:flex;gap:10px"><span style="width:74px;flex-shrink:0;color:var(--ink-3)">Attached</span><span style="color:var(--ink-2)">${(c.evidence||[]).length} evidence ${(c.evidence||[]).length===1?'entry':'entries'} and the full case history</span></div>
+    </div>
+   </div>
+   <label for="escreason" style="display:block;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">Why you are escalating <span style="color:var(--crit)">· required</span></label>
+   <textarea id="escreason" data-escreason="1" placeholder="In your own words: what you are concerned about, and what prompted this now." style="width:100%;min-height:96px;border:1px solid ${reason.length&&!ok?'var(--crit)':'var(--line-2)'};border-radius:10px;padding:12px;font-size:13px;line-height:1.55;resize:vertical;color:var(--ink);font-family:inherit">${S.escReason||''}</textarea>
+   <div aria-live="polite" style="font-size:11.3px;color:${reason.length&&!ok?'var(--crit)':'var(--ink-4)'};margin-top:6px;line-height:1.45">${!reason.length?'The DSL reads this first. It becomes part of the permanent record.':ok?'This is recorded verbatim in the audit log and sent with the referral.':'A little more — the DSL needs to know what prompted this, not just that something did.'}</div>
+   <div style="display:flex;gap:9px;margin-top:18px">
+    <button class="btn btn-g" data-mclose="1" style="flex:1">Cancel</button>
+    <button class="btn btn-u" data-escalatego="${c.id}" ${ok?'':'disabled'} style="flex:1.4">${ic('shield',15)} ${ok?'Send to '+SCHOOL.dsl.split(' (')[0]:'Add a reason first'}</button>
+   </div>
   </div></div></div>`;}
 
 function assignModal(){
@@ -5381,7 +5496,6 @@ function draw(){
   if(S.open)body2=vCase(g(S.open));
   else if(S.fileId)body2=vFileOne(g(S.fileId));
   else if(DIMS[S.cv])body2=vDim(S.cv);
-  else if(S.cv==="roster")body2=vRoster();
   else if(S.cv==="cohort"||S.cv==="today"||S.cv==="files")body2=vCohort();
   else if(S.cv==="cohort-schedule")body2=vToday();
   else if(S.cv==="cohort-all")body2=vCohort();
@@ -5507,7 +5621,7 @@ function draw(){
  const tabbar=`<nav class="tabbar">${TABS.map(t=>{
    const on=t[0]!=="__menu"&&curKey===t[0];
    return `<button class="tabitem ${on?'on':''}" ${t[0]==="__menu"?'data-navopen="1"':navAttr+'="'+t[0]+'"'}>${ic(t[2],20)}<span>${t[1]}</span>${t[0]==="si-cases"&&prioCounts().urgent?`<i class="tabdot"></i>`:''}</button>`;}).join('')}</nav>`;
- R.innerHTML=`<a href="#main" class="skip-link">Skip to main content</a><div class="navscrim" data-navclose="1"></div><div style="height:100vh;display:flex;flex-direction:column">${roleBar()}${sb}</div>${tabbar}${palOpen}${modalEl()}${tflagModal()}${meetModal()}${mergeModal()}${assignModal()}${S.toast?`<div class="toastbar pop">${ic('checkC',17)}${S.toast}</div>`:''}`;
+ R.innerHTML=`<a href="#main" class="skip-link">Skip to main content</a><div class="navscrim" data-navclose="1"></div><div style="height:100vh;display:flex;flex-direction:column">${roleBar()}${sb}</div>${tabbar}${palOpen}${modalEl()}${tflagModal()}${meetModal()}${mergeModal()}${assignModal()}${escalateModal()}${S.toast?`<div class="toastbar pop">${ic('checkC',17)}${S.toast}</div>`:''}`;
  if(S.palOpen){palPaint(S.palQuery||"",S.role);setTimeout(()=>{const palInput=document.getElementById("palInput");if(palInput){palInput.focus();palInput.selectionStart=palInput.selectionEnd=palInput.value.length;}} ,0);}
  bind();
 }
@@ -5602,6 +5716,28 @@ function bind(){
    logAudit("R.HADDAD","CASE_MERGED",c.name,"Merged with "+what);
    S.modal=null;S.mergePick=null;toast("Merged with "+what);draw();});
  q("[data-assignopen]",e=>e.onclick=()=>{S.modal={type:"assign",id:e.dataset.assignopen};S.assignPick=null;draw();});
+ q("[data-casenote]",e=>{e.oninput=()=>{const id=e.dataset.casenote,was=!!(S.noteDraft[id]||'').trim(),now=!!e.value.trim();S.noteDraft[id]=e.value;
+  /* the save button is enabled off this value, so redraw only when it flips */
+  if(was!==now){const pos=e.selectionStart;draw();const f=document.getElementById("casenote");if(f){f.focus();f.setSelectionRange(pos,pos);}}};});
+ q("[data-casenotesave]",e=>e.onclick=()=>{
+  const id=e.dataset.casenotesave,c=g(id),txt=(S.noteDraft[id]||"").trim();
+  if(!c||!txt)return;
+  S.caseNotes[id]=S.caseNotes[id]||[];
+  S.caseNotes[id].unshift({txt,by:SCHOOL.counselor,when:new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+" "+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})});
+  S.noteDraft[id]="";
+  logAudit("R.HADDAD","CASE_NOTE",c.name,"Counselor note added · staff-only");
+  toast("Note saved to "+c.name.split(' ')[0]+"'s case · visible to the counselor role only");});
+ q("[data-escalateopen]",e=>e.onclick=()=>{S.modal={type:"escalate",id:e.dataset.escalateopen};S.escReason="";draw();});
+ q("[data-escreason]",e=>{e.oninput=()=>{const was=(S.escReason||"").trim().length>=12,now=e.value.trim().length>=12;S.escReason=e.value;
+  /* only redraw when the confirm button actually changes state, so the caret survives typing */
+  if(was!==now){const pos=e.selectionStart;draw();const f=document.getElementById("escreason");if(f){f.focus();f.setSelectionRange(pos,pos);}}};});
+ q("[data-escalatego]",e=>e.onclick=()=>{
+  const c=g(e.dataset.escalatego),reason=(S.escReason||"").trim();
+  if(!c||reason.length<12||c.escalated)return;
+  c.escalated={to:SCHOOL.dsl,by:SCHOOL.counselor,reason,when:new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+" "+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})};
+  logAudit("R.HADDAD","ESCALATED_DSL",c.name,"Routed to "+SCHOOL.dsl+" under school policy · reason: "+reason);
+  S.modal=null;S.escReason="";
+  toast("Escalated to "+SCHOOL.dsl+" · referral and reason written to the audit log",4200);});
  q("[data-assignpick]",e=>e.onclick=()=>{S.assignPick=e.dataset.assignpick;draw();});
  q("[data-assigngo]",e=>e.onclick=()=>{const c=g(e.dataset.assigngo);const s=STAFF.find(x=>x.id===S.assignPick);
    if(s){const prev=c.owner;c.owner=s.n;logAudit("R.HADDAD","CASE_REASSIGNED",c.name,prev+" → "+s.n);
@@ -5642,6 +5778,16 @@ function bind(){
   if(S.onbStep<ONBOARD_Q.length-1){S.onbStep++;}else{SURVEY_COMPLETE[PARENT_ME]=true;S.discoverStage=null;S.sv=null;}
   draw();});
  q("[data-onb-back]",e=>e.onclick=()=>{if(S.onbStep>0)S.onbStep--;draw();});
+ /* Skipping keeps whatever has been answered so far and lets the student into
+    the portal; the questions stay reachable from My Pathway. */
+ q("[data-onb-skip]",e=>e.onclick=()=>{
+  const slider=document.querySelector("[data-onb-slider]");if(slider)S.onbAnswers[slider.dataset.onbSlider]=+slider.value;
+  const txt=document.querySelector("[data-onb-text]");if(txt)S.onbAnswers[txt.dataset.onbText]=txt.value;
+  SURVEY_COMPLETE[PARENT_ME]=true;SURVEY_SKIPPED[PARENT_ME]=true;
+  S.discoverStage=null;S.sv=null;draw();});
+ q("[data-onb-restart]",e=>e.onclick=()=>{
+  delete SURVEY_COMPLETE[PARENT_ME];delete SURVEY_SKIPPED[PARENT_ME];
+  S.onbStep=0;S.discoverStage="quiz";draw();});
  q("[data-chat-send]",e=>e.onclick=()=>{
   const ta=document.getElementById("chatinput");
   if(!ta||!ta.value.trim())return;
@@ -5828,7 +5974,6 @@ function bind(){
   else if(a==="dismiss"){c.prio="monitor";c.stage="learn";logAudit("R.HADDAD","CASE_DISMISSED",c.name,"Counselor judged not a concern · feeds threshold tuning");toast("Dismissed · this feeds back into threshold tuning");}
   else if(a==="merge"){toast("Merged with the teacher concern from Mr. Davies");}
   else if(a==="assign"){toast("Assigned to the Grade 12 pastoral lead");}
-  else if(a==="escalate"){logAudit("R.HADDAD","ESCALATED_DSL",c.name,"Routed to "+SCHOOL.dsl+" under school policy");toast("Escalated to "+SCHOOL.dsl+" · logged in audit trail");}
   else if(a==="close"){const iv=S.ivs.find(x=>x.id===id);if(iv){iv.status="resolved";iv.outcome="Outcome recorded by counselor. Signals returned toward baseline and the case was closed with documentation.";iv.resolvedIn="4 days";iv.due="Closed today";logAudit("R.HADDAD","CASE_CLOSED",iv.student,"Outcome documented");}toast("Outcome recorded · case closed");}
   else if(a.startsWith("tc")){const t=[].find(x=>x.id===id);
    if(a==="tcopen"){t.status="linked";t.linked="Case opened and enriched with surrounding data";toast("Case opened for "+t.student+" · engine attaching related signals");}
@@ -5845,7 +5990,7 @@ function bind(){
  q("[data-cpask]",e=>e.onclick=()=>{const v=document.getElementById("cpin").value.trim();if(!v)return;
   S.cpQ=v;S.cpLoad=true;S.cpA=null;draw();
   setTimeout(()=>{S.cpLoad=false;
-   const hit=CPQ.find(x=>x.q.toLowerCase().includes(v.toLowerCase().slice(0,12)))||null;
+   const hit=cpqMatch(v);
    S.cpA=hit?hit.a:"I searched your assigned cohort for that. Nothing matched precisely — try one of the suggested questions below, or ask about a specific student, signal domain or deadline. I only return what sits inside your permission scope.";
    draw();},1300);});
  q("[data-step]",e=>{kb(e,"checkbox",!!S.pathDone[+e.dataset.step]);e.onclick=()=>{const i=+e.dataset.step;S.pathDone[i]=!S.pathDone[i];if(S.pathDone[i])toast("Nice move — your probability went up");draw();};});
@@ -5893,6 +6038,18 @@ document.addEventListener("keydown",ev=>{
   ev.preventDefault();
  }
 });
+/* Sara's case says her personal statement is at draft 2 and has not moved in
+   eleven days, while the Personal Statement Lab opened on "No draft started
+   yet" — the same girl, two answers. The drafts below are the ones the case is
+   describing; the Lab scores them with the same analyser a student would
+   trigger, so the number on her progress card is produced rather than typed. */
+(function seedSaraStatement(){
+ const unis=["London School of Economics","University College London","Warwick"];
+ const drafts=[{text:"From a young age I have been fascinated by economics and the way markets shape the world around us. Growing up in Abu Dhabi, I watched a city change very quickly, and I wanted to understand the forces behind that change.\n\nAt school I take Economics at Higher Level and I read widely around the subject. I enjoy the way economic thinking can be applied to almost any question, from why a queue forms to why a currency moves. I am also part of the debating society, where I have learned to argue a position clearly and to change my mind when the evidence says I should.\n\nStudying economics at university would let me go much deeper than school allows. I am ambitious, hard-working and genuinely excited about the subject, and I believe I would make the most of the opportunity.",when:"18 Oct"},{text:"A tariff meant to protect one industry can end up making the thing it protects more expensive at home than abroad. I came across a case like this in a school project, expecting a straightforward story about protection, and instead spent a term working out why the industry it was designed to help was worse off at the end of it. It was the first time an economic argument I had been taught did not survive contact with the evidence, and it changed how I read every argument since.\n\nThat project is the reason I want to study economics rather than simply enjoy it. I have started following central bank policy statements, and what interests me is rarely the decision itself but the disagreement behind it, the sense that reasonable people looking at the same figures are weighing different things. My higher level economics course has given me some of the tools to test those arguments instead of admiring them, and my mathematics course has made me more careful about what a model assumes before it concludes anything. I want to keep going with both.",when:"21 Oct"}];
+ DISCOVER_TRANSIENT.s3=Object.assign({},DISCOVER_TRANSIENT.s3,{psStatements:{UCAS:{submitted:false,
+  versions:drafts.map(d=>{const analysis=analyzeStatement(d.text,"UCAS","BSc Economics",unis);
+   return {text:d.text,analysis,score:analysis.overall,when:d.when};})}}});
+})();
 draw();
 
 </script>
