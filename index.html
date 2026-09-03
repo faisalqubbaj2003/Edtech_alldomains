@@ -632,6 +632,30 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
   var(--bg)!important;
 }
 
+/* ══════════ WIDE MONITOR ══════════
+   Above 1500px a two-column card grid sets ~785px cards, which strands the
+   figure a long way from its label. Extra width should buy more columns, not
+   wider cards — but only where the children divide evenly, because promoting
+   a four-child grid to three columns just moves the empty space into the
+   layout instead of the margin. Counted with :has() so the rule reads the
+   grid it is actually changing.
+
+   Two-child grids stay two-up on purpose: they are side-by-side pairs
+   (IB against AP, the engine's limits against its methods), and there is no
+   third column to give them that would not be a hole. */
+@media (min-width:1500px){
+ /* Three or six panels divide evenly into three columns. */
+ .pagewrap [style*="grid-template-columns:1fr 1fr"]:not(.tabbar):not(.rolebar):has(> :nth-child(3)):not(:has(> :nth-child(4))),
+ .pagewrap [style*="grid-template-columns:repeat(2,1fr)"]:not(.tabbar):not(.rolebar):has(> :nth-child(3)):not(:has(> :nth-child(4))),
+ .pagewrap [style*="grid-template-columns:1fr 1fr"]:not(.tabbar):not(.rolebar):has(> :nth-child(6)):not(:has(> :nth-child(7))),
+ .pagewrap [style*="grid-template-columns:repeat(2,1fr)"]:not(.tabbar):not(.rolebar):has(> :nth-child(6)):not(:has(> :nth-child(7)))
+  {grid-template-columns:repeat(3,1fr)!important}
+ /* Four go four across rather than three and a gap. */
+ .pagewrap [style*="grid-template-columns:1fr 1fr"]:not(.tabbar):not(.rolebar):has(> :nth-child(4)):not(:has(> :nth-child(5))),
+ .pagewrap [style*="grid-template-columns:repeat(2,1fr)"]:not(.tabbar):not(.rolebar):has(> :nth-child(4)):not(:has(> :nth-child(5)))
+  {grid-template-columns:repeat(4,1fr)!important}
+}
+
 /* ══════════ MOBILE CHROME (hidden on desktop) ══════════ */
 .navtoggle{display:none}
 .navscrim{display:none}

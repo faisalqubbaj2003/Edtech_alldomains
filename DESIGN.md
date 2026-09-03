@@ -225,6 +225,8 @@ A content page sets to `--page-max` (1640px) and centres in the pane. **The shee
 
 Rhythm is the row, not an 8pt grid. Groups are separated by ruling and by the tier group-line, never by gaps and never by cards. Content panes cap prose around 760px.
 
+Above 1500px a two-column card grid gains columns rather than wider cards — three or six children go three across, four go four across, and grids of two or five are left alone because there is no extra column for them that would not be a hole. The rule counts children with `:has()`, so it reads the grid it is changing; at 785px per card the figure had drifted a long way from its label.
+
 Below 640px the tally line breaks to two columns and drops its dividing rules; below 820px the masthead's palette opener stands down so the page title takes the width. 87 quiet rows are revealed in chunks of 25 rather than all at once, because `content-visibility` gives no layout containment to `display:table-row`.
 
 ## Elevation & Depth
