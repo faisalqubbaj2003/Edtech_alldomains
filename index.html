@@ -105,9 +105,9 @@
  --bg:var(--stock-2); --surface:var(--stock); --surface-2:var(--stock-2); --surface-3:var(--stock-3);
  --line:var(--rule); --line-2:var(--rule-2); --line-3:var(--rule-3);
  --brand:var(--school-primary); --brand-2:var(--school-src-deep); --brand-3:var(--stock-3); --brand-4:var(--band-2);
- --crit:var(--t-urgent); --crit-bg:var(--t-urgent-bg); --crit-line:#E3BDB7; --crit-ink:#7E1710;
- --warn:var(--t-review); --warn-bg:var(--t-review-bg); --warn-line:#DDD3AE; --warn-line-2:#D3C79E; --warn-ink:#5E4A0E;
- --ok:var(--t-good); --ok-bg:var(--t-good-bg); --ok-line:#B6D6BF; --ok-ink:#155235;
+ --crit:var(--t-urgent); --crit-bg:var(--t-urgent-bg); --crit-line:#E3BDB7; --crit-ink:#7E1710; --on-crit:#FFFFFF;
+ --warn:var(--t-review); --warn-bg:var(--t-review-bg); --warn-line:#DDD3AE; --warn-line-2:#D3C79E; --warn-ink:#5E4A0E; --on-warn:#FFFFFF;
+ --ok:var(--t-good); --ok-bg:var(--t-good-bg); --ok-line:#B6D6BF; --ok-ink:#155235; --on-ok:#FFFFFF;
  --info:var(--dom-academic); --info-bg:#E4EAF6; --info-line:#BCCBE6; --info-ink:#193F84;
  --mute:var(--t-monitor); --mute-bg:var(--t-monitor-bg); --mute-line:var(--rule-2);
  --violet:var(--dom-engagement); --on-violet:#FFFFFF; --violet-bg:#E7E6F5; --violet-bg-2:#F2F1FA; --violet-light:#7D77D0; --violet-line-2:#C8C5EA; --violetDeep:#3A3596;
@@ -158,9 +158,9 @@
   --on-letterhead-2:var(--school-on-field-dark-mute,#B9C9C6);
   --school-tint:rgba(255,255,255,.04);
   --brand-2:var(--school-src-lift); --brand-3:var(--stock-3); --brand-4:var(--band-2);
-  --crit-line:#5A3230; --crit-ink:#F3A79E;
-  --warn-line:#4E4426; --warn-line-2:#453C22; --warn-ink:#E4D096;
-  --ok-line:#2C5843; --ok-ink:#9BDDB8;
+  --crit-line:#5A3230; --crit-ink:#F3A79E; --on-crit:var(--stock-2);
+  --warn-line:#4E4426; --warn-line-2:#453C22; --warn-ink:#E4D096; --on-warn:var(--stock-2);
+  --ok-line:#2C5843; --ok-ink:#9BDDB8; --on-ok:var(--stock-2);
   --info-bg:#182234; --info-line:#2E4260; --info-ink:#A9C8F5;
   --on-violet:#131D26; --on-rose:#131D26;
   --violet-bg:#1F1E33; --violet-bg-2:#191829; --violet-light:#8C86D8; --violet-line-2:#3B3866; --violetDeep:#BEB9F5;
@@ -1394,7 +1394,7 @@ discoverStage:null,onbStep:0,onbAnswers:{},chatLog:[],chatStep:0,rankedArchetype
 fileId:null,fileTab:"synth",
 cat:{cohort:true,uni:false,si:false,sys:false},ragFilter:"all",
 sheetTier:"all",sheetRoster:false,sel:[],
-navOpen:false,q:"",pv:"overview",tKind:"concern",tTags:[],tNote:"",mKind:"Check-in",mOut:"Ongoing",mergePick:null,assignPick:null,tv:"class",
+navOpen:false,q:"",pv:"overview",tKind:"concern",tTags:[],tNote:"",mKind:"Check-in",mOut:"Ongoing",mergePick:null,assignPick:null,tv:"class",tClass:"c1",
 rQ:"",rSort:"priority",rFilt:"all",
 lettered:false,
 palOpen:false,palQuery:"",palActiveIndex:0,palResults:[]};
@@ -1632,7 +1632,11 @@ function roleNav(role){
   }
   return nav;
  }
- if(role==="teacher")return [["tclasses","My Classes","book"],["class","My Class Register","users"],["classapprovals","Course Approvals","check"],["tlog","What I've logged","list"]];
+ /* The register leads: it is the 90-second action, and everything else is
+    reference a teacher opens far less often. "My Classes" used to sit first
+    in this list while the app itself opened straight to the register — the
+    nav order was still pointing at the card grid it no longer led with. */
+ if(role==="teacher")return [["class","My Class Register","users"],["tclasses","My Classes","book"],["classapprovals","Course Approvals","check"],["tlog","What I've logged","list"]];
  if(role==="mentor")return [["requests","Session Requests","inbox",MENTOR_REQS.length],["mentees","My Mentees","users"]];
  return [["cohort-schedule","Caseload","users"],["si-cases","Priority","alert"],["meetings","Meetings","brief"],["flags","Flags","inbox"]];
 }
@@ -3131,11 +3135,18 @@ function sheetRail(){
 /* ═══════════════ TEACHER PORTAL ═══════════════
    The investor's core ask: after every lesson a teacher can flag or comment
    in seconds, and it lands on the counselor's dashboard. Structured but open. */
+/* A class register only ever holds students from its own grade. c2 and c3
+   used to mix in whichever named cases were convenient (a Grade 9 and a
+   Grade 10 student inside a "Grade 11" class), because the roster and the
+   label were never checked against each other. The caseload only authors
+   one named Grade 10 student and three named Grade 11 students in total
+   (s10; s11, s12, s17) — everyone else generated is Grade 12 — so c2 and c3
+   stay small rather than padded with names that do not exist. */
 const TEACHER={name:"Mr. J. Davies",subject:"Mathematics",av:"JD",
  classes:[
   {id:"c1",code:"12A/Ma1",label:"Grade 12 Mathematics: Analysis & Approaches HL",period:"P2",students:["s1","s2","s3","s4","s5","s6"],enrolled:6,avg:87},
-  {id:"c2",code:"11B/Ma2",label:"Grade 11 Mathematics",period:"P4",students:["s9","s10","s11"],enrolled:3,avg:84},
-  {id:"c3",code:"10C/Ma3",label:"Grade 10 Mathematics (Foundation)",period:"P6",students:["s12","s13","s14","s15"],enrolled:4,avg:79}
+  {id:"c2",code:"11B/Ma2",label:"Grade 11 Mathematics",period:"P4",students:["s11","s12","s17"],enrolled:3,avg:84},
+  {id:"c3",code:"10C/Ma3",label:"Grade 10 Mathematics (Foundation)",period:"P6",students:["s10"],enrolled:1,avg:79}
  ]};
 
 /* what a teacher can log — structured tags, then free text */
@@ -3183,59 +3194,61 @@ function vTLog(){
   }).join(''):`<div style="font-size:12.3px;color:var(--ink-3);line-height:1.6">Nothing logged yet this term. When you flag something from your register, it appears here with what the counselor did about it.</div>`}
  </div></div>`;}
 
-/* ── Teacher: my classes overview ── */
+/* ── Teacher: my classes overview ──
+   Reference, not the landing — the register carries that job now. A row per
+   class in the same sheet vocabulary the rest of the product reads, not a
+   grid of cards with class size and average blown up into hero numbers no
+   decision follows from; a teacher glancing here wants to find a class and
+   open its register, not read a dashboard. */
 function vTMyClasses(){
  return `<div class="arrive" style="max-width:1100px">
-  <div style="padding:24px 0">
-   <div class="stamp" style="font-size:24px;font-weight:600;margin-bottom:8px">My Classes</div>
-   <div style="font-size:13.5px;color:var(--ink-2);line-height:1.6">
-    Your courses this term. Click a class to access the register and log student observations.
-   </div>
-  </div>
-
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px">
-   ${TEACHER.classes.map((cls,i)=>`<div class="card arrive" style="padding:20px;animation:rise .35s ${i*.05}s backwards">
-    <div style="font-weight:600;color:var(--ink);font-size:14px;margin-bottom:2px">${cls.label}</div>
-    <div style="font-size:11px;color:var(--ink-3);margin-bottom:14px">${cls.period} · ${cls.code}</div>
-    
-    <div style="display:flex;gap:16px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--line)">
-     <div>
-      <div style="font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Students</div>
-      <div style="font-size:24px;font-weight:700;color:var(--brand)">${cls.enrolled}</div>
-     </div>
-     <div>
-      <div style="font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Class Average</div>
-      <div style="font-size:24px;font-weight:700;color:var(--ok)">${cls.avg}%</div>
-     </div>
-    </div>
-
-    <button class="btn btn-p btn-sm" data-tnav="class" style="width:100%">${ic('users',14)} Open register</button>
-   </div>`).join('')}
-  </div>
+ ${head("My Classes","Your courses this term","Every class you teach. Open a register to log what you noticed after a lesson.","var(--brand)","book")}
+ <div style="overflow-x:auto"><table class="sheet" style="font-size:13px">
+  <thead><tr>
+   <th scope="col">Class</th>
+   <th scope="col" style="width:70px">Period</th>
+   <th scope="col" class="num" style="width:90px">Students</th>
+   <th scope="col" class="num" style="width:90px">Average</th>
+   <th scope="col" style="width:160px"><span class="sr">Open register</span></th>
+  </tr></thead>
+  <tbody>
+  ${TEACHER.classes.map(cls=>`<tr>
+   <td><div style="font-weight:600;color:var(--ink)">${cls.label}</div><div style="font-size:11px;color:var(--ink-3);margin-top:1px">${cls.code}</div></td>
+   <td class="fig">${cls.period}</td>
+   <td class="num fig">${cls.enrolled}</td>
+   <td class="num fig">${cls.avg}%</td>
+   <td><button class="btn btn-g btn-sm" data-tclass="${cls.id}">${ic('users',13)} Open register</button></td>
+  </tr>`).join('')}
+  </tbody></table></div>
  </div>`;}
 
 /* ── Teacher: my classes / register ── */
 function vTClass(){
- const cls=TEACHER.classes[0];
- const roster=S.cases.slice(0,6);
+ const cls=TEACHER.classes.find(x=>x.id===S.tClass)||TEACHER.classes[0];
+ const roster=cls.students.map(id=>g(id)).filter(Boolean);
+ const surname=TEACHER.name.split(" ").slice(-1)[0];
  return `<div class="fade">
- ${head("After your lesson","Grade 12 Mathematics · P2","Tap a student to log something. It takes about fifteen seconds and goes straight to their counselor — you never chase anyone or fill in a form twice.","var(--brand)","users")}
+ ${head("After your lesson",cls.label+" · "+cls.period,"Tap a student to log something. It takes about fifteen seconds and goes straight to their counselor — you never chase anyone or fill in a form twice.","var(--brand)","users")}
  <div class="card" style="padding:15px 18px;margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
   <div style="width:34px;height:34px;border-radius:var(--r);background:var(--brand-3);display:grid;place-items:center;color:var(--brand-2);flex-shrink:0">${ic('checkC',17)}</div>
   <div style="flex:1;min-width:200px;font-size:12.3px;color:var(--ink-2);line-height:1.5">
    <b style="color:var(--ink)">Grades and attendance come from iSAMS automatically.</b> You are never asked to re-enter data the school already holds — only the thing a system cannot see.</div>
  </div>
+ ${TEACHER.classes.length>1?`<div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px" role="tablist" aria-label="Class">
+  ${TEACHER.classes.map(c=>`<button class="tab ${c.id===cls.id?'on':''}" data-tclass="${c.id}" role="tab" aria-selected="${c.id===cls.id}">${c.code}</button>`).join('')}
+ </div>`:''}
  <div style="display:grid;gap:10px">
- ${roster.map((c,i)=>{const mine=TFLAGS.filter(f=>f.sid===c.id);
+ ${roster.length?roster.map((c,i)=>{const mine=TFLAGS.filter(f=>f.sid===c.id);
   return `<div class="card lift" data-tflag="${c.id}" style="padding:14px 16px;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;animation:rise .35s ${i*.04}s backwards">
    ${av(c.av,"monitor",40)}
    <div style="min-width:0"><b style="font-size:13.5px">${c.name}</b>
     <div style="font-size:11.5px;color:var(--ink-3);margin-top:1px">${cls.code}${mine.length?` · you logged ${mine.length} this term`:''}</div></div>
    <span class="btn btn-g btn-sm" style="pointer-events:none">${ic('plus',13)} Log</span>
-  </div>`;}).join('')}</div>
+  </div>`;}).join(''):`<div style="font-size:12.3px;color:var(--ink-3);line-height:1.6">No students on this register yet.</div>`}
+ </div>
  <div class="card" style="padding:16px 18px;margin-top:16px">
   <h3 class="sechead">${ic('list',13)} What you have logged</h3>
-  ${TFLAGS.filter(f=>f.by.indexOf("Davies")>-1).map(f=>{
+  ${TFLAGS.filter(f=>f.by.indexOf(surname)>-1).map(f=>{
    var K=FLAG_KINDS.find(function(k){return k.k===f.kind;});
    var routed=f.routed?'<div style="font-size:11px;color:var(--ok);margin-top:5px;display:flex;align-items:center;gap:5px">'+ic('checkC',12)+' '+f.routed+'</div>':'';
    return '<div style="padding:11px 0;border-bottom:1px solid var(--line)">'+
@@ -3252,11 +3265,12 @@ function tflagModal(){
  const c=g(S.modal.id);const kind=S.tKind||"concern";
  const K=FLAG_KINDS.find(k=>k.k===kind);
  const picked=S.tTags||[];
+ const cls=TEACHER.classes.find(x=>(x.students||[]).includes(c.id))||TEACHER.classes.find(x=>x.id===S.tClass)||TEACHER.classes[0];
  return `<div class="modalbg" data-mbg="1"><div class="modal">
   <div style="padding:20px 22px 0;position:sticky;top:0;background:var(--surface);z-index:2;border-radius:var(--r-lg) 16px 0 0">
    ${mcloseBtn()}
    <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px">${av(c.av,"monitor",42)}
-    <div><b style="font-size:15.5px">${c.name}</b><div style="font-size:11.5px;color:var(--ink-3)">Grade 12 Mathematics · after P2</div></div></div>
+    <div><b style="font-size:15.5px">${c.name}</b><div style="font-size:11.5px;color:var(--ink-3)">${cls.label} · ${cls.period}</div></div></div>
    <div style="display:flex;gap:6px;background:var(--surface-3);padding:4px;border-radius:var(--r);margin-bottom:4px">
     ${FLAG_KINDS.map(k=>`<button class="tab ${kind===k.k?'on':''}" data-tkind="${k.k}" style="flex:1;font-size:11.5px;padding:8px 6px">${k.l}</button>`).join('')}</div>
   </div>
@@ -3964,18 +3978,18 @@ function vTClassApprovals(){
       </div>
      </aside>
     </div>
-    <div style="padding:14px 20px;border-top:1px solid var(--line);background:white">
+    <div style="padding:14px 20px;border-top:1px solid var(--line);background:var(--surface)">
      <label style="display:block;font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Decision note for student and counselor</label>
      <textarea data-approvalnote="${a.id}" placeholder="Add a reason, prerequisite, or suggested alternative..." style="width:100%;box-sizing:border-box;min-height:54px;resize:vertical;padding:9px 10px;border:1px solid var(--line);border-radius:var(--r);margin-bottom:10px"></textarea>
      <div style="display:flex;gap:8px">
-      <button data-classapprove="${a.id}" style="flex:1;padding:10px;background:var(--ok);color:white;border:none;border-radius:var(--r);font-weight:600;cursor:pointer;font-size:12px">Approve selection</button>
-      <button data-classchanges="${a.id}" style="flex:1;padding:10px;background:var(--warn);color:white;border:none;border-radius:var(--r);font-weight:600;cursor:pointer;font-size:12px">Request changes</button>
-      <button data-classreject="${a.id}" style="flex:1;padding:10px;background:var(--crit);color:white;border:none;border-radius:var(--r);font-weight:600;cursor:pointer;font-size:12px">Decline</button>
+      <button data-classapprove="${a.id}" style="flex:1;padding:10px;background:var(--ok);color:var(--on-ok);border:none;border-radius:var(--r);font-weight:600;cursor:pointer;font-size:12px">Approve selection</button>
+      <button data-classchanges="${a.id}" style="flex:1;padding:10px;background:var(--warn);color:var(--on-warn);border:none;border-radius:var(--r);font-weight:600;cursor:pointer;font-size:12px">Request changes</button>
+      <button data-classreject="${a.id}" style="flex:1;padding:10px;background:var(--crit);color:var(--on-crit);border:none;border-radius:var(--r);font-weight:600;cursor:pointer;font-size:12px">Decline</button>
       <button data-classrequest="${a.id}" class="btn btn-g btn-sm" title="Message student">${ic("msg",15)}</button>
      </div>
     </div>
    </div>`;
-  }).join(''):`<div class="card" style="padding:40px;text-align:center;color:var(--ink-3)">No pending approvals</div>`}
+  }).join(''):`<div class="card" style="padding:24px">${moment({art:"steady",title:"Nothing waiting on you",body:"A course selection lands here the moment a student sends one from their portal, with the timetable check already run. This page only ever holds what's still waiting on a decision — it empties again as soon as you make one."})}</div>`}
  </div>`;}
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -6182,11 +6196,16 @@ function assignModal(){
    work for every student; its network moved to NETWORK; the probability and
    the view it drove are gone, because no number in this product should be
    invented and then made to climb. */
+/* No price field: Mentor stays in the product but unpriced (decided 2026-09-03,
+   P5 — cutting the $120/session marketplace orphaned nothing else, since the
+   student and mentor surfaces already read "no charge" / "nobody is billing
+   you" throughout). A `p` field survived here after the marketplace itself
+   was cut and was never read by any view; removed rather than left dead. */
 const MENTORS=[
- {id:"m1",n:"Hassan Al Rashid",av:"HR",role:"Analyst, IBD",firm:"Goldman Sachs",uni:"London School of Economics",grad:"2021",r:4.9,s:34,p:120,path:[SCHOOL.short,"LSE Economics","Evercore spring week","Goldman IBD"],bio:"LSE Economics grad now on Goldman's London IBD desk. I came through an Abu Dhabi school, so I know this exact route.",best:true},
- {id:"m4",n:"Lina Khoury",av:"LK",role:"Investment Analyst",firm:"Mubadala",uni:"NYU Stern (Abu Dhabi)",grad:"2023",r:4.9,s:27,p:95,path:[SCHOOL.short,"NYUAD Finance","Mubadala"],bio:"NYUAD finance grad at Mubadala. I can speak to both the local route and global finance.",best:true},
- {id:"m2",n:"Aisha Mensah",av:"AM",role:"Foundation Doctor",firm:"NHS · UCLH",uni:"University College London",grad:"2020",r:5.0,s:48,p:100,path:["Intl School","UCL Medicine","Foundation"],bio:"UCL Medicine grad. I mentor on statements, UCAT and interview technique.",best:false},
- {id:"m5",n:"Yusuf Adeyemi",av:"YA",role:"Research Engineer",firm:"DeepMind",uni:"University of Cambridge",grad:"2021",r:5.0,s:39,p:130,path:["Intl School","Cambridge CS","DeepMind"],bio:"Cambridge CompSci grad at DeepMind. I mentor ambitious CS applicants.",best:false}];
+ {id:"m1",n:"Hassan Al Rashid",av:"HR",role:"Analyst, IBD",firm:"Goldman Sachs",uni:"London School of Economics",grad:"2021",r:4.9,s:34,path:[SCHOOL.short,"LSE Economics","Evercore spring week","Goldman IBD"],bio:"LSE Economics grad now on Goldman's London IBD desk. I came through an Abu Dhabi school, so I know this exact route.",best:true},
+ {id:"m4",n:"Lina Khoury",av:"LK",role:"Investment Analyst",firm:"Mubadala",uni:"NYU Stern (Abu Dhabi)",grad:"2023",r:4.9,s:27,path:[SCHOOL.short,"NYUAD Finance","Mubadala"],bio:"NYUAD finance grad at Mubadala. I can speak to both the local route and global finance.",best:true},
+ {id:"m2",n:"Aisha Mensah",av:"AM",role:"Foundation Doctor",firm:"NHS · UCLH",uni:"University College London",grad:"2020",r:5.0,s:48,path:["Intl School","UCL Medicine","Foundation"],bio:"UCL Medicine grad. I mentor on statements, UCAT and interview technique.",best:false},
+ {id:"m5",n:"Yusuf Adeyemi",av:"YA",role:"Research Engineer",firm:"DeepMind",uni:"University of Cambridge",grad:"2021",r:5.0,s:39,path:["Intl School","Cambridge CS","DeepMind"],bio:"Cambridge CompSci grad at DeepMind. I mentor ambitious CS applicants.",best:false}];
 
 
 function ringSvg(v,size,col){size=size||96;const st=9,r=(size-st)/2,c=2*Math.PI*r;
@@ -6389,7 +6408,7 @@ function modalEl(){
    Filtering, sorting, expanding, toggling and typing are not arrivals: you are
    already there, and re-animating the page around you is noise, not feedback. */
 let LASTPLACE=null;
-function place(){return [S.role,S.cv,S.sv,S.pv,S.tv,S.mv,S.open,S.fileId,S.previewGrade,
+function place(){return [S.role,S.cv,S.sv,S.pv,S.tv,S.tClass,S.mv,S.open,S.fileId,S.previewGrade,
  S.tab,S.fileTab,S.letter,S.cpQ,S.cpLoad,S.discoverStage,S.psActiveSystem,
  /* Each gate question replaces the whole panel, so it arrives. Without this
     only the first advance animated — the router sets discoverStage during
@@ -6590,6 +6609,10 @@ function bind(){
    S.modal=null;S.tTags=[];S.tNote="";
    toast("Sent to "+c.name.split(" ")[0]+"'s counselor");});
  q("[data-tnav]",e=>e.onclick=()=>{S.tv=e.dataset.tnav;S.navOpen=false;draw();});
+ /* Picks the class the register shows — from "My Classes" or the in-register
+    switcher. Folds the tv jump in so either entry point lands on the register
+    itself, not just on the right class within whichever view was already open. */
+ q("[data-tclass]",e=>e.onclick=()=>{S.tClass=e.dataset.tclass;S.tv="class";S.navOpen=false;draw();});
  /* ── teacher: class approvals workflow ── */
  const approvalNote=id=>{
    const field=document.querySelector(`[data-approvalnote="${id}"]`);

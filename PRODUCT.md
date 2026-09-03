@@ -48,7 +48,9 @@ Competitive frame: Naviance is the incumbent schools complain about; Scoir is th
 
 **Terminology that must not drift:** *match* already means reach/match/safety in university data, so it can never be reused for mentor pairing. The five triage tiers and their order are product logic. IB and AP are tracks, not themes.
 
-**Explicitly undecided:** whether Teacher and Mentor roles get their own persona accent. Whether the Mentor role survives at all — the $120/session mentor marketplace was cut from the student portal, which orphans the Mentor Hub's session requests; the role is currently demo-only.
+**Resolved 2026-09-03 (P5):** the Mentor role survives, unpriced. The $120/session marketplace stays cut — no view charges for a session, mentor introductions are arranged by the school at no cost, and every mentor conversation is described as safeguarded and in-platform rather than transactional.
+
+**Explicitly undecided:** whether Teacher and Mentor roles get their own persona accent.
 
 ## Brand Commitments
 

@@ -63,5 +63,6 @@ The break in the run: a row of consistent marks, then the cell where it stops, s
 ## Unresolved decisions
 
 - Whether Teacher and Mentor earn their own register treatment, or inherit the counselor's sheet.
-- Whether the Mentor role survives at all (the $120 marketplace was cut, orphaning its session requests).
 - How the retained XP/milestone layer is expressed inside a ledger world without becoming a second visual system.
+
+**Resolved 2026-09-03 (P5):** the Mentor role survives, unpriced. The $120 marketplace stays cut; the role keeps its session requests and mentee list, arranged by the school at no cost.
