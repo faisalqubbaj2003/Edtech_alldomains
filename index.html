@@ -273,13 +273,13 @@ button{color:inherit}
 .btn{
  display:inline-flex;align-items:center;justify-content:center;gap:6px;
  font-family:var(--f-apparatus);font-size:13.5px;font-weight:600;letter-spacing:.008em;
- padding:9px 14px;border-radius:var(--r);border:1px solid transparent;
+ padding:9px 14px;border-radius:var(--r);border:1px solid transparent;min-height:44px;
  cursor:pointer;white-space:nowrap;user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
  transition:background .15s ease,border-color .15s ease,box-shadow .15s ease,transform .1s ease,color .15s ease;
 }
 .btn:active{transform:scale(.985)}
 .btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important}
-.btn-sm{padding:6px 11px;font-size:12px;border-radius:var(--r);gap:5px}
+.btn-sm{padding:6px 11px;font-size:12px;border-radius:var(--r);gap:5px;min-height:44px}
 .btn svg{width:15px;height:15px;flex-shrink:0}
 .btn-sm svg{width:13.5px;height:13.5px}
 .btn-p{background:var(--school-primary);color:var(--school-on-primary);border-color:var(--school-primary)}
@@ -324,7 +324,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--band-2)}
  font-family:var(--f-apparatus);font-weight:700;line-height:1;white-space:nowrap}
 .tstamp-l{letter-spacing:.02em;font-variant-numeric:lining-nums}
 .tstamp-full{gap:5px;padding:2px 6px 2px 5px;border:1px solid currentColor;border-radius:var(--r-sm)}
-.tstamp-t{font-size:10.5px;font-weight:600;letter-spacing:.075em;text-transform:uppercase}
+.tstamp-t{font-size:11.5px;font-weight:600;letter-spacing:.075em;text-transform:uppercase}
 /* Available to assistive tech, invisible on the sheet. */
 .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
  clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
@@ -520,7 +520,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--band-2)}
 
 /* ══════════ SIDEBAR ══════════ */
 .navitem{
- display:flex;align-items:center;gap:9px;width:100%;position:relative;
+ display:flex;align-items:center;gap:9px;width:100%;position:relative;min-height:44px;
  padding:7px 10px;border-radius:var(--r-sm);border:none;cursor:pointer;
  font-family:var(--f-apparatus);font-size:13px;font-weight:500;letter-spacing:.012em;
  text-align:left;background:transparent;color:var(--nav-txt);
@@ -530,7 +530,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--band-2)}
 .navitem.on{background:rgba(255,255,255,.09);color:#fff;font-weight:600}
 .navitem svg{width:15.5px;height:15.5px;opacity:.72;flex-shrink:0}
 .navitem.on svg{opacity:1}
-.rolebtn{transition:background .15s ease,color .15s ease,box-shadow .15s ease;border:none;cursor:pointer;font-family:inherit}
+.rolebtn{transition:background .15s ease,color .15s ease,box-shadow .15s ease;border:none;cursor:pointer;font-family:inherit;min-height:44px}
 svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
 
 /* ══════════ SECTION LABEL ══════════ */
@@ -563,6 +563,7 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
 .steparr{color:var(--ink-4);padding:0 4px;flex-shrink:0;display:flex}
 .tab{padding:7px 13px;border-radius:var(--r-sm);font-size:12.5px;font-weight:600;cursor:pointer;
  border:1px solid transparent;background:transparent;color:var(--ink-3);font-family:inherit;
+ min-height:44px;display:inline-flex;align-items:center;
  transition:background .14s ease,color .14s ease,box-shadow .14s ease}
 .tab:hover{color:var(--ink-2)}
 .tab.on{background:var(--stock);color:var(--ink);border-color:var(--rule-3);border-bottom-color:var(--stock)}
@@ -702,10 +703,10 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
  .evd > *:last-child{justify-self:start}
 
  /* comfortable touch targets */
- .btn{padding:11px 15px;font-size:13.5px;min-height:42px}
- .btn-sm{padding:9px 12px;font-size:12.5px;min-height:38px}
+ .btn{padding:11px 15px;font-size:13.5px;min-height:44px}
+ .btn-sm{padding:9px 12px;font-size:12.5px;min-height:44px}
  .navitem{padding:11px 12px;font-size:14px;min-height:44px}
- .tab{padding:10px 14px;font-size:13px;min-height:40px}
+ .tab{padding:10px 14px;font-size:13px;min-height:44px}
  .chip{font-size:11.5px}
 
  /* type scales up slightly for legibility */
@@ -783,7 +784,7 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
  .rolebar-tag,.rolebar-stats{display:none!important}
  .rolebar{padding:0 12px!important;gap:10px!important}
  .rolebar-switch{gap:1px!important;padding:2px!important}
- .rolebar-switch .rolebtn{padding:6px 9px!important;font-size:11.5px!important}
+ .rolebar-switch .rolebtn{padding:6px 9px!important;font-size:11.5px!important;min-width:44px!important;min-height:44px!important}
  .rolebtn span.rl{display:none}
 
  /* toast must clear the tab bar */
@@ -1393,7 +1394,7 @@ uniOpen:"",pmTopic:"",pmSlot:null,pmNote:"",pathDegree:"",pathCountry:"UK",previ
 discoverStage:null,onbStep:0,onbAnswers:{},chatLog:[],chatStep:0,rankedArchetypes:null,selectedArchetypes:[],pathwaysSubmitted:false,activeArchetype:null,roadmapProgress:{},
 fileId:null,fileTab:"synth",
 cat:{cohort:true,uni:false,si:false,sys:false},ragFilter:"all",
-sheetTier:"all",sheetRoster:false,sel:[],
+sheetTier:"all",sheetRosterShown:0,sel:[],
 navOpen:false,q:"",pv:"overview",tKind:"concern",tTags:[],tNote:"",mKind:"Check-in",mOut:"Ongoing",mergePick:null,assignPick:null,tv:"class",tClass:"c1",
 rQ:"",rSort:"priority",rFilt:"all",
 lettered:false,
@@ -1673,6 +1674,25 @@ function palFilter(query,role){
   .slice(0,8);
 }
 
+/* Focus restoration for the command palette. draw() rebuilds the whole tree
+   on open and close, so the element that had focus is a detached node by the
+   time we'd want to refocus it — a selector survives the rebuild, a node
+   reference does not. */
+let palReturnSel=null;
+function elSelector(el){
+ if(!el||el===document.body)return null;
+ if(el.id)return "#"+CSS.escape(el.id);
+ for(const attr of el.attributes||[]){
+  if(attr.name.slice(0,5)==="data-")return el.tagName.toLowerCase()+'['+attr.name+'="'+CSS.escape(attr.value)+'"]';
+ }
+ return null;
+}
+function palRestoreFocus(){
+ const sel=palReturnSel;palReturnSel=null;
+ if(!sel)return;
+ const el=document.querySelector(sel);
+ if(el)el.focus();
+}
 function palPaint(query,role){
  const list=palFilter(query,role||S.role);
  S.palResults=list;
@@ -1719,10 +1739,10 @@ function roleBar(){
   <div style="display:flex;align-items:center;gap:10px">
    ${crest(28)}
    <div><div class="stamp" style="font-weight:700;font-size:15px;color:#fff;letter-spacing:.03em">CAROS</div>
-   <div class="rolebar-tag" style="font-family:var(--f-apparatus);font-size:9px;letter-spacing:.16em;color:rgba(255,255,255,.55);text-transform:uppercase;margin-top:1px">${SCHOOL.short}</div></div></div>
+   <div class="rolebar-tag" style="font-family:var(--f-apparatus);font-size:9px;letter-spacing:.16em;color:var(--nav-txt);text-transform:uppercase;margin-top:1px">${SCHOOL.short}</div></div></div>
   ${demoStamp()}
   <div style="margin-left:auto;display:flex;align-items:center;gap:14px">
-   <div class="rolebar-stats" style="display:flex;align-items:center;gap:9px;font-size:11px;color:rgba(255,255,255,.55)">
+   <div class="rolebar-stats" style="display:flex;align-items:center;gap:9px;font-size:11px;color:var(--nav-txt)">
     <span style="display:flex;align-items:center;gap:5px"><span class="pulsedot" style="width:7px;height:7px;border-radius:var(--r-dot);background:var(--t-urgent)"></span><b class="fig" style="color:#fff;font-weight:500">${pc.urgent}</b> urgent</span>
     <span style="display:flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:var(--r-dot);background:var(--t-checkin)"></span><b class="fig" style="color:#fff;font-weight:500">${pc.checkin}</b> check-in</span>
     <span style="display:flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:var(--r-dot);background:var(--t-review)"></span><b class="fig" style="color:#fff;font-weight:500">${pc.review}</b> review</span></div>
@@ -1830,12 +1850,12 @@ function caseCard(c,i){
    <div style="font-size:12.8px;color:var(--inkSoft);line-height:1.55;margin-bottom:9px">${c.headline}</div>
    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
     ${doms.map(d=>`<span class="chip" style="background:var(--panel);color:${DOMAINS[d].c};border:1px solid var(--line)">${ic(DOMAINS[d].ic,11)}${DOMAINS[d].label}</span>`).join('')}
-    <span style="font-size:10.5px;color:var(--inkMute);margin-left:3px">Signal strength ${c.signal}% · ${c.window}</span></div>
+    <span style="font-size:11.5px;color:var(--inkMute);margin-left:3px">Signal strength ${c.signal}% · ${c.window}</span></div>
   </div>
   <div style="display:flex;flex-direction:column;align-items:flex-end;gap:7px;flex-shrink:0">
    <span style="font-size:11.5px;font-weight:600;color:var(--tealDeep);display:flex;align-items:center;gap:5px">Open case ${ic('arrowR',14)}</span>
-   <span style="font-size:10.5px;color:var(--inkMute)">Last contact: ${c.lastContact}</span>
-   ${c.prio!=="monitor"&&c.prio!=="good"?`<span style="font-size:10.5px;color:${P.c};font-weight:600">${c.action.what}</span>`:''}
+   <span style="font-size:11.5px;color:var(--inkMute)">Last contact: ${c.lastContact}</span>
+   ${c.prio!=="monitor"&&c.prio!=="good"?`<span style="font-size:11.5px;color:${P.c};font-weight:600">${c.action.what}</span>`:''}
   </div></div></div>`;}
 
 /* ═══════════ SIGNAL INTELLIGENCE DASHBOARD (doc §04+§05) ═══════════ */
@@ -1965,7 +1985,7 @@ function vCase(c){
    ${av(c.av,c.prio,52)}
    <div style="flex:1">
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-     <span class="stamp" style="font-size:22px;font-weight:600">${c.name}</span>${pchip(c.prio)}
+     <h1 class="stamp" style="margin:0;font-size:22px;font-weight:600;line-height:1.2">${c.name}</h1>${pchip(c.prio)}
      <span style="font-size:11.5px;color:var(--inkSoft)">${c.yr} · ${c.goal}${c.pred&&c.pred!=="—"?` · Predicted ${c.pred}`:''}</span></div>
     <div style="font-size:11.5px;color:${P.c};font-weight:600;margin-top:4px">${P.label} · ${P.sla}</div></div>
    <div style="text-align:right;flex-shrink:0">
@@ -2826,7 +2846,7 @@ function sidebarC(){
    ${ic('home',15)}<span style="font-weight:600">Home</span></button>
   ${CATS.map(cat=>{const open=S.cat[cat.id];const cc=catCounts(cat);
    return `<div style="margin:0 11px 4px">
-    <button data-cat="${cat.id}" style="display:flex;align-items:center;gap:9px;width:100%;padding:8px 10px;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:inherit;text-align:left;background:${open?'rgba(255,255,255,.05)':'transparent'};color:#E2E8F0;transition:background .13s ease" onmouseover="this.style.background='rgba(255,255,255,.07)'" onmouseout="this.style.background='${open?'rgba(255,255,255,.05)':'transparent'}'">
+    <button data-cat="${cat.id}" style="display:flex;align-items:center;gap:9px;width:100%;padding:8px 10px;min-height:44px;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:inherit;text-align:left;background:${open?'rgba(255,255,255,.05)':'transparent'};color:#E2E8F0;transition:background .13s ease" onmouseover="this.style.background='rgba(255,255,255,.07)'" onmouseout="this.style.background='${open?'rgba(255,255,255,.05)':'transparent'}'">
      <span style="opacity:.8;display:flex;color:#94A3B8">${ic(cat.ic,15)}</span>
      <span style="font-size:12.5px;font-weight:600;letter-spacing:-.008em;flex:1;line-height:1.3">${cat.label}</span>
      <span style="display:flex;gap:4px;align-items:center">
@@ -2850,7 +2870,7 @@ function sidebarC(){
 
   </div>
   <div style="margin:14px 10px 0;padding-top:12px;border-top:1px solid var(--nav-line);color:var(--nav-txt)">
-   <button data-cat="sys" style="display:flex;align-items:center;gap:8px;width:100%;padding:7px 11px;border:none;background:transparent;cursor:pointer;font-family:var(--f-apparatus);color:var(--nav-txt);font-size:10px;letter-spacing:.09em;text-transform:uppercase;font-weight:600">
+   <button data-cat="sys" style="display:flex;align-items:center;gap:8px;width:100%;padding:7px 11px;min-height:44px;border:none;background:transparent;cursor:pointer;font-family:var(--f-apparatus);color:var(--nav-txt);font-size:10px;letter-spacing:.09em;text-transform:uppercase;font-weight:600">
     Tools & system <span style="margin-left:auto;transform:rotate(${S.cat.sys?90:0}deg);transition:transform .2s;display:flex">${ic('chevR',12)}</span></button>
    ${S.cat.sys?SYSNAV.map(([k,l,i])=>`<button class="navitem ${S.cv===k?'on':''}" data-cnav="${k}" style="padding:7px 11px;font-size:12px">${ic(i,15)}${l}</button>`).join(''):''}
   </div>
@@ -3007,6 +3027,7 @@ function sheetRow(c){
   <td class="lg-last"><span class="fig" style="font-size:11px;color:var(--ink-3)">${c.lastContact}</span></td>
  </tr>`;}
 
+const SHEET_CHUNK=25;
 function vSheet(){
  const pc=prioCounts();
  const list=sheetList();
@@ -3034,12 +3055,18 @@ function vSheet(){
     <div class="lg-grplab" style="color:${P.c}"><span>${P.label}</span>
      <span class="lg-grpsla">${P.sla}</span>
      <span class="lg-grpn">${pc[quiet[0].prio]} of ${S.cases.length}</span></div></td></tr>`;}
+  /* A real <table> gives content-visibility no layout containment on
+     display:table-row, so 87 laid-out <tr> is the cost of expanding in one
+     shot. Reveal in chunks instead — each tap lays out 25 more rows rather
+     than all of them, and collapsing drops them from the DOM again. */
+  const shown=Math.min(S.sheetRosterShown||0,quiet.length);
+  const remaining=quiet.length-shown;
   rows+=`<tr class="lg-grp" style="background:var(--stock)"><td class="lg-sel"></td><td class="lg-mgn"></td><td colspan="11">
-   <button class="lg-more" data-sheetroster="1" aria-expanded="${S.sheetRoster}">
-    <span style="display:flex;transform:rotate(${S.sheetRoster?90:0}deg);transition:transform .18s cubic-bezier(.22,1,.36,1)">${ic('chevR',13)}</span>
-    <span>${S.sheetRoster?`Hide the ${quiet.length}`:`${quiet.length} more students · no open signal`}</span>
+   <button class="lg-more" data-sheetroster="1" aria-expanded="${shown>0}">
+    <span style="display:flex;transform:rotate(${shown>0?90:0}deg);transition:transform .18s cubic-bezier(.22,1,.36,1)">${ic('chevR',13)}</span>
+    <span>${remaining>0?`Show ${Math.min(SHEET_CHUNK,remaining)} of ${remaining} more students · no open signal`:`Hide the ${quiet.length}`}</span>
     <span class="lg-morerule"></span></button></td></tr>`;
-  if(S.sheetRoster)quiet.forEach(c=>{rows+=sheetRow(c);});}
+  quiet.slice(0,shown).forEach(c=>{rows+=sheetRow(c);});}
 
  const railBody=sheetRail();
 
@@ -3576,7 +3603,7 @@ function gradeSwitcher(){
   <span class="chip" style="background:var(--violet-bg);color:var(--violetDeep)">${ic('users',11)} Family switcher</span>
   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
    <div style="display:flex;background:var(--surface-3);border-radius:var(--r);padding:3px;gap:2px">
-    ${grades.map(gr=>`<button data-pgrade="${gr}" style="padding:6px 12px;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;background:${S.previewGrade===gr?'var(--surface)':'transparent'};color:${S.previewGrade===gr?'var(--ink)':'var(--ink-3)'};box-shadow:${S.previewGrade===gr?'var(--sh-xs)':'none'}">Grade ${gr}</button>`).join('')}
+    ${grades.map(gr=>`<button data-pgrade="${gr}" style="padding:6px 12px;min-height:44px;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;background:${S.previewGrade===gr?'var(--surface)':'transparent'};color:${S.previewGrade===gr?'var(--ink)':'var(--ink-3)'};box-shadow:${S.previewGrade===gr?'var(--sh-xs)':'none'}">Grade ${gr}</button>`).join('')}
    </div></div>
   <span style="font-size:12px;color:var(--ink-2)"><b>${stu.name}</b> · ${trackLabel}</span>
   <span style="font-size:11px;color:var(--ink-4);margin-left:auto">Each grade is a different real student and family, so you can show a school every stage in one sitting</span>
@@ -3788,7 +3815,7 @@ function vStuClasses(){
  
  return `<div class="arrive" style="max-width:1000px">
   <div style="padding:24px 0">
-   <div class="stamp" style="font-size:24px;font-weight:600;margin-bottom:8px">My Classes</div>
+   <h1 class="stamp" style="margin:0 0 8px;font-size:24px;font-weight:600;line-height:1.2">My Classes</h1>
    <div style="font-size:13.5px;color:var(--ink-2);line-height:1.6;max-width:680px">
     ${grade===9?"Explore available AP courses for your future academics. Select courses you want to pursue starting next year to send to your counselor and teachers for guidance.":"Your current classes, grades, and what your target universities are looking for. Select your AP, IB, or Standard combination to send to your counselor and teachers for approval."}
    </div>
@@ -3932,7 +3959,7 @@ function vTClassApprovals(){
  const pending=CLASS_APPROVALS_PENDING.filter(a=>a.status==="pending");
  return `<div class="arrive" style="max-width:1100px">
   <div style="padding:24px 0">
-   <div class="stamp" style="font-size:24px;font-weight:600;margin-bottom:8px">Course Selections to Review</div>
+   <h1 class="stamp" style="margin:0 0 8px;font-size:24px;font-weight:600;line-height:1.2">Course Selections to Review</h1>
    <div style="font-size:13.5px;color:var(--ink-2)">Review readiness, timetable fit, and the courses you teach before recording your decision.</div>
   </div>
 
@@ -6523,7 +6550,7 @@ function draw(){
   else if(sv==="guide")body=`<div class="fade">${vHSGuide()}</div>`;
   else if(sv==="stuclass")body=vStuClasses();
   else if(sv==="stuacs")body=vStuACSSelector();
-  else if(sv==="explore")body=`<div class="fade">${vPathExplorer("data-snav","targets","mentors")}</div>`;
+  else if(sv==="explore")body=`<div class="fade">${head("Pathway","Choosing IB or AP","","var(--school-primary)","route")}${vPathExplorer("data-snav","targets","mentors")}</div>`;
   else if(sv==="progress")body=vStuProgress();
   else if(sv==="targets")body=vStuTargets();
   else if(sv==="apexams")body=`<div class="fade">${vApExamsStandalone("data-snav",null)}</div>`;
@@ -6541,10 +6568,10 @@ function draw(){
  }
  document.body.classList.toggle("nav-open",!!S.navOpen);
  document.body.classList.toggle("modal-open",!!S.modal);
- const palOpen = S.palOpen ? `<div class="palbackdrop" data-palclose="1" style="position:fixed;inset:0;background:rgba(16,24,40,.26);z-index:90;display:grid;place-items:start center;padding-top:100px"><div class="pal" style="width:min(620px,calc(100vw - 32px));background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:0 22px 60px rgba(10,14,24,.18);overflow:hidden">
+ const palOpen = S.palOpen ? `<div class="palbackdrop" data-palclose="1" style="position:fixed;inset:0;background:rgba(16,24,40,.26);z-index:90;display:grid;place-items:start center;padding-top:100px"><div class="pal" role="dialog" aria-modal="true" aria-label="Command palette" style="width:min(620px,calc(100vw - 32px));background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:0 22px 60px rgba(10,14,24,.18);overflow:hidden">
   <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--surface)">
    <span style="width:28px;height:28px;border-radius:var(--r);background:var(--surface-3);display:grid;place-items:center;color:var(--ink-3)">${ic('search',14)}</span>
-   <input id="palInput" value="${(S.palQuery||"").replace(/"/g,'&quot;')}" placeholder="Search commands…" style="border:none;background:none;flex:1;font-size:14px;color:var(--ink);font-family:inherit;outline:none"/>
+   <input id="palInput" value="${(S.palQuery||"").replace(/"/g,'&quot;')}" placeholder="Search commands…" aria-label="Search commands" style="border:none;background:none;flex:1;font-size:14px;color:var(--ink);font-family:inherit"/>
    <kbd style="font-size:10px;color:var(--ink-4);background:var(--surface-3);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:2px 6px">Esc</kbd>
   </div>
   <div id="palResults" style="padding:8px 8px 10px;max-height:360px;overflow:auto"></div>
@@ -6572,7 +6599,7 @@ function draw(){
  const tabbar=`<nav class="tabbar">${TABS.map(t=>{
    const on=t[0]!=="__menu"&&curKey===t[0];
    return `<button class="tabitem ${on?'on':''}" ${t[0]==="__menu"?'data-navopen="1"':navAttr+'="'+t[0]+'"'}>${ic(t[2],20)}<span>${t[1]}</span>${t[0]==="si-cases"&&prioCounts().urgent?`<i class="tabdot"></i>`:''}</button>`;}).join('')}</nav>`;
- R.innerHTML=`<a href="#main" class="skip-link">Skip to main content</a><div class="navscrim" data-navclose="1"></div><div style="height:100vh;display:flex;flex-direction:column">${roleBar()}${sb}</div>${tabbar}${palOpen}${modalEl()}${tflagModal()}${meetModal()}${mergeModal()}${assignModal()}${bulkAssignModal()}${escalateModal()}${S.toast?`<div class="toastbar pop">${ic('checkC',17)}${S.toast}</div>`:''}`;
+ R.innerHTML=`<a href="#main" class="skip-link">Skip to main content</a><div class="navscrim" data-navclose="1"></div><div${S.palOpen?' aria-hidden="true"':''} style="height:100vh;display:flex;flex-direction:column">${roleBar()}${sb}</div>${S.palOpen?tabbar.replace('<nav class="tabbar">','<nav class="tabbar" aria-hidden="true">'):tabbar}${palOpen}${modalEl()}${tflagModal()}${meetModal()}${mergeModal()}${assignModal()}${bulkAssignModal()}${escalateModal()}${S.toast?`<div class="toastbar pop" role="status" aria-live="polite">${ic('checkC',17)}${S.toast}</div>`:''}`;
  if(S.palOpen){palPaint(S.palQuery||"",S.role);setTimeout(()=>{const palInput=document.getElementById("palInput");if(palInput){palInput.focus();palInput.selectionStart=palInput.selectionEnd=palInput.value.length;}} ,0);}
  bind();
 }
@@ -6588,9 +6615,9 @@ function bind(){
     second full draw() (which stamps .still and cancels the entry animation
     the first one had just started) plus a silent S.open=null. */
  q("#root [data-role]",e=>e.onclick=()=>{S.role=e.dataset.role;S.open=null;S.navOpen=false;draw();});
- q("[data-palopener]",e=>e.onclick=()=>{S.palOpen=true;S.palQuery="";S.palActiveIndex=0;draw();});
- q("[data-palclose]",e=>e.onclick=()=>{S.palOpen=false;S.palQuery="";S.palActiveIndex=0;draw();});
- q("[data-palcmd]",e=>e.onclick=()=>{const action=e.dataset.palcmd;const m=(action||"").match(/^nav:(.+)$/);if(m){const key=m[1];if(S.role==="counselor")S.cv=key;else if(S.role==="student")S.sv=key;else if(S.role==="parent")S.pv=key;else if(S.role==="teacher")S.tv=key;else if(S.role==="mentor")S.mv=key;S.palOpen=false;S.palQuery="";S.palActiveIndex=0;draw();return;}if(action==="role:counselor"){S.role="counselor";S.palOpen=false;S.palQuery="";draw();return;}if(action==="role:teacher"){S.role="teacher";S.palOpen=false;S.palQuery="";draw();return;}if(action==="role:student"){S.role="student";S.palOpen=false;S.palQuery="";draw();return;}if(action==="role:parent"){S.role="parent";S.palOpen=false;S.palQuery="";draw();return;}if(action==="role:mentor"){S.role="mentor";S.palOpen=false;S.palQuery="";draw();return;}});
+ q("[data-palopener]",e=>e.onclick=()=>{palReturnSel=elSelector(document.activeElement)||elSelector(e);S.palOpen=true;S.palQuery="";S.palActiveIndex=0;draw();});
+ q("[data-palclose]",e=>e.onclick=()=>{S.palOpen=false;S.palQuery="";S.palActiveIndex=0;draw();palRestoreFocus();});
+ q("[data-palcmd]",e=>e.onclick=()=>{const action=e.dataset.palcmd;const m=(action||"").match(/^nav:(.+)$/);if(m){const key=m[1];if(S.role==="counselor")S.cv=key;else if(S.role==="student")S.sv=key;else if(S.role==="parent")S.pv=key;else if(S.role==="teacher")S.tv=key;else if(S.role==="mentor")S.mv=key;S.palOpen=false;S.palQuery="";S.palActiveIndex=0;draw();palRestoreFocus();return;}if(action==="role:counselor"){S.role="counselor";S.palOpen=false;S.palQuery="";draw();palRestoreFocus();return;}if(action==="role:teacher"){S.role="teacher";S.palOpen=false;S.palQuery="";draw();palRestoreFocus();return;}if(action==="role:student"){S.role="student";S.palOpen=false;S.palQuery="";draw();palRestoreFocus();return;}if(action==="role:parent"){S.role="parent";S.palOpen=false;S.palQuery="";draw();palRestoreFocus();return;}if(action==="role:mentor"){S.role="mentor";S.palOpen=false;S.palQuery="";draw();palRestoreFocus();return;}});
  q("[data-cnav]",e=>e.onclick=()=>{S.cv=e.dataset.cnav;S.open=null;S.fileId=null;S.ragFilter="all";S.navOpen=false;draw();});
  q("[data-cat]",e=>e.onclick=()=>{const k=e.dataset.cat;S.cat[k]=!S.cat[k];draw();});
  /* ── teacher flag flow ── */
@@ -6913,14 +6940,17 @@ function bind(){
    S.sheetTier=e.dataset.tier;
    /* A selection made under one filter must not survive into another, or the
       bulk bar acts on students the counselor can no longer see. */
-   S.sel=[];draw();});
+   S.sel=[];S.sheetRosterShown=0;draw();});
  /* Mouse convenience across the full width of a row. Not keyboard-exposed:
     the name inside it is the focusable control, and a second stop per row
     would double the tab count of the sheet for nothing. */
  q("[data-rowfile]",e=>e.onclick=(ev)=>{
    if(ev.target.closest("button,a,input,label"))return;
    S.fileId=e.dataset.rowfile;S.fileTab="synth";draw();});
- q("[data-sheetroster]",e=>e.onclick=(ev)=>{ev.stopPropagation();S.sheetRoster=!S.sheetRoster;draw();});
+ q("[data-sheetroster]",e=>e.onclick=(ev)=>{ev.stopPropagation();
+  const quiet=sheetList().filter(c=>c.roster).length;
+  S.sheetRosterShown=(S.sheetRosterShown||0)<quiet?Math.min((S.sheetRosterShown||0)+SHEET_CHUNK,quiet):0;
+  draw();});
  q("[data-sel]",e=>e.onclick=(ev)=>{ev.stopPropagation();ev.preventDefault();
    const id=e.dataset.sel,i=S.sel.indexOf(id);
    if(i>=0)S.sel.splice(i,1);else S.sel.push(id);
@@ -7022,11 +7052,25 @@ document.addEventListener("keydown",ev=>{
  }
  if((ev.metaKey||ev.ctrlKey)&&ev.key.toLowerCase()==="k"){
   ev.preventDefault();
+  palReturnSel=elSelector(document.activeElement);
   S.palOpen=true;S.palQuery="";S.palActiveIndex=0;draw();
   return;
  }
  if(S.palOpen&&ev.key==="Escape"){
-  S.palOpen=false;S.palQuery="";S.palActiveIndex=0;draw();
+  S.palOpen=false;S.palQuery="";S.palActiveIndex=0;draw();palRestoreFocus();
+  return;
+ }
+ if(S.palOpen&&ev.key==="Tab"){
+  const pal=document.querySelector(".pal");
+  if(pal){
+   const f=[...pal.querySelectorAll('input,button:not([disabled])')].filter(el=>el.offsetParent!==null);
+   if(f.length){
+    const first=f[0],last=f[f.length-1];
+    if(ev.shiftKey&&document.activeElement===first){ev.preventDefault();last.focus();}
+    else if(!ev.shiftKey&&document.activeElement===last){ev.preventDefault();first.focus();}
+    else if(!pal.contains(document.activeElement)){ev.preventDefault();first.focus();}
+   }
+  }
   return;
  }
  if(S.palOpen&&ev.key==="ArrowDown"){
@@ -7046,7 +7090,7 @@ document.addEventListener("keydown",ev=>{
  if(S.palOpen&&ev.key==="Enter"){
   const list=S.palResults.length?S.palResults:palFilter(S.palQuery,S.role);
   const item=list[Math.min(S.palActiveIndex||0,list.length-1)];
-  if(item){const act=item.action;const m=(act||"").match(/^nav:(.+)$/);if(m){const key=m[1];if(S.role==="counselor")S.cv=key;else if(S.role==="student")S.sv=key;else if(S.role==="parent")S.pv=key;else if(S.role==="teacher")S.tv=key;else if(S.role==="mentor")S.mv=key;S.palOpen=false;S.palQuery="";S.palActiveIndex=0;draw();} else if(act&&act.startsWith("role:")){S.role=act.replace(/^role:/,"");S.palOpen=false;S.palQuery="";S.palActiveIndex=0;draw();}}
+  if(item){const act=item.action;const m=(act||"").match(/^nav:(.+)$/);if(m){const key=m[1];if(S.role==="counselor")S.cv=key;else if(S.role==="student")S.sv=key;else if(S.role==="parent")S.pv=key;else if(S.role==="teacher")S.tv=key;else if(S.role==="mentor")S.mv=key;S.palOpen=false;S.palQuery="";S.palActiveIndex=0;draw();palRestoreFocus();} else if(act&&act.startsWith("role:")){S.role=act.replace(/^role:/,"");S.palOpen=false;S.palQuery="";S.palActiveIndex=0;draw();palRestoreFocus();}}
   ev.preventDefault();
  }
 });
@@ -7144,7 +7188,6 @@ draw();
  var LIVE=[
  ];
  var GLOBAL=[
-  {loc:"vSheet",msg:"The caseload sheet is a real <table>; content-visibility:auto doesn't reliably apply to table rows (no layout containment on display:table-row), so the roster rows are unvirtualized when expanded. Mitigated in P3 — the sheet renders 15 rows until the counselor opens the other 72 — but a full expansion still lays out 87 <tr>. Needs restructuring off <table> or real virtualization."}
  ];
 
  function svgEsc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
