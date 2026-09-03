@@ -83,7 +83,11 @@
  --school-src:#004D43; --school-src-deep:#023A33; --school-src-lift:#4FA898; --school-src-accent:#F7BD00;
  --school-field:#004D43; --school-field-dark:#00302A;
  --school-primary:var(--school-src);
- --school-on-primary:#FFFFFF;
+ /* Read through a *-paper source, never written directly by applySchool: an
+    inline custom property on <html> outranks the night-ledger media query on
+    the same element, so writing the resolved token here pinned the daylight
+    foreground into dark mode. Same discipline as --school-primary above. */
+ --school-on-primary:var(--school-on-primary-paper,#FFFFFF);
  /* The letterhead field and its text ramp. --letterhead is what a masthead or
     a sidebar paints with; --school-primary stays the colour of a mark. */
  --letterhead:var(--school-field);
@@ -91,7 +95,7 @@
  --on-letterhead-2:var(--school-on-field-mute,#C6D8D4);
  --school-accent:var(--school-src-accent); /* gold: a fill only. 1.62:1 as text — never text. */
  --school-on-accent:#131D26;
- --school-tint:rgba(0,77,67,.04);          /* the bounded ~4% material tint. */
+ --school-tint:var(--school-tint-paper,rgba(0,77,67,.04)); /* the bounded ~4% material tint. */
 
  /* ── Bridge to the incumbent vocabulary ───────────────────────────────────
     Every component in this file already reads the names below, so aliasing
@@ -253,6 +257,19 @@ input,textarea,select,[contenteditable]{caret-color:var(--margin)}
 .shadowbar{background:var(--t-review-bg);border:1px solid var(--warn-line)!important}
 
 /* ══════════ BUTTONS ══════════ */
+/* A bare <button> inherits the UA's `buttontext`, which is black in every
+   rendition — legible on paper by luck, invisible on the night ledger. Any
+   button that wants its own colour still declares one; this only stops the
+   ones that never did from silently opting out of the sheet's ink. */
+button{color:inherit}
+/* The topbar's palette opener. Below the tab-bar breakpoint it stands down so
+   the page title gets the width — ⌘K has no keyboard there anyway, and the
+   tab bar is the navigation. */
+.topsearch{display:flex;align-items:center;gap:8px;height:36px;padding:0 11px;width:210px;
+ background:var(--stock);border:1px solid var(--rule-2);border-radius:var(--r);
+ font-family:var(--f-content);font-size:12.5px;color:var(--ink-3);cursor:pointer}
+.topsearch:hover{border-color:var(--rule-3);color:var(--ink-2)}
+@media (max-width:820px),(max-height:540px) and (max-width:1000px){.topsearch{display:none}}
 .btn{
  display:inline-flex;align-items:center;justify-content:center;gap:6px;
  font-family:var(--f-apparatus);font-size:13.5px;font-weight:600;letter-spacing:.008em;
@@ -329,6 +346,30 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--band-2)}
 .sheet td.num,.sheet th.num{font-family:var(--f-figure);font-variant-numeric:tabular-nums;text-align:right;letter-spacing:-.028em}
 /* The red margin rule. One accent, and it only ever runs down the left edge. */
 .marginrule{border-left:2px solid var(--margin)}
+
+/* ══════════ THE LEDGER STAMP ══════════
+   A boxed letter in the margin, struck in ink rather than in a tier colour.
+   The coloured .tstamp is reserved for the five triage tiers and nothing
+   else; every other margin mark — a list standing, a milestone entered —
+   takes this one, so a student's "Reach" can never be read as an Urgent
+   case. Same box, same width, different register. */
+.lstamp{display:inline-grid;place-items:center;width:21px;height:21px;flex-shrink:0;
+ border:1.5px solid var(--rule-3);background:var(--stock);
+ font-family:var(--f-apparatus);font-size:11px;font-weight:700;line-height:1;
+ letter-spacing:.02em;color:var(--ink-2)}
+.lstamp.on{border-color:var(--school-primary);background:var(--school-primary);color:var(--school-on-primary)}
+.lstamp.void{border-style:dashed;color:var(--ink-4)}
+
+/* ══════════ THE RUN ══════════
+   The counselor reads a run of marks across a row until it breaks. On the
+   student's own page the run goes the other way: cells fill as milestones are
+   entered against her name. Same cell, same stock, same ruling — one
+   vocabulary, so progress on the student side is not a second visual system
+   imported from a game. */
+.run{display:flex;gap:3px;flex-wrap:wrap;align-items:center}
+.run i{width:13px;height:19px;border:1px solid var(--rule-2);background:var(--stock);display:block}
+.run i.in{background:var(--school-primary);border-color:var(--school-primary)}
+.run i.next{border-color:var(--ink-3);border-style:dashed}
 
 /* ══════════ THE CASELOAD SHEET ══════════
    Full bleed: the sheet is the page, so it opts the shell's own gutter out
@@ -717,8 +758,11 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
  .tabitem.on{color:var(--brand)}
  .tabitem.on svg{stroke-width:2.1}
  .tabitem:active{background:var(--surface-3)}
+ /* The ring separating the dot from the bar is the bar's own ground, not
+    white — on the night ledger a white ring is the only thing on this bar
+    that does not turn down with the lamp. */
  .tabdot{position:absolute;top:5px;right:calc(50% - 15px);width:7px;height:7px;border-radius:var(--r-dot);
-  background:var(--crit);border:1.5px solid #fff}
+  background:var(--crit);border:1.5px solid var(--stock)}
  body.nav-open .tabbar{opacity:0;pointer-events:none;transition:opacity .2s}
 }
 
@@ -887,7 +931,11 @@ function applySchool(id){
  r.setProperty('--school-field-dark',shade);
  r.setProperty('--school-src-lift',lift);
  r.setProperty('--school-src-accent',b.accent);
- r.setProperty('--school-on-primary',ink(b.primary));
+ /* -paper, not the resolved name: see the note on --school-on-primary in the
+    token block. Writing the resolved token inline beat the dark rule and put
+    white on the lifted mark at 3.74:1 — the very failure the split of field
+    from mark was made to prevent, re-entering through the cascade. */
+ r.setProperty('--school-on-primary-paper',ink(b.primary));
  r.setProperty('--school-on-primary-lift',ink(lift));
  r.setProperty('--school-on-field',ink(b.primary));
  r.setProperty('--school-on-field-dark',ink(shade));
@@ -899,10 +947,15 @@ function applySchool(id){
  r.setProperty('--school-on-accent',ink(b.accent));
  /* The bounded material tint. ~4% and no further: unbounded, it walks the
     stock toward the warm cream this direction exists to refuse. */
- r.setProperty('--school-tint',hexA(b.primary,.04));
+ r.setProperty('--school-tint-paper',hexA(b.primary,.04));
  document.documentElement.dataset.school=rec.id;
  document.documentElement.dataset.demoData=rec.real?'on':'off';
 }
+/* Spoken about rather than addressed, a counselor is title plus surname:
+   "Ms. Reem Haddad" reads as "Ms. Haddad", which is also the form the other
+   49 references in this file already use. */
+function counselorShort(){const p=SCHOOL.counselor.split(" ");
+ return p.length>2?p[0]+" "+p[p.length-1]:SCHOOL.counselor;}
 function hexA(hex,a){const h=hex.replace('#','');
  return 'rgba('+parseInt(h.substr(0,2),16)+','+parseInt(h.substr(2,2),16)+','+parseInt(h.substr(4,2),16)+','+a+')';}
 /* A school primary dark enough to read on paper is too dark to read on the
@@ -1343,7 +1396,7 @@ cat:{cohort:true,uni:false,si:false,sys:false},ragFilter:"all",
 sheetTier:"all",sheetRoster:false,sel:[],
 navOpen:false,q:"",pv:"overview",tKind:"concern",tTags:[],tNote:"",mKind:"Check-in",mOut:"Ongoing",mergePick:null,assignPick:null,tv:"class",
 rQ:"",rSort:"priority",rFilt:"all",
-pathDone:{},lettered:false,
+lettered:false,
 palOpen:false,palQuery:"",palActiveIndex:0,palResults:[]};
 const R=document.getElementById("root");
 const g=id=>S.cases.find(c=>c.id===id);
@@ -1545,10 +1598,14 @@ function prioCounts(){const o={urgent:0,checkin:0,review:0,monitor:0,good:0};S.c
 function needToday(){const p=prioCounts();return p.urgent+p.checkin;}
 
 /* ═══════════ ROLE BAR ═══════════ */
+/* One nav per role, and only one. Entries are [id, label, icon] — the shape
+   shell() already consumes — so the sidebar, the mobile tab bar and ⌘K all
+   read the same list. Three hand-maintained copies is how the sidebar came to
+   offer a Grade 10 student a mentor surface this function gates to Grade 11. */
 function roleNav(role){
+ const grade=S.previewGrade||12;
+ const track=(g(PARENT_ME)||{}).track||"IB";
  if(role==="parent"){
-  const grade=S.previewGrade||12;
-  const track=(g(PARENT_ME)||{}).track||"IB";
   let nav=[["overview","Overview","home"],["messages","Messages","msg"],["meetings","Meet the counselor","brief"]];
   if(grade===9)nav.splice(2,0,["guide","High School Guide","book"]);
   if(grade>=10)nav.splice(2,0,["pathway","IB or AP","route"]);
@@ -1556,33 +1613,33 @@ function roleNav(role){
   if(grade===12)nav.splice(Math.max(nav.findIndex(t=>t[0]==="pathway"),0),0,["uni","University requirements","grad"]);
   if(grade>=11&&track==="AP")nav.splice(Math.max(nav.findIndex(t=>t[0]==="meetings"),0),0,["apexams","AP Exams","clock"]);
   const order=["overview","messages","guide","grades","uni","pathway","apexams","meetings"];
-  return nav.sort((a,b)=>order.indexOf(a[0])-order.indexOf(b[0]))
-   .map(([id,label,icon])=>({id,label,icon}));
+  return nav.sort((a,b)=>order.indexOf(a[0])-order.indexOf(b[0]));
  }
  if(role==="student"){
-  const grade=S.previewGrade||12;
-  const track=(g(PARENT_ME)||{}).track||"IB";
   const nav=[["discover","My Pathway","spark"]];
-  if(grade===9){nav.push(["guide","High School Guide","book"]);}
+  if(grade===9)nav.push(["guide","High School Guide","book"],["stuclass","My Classes","book"]);
   else{
-    nav.push(["explore","Choosing IB or AP","route"]);
-    if(grade>=11)nav.push(["stuclass","My Classes","book"]);
-    if(grade>=11)nav.push(["progress","My progress","trend"]);
-    if(grade===12)nav.push(["targets","University targets","target"]);
-    if(grade>=11)nav.push(["mentors","Find a Mentor","users"]);
-    if(grade>=11&&track==="AP")nav.push(["apexams","AP Exams","clock"]);
-    if(grade===12)nav.push(["network","My network","brief"]);
+   if(grade>=11)nav.push(["progress","My progress","trend"]);
+   nav.push(["stuclass","My Classes","book"]);
+   if(grade===12)nav.push(["targets","University targets","target"]);
+   nav.push(["explore","Choosing IB or AP","route"]);
+   if(grade>=11)nav.push(["pslab","Personal Statement Lab","doc"]);
+   if(grade>=11&&track==="AP")nav.push(["apexams","AP Exams","clock"]);
+   /* Alumni are gated to Grade 11 and up: the conversation is about an
+      application the student is close enough to be making. */
+   if(grade>=11)nav.push(["mentors","Find a Mentor","users"]);
+   if(grade===12)nav.push(["network","My network","brief"]);
   }
-  return nav.map(([id,label,icon])=>({id,label,icon}));
+  return nav;
  }
- if(role==="teacher")return [{id:"tclasses",label:"My Classes",icon:"book"},{id:"class",label:"My Class Register",icon:"users"},{id:"tlog",label:"What I've logged",icon:"list"},{id:"classapprovals",label:"Course Approvals",icon:"check"}];
- if(role==="mentor")return [{id:"requests",label:"Session requests",icon:"inbox"},{id:"mentees",label:"My mentees",icon:"users"}];
- return [{id:"cohort-schedule",label:"Caseload",icon:"users"},{id:"si-cases",label:"Priority",icon:"alert"},{id:"meetings",label:"Meetings",icon:"brief"},{id:"flags",label:"Flags",icon:"inbox"}];
+ if(role==="teacher")return [["tclasses","My Classes","book"],["class","My Class Register","users"],["classapprovals","Course Approvals","check"],["tlog","What I've logged","list"]];
+ if(role==="mentor")return [["requests","Session Requests","inbox",MENTOR_REQS.length],["mentees","My Mentees","users"]];
+ return [["cohort-schedule","Caseload","users"],["si-cases","Priority","alert"],["meetings","Meetings","brief"],["flags","Flags","inbox"]];
 }
 
 function palCommands(role){
  const nav=roleNav(role);
- const base=nav.map(x=>({id:x.id,label:`Open ${x.label}`,icon:x.icon,action:`nav:${x.id}`}));
+ const base=nav.map(([id,label,icon])=>({id,label:`Open ${label}`,icon,action:`nav:${id}`}));
  if(role==="counselor"){base.push({id:"cohort-schedule",label:"Open the caseload sheet",icon:"users",action:"nav:cohort-schedule"},{id:"flags",label:"Open teacher flags",icon:"inbox",action:"nav:flags"},{id:"meetings",label:"Open meetings",icon:"brief",action:"nav:meetings"},{id:"thresholds",label:"Tune thresholds",icon:"gauge",action:"nav:thresholds"});}
  else if(role==="teacher"){base.push({id:"class",label:"Open my class",icon:"users",action:"nav:class"},{id:"tlog",label:"Open logged concerns",icon:"list",action:"nav:tlog"});}
  else if(role==="student"){base.push({id:"discover",label:"Restart my pathway",icon:"spark",action:"nav:discover"},{id:"progress",label:"Open my progress",icon:"trend",action:"nav:progress"});}
@@ -1695,7 +1752,14 @@ function shell(theme,nav,active,attr,footAv,footN,footR,title,sub,body){
   <div class="glass" style="position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);padding:13px 30px;display:flex;align-items:center;gap:16px">
    <button class="navtoggle" data-navopen="1" aria-label="Menu">${ic('list',18)}</button>
    <div style="flex:1;min-width:0"><div class="stamp" style="font-size:18px;font-weight:600">${title}</div><div style="font-size:11.5px;color:var(--inkMute);margin-top:1px">${sub}</div></div>
-   <div style="display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:7px 12px;width:210px">${ic('search',14)}<input placeholder="Search students…" style="border:none;background:none;font-size:12.5px;width:100%;color:var(--ink)"></div>
+   ${/* Was a dead <input placeholder="Search students…"> on a white literal:
+        it had no handler, it inverted wrong on the night ledger, and on the
+        student's own portal it offered to search other students — the exact
+        permission the ⌘K palette is scoped to withhold. It is now the opener
+        for that palette, which already knows what each role may search. */''}
+   <button class="topsearch" data-palopener="1" aria-label="Search — ⌘K" aria-keyshortcuts="Meta+K">
+    ${ic('search',14)}<span style="flex:1;text-align:left">Search</span>
+    <kbd style="font-family:var(--f-figure);font-size:10px;color:var(--ink-3);background:var(--stock-3);border:1px solid var(--rule-2);border-radius:var(--r-sm);padding:1px 5px;flex-shrink:0">⌘K</kbd></button>
   </div>
   <div class="pagewrap" style="padding:24px 30px 70px;max-width:1140px">${body}</div>
  </main></div>`;}
@@ -3309,6 +3373,14 @@ const SUBJECTS=[
  {s:"Arabic B",lv:"SL",work:6,pred:6,t:"Ms. Nasser",dir:"flat",note:""},
  {s:"Physics",lv:"SL",work:5,pred:6,t:"Dr. Reid",dir:"up",note:"Improved after the October intervention."}];
 const IB_CORE=[{s:"Theory of Knowledge",g:"B"},{s:"Extended Essay",g:"A"},{s:"Bonus points",g:"3 of 3"}];
+/* Subjects and network are per-student records, not one global belonging to
+   whichever student the demo happened to open on. Only Sara has a full
+   timetable and a built network today; every other student falls through to
+   an honest empty state rather than being shown hers. */
+const SUBJECTS_BY={s3:SUBJECTS};
+const NETWORK={s3:[{n:"Hassan Al Rashid",r:"Mentor · Goldman IBD",w:true},
+ {n:"Lina Khoury",r:"Mentor · Mubadala",w:true},
+ {n:"Uncle — Emirates NBD",r:"Family · Banking",w:true}]};
 
 /* university eligibility: which school courses are required, multiple paths where they exist */
 /* ═══ COST OF ATTENDANCE — per university, tuition + living, updated for the year Sara applies ═══ */
@@ -3325,7 +3397,12 @@ const OFFERS={
  "Warwick":{status:"pending",note:"Application not yet submitted — 18 days to the UCAS deadline."},
  "NYU Stern (Abu Dhabi)":{status:"conditional",date:"14 Nov 2025",
   condition:"Maintain predicted IB performance through final exams — no specific subject minimum below her current 39-point prediction.",
-  detail:"NYU Abu Dhabi reviews holistically rather than against a fixed grade line, so the condition is framed around consistency rather than a hard threshold. As long as Sara's final results land at or near her current prediction, the offer stands."}};
+  detail:"NYU Abu Dhabi reviews holistically rather than against a fixed grade line, so the condition is framed around consistency rather than a hard threshold. As long as Sara's final results land at or near her current prediction, the offer stands.",
+  /* The counselor and the parent read about a student; the student reads
+     about herself. Same facts, second person — a portal that calls its own
+     owner "her" is quoting a file at her rather than telling her something. */
+  youCondition:"Hold your predicted IB performance through final exams. There is no subject minimum below your current 39-point prediction.",
+  youDetail:"NYU Abu Dhabi reads the whole application rather than a fixed grade line, so the condition is about consistency, not a threshold to clear. Land at or near your prediction and the offer stands."}};
 
 const UNI_REQS={
  "London School of Economics":{course:"BSc Economics",offer:"38 points overall, 7 6 6 at HL",
@@ -3709,7 +3786,7 @@ function vStuClasses(){
     <div style="font-size:13px;color:var(--ink)">${classes.length} courses taken · ${classes[0].scale==="ib"?"Predicted total: "+classes.reduce((a,b)=>a+(b.grade||0),0)+" / 42 subject points":"Average: "+Math.round(classes.reduce((a,b)=>a+(b.avg||0),0)/classes.length)+"%"}</div>
    </div>
    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1px;background:var(--line)">
-    ${classes.map((cl,i)=>`<div style="background:white;padding:14px;border-bottom:${i<classes.length-1?'1px solid var(--line)':'none'}">
+    ${classes.map((cl,i)=>`<div style="background:var(--stock);padding:14px;border-bottom:${i<classes.length-1?'1px solid var(--line)':'none'}">
      <div style="font-weight:600;font-size:13px;color:var(--ink);margin-bottom:4px">${cl.name}</div>
      <div style="font-size:11px;color:var(--ink-3);margin-bottom:8px">${cl.teacher} · Period ${cl.period}</div>
      ${cl.grade?`<div style="display:flex;gap:12px;align-items:center">
@@ -3906,18 +3983,23 @@ function vTClassApprovals(){
    pathway proposals, counselor approval, gamified roadmap.
    ═══════════════════════════════════════════════════════════════════ */
 
+/* Three taps, not nine open-ended paragraphs before a fifteen-year-old is
+   shown a single thing. The depth this used to demand in a form is what the
+   conversation on the very next screen exists to do, and does better; a gate
+   only owes that conversation somewhere to start.
+
+   Every option carries the tag the scoring engine wants, so a tap is a
+   stronger signal than a paragraph the keyword matcher had to guess at — the
+   three kept questions are also the three the engine weights most heavily
+   (interests 2.5 per pick, drive 2, spark 2). Free text still scores through
+   extractTag for any answer written before this change. */
 const ONBOARD_Q=[
- {id:"passions",type:"text",text:"What are your actual passions — the things you would do even if nobody was paying you or grading you for them?"},
- {id:"moment",type:"text",text:"Tell me about a time you felt genuinely proud, or completely absorbed in what you were doing. What were you actually doing?"},
- {id:"dislikes",type:"text",text:"Is there anything you already know you want to avoid — a type of work, a lifestyle, a feeling you never want to have in a job?"},
- {id:"drive",type:"text",text:"Think of a moment you felt genuinely great at something. What were you actually doing — leading people, building or fixing something, solving a hard problem, or making something from nothing?"},
- {id:"spark",type:"text",text:"Paint the picture — at 25, what would genuinely excite you about your life? The money, the impact you've had, being excellent at one specific thing, or the freedom to work on your own terms?"},
- {id:"risk",type:"slider",text:"How much risk are you actually comfortable with, honestly?",
-  low:"A stable, well-defined path",high:"High risk, high reward, no guarantees"},
- {id:"env",type:"text",text:"Describe the environment where you'd actually feel comfortable working — the pace, how many people are around you, how much structure there is."},
- {id:"interests",type:"multi",text:"Which of these already genuinely interest you? Pick as many as apply.",
-  opts:[["finance","Markets, investing, business"],["tech","Coding, AI, technology"],["science","Biology, chemistry, medicine"],["design","Art, design, architecture"],["writing","Writing, media, storytelling"],["people","Psychology, teaching, working with people"],["none","Honestly, none of these yet — that's fine"]]},
- {id:"specific",type:"text",text:"Is there anything specific you already want to do — a job, a company, a place you picture yourself? If not, just say so."}
+ {id:"interests",type:"multi",text:"What already interests you? Pick as many as apply.",
+  opts:[["finance","Markets, investing, business"],["tech","Coding, AI, technology"],["science","Biology, chemistry, medicine"],["design","Art, design, architecture"],["writing","Writing, media, storytelling"],["people","Psychology, teaching, working with people"],["none","None of these yet — that is a real answer"]]},
+ {id:"drive",type:"pick",text:"When you have felt genuinely good at something, what were you doing?",
+  opts:[["people","Leading people, or talking them round"],["building","Building or fixing something"],["analyzing","Solving a hard problem"],["creating","Making something out of nothing"]]},
+ {id:"spark",type:"pick",text:"At 25, what would make you feel it had gone well?",
+  opts:[["money","Earning seriously well"],["impact","Having changed something for people"],["mastery","Being excellent at one specific thing"],["freedom","Working on my own terms"]]}
 ];
 
 /* Pathway archetypes — each with a real, visual, milestone-based roadmap. */
@@ -4091,9 +4173,10 @@ const DISCOVERY_NARROW={
 function scoreArchetypes(answers){
  const scores={};Object.keys(ARCHETYPES).forEach(k=>scores[k]=0);
  const bump=(key,amt)=>{Object.entries(ARCHETYPES).forEach(([k,a])=>{if(a.score[key])scores[k]+=a.score[key]*amt;});};
- const driveTag=extractTag(answers.drive,["people","building","analyzing","creating"]);
- const sparkTag=extractTag(answers.spark,["money","impact","mastery","freedom"]);
- const envTag=extractTag(answers.env,["fast","steady","social","solo"]);
+ /* A tapped option states its tag; free text still has to be read for one. */
+ const driveTag=answers.driveTag||extractTag(answers.drive,["people","building","analyzing","creating"]);
+ const sparkTag=answers.sparkTag||extractTag(answers.spark,["money","impact","mastery","freedom"]);
+ const envTag=answers.envTag||extractTag(answers.env,["fast","steady","social","solo"]);
  if(driveTag)bump(driveTag,2);
  if(sparkTag)bump(sparkTag,2);
  if(envTag)bump(envTag,1.5);
@@ -4210,48 +4293,47 @@ function vOnboardQuiz(){
  const q=ONBOARD_Q[step];
  const total=ONBOARD_Q.length;
  const ans=S.onbAnswers||{};
- if(q.type==="slider"&&ans[q.id]===undefined)ans[q.id]=50;
+
  const canNext=(()=>{
   if(q.type==="single")return !!ans[q.id];
+  if(q.type==="pick")return !!ans[q.id+"Tag"];
   if(q.type==="multi")return ans[q.id]&&ans[q.id].length>0;
-  if(q.type==="slider")return true;
-  if(q.type==="text")return true;
   return true;})();
+ /* One option row. The register is the sheet's: a ruled box that fills with
+    the school's ink when it is the answer, not a tinted lozenge. */
+ const optRow=(attr,val,label,on,shape)=>
+  `<button ${attr}="${val}" aria-pressed="${on}" style="text-align:left;font-family:inherit;cursor:pointer;min-height:44px;padding:14px 16px;border:1.5px solid ${on?'var(--school-primary)':'var(--rule-2)'};background:${on?'var(--band)':'var(--stock)'};display:flex;align-items:center;gap:12px;transition:border-color .15s,background-color .15s">
+    <span style="width:20px;height:20px;border-radius:${shape==="dot"?'var(--r-dot)':'var(--r-sm)'};border:2px solid ${on?'var(--school-primary)':'var(--rule-3)'};background:${on?'var(--school-primary)':'var(--stock)'};color:var(--school-on-primary);flex-shrink:0;display:grid;place-items:center">${on?(shape==="dot"?'<span style="width:7px;height:7px;border-radius:var(--r-dot);background:var(--school-on-primary)"></span>':ic('check',13)):''}</span>
+    <span style="font-size:14px;color:var(--ink);font-weight:${on?600:500}">${label}</span></button>`;
  return `<div class="fade" style="max-width:640px;margin:0 auto">
-  <div style="display:flex;gap:5px;margin-bottom:28px">
-   ${ONBOARD_Q.map((_,i)=>`<div style="flex:1;height:5px;border-radius:var(--r-sm);background:${i<=step?'var(--violet)':'var(--line-2)'};transition:background .3s"></div>`).join('')}
+  <div style="display:flex;gap:5px;margin-bottom:28px" role="presentation">
+   ${ONBOARD_Q.map((_,i)=>`<div style="flex:1;height:5px;background:${i<=step?'var(--school-primary)':'var(--rule-2)'};transition:background .3s"></div>`).join('')}
   </div>
-  <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--violetDeep);font-weight:700;margin-bottom:10px">Question ${step+1} of ${total}</div>
-  <div class="stamp" style="font-size:24px;font-weight:600;line-height:1.35;margin-bottom:26px">${q.text}</div>
+  <div class="railh" style="margin-bottom:10px">Question ${step+1} of ${total}</div>
+  <h1 class="stamp" style="font-size:24px;font-weight:600;line-height:1.35;margin:0 0 26px">${q.text}</h1>
 
   ${q.type==="single"?`<div style="display:flex;flex-direction:column;gap:10px">
-   ${q.opts.map(([v,label])=>{const on=ans[q.id]===v;
-    return `<button data-onb-single="${q.id}:${v}" style="text-align:left;font-family:inherit;cursor:pointer;padding:16px 18px;border-radius:var(--r);border:1.5px solid ${on?'var(--violet)':'var(--line-2)'};background:${on?'var(--violet-bg)':'var(--surface)'};display:flex;align-items:center;gap:12px;transition:border-color .15s,background-color .15s">
-     <span style="width:20px;height:20px;border-radius:var(--r-pill);border:2px solid ${on?'var(--violet)':'var(--line-3)'};background:${on?'var(--violet)':'#fff'};flex-shrink:0;display:grid;place-items:center">${on?'<span style="width:7px;height:7px;border-radius:var(--r-dot);background:#fff"></span>':''}</span>
-     <span style="font-size:14px;color:${on?'var(--violetDeep)':'var(--ink)'};font-weight:${on?600:500}">${label}</span></button>`;}).join('')}
+   ${q.opts.map(([v,label])=>optRow("data-onb-single",q.id+":"+v,label,ans[q.id]===v,"dot")).join('')}
+  </div>`:''}
+
+  ${q.type==="pick"?`<div style="display:flex;flex-direction:column;gap:10px">
+   ${q.opts.map(([v,label])=>optRow("data-onb-pick",q.id+":"+v,label,ans[q.id+"Tag"]===v,"dot")).join('')}
   </div>`:''}
 
   ${q.type==="multi"?`<div style="display:flex;flex-direction:column;gap:10px">
-   ${q.opts.map(([v,label])=>{const on=(ans[q.id]||[]).includes(v);
-    return `<button data-onb-multi="${q.id}:${v}" style="text-align:left;font-family:inherit;cursor:pointer;padding:16px 18px;border-radius:var(--r);border:1.5px solid ${on?'var(--violet)':'var(--line-2)'};background:${on?'var(--violet-bg)':'var(--surface)'};display:flex;align-items:center;gap:12px;transition:border-color .15s,background-color .15s">
-     <span style="width:20px;height:20px;border-radius:var(--r-sm);border:2px solid ${on?'var(--violet)':'var(--line-3)'};background:${on?'var(--violet)':'#fff'};flex-shrink:0;display:grid;place-items:center">${on?ic('check',13):''}</span>
-     <span style="font-size:14px;color:${on?'var(--violetDeep)':'var(--ink)'};font-weight:${on?600:500}">${label}</span></button>`;}).join('')}
+   ${q.opts.map(([v,label])=>optRow("data-onb-multi",q.id+":"+v,label,(ans[q.id]||[]).includes(v),"box")).join('')}
   </div>`:''}
 
-  ${q.type==="slider"?`<div style="padding:10px 4px">
-   <input type="range" aria-label="${q.text}" min="0" max="100" value="${ans[q.id]!==undefined?ans[q.id]:50}" data-onb-slider="${q.id}" style="width:100%">
-   <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink-3);margin-top:10px;line-height:1.4">
-    <span style="max-width:45%">${q.low}</span><span style="max-width:45%;text-align:right">${q.high}</span></div>
-  </div>`:''}
-
-  ${q.type==="text"?`<textarea data-onb-text="${q.id}" aria-label="${q.text}" placeholder="Type as much or as little as you want…" style="width:100%;min-height:110px;border:1.5px solid var(--line-2);border-radius:var(--r);padding:16px;font-size:14px;line-height:1.6;resize:vertical">${ans[q.id]||''}</textarea>`:''}
+  <!-- The slider and free-text question types went with the questions that
+       used them. Everything this gate asks is now a tap; the typing happens
+       in the conversation, which is built for it. -->
 
   <div style="display:flex;gap:10px;margin-top:30px">
    ${step>0?`<button class="btn btn-g" data-onb-back="1">${ic('arrowL',15)} Back</button>`:''}
-   <button class="btn" style="flex:1;background:var(--violet);color:var(--on-violet)" data-onb-next="1" ${canNext?'':'disabled'}>
+   <button class="btn btn-p" style="flex:1" data-onb-next="1" ${canNext?'':'disabled'}>
     ${step===total-1?'See what this reveals':'Continue'} ${ic('arrowR',15)}</button>
   </div>
-  <button data-onb-skip="1" style="display:block;margin:16px auto 0;background:none;border:none;cursor:pointer;font-family:inherit;font-size:12.5px;color:var(--ink-3);text-decoration:underline;text-underline-offset:3px;padding:6px">Skip for now — I'll answer these later</button>
+  <button data-onb-skip="1" style="display:block;margin:16px auto 0;min-height:44px;background:none;border:none;cursor:pointer;font-family:inherit;font-size:12.5px;color:var(--ink-3);text-decoration:underline;text-underline-offset:3px;padding:6px 12px">Skip for now — I'll answer these later</button>
   <div style="text-align:center;font-size:11.5px;color:var(--ink-4);margin-top:6px;line-height:1.5">Nothing here is mandatory. Your answers${step>0?' so far':''} are kept, and the questions stay on My Pathway.</div>
  </div>`;}
 
@@ -4403,11 +4485,11 @@ function chatIsDone(){
 function explainMatch(archKey,answers,chatAnswers){
  const a=ARCHETYPES[archKey];
  const reasons=[];
- const driveTag=extractTag(answers.drive,["people","building","analyzing","creating"]);
- if(driveTag&&a.score[driveTag])reasons.push({from:"What genuinely makes you feel capable",quote:answers.drive,signal:driveTag});
- const sparkTag=extractTag(answers.spark,["money","impact","mastery","freedom"]);
- if(sparkTag&&a.score[sparkTag])reasons.push({from:"What would excite you at 25",quote:answers.spark,signal:sparkTag});
- const envTag=extractTag(answers.env,["fast","steady","social","solo"]);
+ const driveTag=answers.driveTag||extractTag(answers.drive,["people","building","analyzing","creating"]);
+ if(driveTag&&a.score[driveTag])reasons.push({from:"What makes you feel capable",quote:answers.drive,signal:driveTag});
+ const sparkTag=answers.sparkTag||extractTag(answers.spark,["money","impact","mastery","freedom"]);
+ if(sparkTag&&a.score[sparkTag])reasons.push({from:"What would make 25 feel like it went well",quote:answers.spark,signal:sparkTag});
+ const envTag=answers.envTag||extractTag(answers.env,["fast","steady","social","solo"]);
  if(envTag&&a.score[envTag])reasons.push({from:"The environment you described wanting",quote:answers.env,signal:envTag});
  if(answers.interests&&answers.interests.some(i=>a.score[i]))reasons.push({from:"An interest you flagged directly",quote:answers.interests.filter(i=>a.score[i]).join(", "),signal:null});
  const chatEntries=Object.entries(chatAnswers||{});
@@ -4458,6 +4540,13 @@ function discoveryCohortStats(){
  };
 }
 
+/* ═══ THE CONVERSATION, AS A TRANSCRIPT ═══
+   A chat in a ledger is a record of exchange, so this is set as one: a
+   speaker label in printed apparatus, the words beside it, her own answers
+   marked down the left in the school's ink. What it replaced wore the
+   messaging-app costume — gradient bubbles, a glowing send key, and tints
+   built from rgba(105,56,239), the pre-Register purple written as a literal
+   rather than read from any token. */
 function vDiscoveryChat(){
  const log=S.chatLog||[];
  const answers=S.onbAnswers||{};
@@ -4468,122 +4557,114 @@ function vDiscoveryChat(){
  const currentSignal=chatDone?scoreWithChat(answers,chatAnswers)[0]:null;
  const inNarrow=chatDone&&!S.narrowAnswered;
  const narrowQ=inNarrow?DISCOVERY_NARROW[currentSignal]:null;
- const allDone=chatDone&&(!narrowQ||S.narrowAnswered);
  const q=!chatDone?currentChatQuestion():null;
+ const pct=Math.min(100,Math.round((step/MIN_QUESTIONS)*100));
+ /* One turn of the transcript. */
+ const turn=(who,text,mine)=>`<div style="display:grid;grid-template-columns:72px 1fr;gap:12px;padding:11px 0;border-bottom:1px solid var(--rule);${mine?'background:var(--band);':''}">
+   <div class="railh" style="margin:0;padding-left:${mine?'8px':'0'};${mine?'border-left:2px solid var(--school-primary);':''}">${who}</div>
+   <div class="prose" style="font-size:13.5px;line-height:1.6;color:${mine?'var(--ink)':'var(--ink-2)'};white-space:pre-wrap;max-width:62ch">${text}</div>
+  </div>`;
+ const composer=(attr,val)=>`<div style="display:flex;gap:9px;align-items:flex-end;margin-top:14px">
+   <textarea id="chatinput" aria-label="Your answer" placeholder="Your answer…" style="flex:1;min-height:64px;border:1.5px solid var(--rule-2);background:var(--stock);color:var(--ink);border-radius:var(--r);padding:12px 13px;font-size:13.5px;line-height:1.55;resize:vertical;font-family:inherit"></textarea>
+   <button ${attr}="${val}" class="btn btn-p" aria-label="Send answer" style="height:44px;width:44px;flex-shrink:0;padding:0;display:grid;place-items:center">${ic('send',16)}</button>
+  </div>`;
 
- return `<div class="fade" style="max-width:700px;margin:0 auto;padding-top:16px">
-  <div style="background:linear-gradient(135deg,rgba(105,56,239,.05),rgba(153,70,255,.03));border-radius:var(--r-lg);border:1px solid rgba(105,56,239,.15);padding:24px;margin-bottom:24px">
-   <div style="display:flex;align-items:center;gap:13px;margin-bottom:12px">
-    <div style="width:44px;height:44px;border-radius:var(--r-lg);background:linear-gradient(145deg,var(--violet-light),var(--violet));display:grid;place-items:center;color:#fff;box-shadow:0 4px 12px rgba(105,56,239,.35)">${ic('spark',20)}</div>
-    <div>
-     <div class="stamp" style="font-size:18px;font-weight:700;margin-bottom:2px">Pathway Discovery</div>
-     <div style="font-size:12.5px;color:var(--ink-3);font-weight:500">${chatDone?'Analyzing your profile and interests':'Question '+(step+1)+' of ~8–10 · thoughtful pace'}</div>
-    </div>
-   </div>
-   ${!chatDone?`<div style="height:3px;background:var(--line-2);border-radius:var(--r-pill);margin-top:16px;overflow:hidden"><div style="height:100%;width:100%;background:linear-gradient(90deg,var(--violet-light),var(--violet));border-radius:var(--r-pill);clip-path:inset(0 ${100-Math.min(90,Math.round((step/MIN_QUESTIONS)*70))}% 0 0);transition:clip-path .3s ease"></div></div>`:''}
+ return `<div class="fade discover-chat" style="max-width:700px;margin:0 auto;padding-top:16px">
+  <div class="railh" style="margin-bottom:8px">Pathway discovery</div>
+  <h1 class="stamp" style="margin:0 0 8px;font-size:24px;font-weight:600;line-height:1.2">${chatDone?"Reading back what you said":"A conversation, not a form"}</h1>
+  <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px">
+   <span style="font-size:12.5px;color:var(--ink-3)">${chatDone?"Enough to work from.":"It runs as long as it needs to. Answer in your own words."}</span>
+   ${!chatDone?`<span class="fig" style="font-size:11.5px;color:var(--ink-3)">${step} answered</span>`:''}
+  </div>
+  ${!chatDone?`<div style="height:4px;background:var(--rule-2);overflow:hidden;margin-bottom:22px"><div style="height:100%;background:var(--school-primary);clip-path:inset(0 ${100-pct}% 0 0);transition:clip-path .3s ease"></div></div>`:'<div style="height:1.5px;background:var(--rule-3);margin-bottom:22px"></div>'}
+
+  <div id="chatlog" style="border-top:1.5px solid var(--rule-3);max-height:420px;overflow-y:auto;margin-bottom:4px">
+   ${turn("CAROS","Let me understand what you are trying to work out. I will ask whatever it actually takes.",false)}
+   ${log.map(m=>turn(m.from==='you'?c.name.split(' ')[0].toUpperCase():"CAROS",m.text,m.from==='you')).join('')}
+   ${!chatDone?turn("CAROS",q.text(c,step>=6?scoreWithChat(answers,chatAnswers)[0]:null),false):''}
+   ${inNarrow?turn("CAROS",`<b style="display:block;color:var(--ink);margin-bottom:4px">On ${ARCHETYPES[currentSignal].title.toLowerCase()}</b>${narrowQ.ask}`,false):''}
   </div>
 
-  <div id="chatlog" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;max-height:420px;overflow-y:auto;padding-right:4px">
-   <div style="display:flex;flex-direction:column;align-items:flex-start">
-    <div style="max-width:90%;background:var(--surface-2);padding:11px 14px;border-radius:var(--r);border:1px solid var(--line);font-size:13.5px;line-height:1.5;color:var(--ink-2)">Let me understand what you're genuinely trying to work out. I'll ask whatever it actually takes.</div>
-   </div>
-   ${log.map(m=>`<div style="display:flex;flex-direction:column;align-items:${m.from==='you'?'flex-end':'flex-start'}">
-    <div style="max-width:90%;background:${m.from==='you'?'linear-gradient(135deg,var(--violet-light),var(--violet))':'var(--surface-2)'};color:${m.from==='you'?'#fff':'var(--ink)'};padding:11px 14px;border-radius:${m.from==='you'?'13px 13px 3px 13px':'13px 13px 13px 3px'};border:${m.from==='you'?'1px solid rgba(255,255,255,.1)':'1px solid var(--line)'};font-size:13.5px;line-height:1.5;white-space:pre-wrap">
-     <span style="opacity:${m.from==='you'?.98:1}">${m.text}</span>
-    </div>
-   </div>`).join('')}
-  </div>
-
-  ${!chatDone?(()=>{const qText=q.text(c,step>=6?scoreWithChat(answers,chatAnswers)[0]:null);
-   return `<div style="display:flex;flex-direction:column;align-items:flex-start;margin-bottom:11px">
-    <div style="max-width:90%;background:var(--surface-2);padding:12px 15px;border-radius:var(--r);border:1px solid var(--line);font-size:13.5px;line-height:1.55;color:var(--ink-2)">${qText}</div>
-   </div>
-   <div style="display:flex;gap:9px;align-items:flex-end">
-    <textarea id="chatinput" placeholder="Your answer…" style="flex:1;min-height:64px;border:1.5px solid var(--line);border-radius:var(--r);padding:12px 13px;font-size:13px;line-height:1.5;resize:vertical;font-family:inherit;background:#fff"></textarea>
-    <button data-chat-send="${q.id}" class="btn" style="background:linear-gradient(135deg,var(--violet-light),var(--violet));color:#fff;height:40px;width:40px;flex-shrink:0;border-radius:var(--r);font-weight:600;padding:0;display:grid;place-items:center;box-shadow:0 3px 10px rgba(105,56,239,.25)">${ic('send',16)}</button>
-   </div>
-   <div style="font-size:11px;color:var(--ink-4);margin-top:7px;text-align:center">Be specific — vague answers slow things down</div>`;})()
-  :inNarrow?(()=>{
-   return `<div style="display:flex;flex-direction:column;align-items:flex-start;margin-bottom:11px">
-    <div style="max-width:90%;background:linear-gradient(135deg,rgba(105,56,239,.08),rgba(153,70,255,.05));padding:13px 15px;border-radius:var(--r);border:1px solid rgba(105,56,239,.2);font-size:13.5px;line-height:1.55;color:var(--ink-2)">
-     <b style="display:block;color:var(--ink);margin-bottom:3px;font-size:13.5px">→ ${ARCHETYPES[currentSignal].title.toLowerCase()}</b>${narrowQ.ask}</div>
-   </div>
-   <div style="display:flex;gap:9px;align-items:flex-end">
-    <textarea id="chatinput" placeholder="Your answer…" style="flex:1;min-height:64px;border:1.5px solid var(--line);border-radius:var(--r);padding:12px 13px;font-size:13px;line-height:1.5;resize:vertical;font-family:inherit;background:#fff"></textarea>
-    <button data-narrow-send="${currentSignal}" class="btn" style="background:linear-gradient(135deg,var(--violet-light),var(--violet));color:#fff;height:40px;width:40px;flex-shrink:0;border-radius:var(--r);font-weight:600;padding:0;display:grid;place-items:center;box-shadow:0 3px 10px rgba(105,56,239,.25)">${ic('send',16)}</button>
-   </div>`;})()
-  :`<div style="text-align:center;padding:20px 18px;background:linear-gradient(135deg,rgba(5,186,150,.08),rgba(5,186,150,.04));border-radius:var(--r);border:1px solid rgba(5,186,150,.15)">
-    <div style="width:44px;height:44px;border-radius:var(--r-pill);background:var(--ok-bg);color:var(--ok);display:grid;place-items:center;margin:0 auto 12px;box-shadow:0 3px 10px rgba(5,186,150,.2)">${ic('checkC',22)}</div>
-    <div style="font-size:13.5px;font-weight:700;margin-bottom:6px;color:var(--ink)">Great — I have a clear picture now</div>
-    <div style="font-size:12px;color:var(--ink-3);margin-bottom:16px;line-height:1.55">Based on everything you've shared, here are the paths that fit — main route plus real alternatives.</div>
-    <button class="btn" style="background:linear-gradient(135deg,var(--violet-light),var(--violet));color:#fff;padding:10px 22px;border-radius:var(--r);font-weight:600;box-shadow:0 3px 10px rgba(105,56,239,.25);font-size:13px" data-see-pathways="1">${ic('route',14)} See your paths</button>
-   </div>`}
+  ${!chatDone?`<div class="discover-chat-input">${composer("data-chat-send",q.id)}
+   <div style="font-size:11.5px;color:var(--ink-3);margin-top:8px">Specific answers get you a better path. There are no wrong ones.</div></div>`
+  :inNarrow?`<div class="discover-chat-input">${composer("data-narrow-send",currentSignal)}</div>`
+  :`<div class="discover-chat-input" style="border:1.5px solid var(--rule-3);background:var(--stock);margin-top:18px">
+    <div style="padding:10px 16px;background:var(--band);border-bottom:1px solid var(--rule)">
+     <span class="railh" style="margin:0">Enough to go on</span></div>
+    <div style="padding:16px">
+     <div style="font-size:13.5px;color:var(--ink);line-height:1.6;margin-bottom:6px;max-width:62ch">There is a clear picture here now.</div>
+     <div style="font-size:12.5px;color:var(--ink-3);line-height:1.6;margin-bottom:16px;max-width:62ch">What comes next is built from what you actually said and from your real academic record — a main route, and alternatives that are genuinely alternatives.</div>
+     <button class="btn btn-p" data-see-pathways="1">${ic('route',14)} See your paths</button>
+    </div></div>`}
  </div>`;
 }
-
-
-
-/* ═══ PATHWAY PROPOSALS ═══ */
+/* ═══ THE PROPOSALS ═══
+   Three candidate paths, ruled as entries rather than stacked as coloured
+   cards. The strongest match is stamped, not glowed: on a sheet the thing
+   that matters carries a printed mark, and the other two stay legible beside
+   it instead of being dimmed into runners-up. */
 function vPathwayProposals(){
  const ranked=S.rankedArchetypes||scoreArchetypes(S.onbAnswers||{});
  const top3=ranked.slice(0,3);
  const selected=S.selectedArchetypes||[];
  const submitted=S.pathwaysSubmitted;
  const subpath=S.selectedSubpath||{};
- return `<div class="fade" style="max-width:780px;margin:0 auto">
-  <div style="text-align:center;margin-bottom:26px">
-   <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--violetDeep);font-weight:700;margin-bottom:8px">What the conversation points to</div>
-   <div class="stamp" style="font-size:24px;font-weight:600;margin-bottom:8px">Three paths worth exploring</div>
-   <div style="font-size:13px;color:var(--ink-3);max-width:520px;margin:0 auto;line-height:1.6">These aren't predictions — they're built from everything you actually said, and from your real academic record. Pick any that genuinely interest you. You can pick more than one, and nothing here is final.</div>
-  </div>
-  <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:24px">
+ const focusLabel=S.goalFocus?(S.goalFocus.focus==='university'?'University-focused'+(S.goalFocus.university?': '+S.goalFocus.university:'')
+  :S.goalFocus.focus==='both'?'University and industry':'Industry-focused'):null;
+ return `<div class="fade" style="max-width:740px;margin:0 auto">
+  <div class="railh" style="margin-bottom:8px">What the conversation points to</div>
+  <h1 class="stamp" style="margin:0 0 10px;font-size:26px;font-weight:600;line-height:1.15">Three paths worth exploring</h1>
+  <div class="prose" style="font-size:13.5px;color:var(--ink-2);line-height:1.7;max-width:64ch;margin-bottom:24px">These are not predictions. They are built from what you said and from your academic record, and none of them is final — pick as many as genuinely interest you.</div>
+
+  <div style="border-top:1.5px solid var(--rule-3)">
    ${top3.map((key,i)=>{const a=ARCHETYPES[key];const on=selected.includes(key);
     const narrowKey=subpath[key];
     const rawDetail=narrowKey?getSubpathDetail(key,narrowKey):null;
     const detail=rawDetail&&key===ranked[0]?applyGoalFocus(rawDetail,S.goalFocus):rawDetail;
     const previewTitle=detail?detail.main.title:a.title;
     const previewSteps=(detail?detail.main.steps:a.steps.map(s=>({t:s.t,d:s.d,timeframe:""}))).slice(0,2);
-    return `<div style="border-radius:var(--r-lg);border:2px solid ${on?a.color:'var(--line-2)'};box-shadow:${on?'0 0 0 3px '+a.color+'22, var(--sh-sm)':'var(--sh-xs)'};overflow:hidden;position:relative;animation:rise .4s ${i*.08}s backwards">
-     ${i===0?`<span style="position:absolute;top:11px;left:20px;background:${a.color};color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:var(--r-pill);letter-spacing:.03em;z-index:1">STRONGEST MATCH</span>`:''}
-     <button data-select-arch="${key}" ${submitted?'disabled':''} style="width:100%;text-align:left;font-family:inherit;cursor:${submitted?'default':'pointer'};padding:${i===0?'34':'20'}px 22px 16px;border:none;background:var(--surface)">
-      <div style="display:flex;gap:15px;align-items:flex-start">
-       <div style="width:44px;height:44px;border-radius:var(--r);background:${a.color};color:#fff;display:grid;place-items:center;flex-shrink:0;box-shadow:0 3px 10px ${a.color}44">${ic(a.icon,22)}</div>
-       <div style="flex:1;min-width:0">
-        <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:4px">
-         <b style="font-size:16px">${previewTitle}</b>
-         ${narrowKey?'':`<span class="chip" style="background:var(--surface-3);color:var(--ink-3)">${a.tag}</span>`}</div>
-        ${S.goalFocus?`<div style="margin-bottom:6px"><span class="chip" style="${S.goalFocus.focus==='university'?'background:var(--info-bg);color:var(--info)':S.goalFocus.focus==='both'?'background:var(--violet-bg);color:var(--violetDeep)':'background:var(--surface-3);color:var(--ink-3)'}">${S.goalFocus.focus==='university'?ic('grad',10)+' University-focused'+(S.goalFocus.university?': '+S.goalFocus.university:''):S.goalFocus.focus==='both'?ic('spark',10)+' University + industry':ic('route',10)+' Industry-focused'}</span></div>`:''}
-        <div style="font-size:13px;color:var(--ink-2);line-height:1.55">${a.blurb}</div>
-       </div>
-       <span style="width:26px;height:26px;border-radius:var(--r-pill);border:2px solid ${on?a.color:'var(--line-3)'};background:${on?a.color:'#fff'};flex-shrink:0;display:grid;place-items:center">${on?ic('check',15):''}</span>
-      </div>
+    return `<div style="border-bottom:1px solid var(--rule);${on?'background:var(--band);':''}">
+     <button data-select-arch="${key}" ${submitted?'disabled':''} aria-pressed="${on}" style="width:100%;text-align:left;font-family:inherit;cursor:${submitted?'default':'pointer'};padding:16px 4px 12px;border:none;background:none;display:grid;grid-template-columns:44px 1fr auto;gap:13px;align-items:start">
+      <span style="width:44px;height:44px;display:grid;place-items:center;justify-self:start">
+       <span class="lstamp${on?' on':''}" style="width:26px;height:26px">${on?ic('check',15):i+1}</span></span>
+      <span style="min-width:0">
+       <span style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:4px">
+        <b style="font-size:15.5px;color:var(--ink)">${previewTitle}</b>
+        ${i===0?`<span class="stamp" style="font-size:9.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;background:var(--school-accent);color:var(--school-on-accent);padding:2px 7px">Strongest match</span>`:''}
+        ${narrowKey?'':`<span class="chip" style="background:var(--stock-3);color:var(--ink-2)">${a.tag}</span>`}</span>
+       ${focusLabel?`<span class="railh" style="display:block;margin:0 0 5px">${focusLabel}</span>`:''}
+       <span style="display:block;font-size:13px;color:var(--ink-2);line-height:1.6;max-width:62ch">${a.blurb}</span>
+      </span>
+      <span class="railh" style="margin:0;white-space:nowrap;color:${on?'var(--ink)':'var(--ink-3)'}">${on?'Picked':'Pick'}</span>
      </button>
-     <div style="padding:0 22px 18px 81px">
-      <div style="font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-4);margin-bottom:8px">What this actually looks like</div>
-      ${previewSteps.map(s=>`<div style="display:flex;gap:9px;padding:7px 0;border-top:1px solid var(--line)">
-       <span style="width:6px;height:6px;border-radius:var(--r-dot);background:${a.color};flex-shrink:0;margin-top:6px"></span>
-       <div><div style="font-size:12.3px;font-weight:600">${s.t}</div><div style="font-size:11.3px;color:var(--ink-3);margin-top:1px;line-height:1.45">${s.d}</div></div>
+     <div style="padding:0 4px 16px 57px">
+      <div class="railh" style="margin-bottom:5px">What this actually looks like</div>
+      ${previewSteps.map(s=>`<div style="padding:7px 0;border-top:1px solid var(--rule)">
+       <div style="font-size:12.3px;font-weight:600;color:var(--ink)">${s.t}</div>
+       <div style="font-size:11.5px;color:var(--ink-3);margin-top:2px;line-height:1.5;max-width:58ch">${s.d}</div>
       </div>`).join('')}
-      <div style="font-size:11px;color:var(--ink-4);margin-top:6px;padding-top:7px;border-top:1px solid var(--line)">+ more, unlocked once your counselor approves</div>
+      <div style="font-size:11.3px;color:var(--ink-3);margin-top:7px;padding-top:7px;border-top:1px solid var(--rule)">The rest of the milestones open once ${SCHOOL.counselor} has approved this path.</div>
      </div>
     </div>`;}).join('')}
   </div>
-  ${!submitted?`<div style="text-align:center">
-   <button class="btn" style="background:var(--violet);color:var(--on-violet);padding:13px 28px" data-submit-pathways="1" ${selected.length?'':'disabled'}>${ic('send',16)} Send my ${selected.length||''} pick${selected.length===1?'':'s'} to my counselor</button>
-   <div style="font-size:11.5px;color:var(--ink-4);margin-top:10px">Your counselor reviews these before you get your full roadmap — usually within a day or two.</div>
-  </div>`
-  :`<div style="text-align:center;background:var(--warn-bg);border:1px solid var(--warn-line);border-radius:var(--r-lg);padding:22px">
-   <div style="width:40px;height:40px;border-radius:var(--r-pill);background:#fff;color:var(--warn);display:grid;place-items:center;margin:0 auto 10px">${ic('clock',20)}</div>
-   <div style="font-size:14px;font-weight:600;color:var(--warn-ink);margin-bottom:5px">Sent to Ms. Haddad for review</div>
-   <div style="font-size:12.5px;color:var(--warn-ink);line-height:1.55">She'll look over your selections and turn on your full roadmap once approved. You'll see it appear right here.</div>
-  </div>`}
- </div>`;}
 
-/* ═══ GAMIFIED ROADMAP ═══ */
+  ${!submitted?`<div style="margin-top:22px">
+   <button class="btn btn-p" style="padding:13px 26px" data-submit-pathways="1" ${selected.length?'':'disabled'}>${ic('send',16)} Send ${selected.length?selected.length+' ':''}to ${counselorShort()}</button>
+   <div style="font-size:12px;color:var(--ink-3);margin-top:10px;line-height:1.55;max-width:60ch">She reads these before any roadmap opens, usually within a day or two. Nothing you pick here commits you to it.</div>
+  </div>`
+  :`<div style="border:1.5px solid var(--rule-3);background:var(--stock);margin-top:22px">
+   <div style="padding:10px 16px;background:var(--band);border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:9px">
+    <span style="color:var(--ink-3);display:flex">${ic('clock',15)}</span>
+    <span class="railh" style="margin:0">With your counselor</span></div>
+   <div style="padding:16px">
+    <div style="font-size:14px;font-weight:600;color:var(--ink);margin-bottom:5px">Sent to ${SCHOOL.counselor} for review</div>
+    <div style="font-size:12.5px;color:var(--ink-2);line-height:1.6;max-width:62ch">She reads your selections and turns the full roadmap on once she is happy with it. It appears on this page.</div>
+   </div></div>`}
+ </div>`;}
 function vGamifiedRoadmap(){
  const key=S.activeArchetype||(S.approvedArchetypes||[])[0];
  const a=ARCHETYPES[key];
- if(!a)return `<div class="fade"><div class="card" style="padding:40px;text-align:center;color:var(--ink-3)">No roadmap selected yet.</div></div>`;
+ if(!a)return `<div class="fade">${empty("No roadmap selected yet","Pick one of your approved paths above to see its milestones.")}</div>`;
  const subKey=(S.selectedSubpath||{})[key];
  const rawDetail=subKey?getSubpathDetail(key,subKey):null;
  const detail=rawDetail?applyGoalFocus(rawDetail,S.goalFocus):rawDetail;
@@ -4592,139 +4673,139 @@ function vGamifiedRoadmap(){
  const gf=S.goalFocus;
  const alts=detail?detail.alts:[];
  const progress=S.roadmapProgress||{};
- const doneCount=steps.filter((s,i)=>progress[PARENT_ME+key+i]).length;
- const pct=Math.round(doneCount/steps.length*100);
+ const done=steps.map((s,i)=>!!progress[PARENT_ME+key+i]);
+ const doneCount=done.filter(Boolean).length;
+ const nextIdx=done.indexOf(false);
  const xp=doneCount*150;
  const approved=(S.approvedArchetypes||[]);
+ /* The run: one cell per milestone, filled as it is entered, the next one
+    ruled dashed so the sheet says where the pen goes next. */
+ const run=`<div class="run" role="img" aria-label="${doneCount} of ${steps.length} milestones marked">
+  ${steps.map((s,i)=>`<i class="${done[i]?'in':i===nextIdx?'next':''}"></i>`).join('')}</div>`;
+ const focusStamp=gf&&gf.focus==="university"?"University-focused"+(gf.university?": "+gf.university:"")
+  :gf&&gf.focus==="both"?"University and industry, both fixed"
+  :"Industry-focused — university stays open";
+ /* A ruled list, used for courses, clubs and employers alike. Three identical
+    tinted panels of pill-shaped tiles was the same content wearing a costume. */
+ const ruled=(label,icon,items)=>items&&items.length?`
+  <div style="margin-top:20px">
+   <div class="railh" style="display:flex;align-items:center;gap:6px;margin-bottom:0">${ic(icon,12)}${label}</div>
+   <div style="border-top:1.5px solid var(--rule-3);margin-top:7px">
+    ${items.map(t=>`<div style="padding:8px 0;border-bottom:1px solid var(--rule);font-size:12.5px;color:var(--ink-2);line-height:1.4">${t}</div>`).join('')}
+   </div></div>`:'';
+
  return `<div class="fade" style="max-width:700px;margin:0 auto">
-  ${approved.length>1?`<div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;justify-content:center">
-   ${approved.map(k=>`<button data-switch-arch="${k}" style="padding:8px 15px;border-radius:var(--r-pill);border:1.5px solid ${k===key?ARCHETYPES[k].color:'var(--line-2)'};background:${k===key?ARCHETYPES[k].color:'var(--surface)'};color:${k===key?'#fff':'var(--ink-2)'};font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer">${ARCHETYPES[k].title}</button>`).join('')}
+  ${approved.length>1?`<div style="display:flex;gap:0;margin-bottom:22px;flex-wrap:wrap;border-bottom:1.5px solid var(--rule-3)">
+   ${approved.map(k=>`<button data-switch-arch="${k}" style="padding:10px 16px;min-height:44px;border:none;border-bottom:2px solid ${k===key?'var(--school-primary)':'transparent'};background:none;color:${k===key?'var(--ink)':'var(--ink-3)'};font-family:var(--f-apparatus);font-size:12.5px;font-weight:${k===key?700:600};letter-spacing:.02em;cursor:pointer">${ARCHETYPES[k].title}</button>`).join('')}
   </div>`:''}
-  <div style="text-align:center;margin-bottom:8px">
-   <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:14px;flex-wrap:wrap">
-    <div style="display:inline-flex;align-items:center;gap:8px;background:${a.color}18;color:${a.color};padding:6px 16px;border-radius:var(--r-pill);font-size:11.5px;font-weight:700;letter-spacing:.02em">${ic('checkC',13)} Approved by Ms. Haddad</div>
-    ${gf&&gf.focus==="university"?`<div style="display:inline-flex;align-items:center;gap:6px;background:var(--info-bg);color:var(--info);padding:6px 16px;border-radius:var(--r-pill);font-size:11.5px;font-weight:700">${ic('grad',13)} University-focused${gf.university?': '+gf.university:''}</div>`
-    :gf&&gf.focus==="both"?`<div style="display:inline-flex;align-items:center;gap:6px;background:var(--violet-bg);color:var(--violetDeep);padding:6px 16px;border-radius:var(--r-pill);font-size:11.5px;font-weight:700">${ic('spark',13)} University + industry, both fixed</div>`
-    :`<div style="display:inline-flex;align-items:center;gap:6px;background:var(--surface-3);color:var(--ink-3);padding:6px 16px;border-radius:var(--r-pill);font-size:11.5px;font-weight:700">${ic('route',13)} Industry-focused — university is flexible</div>`}
+
+  <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:12px">
+   <span class="stamp" style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:var(--school-accent);color:var(--school-on-accent);padding:3px 8px">Signed off by ${SCHOOL.counselor}</span>
+   <span class="railh" style="margin:0">${focusStamp}</span>
+  </div>
+  <h1 class="stamp" style="margin:0 0 6px;font-size:26px;font-weight:600;line-height:1.15">${roadmapTitle}</h1>
+  <div class="prose" style="font-size:13.5px;color:var(--ink-2);line-height:1.65;max-width:64ch">${a.blurb}</div>
+
+  <div style="border:1.5px solid var(--rule-3);background:var(--stock);margin:22px 0 26px">
+   <div style="display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:10px 16px;background:var(--band);border-bottom:1px solid var(--rule)">
+    <span class="railh" style="margin:0">Marks entered</span>
+    <span class="fig" style="font-size:13px;color:var(--ink);font-weight:600">${doneCount} of ${steps.length}<span style="color:var(--ink-3);font-weight:400"> · ${xp} XP</span></span>
    </div>
-   <h2 class="stamp" style="margin:0 0 6px;font-size:25px;font-weight:600">${roadmapTitle}</h2>
-   <div style="font-size:12.5px;color:var(--ink-3)">${a.blurb}</div>
+   <div style="padding:14px 16px">
+    ${run}
+    <div style="font-size:12.3px;color:var(--ink-3);margin-top:10px;line-height:1.5">${
+      doneCount===0?"Nothing marked yet. The first one is the hardest to write down."
+      :doneCount===steps.length?"Every milestone on this path is marked. There is nothing left to enter here."
+      :doneCount===1?"One entered. The run starts from here."
+      :`${doneCount} entered, ${steps.length-doneCount} to go.`}</div>
+   </div>
   </div>
 
-  <div style="display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,${a.color}12,${a.color}05);border:1px solid ${a.color}30;border-radius:var(--r-lg);padding:18px 22px;margin:22px 0">
-   <div style="position:relative;width:64px;height:64px;flex-shrink:0">${ringSvg(pct,64,a.color)}
-    <div style="position:absolute;inset:0;display:grid;place-items:center"><span class="stamp" style="font-size:16px;font-weight:700;color:${a.color}">${pct}%</span></div></div>
-   <div style="flex:1">
-    <div style="display:flex;align-items:baseline;gap:8px"><span class="stamp" style="font-size:22px;font-weight:700;color:${a.color}">${xp} XP</span>
-     <span style="font-size:11.5px;color:var(--ink-3)">· ${doneCount} of ${steps.length} milestones</span></div>
-    <div style="font-size:11.5px;color:var(--ink-3);margin-top:2px">${doneCount===0?"Complete your first milestone to start earning XP":doneCount===steps.length?"Every milestone complete — this path is fully mapped out":"Keep going — you're building real momentum"}</div>
-   </div>
-  </div>
-
-  <div style="position:relative;padding-left:8px">
-   <div style="position:absolute;left:29px;top:6px;bottom:6px;width:3px;background:linear-gradient(${a.color},var(--line-2));border-radius:var(--r-sm)"></div>
-   ${steps.map((s,i)=>{const stepDone=!!progress[PARENT_ME+key+i];
-     const prevDone=i===0||!!progress[PARENT_ME+key+(i-1)];
+  <div class="railh" style="margin-bottom:0">The milestones</div>
+  <div style="border-top:1.5px solid var(--rule-3);margin-top:7px">
+   ${steps.map((s,i)=>{const stepDone=done[i];
+     const prevDone=i===0||done[i-1];
      const locked=!stepDone&&!prevDone;
-     return `<div style="display:flex;gap:16px;margin-bottom:${i<steps.length-1?'6':'0'}px;position:relative;animation:rise .35s ${i*.06}s backwards">
-      <div style="width:58px;display:flex;flex-direction:column;align-items:center;flex-shrink:0;z-index:1">
-       <button data-toggle-step="${PARENT_ME}:${key}:${i}" ${locked?'disabled':''} style="width:34px;height:34px;border-radius:var(--r-pill);border:none;cursor:${locked?'default':'pointer'};display:grid;place-items:center;background:${stepDone?a.color:locked?'var(--surface-3)':'#fff'};box-shadow:${stepDone?'0 3px 10px '+a.color+'55':'var(--sh-sm)'};border:2.5px solid ${stepDone?a.color:locked?'var(--line-2)':a.color}">
-        ${stepDone?ic('check',17):locked?ic('lock',14):`<span class="stamp" style="font-size:13px;font-weight:700;color:${a.color}">${i+1}</span>`}</button>
+     const isNext=i===nextIdx;
+     return `<div style="display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:start;padding:15px 0;border-bottom:1px solid var(--rule);${locked?'opacity:.55;':''}${isNext?'background:var(--band);':''}">
+      <button data-toggle-step="${PARENT_ME}:${key}:${i}" ${locked?'disabled':''}
+       aria-pressed="${stepDone}" aria-label="${stepDone?'Marked':'Mark'}: ${s.t.replace(/"/g,'&quot;')}"
+       style="width:44px;height:44px;display:grid;place-items:center;border:none;background:none;padding:0;cursor:${locked?'default':'pointer'};justify-self:start">
+       <span class="lstamp${stepDone?' on':locked?' void':''}" style="width:26px;height:26px;font-size:12px">${stepDone?ic('check',14):locked?ic('lock',12):i+1}</span>
+      </button>
+      <div style="min-width:0;padding-right:2px">
+       ${s.timeframe?`<div class="railh" style="margin-bottom:3px">${s.timeframe}</div>`:''}
+       <div style="display:flex;gap:12px;align-items:baseline;justify-content:space-between">
+        <b style="font-size:13.8px;line-height:1.4;color:${stepDone?'var(--ink-3)':'var(--ink)'};text-decoration:${stepDone?'line-through':'none'}">${s.t}</b>
+        ${stepDone?`<span class="fig" style="font-size:11px;color:var(--ink-3);white-space:nowrap;flex-shrink:0">+150 XP</span>`:''}
+       </div>
+       <div style="font-size:12.3px;color:var(--ink-3);margin-top:4px;line-height:1.55;max-width:60ch">${s.d}</div>
+       ${locked?`<div style="font-size:11.5px;color:var(--ink-4);margin-top:6px">Opens once the one above is marked.</div>`:''}
       </div>
-      <div class="card lift" style="flex:1;padding:15px 18px;margin-bottom:14px;opacity:${locked?.55:1};background:${stepDone?a.color+'08':'var(--surface)'};border-color:${stepDone?a.color+'40':'var(--line)'}">
-       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
-        <div>${s.timeframe?`<span style="font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:${a.color}">${s.timeframe}</span>`:''}
-        <b style="display:block;font-size:14px;text-decoration:${stepDone?'line-through':'none'};color:${stepDone?'var(--ink-3)':'var(--ink)'};margin-top:2px">${s.t}</b>
-        <div style="font-size:12px;color:var(--ink-3);margin-top:4px;line-height:1.5">${s.d}</div></div>
-        ${stepDone?`<span class="chip" style="background:${a.color}18;color:${a.color};flex-shrink:0">+150 XP</span>`:''}
-       </div></div>
      </div>`;}).join('')}
   </div>
 
-  <div style="margin-top:28px;padding:20px;background:linear-gradient(135deg,${a.color}08,${a.color}04);border:1px solid ${a.color}20;border-radius:var(--r-lg)">
-   <div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:${a.color};margin-bottom:14px">${ic('book',13)} Essential courses</div>
-   <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
-    ${(a.courses||[]).map(course=>`<div style="background:#fff;border:1px solid ${a.color}30;border-radius:var(--r);padding:10px 12px;font-size:11.5px;font-weight:600;color:var(--ink);line-height:1.35">${course}</div>`).join('')}
-   </div>
+  ${ruled("Courses this path checks for","book",a.courses)}
+  ${ruled("Where genuine interest shows","users",a.clubs)}
+  ${ruled("Where this route ends up","trend",(a.companies||[]).slice(0,6))}
+
+  <div style="border-left:1px solid var(--rule-2);background:var(--stock-3);padding:14px 16px;margin-top:20px">
+   <div style="font-size:12.3px;color:var(--ink-2);line-height:1.65;max-width:66ch"><b style="color:var(--ink)">Read the courses row literally.</b> Universities and employers check those subjects by name — they are a condition, not a suggestion. The clubs are evidence that the interest predates the application. The employers are where students on this route actually landed, not an aspiration.</div>
   </div>
 
-  <div style="margin-top:18px;padding:20px;background:linear-gradient(135deg,${a.color}08,${a.color}04);border:1px solid ${a.color}20;border-radius:var(--r-lg)">
-   <div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:${a.color};margin-bottom:14px">${ic('users',13)} Clubs & activities</div>
-   <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
-    ${(a.clubs||[]).map(club=>`<div style="background:#fff;border:1px solid ${a.color}30;border-radius:var(--r);padding:10px 12px;font-size:11.5px;font-weight:600;color:var(--ink);line-height:1.35">${club}</div>`).join('')}
-   </div>
-  </div>
-
-  <div style="margin-top:18px;padding:20px;background:linear-gradient(135deg,${a.color}08,${a.color}04);border:1px solid ${a.color}20;border-radius:var(--r-lg)">
-   <div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:${a.color};margin-bottom:14px">${ic('trend',13)} Top companies & organizations</div>
-   <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
-    ${(a.companies||[]).slice(0,6).map(company=>`<div style="background:#fff;border:1px solid ${a.color}30;border-radius:var(--r);padding:10px 12px;font-size:11.5px;font-weight:600;color:var(--ink);line-height:1.35">${company}</div>`).join('')}
-   </div>
-  </div>
-
-  <div class="card" style="padding:16px;margin-top:18px;background:linear-gradient(135deg,${a.color}06,${a.color}02);border-color:${a.color}15">
-   <div style="font-size:11.5px;color:var(--ink-2);line-height:1.6"><b style="color:var(--ink)">Reality check:</b> The courses above are not optional — they're what universities and employers specifically look for on applications. Clubs show genuine interest (not just padding). Companies are realistic targets for internships/jobs.</div>
-  </div>
   ${alts.length?`<div style="margin-top:24px">
-   <button data-toggle-alts="1" style="width:100%;text-align:left;font-family:inherit;cursor:pointer;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:14px 18px;display:flex;align-items:center;gap:9px">
-    ${ic('route',15)}<b style="font-size:13px;flex:1">See ${alts.length} real alternative route${alts.length>1?'s':''} to a similar outcome</b>
-    <span style="transform:rotate(${S.showAlts?90:0}deg);transition:transform .2s;color:var(--ink-4)">${ic('arrowR',14)}</span></button>
-   ${S.showAlts?alts.map(alt=>`<div style="border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;margin-top:10px;background:var(--surface)">
+   <button data-toggle-alts="1" aria-expanded="${!!S.showAlts}" style="width:100%;text-align:left;font-family:inherit;cursor:pointer;background:var(--stock-2);border:1px solid var(--rule-2);min-height:44px;padding:13px 16px;display:flex;align-items:center;gap:9px">
+    ${ic('route',15)}<b style="font-size:13px;flex:1">${alts.length} other route${alts.length>1?'s':''} to the same outcome</b>
+    <span style="transform:rotate(${S.showAlts?90:0}deg);transition:transform .2s;color:var(--ink-3);display:flex">${ic('arrowR',14)}</span></button>
+   ${S.showAlts?alts.map(alt=>`<div style="border:1px solid var(--rule-2);padding:16px 18px;margin-top:10px;background:var(--stock)">
     <b style="font-size:13.5px">${alt.title}</b>
-    <div style="font-size:11.8px;color:var(--ink-3);margin:3px 0 12px;line-height:1.5">${alt.note}</div>
-    ${alt.steps.map((s,i)=>`<div style="display:flex;gap:10px;padding:8px 0;border-top:${i>0?'1px solid var(--line)':'none'}">
-     <span style="width:20px;height:20px;border-radius:var(--r-pill);background:var(--surface-3);color:var(--ink-3);display:grid;place-items:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:1px">${i+1}</span>
-     <div><div style="font-size:12.3px;font-weight:600">${s.t}</div><div style="font-size:11.3px;color:var(--ink-3);margin-top:2px;line-height:1.45">${s.d}</div></div>
+    <div style="font-size:11.8px;color:var(--ink-3);margin:3px 0 12px;line-height:1.5;max-width:62ch">${alt.note}</div>
+    ${alt.steps.map((s,i)=>`<div style="display:flex;gap:11px;padding:9px 0;border-top:${i>0?'1px solid var(--rule)':'none'}">
+     <span class="lstamp" style="width:19px;height:19px;font-size:10px;margin-top:1px">${i+1}</span>
+     <div><div style="font-size:12.3px;font-weight:600">${s.t}</div><div style="font-size:11.5px;color:var(--ink-3);margin-top:2px;line-height:1.5;max-width:58ch">${s.d}</div></div>
     </div>`).join('')}
    </div>`).join(''):''}
   </div>`:''}
 
- <div class="card" style="padding:22px;margin-top:16px">
-  <button data-toggle-why="1" style="width:100%;text-align:left;font-family:inherit;cursor:pointer;background:none;border:none;padding:0;display:flex;align-items:center;gap:9px">
-   <span style="color:var(--violetDeep);display:flex">${ic('spark',16)}</span>
-   <b style="font-size:13.5px;flex:1">Why this actually matched</b>
-   <span style="transform:rotate(${S.showWhy?90:0}deg);transition:transform .2s;color:var(--ink-4)">${ic('arrowR',14)}</span>
+ <div style="margin-top:24px;border-top:1.5px solid var(--rule-3);padding-top:14px">
+  <button data-toggle-why="1" aria-expanded="${!!S.showWhy}" style="width:100%;text-align:left;font-family:inherit;cursor:pointer;background:none;border:none;min-height:44px;padding:0;display:flex;align-items:center;gap:9px">
+   <span style="color:var(--ink-3);display:flex">${ic('spark',16)}</span>
+   <b style="font-size:13.5px;flex:1">Why this matched you</b>
+   <span style="transform:rotate(${S.showWhy?90:0}deg);transition:transform .2s;color:var(--ink-3);display:flex">${ic('arrowR',14)}</span>
   </button>
   ${S.showWhy?(()=>{const reasons=explainMatch(key,S.onbAnswers||{},S.chatAnswers||{});
-   return `<div style="margin-top:14px;display:flex;flex-direction:column;gap:10px">
-    ${reasons.length?reasons.map(r=>`<div style="background:var(--surface-2);border-radius:var(--r);padding:10px 14px">
-     <div style="font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:${a.color}">${r.from}</div>
-     <div style="font-size:12.3px;color:var(--ink-2);margin-top:3px;line-height:1.5;font-style:italic">"${(r.quote||'').slice(0,140)}${(r.quote||'').length>140?'…':''}"</div>
-    </div>`).join(''):'<div style="font-size:12px;color:var(--ink-3)">Based on the overall shape of your answers rather than any single one.</div>'}
-    <div style="font-size:11px;color:var(--ink-4);margin-top:2px">This is exactly what it looked like from your own words — nothing here is hidden from you.</div>
+   return `<div style="margin-top:12px">
+    ${reasons.length?reasons.map(r=>`<div style="padding:10px 0;border-top:1px solid var(--rule)">
+     <div class="railh" style="margin-bottom:3px">${r.from}</div>
+     <div class="prose" style="font-size:12.5px;color:var(--ink-2);line-height:1.55;max-width:64ch">${(r.quote||'').slice(0,140)}${(r.quote||'').length>140?'…':''}</div>
+    </div>`).join(''):'<div style="font-size:12.3px;color:var(--ink-3);line-height:1.55">The shape of your answers taken together, rather than any single one of them.</div>'}
+    <div style="font-size:11.5px;color:var(--ink-3);margin-top:9px;line-height:1.5">This is the whole of it. Nothing was weighed that is not printed here.</div>
    </div>`;})():''}
  </div>
 
  ${(()=>{const precedent=pathwayPrecedent(key);const matches=alumniForArchetype(key);
   if(!precedent)return'';
-  return `<div class="card" style="padding:22px;margin-top:16px">
-   <h3 class="sechead">${ic('users',13)} Real precedent from this school</h3>
-   <div style="font-size:12.3px;color:var(--ink-3);margin-bottom:14px;line-height:1.6">${precedent.total} student${precedent.total>1?'s':''} from ${SCHOOL.short} took a route like this, reaching ${precedent.universities} different universit${precedent.universities>1?'ies':'y'} across ${precedent.countries} countr${precedent.countries>1?'ies':'y'} — this isn't a hypothetical path.</div>
-   ${matches.slice(0,3).map(m=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)">
+  return `<div style="margin-top:22px;border-top:1.5px solid var(--rule-3);padding-top:14px">
+   <div class="railh" style="display:flex;align-items:center;gap:6px;margin-bottom:8px">${ic('users',12)}Precedent from ${SCHOOL.short}</div>
+   <div style="font-size:12.5px;color:var(--ink-2);margin-bottom:12px;line-height:1.6;max-width:64ch">${precedent.total} student${precedent.total>1?'s':''} from this school took a route like this, reaching ${precedent.universities} universit${precedent.universities>1?'ies':'y'} across ${precedent.countries} countr${precedent.countries>1?'ies':'y'}.</div>
+   ${matches.slice(0,3).map(m=>`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--rule)">
     ${av(m.name.split(' ').map(w=>w[0]).join(''),"student",26,8)}
-    <div style="flex:1;min-width:0"><b style="font-size:12px">${m.name}</b> <span class="chip" style="background:${m.path==='IB'?'var(--ok-bg)':'var(--info-bg)'};color:${m.path==='IB'?'var(--ok)':'var(--info)'};margin-left:4px">${m.path}</span>
-     <div style="font-size:11px;color:var(--ink-3);margin-top:1px">${m.subjects} → ${m.uni}</div></div>
+    <div style="flex:1;min-width:0"><b style="font-size:12.3px">${m.name}</b> <span class="chip" style="background:var(--stock-3);color:var(--ink-2);margin-left:4px">${m.path}</span>
+     <div style="font-size:11.3px;color:var(--ink-3);margin-top:1px">${m.subjects} → ${m.uni}</div></div>
    </div>`).join('')}
   </div>`;})()}
 
- <div class="card" style="padding:20px;margin-top:16px;display:flex;align-items:center;gap:14px">
-  <span style="width:38px;height:38px;border-radius:var(--r);background:var(--brand-3);color:var(--brand-2);display:grid;place-items:center;flex-shrink:0">${ic('users',19)}</span>
-  <div style="flex:1"><b style="font-size:13px">Talk to someone who's actually done this</b>
-   <div style="font-size:11.8px;color:var(--ink-3);margin-top:2px">The mentor network has alumni matched to exactly this kind of direction.</div></div>
+ <div style="margin-top:22px;border-top:1.5px solid var(--rule-3);padding-top:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+  <div style="flex:1;min-width:220px"><b style="font-size:13px">Talk to someone who has done this</b>
+   <div style="font-size:11.8px;color:var(--ink-3);margin-top:2px;line-height:1.5">${SCHOOL.short} alumni who took this exact route. The school makes the introduction.</div></div>
   <button class="btn btn-g btn-sm" data-snav="mentors">${ic('arrowR',13)} Find a mentor</button>
  </div>
 
- <div style="text-align:center;margin-top:16px">
+ <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:16px">
   <button class="btn btn-g btn-sm" data-export-roadmap="1">${ic('doc',13)} Save as a one-page summary</button>
+  <button class="btn btn-g btn-sm" data-swap-path="1">${ic('refresh',13)} Explore a different approved path</button>
  </div>
- <div style="text-align:center;margin-top:8px">
-   <button class="btn btn-g btn-sm" data-swap-path="1">${ic('refresh',13)} Explore a different approved path</button>
-  </div>
  </div>`;}
-
-
-
-/* ═══ DISCOVER MY PATH — routes to the right stage ═══ */
 function vDiscoverFlow(){
  const sid=PARENT_ME;
  if(APPROVED_PATHS[sid]){
@@ -4734,53 +4815,54 @@ function vDiscoverFlow(){
  }
  const pending=PENDING_APPROVALS.find(p=>p.sid===sid&&p.status==="pending");
  if(pending){
-  return `<div class="fade" style="max-width:600px;margin:0 auto;text-align:center;padding-top:40px">
-   <div style="width:56px;height:56px;border-radius:var(--r-pill);background:var(--warn-bg);color:var(--warn);display:grid;place-items:center;margin:0 auto 18px">${ic('clock',26)}</div>
-   <div class="stamp" style="font-size:22px;font-weight:600;margin-bottom:10px">Sent to your counselor</div>
-   <div style="font-size:13.5px;color:var(--ink-3);line-height:1.65;margin-bottom:6px">You picked ${pending.archetypes.length} path${pending.archetypes.length>1?'s':''} to explore, and Ms. Haddad is reviewing them now.</div>
-   <div style="font-size:13.5px;color:var(--ink-3);line-height:1.65">Once approved, your full roadmap unlocks right here — with real milestones and progress tracking.</div>
+  return `<div class="fade" style="max-width:620px;margin:0 auto;padding-top:34px">
+   <div style="border:1.5px solid var(--rule-3);background:var(--stock)">
+    <div style="padding:10px 18px;background:var(--band);border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:9px">
+     <span style="color:var(--ink-3);display:flex">${ic('clock',15)}</span>
+     <span class="railh" style="margin:0">With your counselor</span></div>
+    <div style="padding:18px">
+     <h1 class="stamp" style="font-size:22px;font-weight:600;margin:0 0 10px">Sent for review</h1>
+     <div style="font-size:13.5px;color:var(--ink-2);line-height:1.65;margin-bottom:7px;max-width:62ch">You picked ${pending.archetypes.length} path${pending.archetypes.length>1?'s':''} to explore, and ${SCHOOL.counselor} is reading them now.</div>
+     <div style="font-size:13px;color:var(--ink-3);line-height:1.65;max-width:62ch">Nothing is decided until she has seen it. When she signs it off, the roadmap opens on this page with its milestones ready to mark.</div>
+    </div></div>
   </div>`;
  }
  if(S.discoverStage==="proposals")return `<div class="fade">${vPathwayProposals()}</div>`;
  if(S.discoverStage==="chat")return `<div class="fade">${vDiscoveryChat()}</div>`;
+ /* The three tiles that stood here read "8–12 questions", "3 specific paths"
+    and "100% based on your actual profile" — a stat row measuring nothing,
+    printed over a record that already holds real facts about this student.
+    What replaces it is that record: what the school knows, what she has told
+    us, and the one line that is still blank. */
+ const c=g(PARENT_ME);
  const introDone=!SURVEY_SKIPPED[PARENT_ME];
- const passionSnippet=(S.onbAnswers&&S.onbAnswers.passions&&S.onbAnswers.passions.trim().length>8)
-   ?`You told me about "${S.onbAnswers.passions.trim().slice(0,90)}${S.onbAnswers.passions.trim().length>90?'…':''}" when you first joined — that's a good starting point, `
-   :"";
- return `<div class="fade" style="max-width:680px;margin:0 auto;padding-top:24px">
-  <div style="text-align:center;margin-bottom:32px">
-   <div style="width:72px;height:72px;border-radius:var(--r-lg);background:linear-gradient(145deg,var(--violet-light),var(--violet));display:grid;place-items:center;margin:0 auto 24px;box-shadow:0 8px 28px rgba(105,56,239,.35)">${ic('spark',36)}</div>
-   <h1 class="stamp" style="margin:0 0 12px;font-size:28px;font-weight:700">Your Pathway Discovery</h1>
-   <div style="font-size:15px;color:var(--ink-2);line-height:1.75;max-width:560px;margin:0 auto">${passionSnippet}We'll have a genuine conversation about what you're working toward — not a form, but a back-and-forth that goes as deep as it actually needs to.</div>
-  </div>
-  
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px">
-   <div style="background:linear-gradient(135deg,rgba(105,56,239,.08),rgba(153,70,255,.04));border:1px solid rgba(105,56,239,.15);border-radius:var(--r-lg);padding:20px 16px;text-align:center">
-    <div style="font-size:24px;font-weight:700;color:var(--violet);margin-bottom:6px">8–12</div>
-    <div style="font-size:12px;color:var(--ink-3);line-height:1.5">thoughtful questions, exactly as many as needed</div></div>
-   <div style="background:linear-gradient(135deg,rgba(105,56,239,.08),rgba(153,70,255,.04));border:1px solid rgba(105,56,239,.15);border-radius:var(--r-lg);padding:20px 16px;text-align:center">
-    <div style="font-size:24px;font-weight:700;color:var(--violet);margin-bottom:6px">3</div>
-    <div style="font-size:12px;color:var(--ink-3);line-height:1.5">specific paths, main + real alternatives</div></div>
-   <div style="background:linear-gradient(135deg,rgba(105,56,239,.08),rgba(153,70,255,.04));border:1px solid rgba(105,56,239,.15);border-radius:var(--r-lg);padding:20px 16px;text-align:center">
-    <div style="font-size:24px;font-weight:700;color:var(--violet);margin-bottom:6px">100%</div>
-    <div style="font-size:12px;color:var(--ink-3);line-height:1.5">based on your actual profile</div></div>
-  </div>
+ const a=S.onbAnswers||{};
+ const iOpts=Object.fromEntries(((ONBOARD_Q.find(x=>x.id==="interests")||{}).opts)||[]);
+ const rows=[["Student",c.name],
+  ["Year",c.yr+" · "+(c.track==="undecided"?"IB or AP not chosen yet":c.track)]];
+ if(a.interests&&a.interests.length)rows.push(["Interests you picked",a.interests.map(i=>iOpts[i]||i).join(" · ")]);
+ if(a.drive)rows.push(["Feels capable when",a.drive]);
+ if(a.spark)rows.push(["Wants at 25",a.spark]);
+ if(!introDone)rows.push(["Your three answers","Skipped — nothing to start from yet"]);
+ rows.push(["Pathway","Nothing decided yet"],["Signed off by",SCHOOL.counselor]);
+ return `<div class="fade" style="max-width:640px;margin:0 auto;padding-top:20px">
+  <div class="railh" style="margin-bottom:9px">My pathway</div>
+  <h1 class="stamp" style="margin:0 0 10px;font-size:27px;font-weight:600;line-height:1.15">Nothing is decided yet</h1>
+  <div class="prose" style="font-size:14px;color:var(--ink-2);line-height:1.7;max-width:62ch;margin-bottom:26px">This page is blank on purpose. It fills in from a conversation — a real back-and-forth, not a form — and nothing it produces becomes a plan until ${SCHOOL.counselor} has read it and signed it off.</div>
 
-  <div style="background:linear-gradient(135deg,rgba(105,56,239,.06),rgba(153,70,255,.03));border:1px solid rgba(105,56,239,.12);border-radius:var(--r-lg);padding:24px;margin-bottom:28px">
-   <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:0">
-    <span style="color:var(--violet);font-size:18px;flex-shrink:0;margin-top:2px">→</span>
-    <div>
-     <div style="font-weight:700;color:var(--ink);margin-bottom:6px;font-size:13.5px">Why this matters</div>
-     <div style="font-size:13px;color:var(--ink-3);line-height:1.65">A quiz can categorize you. But it can't tell the difference between wanting to build something and wanting to work at something built. This conversation exists to catch that nuance — nothing gets built until it genuinely understands your actual goals, not just your answers.</div>
-    </div>
-   </div>
-  </div>
+  <div style="border:1.5px solid var(--rule-3);background:var(--stock);margin-bottom:24px">
+   <div style="padding:9px 18px;background:var(--band);border-bottom:1px solid var(--rule)">
+    <span class="railh" style="margin:0">What your record holds today</span></div>
+   <div style="padding:4px 18px 12px">
+    ${rows.map(([k,v])=>`<div class="kv"><span>${k}</span><b style="text-align:right">${v}</b></div>`).join('')}
+   </div></div>
 
-  <div style="text-align:center">
-   <button class="btn" style="background:linear-gradient(135deg,var(--violet-light),var(--violet));color:#fff;padding:14px 32px;border-radius:var(--r);font-weight:600;box-shadow:0 4px 16px rgba(105,56,239,.35);font-size:15px" data-start-discover="1">${ic('arrowR',18)} Begin your discovery</button>
-   <div style="font-size:12px;color:var(--ink-4);margin-top:14px">There's no rush — come back whenever you're ready. Nothing here is mandatory.</div>
-   <button class="btn btn-g btn-sm" data-onb-restart="1" style="margin-top:18px">${ic('list',14)} ${introDone?'Change your intro answers':'Finish the '+ONBOARD_Q.length+' intro questions'}</button>
-   <div style="font-size:11.5px;color:var(--ink-4);margin-top:8px;line-height:1.5;max-width:420px;margin-left:auto;margin-right:auto">${introDone?'The '+ONBOARD_Q.length+' short questions you answered when you joined. Changing them changes what the conversation starts from.':'You skipped these earlier. They are short, and they give the conversation somewhere to start.'}</div>
+  <button class="btn btn-p" style="font-size:14.5px;padding:13px 26px" data-start-discover="1">${ic('arrowR',17)} Start the conversation</button>
+  <div style="font-size:12.3px;color:var(--ink-3);margin-top:12px;line-height:1.6;max-width:62ch">It goes as long as it needs to and you can stop at any point. A quiz can sort you into a category; it cannot tell wanting to build something apart from wanting to work at something built, which is the difference this is listening for.</div>
+
+  <div style="margin-top:22px;padding-top:16px;border-top:1px solid var(--rule)">
+   <button class="btn btn-g btn-sm" data-onb-restart="1">${ic('list',14)} ${introDone?'Change your three answers':'Answer the three questions'}</button>
+   <div style="font-size:11.8px;color:var(--ink-3);margin-top:8px;line-height:1.55;max-width:58ch">${introDone?'The three you answered when you joined. Changing them changes where the conversation starts.':'You skipped these. They are three taps, and they give the conversation somewhere to start.'}</div>
   </div>
  </div>`;}
 
@@ -4829,9 +4911,9 @@ function vPathExplorer(navAttr,uniTab,contactTab){
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:18px">
    ${COUNTRY_OPTIONS.map(cn=>{const on=(S.pathCountry||"UK")===cn;
     const stats=(()=>{const all=PATH_ALUMNI.filter(a=>a.country===cn);return{n:all.length,u:[...new Set(all.map(a=>a.uni))].length};})();
-    const flagBg={UK:"linear-gradient(135deg,#3B5FE0,#1A3AA8)",US:"linear-gradient(135deg,#E0473B,#A82A1A)",UAE:"linear-gradient(135deg,#1FA97E,#0B7D5C)"}[cn];
+
     return `<button data-pcty="${cn}" style="text-align:left;font-family:inherit;cursor:pointer;border-radius:var(--r);padding:14px 15px;border:1.5px solid ${on?'var(--rose)':'var(--line)'};background:${on?'var(--rose-bg)':'var(--surface)'};box-shadow:${on?'0 0 0 3px var(--rose-line)':'none'};transition:border-color .15s,background-color .15s,box-shadow .15s">
-     <div style="width:34px;height:34px;border-radius:var(--r);background:${flagBg};color:#fff;display:grid;place-items:center;font-size:11px;font-weight:700;margin-bottom:10px;box-shadow:inset 0 1px 0 rgba(255,255,255,.25)">${cn}</div>
+     <div class="lstamp" style="width:34px;height:26px;font-size:11px;margin-bottom:10px">${cn}</div>
      <div style="font-size:13.5px;font-weight:700;color:${on?'var(--rose-2)':'var(--ink)'}">${cn==="UK"?"United Kingdom":cn==="US"?"United States":"United Arab Emirates"}</div>
      <div style="font-size:11px;color:var(--ink-3);margin-top:2px">${stats.u} universities · ${stats.n} students tracked</div>
     </button>`;}).join('')}
@@ -4843,7 +4925,7 @@ function vPathExplorer(navAttr,uniTab,contactTab){
     const goalMap={"Investment Banking":"Economics"};
     const goalMatch=goalMap[c.goal]||DEGREE_OPTIONS.find(d=>c.goal.includes(d))||"";
     const isGoal=val===goalMatch&&goalMatch!=="";
-    return `<button data-pdeg="${val}" style="font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:var(--r-pill);cursor:pointer;font-family:inherit;border:1px solid ${on?'var(--rose)':'var(--line-2)'};background:${on?'var(--rose)':'var(--surface)'};color:${on?'#fff':'var(--ink-2)'};transition:border-color .15s,background-color .15s,color .15s">${label}${isGoal?` <span style="opacity:.7">· their goal</span>`:''}</button>`;}).join('')}
+    return `<button data-pdeg="${val}" style="font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:var(--r-pill);cursor:pointer;font-family:inherit;border:1px solid ${on?'var(--school-primary)':'var(--rule-2)'};background:${on?'var(--school-primary)':'var(--stock)'};color:${on?'var(--school-on-primary)':'var(--ink-2)'};min-height:44px;transition:border-color .15s,background-color .15s,color .15s">${label}${isGoal?` <span style="opacity:.7">· their goal</span>`:''}</button>`;}).join('')}
   </div>
 
   ${(()=>{
@@ -4890,7 +4972,7 @@ function vPathExplorer(navAttr,uniTab,contactTab){
      <div style="font-size:12.8px;color:var(--ink-2);line-height:1.7;margin-bottom:14px">Use this the way a family would use it before finalising subject choices: look at the combination, look at where it led, and see whether it matches the country or course ${c.name.split(' ')[0]} is aiming for. The rest is about finishing a strong application — the personal statement, the references, and a university list with a genuine floor.</div>`}
      <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:center;padding-top:12px;border-top:1px solid var(--rose-line-2)">
       <span style="font-size:11.5px;color:var(--ink-3)">${c.uni.targets.length?"Their own list right now:":"No university list yet:"}</span>
-      <span class="chip" style="background:var(--urgent-bg,#FEF3F2);color:var(--crit)">${reach} reach</span>
+      <span class="chip" style="background:var(--crit-bg);color:var(--crit)">${reach} reach</span>
       <span class="chip" style="background:var(--ok-bg);color:var(--ok)">${match} match</span>
       <span class="chip" style="background:${safety?'var(--ok-bg)':'var(--warn-bg)'};color:${safety?'var(--ok)':'var(--warn)'}">${safety} safety</span>
       <button class="btn btn-sm" style="margin-left:auto;background:var(--rose);color:var(--on-rose)" ${navAttr}="${uniTab}">${ic('grad',13)} See full application status</button>
@@ -5449,14 +5531,10 @@ ${(()=>{const stats=psCohortStats();
  </div>`;}
 
 function vParent(){
- const c=g(PARENT_ME);const pg=S.previewGrade||12,pt=c.track||"IB";
- let tabs=[["overview","Overview"],["messages","Messages"],["meetings","Meet the counselor"]];
- if(pg===9)tabs.splice(2,0,["guide","High School Guide"]);
- if(pg>=10)tabs.splice(2,0,["pathway","IB or AP"]);
- if(pg>=11)tabs.splice(2,0,["grades","Grades & transcripts"]);
- if(pg===12)tabs.splice(tabs.findIndex(t=>t[0]==="pathway"),0,["uni","University requirements"]);
- if(pg>=11&&pt==="AP")tabs.splice(tabs.findIndex(t=>t[0]==="meetings"),0,["apexams","AP Exams"]);
- tabs.sort((a,b)=>{const ord=["overview","messages","guide","grades","uni","pathway","apexams","meetings"];return ord.indexOf(a[0])-ord.indexOf(b[0]);});
+ const c=g(PARENT_ME);const pg=S.previewGrade||12;
+ /* The in-page tab strip is the same nav as the sidebar, so it reads the same
+    source rather than re-deriving the grade rules a fourth time. */
+ const tabs=roleNav("parent");
  const validKeys=tabs.map(t=>t[0]);
  const pv=validKeys.includes(S.pv)?S.pv:"overview";
  const att=attPct(c),attTxt=att===null?"—":att+"%";
@@ -5893,24 +5971,30 @@ let SREFLECT=[{txt:"Struggling to balance the statement with mocks. Would like h
 function vStuProgress(){
  const c=g(PARENT_ME);
  const att=attPct(c),attTxt=att===null?"—":att+"%";
- const predDisplay=c.track==="IB"?"39 / 45":c.track==="AP"?"4 exams":c.pred&&c.pred!=="—"?c.pred:"—";
+ /* Read the student's own prediction. A literal "39 / 45" here was Sara's
+    number printed over every IB student on the roster. */
+ const predDisplay=c.track==="IB"?(c.pred&&c.pred!=="—"?c.pred.replace("/"," / "):"—")
+  :c.track==="AP"?AP_EXAMS.length+" exams"
+  :(c.pred&&c.pred!=="—"?c.pred:"—");
+ const subs=SUBJECTS_BY[c.id]||null;
  /* Whatever the Personal Statement Lab actually holds for this student — a
     hardcoded "62%" here is how the tile came to disagree with the Lab. */
  const psRec=Object.values(S.psStatements||{}).find(r=>r&&r.versions&&r.versions.length);
  const psTile=psRec?{v:"Draft "+psRec.versions.length,c:"var(--warn)"}:{v:"Not started",c:"var(--ink-3)"};
  return `<div class="fade">
- ${head("My progress","How I'm actually doing","Your grades, attendance and trajectory — the same information your counselor sees, so there are no surprises.","var(--violet)","trend")}
+ ${head("My progress","How I'm actually doing","Your grades, attendance and trajectory — the same information your counselor sees, so there are no surprises.","var(--school-primary)","trend")}
  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">
-  ${[["Attendance",attTxt,"var(--ok)"],[c.track==="IB"?"Predicted total":c.track==="AP"?"AP exams this year":"Predicted",predDisplay,"var(--violet)"],["Statement",psTile.v,psTile.c]]
+  ${[["Attendance",attTxt,"var(--ok)"],[c.track==="IB"?"Predicted total":c.track==="AP"?"AP exams this year":"Predicted",predDisplay,"var(--ink)"],["Statement",psTile.v,psTile.c]]
    .map(x=>`<div class="card" style="padding:16px 18px"><div class="stamp" style="font-size:24px;font-weight:600;color:${x[2]};line-height:1">${x[1]}</div>
    <div style="font-size:11.5px;color:var(--ink-3);margin-top:4px">${x[0]}</div></div>`).join('')}</div>
  <div class="card" style="padding:20px;margin-bottom:16px">
   <h3 class="sechead">${ic('book',13)} My subjects</h3>
-  ${c.track==="IB"?
-   SUBJECTS.map(s=>`<div style="display:grid;grid-template-columns:1fr 60px 90px;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)">
+  ${c.track==="IB"?(subs?
+   subs.map(s=>`<div style="display:grid;grid-template-columns:1fr 60px 90px;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)">
     <b style="font-size:13px">${s.s}<span style="font-weight:400;color:var(--ink-3)"> · ${s.lv}</span></b><span style="font-size:15px;font-weight:600;color:${s.pred>=6?'var(--ok)':s.pred>=5?'var(--warn)':'var(--crit)'}">${s.pred}</span>
     <div><div class="meter"><div style="width:${Math.round(s.work/7*100)}%;background:${s.pred>=6?'var(--ok)':'var(--warn)'}"></div></div>
     <div style="font-size:10.5px;color:var(--ink-4);margin-top:3px">${s.work} of 7 working</div></div></div>`).join('')
+   :empty("No subjects loaded yet","Your timetable appears here once this term's data comes across from the school's system. Nothing is missing from your record — it has not been imported yet."))
   :c.track==="AP"?
    AP_EXAMS.map(e=>`<div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)">
     <b style="font-size:13px">${e.subject}</b>
@@ -5925,12 +6009,12 @@ function vStuProgress(){
  <div class="card" style="padding:20px">
   <h3 class="sechead">${ic('msg',13)} Tell your counselor something</h3>
   <div style="font-size:12.3px;color:var(--ink-3);margin-bottom:12px;line-height:1.5">Anything you want Ms. Haddad to know before your next meeting. Only she sees this — not your teachers, not your parents.</div>
-  ${SREFLECT.map(r=>`<div style="background:var(--violet-bg);border-radius:var(--r);padding:12px 14px;margin-bottom:9px">
+  ${SREFLECT.map(r=>`<div style="background:var(--stock-3);border-left:1px solid var(--rule-2);padding:12px 14px;margin-bottom:9px">
    <div style="font-size:12.5px;color:var(--ink);line-height:1.55">${r.txt}</div>
    <div style="font-size:10.5px;color:var(--ink-3);margin-top:6px">${r.when} · ${r.seen?'Read by Ms. Haddad':'Not read yet'}</div></div>`).join('')}
   <div style="display:flex;gap:9px;align-items:flex-end;margin-top:10px">
    <textarea id="sref" aria-label="Message to your counselor" placeholder="What would help right now?" style="flex:1;min-height:64px;border:1px solid var(--line-2);border-radius:var(--r);padding:11px;font-size:13px;resize:vertical"></textarea>
-   <button class="btn" data-sref="1" style="background:var(--violet);color:var(--on-violet)">${ic('send',15)} Send</button></div>
+   <button class="btn btn-p" data-sref="1">${ic('send',15)} Send</button></div>
  </div></div>`;}
 
 /* ═══════════ COUNSELOR: teacher flag inbox ═══════════ */
@@ -6091,67 +6175,92 @@ function assignModal(){
    <button class="btn btn-p" data-assigngo="${c.id}" ${pick?'':'disabled'} style="width:100%;margin-top:10px">${ic('check',15)} ${pick?'Confirm reassignment':'Choose a colleague'}</button>
   </div></div></div>`;}
 /* ═══════════ STUDENT (sees guidance only — never risk analytics) ═══════════ */
-const STU={name:"Sara Al Mansoori",av:"SA",yr:"Grade 12",grade:12,track:"IB",goal:"MD at a bulge-bracket bank by 30",career:"Investment Banking",prob:71,
- steps:[{t:"Join the LSE Finance Society",d:"Students who joined lifted their Goldman conversion by 12 points",imp:12,when:"This term"},
-  {t:"Secure a spring week (Evercore / Rothschild)",d:"78% of spring-week students went on to a summer internship",imp:18,when:"Year 1"},
-  {t:"Target the Goldman summer analyst programme",d:"The critical conversion point into a full-time offer",imp:9,when:"Year 2"}],
- targets:[{u:"London School of Economics",c:"BSc Economics",p:67,b:"reach"},{u:"University College London",c:"BSc Economics",p:81,b:"match"},{u:"Warwick",c:"BSc Economics",p:88,b:"match"},{u:"NYU Stern (Abu Dhabi)",c:"BS Finance",p:74,b:"match"}],
- net:[{n:"Hassan Al Rashid",r:"Mentor · Goldman IBD",w:true},{n:"Lina Khoury",r:"Mentor · Mubadala",w:true},{n:"Uncle — Emirates NBD",r:"Family · Banking",w:true}]};
+/* The STU global that used to sit here held one student's targets, network
+   and a "probability" that started at a fabricated 71% and rose 12, 18 or 9
+   points whenever a checkbox was ticked. Its targets were a byte-for-byte
+   copy of g("s3").uni.targets, so the views now read the roster record and
+   work for every student; its network moved to NETWORK; the probability and
+   the view it drove are gone, because no number in this product should be
+   invented and then made to climb. */
 const MENTORS=[
  {id:"m1",n:"Hassan Al Rashid",av:"HR",role:"Analyst, IBD",firm:"Goldman Sachs",uni:"London School of Economics",grad:"2021",r:4.9,s:34,p:120,path:[SCHOOL.short,"LSE Economics","Evercore spring week","Goldman IBD"],bio:"LSE Economics grad now on Goldman's London IBD desk. I came through an Abu Dhabi school, so I know this exact route.",best:true},
  {id:"m4",n:"Lina Khoury",av:"LK",role:"Investment Analyst",firm:"Mubadala",uni:"NYU Stern (Abu Dhabi)",grad:"2023",r:4.9,s:27,p:95,path:[SCHOOL.short,"NYUAD Finance","Mubadala"],bio:"NYUAD finance grad at Mubadala. I can speak to both the local route and global finance.",best:true},
  {id:"m2",n:"Aisha Mensah",av:"AM",role:"Foundation Doctor",firm:"NHS · UCLH",uni:"University College London",grad:"2020",r:5.0,s:48,p:100,path:["Intl School","UCL Medicine","Foundation"],bio:"UCL Medicine grad. I mentor on statements, UCAT and interview technique.",best:false},
  {id:"m5",n:"Yusuf Adeyemi",av:"YA",role:"Research Engineer",firm:"DeepMind",uni:"University of Cambridge",grad:"2021",r:5.0,s:39,p:130,path:["Intl School","Cambridge CS","DeepMind"],bio:"Cambridge CompSci grad at DeepMind. I mentor ambitious CS applicants.",best:false}];
 
-function stuProb(){let p=STU.prob;STU.steps.forEach((s,i)=>{if(S.pathDone[i])p+=s.imp;});return Math.min(p,97);}
+
 function ringSvg(v,size,col){size=size||96;const st=9,r=(size-st)/2,c=2*Math.PI*r;
  return `<svg width="${size}" height="${size}" style="transform:rotate(-90deg)"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--line)" stroke-width="${st}"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${col||'var(--violet)'}" stroke-width="${st}" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-v/100)}" style="transition:stroke-dashoffset 1s cubic-bezier(.16,1,.3,1)"/></svg>`;}
 
-function vStuPath(){
- const p=stuProb();
- return `<div class="fade">
- ${head("Your pathway","Your path to "+STU.career,"Every move here is ranked by how much it moves your odds, based on students who walked this route before you. Tick one and watch the number change.","var(--violet)","route")}
- <div class="card" style="padding:24px;margin-bottom:16px">
-  <div style="display:flex;gap:20px;align-items:center;margin-bottom:20px;flex-wrap:wrap">
-   <div style="position:relative;width:96px;height:96px;flex-shrink:0">${ringSvg(p)}
-    <div style="position:absolute;inset:0;display:grid;place-items:center"><span class="stamp" style="font-size:25px;font-weight:600;color:var(--violet)">${p}%</span></div></div>
-   <div><div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--inkMute);font-weight:700">Current probability</div>
-    <div class="stamp" style="font-size:20px;font-weight:600;margin:3px 0 5px">${STU.goal}</div>
-    <div style="font-size:12.5px;color:var(--inkSoft)">Started at ${STU.prob}% · ${p>STU.prob?`<b style="color:var(--good)">+${p-STU.prob} points from your completed moves</b>`:'tick a move below to see it climb'}</div></div>
-  </div>
-  ${STU.steps.map((s,i)=>`<div style="display:grid;grid-template-columns:auto 1fr auto;gap:15px;align-items:center;padding:15px 0;border-bottom:${i<STU.steps.length-1?'1px solid var(--lineSoft)':'none'}">
-   <div data-step="${i}" style="width:26px;height:26px;border-radius:var(--r);border:2px solid ${S.pathDone[i]?'var(--good)':'var(--line)'};background:${S.pathDone[i]?'var(--good)':'#fff'};display:grid;place-items:center;color:#fff;cursor:pointer;transition:border-color .2s,background-color .2s">${S.pathDone[i]?ic('check',14):''}</div>
-   <div><div style="font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:8px">${s.t}<span class="chip" style="background:var(--panel);color:var(--inkMute);border:1px solid var(--line)">${s.when}</span></div>
-   <div style="font-size:11.8px;color:var(--inkMute);margin-top:2px">${s.d}</div></div>
-   <span class="stamp" style="font-size:16px;font-weight:600;color:var(--good);flex-shrink:0">+${s.imp}%</span></div>`).join('')}
- </div>
- <div class="card" style="padding:18px 20px;background:var(--violetSoft);border-color:var(--violet-line-2);display:flex;gap:13px;align-items:flex-start">
-  <div style="width:36px;height:36px;border-radius:var(--r);background:var(--violet);color:var(--on-violet);display:grid;place-items:center;flex-shrink:0">${ic('spark',18)}</div>
-  <div style="font-size:12.5px;color:var(--violetDeep);line-height:1.6"><b>Your next move.</b> Talk to <b>Hassan Al Rashid</b> — he went ${SCHOOL.short} → LSE Economics → Evercore spring week → Goldman IBD. That is your exact route, and he is the single highest-leverage person in your network right now.</div>
- </div></div>`;}
+/* Reach, match and safety are a standing on a list — not a severity. They
+   take the ink stamp, never the five tier colours, or a student's ambitious
+   choice reads in the same red the caseload spends on a broken run. */
+const LIST_BAND={reach:["R","Reach","Ambitious. Worth the application."],
+ match:["M","Match","Your predictions line up with what they ask for."],
+ safety:["S","Safety","Your secure floor."]};
 
 function vStuTargets(){
+ const c=g(PARENT_ME);
+ const targets=(c.uni&&c.uni.targets)||[];
+ if(!targets.length)return `<div class="fade">
+  ${head("University targets","Where you stand","","var(--school-primary)","target")}
+  ${moment({art:"open",title:"No universities on your list yet",body:"Lists are built in Grade 12 with "+SCHOOL.counselor+". Nothing is missing from this page — it fills in when the list does."})}
+ </div>`;
+ /* An offer already decided outranks every estimate on the page. Sara has
+    been holding one since 14 November while this view showed her a 74%
+    chance of a place she already has. */
+ const held=targets.filter(t=>{const o=OFFERS[t.u];return o&&o.status!=="pending";});
+ const noSafety=!targets.some(t=>t.b==="safety");
  return `<div class="fade">
- ${head("University targets","Where you stand","Your live admission probability at each university, updated as your grades, statement and activities change.","var(--violet)","target")}
- <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
- ${STU.targets.map((t,i)=>{const col=t.b==="reach"?'var(--urgent)':t.b==="match"?'var(--good)':'var(--review)';
-  return `<div class="card lift" style="padding:20px;animation:rise .4s ${i*.05}s backwards">
-   <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
-    <div><b style="font-size:14.5px">${t.u}</b><div style="font-size:12px;color:var(--inkMute)">${t.c}</div></div>
-    <span class="stamp" style="font-size:25px;font-weight:600;color:${col}">${t.p}%</span></div>
-   ${meter(t.p,col)}
-   <div style="display:flex;justify-content:space-between;align-items:center;margin-top:11px">
-    ${chip(t.b.toUpperCase(),col,t.b==="reach"?'var(--urgentSoft)':t.b==="match"?'var(--goodSoft)':'var(--reviewSoft)')}
-    <span style="font-size:11.3px;color:var(--inkMute)">${t.b==="reach"?"Ambitious — keep pushing":t.b==="match"?"Strong fit":"Your safety net"}</span></div>
-  </div>`;}).join('')}
- </div>
- <div class="card" style="padding:17px 20px;margin-top:14px;background:var(--reviewSoft);border-color:var(--warn-line-2);display:flex;gap:12px;align-items:flex-start">
-  ${ic('alert',18)}<div style="font-size:12.3px;color:var(--warn-ink);line-height:1.55"><b>Worth a conversation.</b> Your list is strong but every option sits at match or above. Ms. Haddad suggested adding one secure floor — Bath or Bristol Economics — so nothing rests on a single result. Keep LSE exactly where it is.</div>
- </div></div>`;}
+ ${head("University targets","Where you stand","Every university on your list, what each one is for, and where a decision has already come back.","var(--school-primary)","target")}
+
+ ${held.map(t=>{const o=OFFERS[t.u];const cond=o.status==="conditional";
+  return `<div style="border:1.5px solid var(--rule-3);background:var(--stock);margin-bottom:18px">
+   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 16px;background:var(--band);border-bottom:1px solid var(--rule)">
+    <span class="stamp" style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:var(--school-accent);color:var(--school-on-accent);padding:3px 8px">${cond?"Conditional offer held":"Offer held"}</span>
+    ${o.date?`<span class="fig" style="font-size:11.5px;color:var(--ink-3)">${o.date}</span>`:''}
+   </div>
+   <div style="padding:15px 16px 16px">
+    <div class="stamp" style="font-size:20px;font-weight:600;line-height:1.2;color:var(--ink)">${t.u}</div>
+    <div style="font-size:12.5px;color:var(--ink-3);margin-top:3px">${t.c}</div>
+    ${cond&&(o.youCondition||o.condition)?`<div style="margin-top:14px;padding-top:13px;border-top:1px solid var(--rule)">
+     <div class="railh" style="margin-bottom:6px">What you need to keep</div>
+     <div style="font-size:13.5px;color:var(--ink);line-height:1.6;max-width:66ch">${o.youCondition||o.condition}</div>
+     ${(o.youDetail||o.detail)?`<div style="font-size:12.3px;color:var(--ink-3);line-height:1.6;margin-top:9px;max-width:66ch">${o.youDetail||o.detail}</div>`:''}
+    </div>`:''}
+   </div></div>`;}).join('')}
+
+ <div style="overflow-x:auto"><table class="sheet" style="font-size:12.5px">
+  <thead><tr>
+   <th scope="col" style="width:36px"><span class="sr">Standing</span></th>
+   <th scope="col">University</th>
+   <th scope="col">Course</th>
+   <th scope="col" style="width:130px">Standing</th>
+   <th scope="col" class="num" style="width:92px">Chance</th>
+  </tr></thead><tbody>
+  ${targets.map(t=>{const B=LIST_BAND[t.b]||LIST_BAND.match;const o=OFFERS[t.u];
+   const decided=!!(o&&o.status!=="pending");
+   return `<tr>
+    <td><span class="lstamp${decided?' on':''}" aria-hidden="true">${decided?"O":B[0]}</span><span class="sr">${decided?"Offer held":B[1]}</span></td>
+    <td style="color:var(--ink);font-weight:600">${t.u}</td>
+    <td>${t.c}</td>
+    <td>${decided?`<span class="stamp" style="font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;background:var(--school-accent);color:var(--school-on-accent);padding:2px 7px">Offer held</span>`:B[1]}</td>
+    <td class="num">${decided?`<span style="color:var(--ink-4)">—</span>`:t.p+"%"}</td>
+   </tr>`;}).join('')}
+  </tbody></table></div>
+ ${held.length?`<div style="font-size:11.8px;color:var(--ink-3);margin-top:10px;line-height:1.6;max-width:70ch">A chance is an estimate of a decision nobody has made yet. Where the decision has come back, that column is left blank — the offer is the fact, not the forecast.</div>`:''}
+
+ ${c.uni.flags&&c.uni.flags.length?`<div style="margin-top:22px;padding-top:16px;border-top:1.5px solid var(--rule-3)">
+  <div class="railh" style="margin-bottom:9px">What ${counselorShort()} is watching</div>
+  ${c.uni.flags.map(f=>`<div style="display:flex;gap:10px;align-items:flex-start;padding:6px 0;font-size:12.8px;color:var(--ink-2);line-height:1.55">
+   <span class="lstamp void" aria-hidden="true">!</span><span>${f}</span></div>`).join('')}
+  ${noSafety?`<div style="font-size:12.3px;color:var(--ink-3);line-height:1.65;margin-top:11px;max-width:68ch">Every university on this list sits at match or above. That is not a weak list — it is a list with no floor. Adding one secure option costs you none of the ambitious ones.</div>`:''}
+ </div>`:''}
+ </div>`;}
 
 function vStuMentors(){
  return `<div class="fade">
- ${head("Mentor marketplace","Talk to someone who got there","Verified alumni who walked your exact route. Every session happens inside the platform and is recorded — your school is in the loop.","var(--violet)","users")}
+ ${head("Alumni","Talk to someone who walked it","Former ${SCHOOL.short} students who took the route you are looking at. The school arranges the introduction, every conversation happens inside the platform, and it is recorded — nobody is billing you and nothing here is private from your counselor.","var(--school-primary)","users")}
  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
  ${MENTORS.map((m,i)=>`<div class="card lift" style="padding:20px;animation:rise .4s ${i*.05}s backwards">
   <div style="display:flex;gap:13px;margin-bottom:12px">
@@ -6159,34 +6268,40 @@ function vStuMentors(){
    <div style="flex:1"><div style="display:flex;align-items:center;gap:6px"><b style="font-size:14.5px">${m.n}</b>${ic('checkC',14)}</div>
     <div style="font-size:12.2px;color:var(--inkSoft)">${m.role} · ${m.firm}</div>
     <div style="font-size:11.3px;color:var(--inkMute)">${m.uni} · ${m.grad}</div></div>
-   ${m.best?chip("Best match","var(--violetDeep)","var(--violetSoft)"):''}</div>
-  <div style="background:var(--panel);border-radius:var(--r);padding:9px 11px;margin-bottom:11px;display:flex;flex-wrap:wrap;gap:5px;align-items:center">
-   ${m.path.map((p,j)=>`<span style="font-size:10.3px;background:#fff;border:1px solid var(--line);border-radius:var(--r-sm);padding:2px 7px;color:var(--inkSoft)">${p}</span>${j<m.path.length-1?`<span style="color:var(--inkMute)">${ic('arrowR',10)}</span>`:''}`).join('')}</div>
-  <div style="font-size:12.2px;color:var(--inkSoft);line-height:1.5;margin-bottom:13px">${m.bio}</div>
-  <div style="display:flex;align-items:center;gap:15px;padding-top:13px;border-top:1px solid var(--line)">
-   <div><b style="font-size:13px">★ ${m.r}</b><div style="font-size:9.5px;color:var(--inkMute);text-transform:uppercase;letter-spacing:.04em">${m.s} sessions</div></div>
-   <div><b style="font-size:13px">$${m.p}</b><div style="font-size:9.5px;color:var(--inkMute);text-transform:uppercase;letter-spacing:.04em">per session</div></div>
-   <button class="btn btn-sm" data-book="${m.id}" style="margin-left:auto;background:var(--violet);color:var(--on-violet)">Book session</button></div>
+   ${m.best?chip("Closest route","var(--ink-2)","var(--stock-3)"):''}</div>
+  <div style="background:var(--stock-3);padding:9px 11px;margin-bottom:11px;display:flex;flex-wrap:wrap;gap:5px;align-items:center">
+   ${m.path.map((p,j)=>`<span style="font-size:10.3px;background:var(--stock);border:1px solid var(--rule-2);padding:2px 7px;color:var(--ink-2)">${p}</span>${j<m.path.length-1?`<span style="color:var(--ink-4);display:flex">${ic('arrowR',10)}</span>`:''}`).join('')}</div>
+  <div style="font-size:12.2px;color:var(--ink-2);line-height:1.5;margin-bottom:13px">${m.bio}</div>
+  <div style="display:flex;align-items:center;gap:14px;padding-top:13px;border-top:1px solid var(--rule)">
+   <div><b class="fig" style="font-size:13px;color:var(--ink)">${m.s}</b><div style="font-size:9.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em">conversations with students here</div></div>
+   <button class="btn btn-p btn-sm" data-book="${m.id}" style="margin-left:auto;flex-shrink:0">Ask for an introduction</button></div>
  </div>`).join('')}
  </div></div>`;}
 
 function vStuNet(){
+ const c=g(PARENT_ME);
+ const net=NETWORK[c.id]||[];
  return `<div class="fade">
- ${head("My network","The people on your path","Mentors, family connections you have added, and people you meet through CAROS. This graph is yours — every connection is tagged to where it sits on your route.","var(--violet)","route")}
- <div class="card" style="padding:22px">
-  ${STU.net.map((n,i)=>`<div style="display:grid;grid-template-columns:auto 1fr auto;gap:13px;align-items:center;padding:13px 0;border-bottom:${i<STU.net.length-1?'1px solid var(--lineSoft)':'none'};animation:rise .35s ${i*.05}s backwards">
-   ${av(n.n.split(' ').map(w=>w[0]).slice(0,2).join(''),"student",38,11)}
-   <div><b style="font-size:13.3px">${n.n}</b><div style="font-size:11.5px;color:var(--inkMute)">${n.r}</div></div>
-   ${chip(n.w?"Warm":"1st","var(--good)","var(--goodSoft)")}</div>`).join('')}
-  <div style="display:flex;gap:9px;margin-top:15px">
-   <button class="btn btn-sm" data-snav="mentors" style="background:var(--violet);color:var(--on-violet)">${ic('plus',13)} Add a mentor</button>
-   <button class="btn btn-g btn-sm" data-toast="Add someone you already know — a family contact counts">${ic('plus',13)} Add someone I know</button></div>
- </div></div>`;}
+ ${head("My network","The people on your path","Alumni you have spoken to, and people you already know who sit somewhere on your route. Every entry is yours — none of it is visible to other students.","var(--school-primary)","route")}
+ ${net.length?`<div style="overflow-x:auto"><table class="sheet" style="font-size:12.5px">
+  <thead><tr><th scope="col">Name</th><th scope="col">How you know them</th><th scope="col" style="width:120px">Standing</th></tr></thead>
+  <tbody>${net.map(n=>`<tr>
+   <td style="color:var(--ink);font-weight:600">${n.n}</td>
+   <td>${n.r}</td>
+   <td>${n.w?"Spoken":"Introduced"}</td></tr>`).join('')}</tbody></table></div>`
+ :empty("Nobody on your record yet","Your network fills in as you talk to alumni and add people you already know. An empty page here is a starting point, not a gap in your file.")}
+ <div style="display:flex;gap:9px;margin-top:15px;flex-wrap:wrap">
+  <button class="btn btn-p btn-sm" data-snav="mentors">${ic('plus',13)} Find a mentor</button>
+  <button class="btn btn-g btn-sm" data-toast="Add someone you already know — a family contact counts">${ic('plus',13)} Add someone I know</button></div>
+ </div>`;}
 
 /* ═══════════ MENTOR ═══════════ */
+/* Hoisted so the sidebar badge counts the real requests instead of printing a
+   literal 2 that nothing keeps in step. */
+const MENTOR_REQS=[{n:"Sara Al Mansoori",av:"SA",goal:"Investment Banking · LSE Economics",msg:"Hi Hassan — I had a great first call. I'd love a follow-up on spring week applications and how to frame my Economics Society project in interviews.",when:"2 hours ago"},
+ {n:"Khalid Noor",av:"KN",goal:"Finance · targeting LSE",msg:"Could we talk about the LSE Economics application and what made yours stand out?",when:"Yesterday"}];
 function vMentorReq(){
- const reqs=[{n:"Sara Al Mansoori",av:"SA",goal:"Investment Banking · LSE Economics",msg:"Hi Hassan — I had a great first call. I'd love a follow-up on spring week applications and how to frame my Economics Society project in interviews.",when:"2 hours ago"},
-  {n:"Khalid Noor",av:"KN",goal:"Finance · targeting LSE",msg:"Could we talk about the LSE Economics application and what made yours stand out?",when:"Yesterday"}];
+ const reqs=MENTOR_REQS;
  return `<div class="fade">
  ${head("Session requests","Students who want to talk","Students matched to your route have asked for time. You walked their exact path — that is the most valuable thing they can access.","var(--teal)","inbox")}
  <div class="card" style="padding:16px 19px;margin-bottom:16px;display:flex;gap:12px;align-items:center">
@@ -6258,12 +6373,12 @@ function modalEl(){
    <div style="display:flex;gap:13px;margin-bottom:16px">${av(mt.av,"mentor",46)}
     <div><div style="display:flex;align-items:center;gap:6px"><b style="font-size:15.5px">${mt.n}</b>${ic('checkC',14)}</div>
     <div style="font-size:12.2px;color:var(--inkSoft)">${mt.role} · ${mt.uni}</div></div></div>
-   ${[["Session length","45 minutes · video call"],["Price","$"+mt.p],["Walked your route",mt.path.slice(1).join(" → ")]].map(([l,r])=>`<div class="kv"><span style="color:var(--inkMute)">${l}</span><b>${r}</b></div>`).join('')}
+   ${[["Length","45 minutes · video call"],["Arranged by",SCHOOL.short+" · no charge"],["Walked your route",mt.path.slice(1).join(" → ")]].map(([l,r])=>`<div class="kv"><span style="color:var(--ink-3)">${l}</span><b>${r}</b></div>`).join('')}
    <div style="font-size:12.5px;font-weight:600;margin:15px 0 8px">Pick a time</div>
    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
-    ${slots.map((s,i)=>`<div data-slot="${i}" style="padding:10px;border:1px solid ${S.selSlot===i?'var(--violet)':'var(--line)'};background:${S.selSlot===i?'var(--violet)':'#fff'};color:${S.selSlot===i?'#fff':'var(--inkSoft)'};border-radius:var(--r);text-align:center;font-size:11.8px;font-weight:600;cursor:pointer">${s}</div>`).join('')}</div>
-   <div style="display:flex;gap:9px;background:var(--tealSoft);border-radius:var(--r);padding:12px 14px;margin-top:14px;font-size:11.5px;color:#07553f;line-height:1.5">${ic('shield',16)}<div><b>Safeguarded session.</b> This call happens in-platform and is recorded. Your school is in the loop and parental consent is on file. No private contact details are exchanged.</div></div>
-   <button class="btn" data-confirm="${mt.id}" ${S.selSlot===null?'disabled':''} style="width:100%;margin-top:15px;background:var(--violet);color:var(--on-violet)">${ic('check',15)} Confirm booking${S.selSlot!==null?' · '+slots[S.selSlot]:''}</button>
+    ${slots.map((s,i)=>`<div data-slot="${i}" style="padding:10px;min-height:44px;display:grid;place-items:center;border:1px solid ${S.selSlot===i?'var(--school-primary)':'var(--rule-2)'};background:${S.selSlot===i?'var(--school-primary)':'var(--stock)'};color:${S.selSlot===i?'var(--school-on-primary)':'var(--ink-2)'};text-align:center;font-size:11.8px;font-weight:600;cursor:pointer">${s}</div>`).join('')}</div>
+   <div style="display:flex;gap:9px;background:var(--stock-3);border:1px solid var(--rule-2);padding:12px 14px;margin-top:14px;font-size:11.5px;color:var(--ink-2);line-height:1.5">${ic('shield',16)}<div><b>Safeguarded conversation.</b> This call happens in-platform and is recorded. Your school is in the loop and parental consent is on file. No private contact details are exchanged, and no money changes hands.</div></div>
+   <button class="btn btn-p" data-confirm="${mt.id}" ${S.selSlot===null?'disabled':''} style="width:100%;margin-top:15px">${ic('check',15)} Request this time${S.selSlot!==null?' · '+slots[S.selSlot]:''}</button>
   </div></div>`;}
  return '';}
 
@@ -6275,7 +6390,12 @@ function modalEl(){
    already there, and re-animating the page around you is noise, not feedback. */
 let LASTPLACE=null;
 function place(){return [S.role,S.cv,S.sv,S.pv,S.tv,S.mv,S.open,S.fileId,S.previewGrade,
- S.tab,S.fileTab,S.letter,S.cpQ,S.cpLoad,S.discoverStage,S.psActiveSystem].join("|");}
+ S.tab,S.fileTab,S.letter,S.cpQ,S.cpLoad,S.discoverStage,S.psActiveSystem,
+ /* Each gate question replaces the whole panel, so it arrives. Without this
+    only the first advance animated — the router sets discoverStage during
+    render, one step after place() has already read it — and the rest changed
+    with no transition at all. */
+ S.onbStep].join("|");}
 
 /* ═══════════ RENDER ═══════════ */
 function draw(){
@@ -6355,19 +6475,11 @@ function draw(){
     </div>
     <div style="padding:26px 28px 72px;max-width:1180px">${body2}</div></main></div>`;
  } else if(S.role==="teacher"){
-  const nav=[["tclasses","My Classes","book"],["class","My Class Register","users"],["classapprovals","Course Approvals","check"],["tlog","What I've logged","list"]];
+  const nav=roleNav("teacher");
   const body3=S.tv==="tclasses"?vTMyClasses():S.tv==="tlog"?vTLog():S.tv==="classapprovals"?vTClassApprovals():vTClass();
   sb=shell("teacher",nav,S.tv,"data-tnav","JD",TEACHER.name,TEACHER.subject,"Teacher portal",TEACHER.name+" · "+TEACHER.subject,body3);
  } else if(S.role==="parent"){
-  const pg2=S.previewGrade||12,pt2=g(PARENT_ME).track||"IB";
-  let nav=[["overview","Overview","home"],["messages","Messages","msg"],["meetings","Meet the counselor","brief"]];
-  if(pg2===9)nav.splice(2,0,["guide","High School Guide","book"]);
-  if(pg2>=10)nav.splice(2,0,["pathway","IB or AP","route"]);
-  if(pg2>=11)nav.splice(2,0,["grades","Grades & transcripts","book"]);
-  if(pg2===12)nav.splice(nav.findIndex(t=>t[0]==="pathway"),0,["uni","University requirements","grad"]);
-  if(pg2>=11&&pt2==="AP")nav.splice(nav.findIndex(t=>t[0]==="meetings"),0,["apexams","AP Exams","clock"]);
-  const order2=["overview","messages","guide","grades","uni","pathway","apexams","meetings"];
-  nav.sort((a,b)=>order2.indexOf(a[0])-order2.indexOf(b[0]));
+  const nav=roleNav("parent");
   sb=shell("parent",nav,S.pv,"data-pv",PARENTS[PARENT_ME].av,PARENTS[PARENT_ME].name,"Parent of "+g(PARENT_ME).name.split(" ")[0],"Family portal",g(PARENT_ME).name+" · "+g(PARENT_ME).yr+" · "+SCHOOL.short,vParent());
  } else if(S.role==="student"){
   const pg=S.previewGrade||12,pt=g(PARENT_ME).track||"IB";
@@ -6377,19 +6489,14 @@ function draw(){
     <div style="width:100%;max-width:640px;margin:0 auto">
      ${gradeSwitcher()}
      <div style="text-align:center;margin-bottom:22px">
-      <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--violetDeep);font-weight:700">Before anything else</div>
-      <div class="stamp" style="font-size:19px;font-weight:600;margin-top:4px">Let's get to know you first</div>
+      <div class="railh">Three questions</div>
+      <div class="stamp" style="font-size:19px;font-weight:600;margin-top:4px">Somewhere for the conversation to start</div>
      </div>
      ${vOnboardQuiz()}
     </div></div>`;
   }
  else {
-  let nav=pg===9?[["guide","High School Guide","book"],["stuclass","My Classes","book"]]:[["stuclass","My Classes","book"],["explore","Choosing IB or AP","route"],["mentors","Find a Mentor","users",2]];
-  if(pg>=11)nav.unshift(["progress","My progress","trend"]);
-  if(pg===12){nav.splice(1,0,["targets","University Targets","target"]);nav.push(["network","My Network","brief"]);}
-  if(pg>=11)nav.splice(nav.findIndex(x=>x[0]==="mentors")>=0?nav.findIndex(x=>x[0]==="mentors"):nav.length,0,["pslab","Personal Statement Lab","doc"]);
-  if(pg>=11&&pt==="AP")nav.splice(nav.findIndex(x=>x[0]==="mentors"),0,["apexams","AP Exams","clock"]);
-  nav.unshift(["discover","My Pathway","spark"]);
+  const nav=roleNav("student");
   const validSv=[...nav.map(x=>x[0]),"stuacs"];
   const sv=validSv.includes(S.sv)?S.sv:nav[0][0];
   let body;
@@ -6409,7 +6516,7 @@ function draw(){
   sb=shell("student",nav,sv,"data-snav",curStu.av,curStu.name,curStu.yr+" · "+curStu.goal,"My Career OS",curStu.name+" · "+curStu.yr+" · "+SCHOOL.short,body);
   }
  } else {
-  const nav=[["requests","Session Requests","inbox",2],["mentees","My Mentees","users"]];
+  const nav=roleNav("mentor");
   body=S.mv==="requests"?vMentorReq():vMentorMentees();
   sb=shell("mentor",nav,S.mv,"data-mnav","HR","Hassan Al Rashid","Goldman Sachs · LSE '21","Mentor Hub","Hassan Al Rashid · Analyst, IBD · Goldman Sachs",body);
  }
@@ -6423,17 +6530,24 @@ function draw(){
   </div>
   <div id="palResults" style="padding:8px 8px 10px;max-height:360px;overflow:auto"></div>
  </div></div>` : '';
- const TABSETS={
-  counselor:[["cohort-schedule","Caseload","users"],["si-cases","Priority","alert"],["meetings","Meetings","brief"],["__menu","More","list"]],
-  student:(()=>{const pg=S.previewGrade||12,pt=g(PARENT_ME).track||"IB";
-   if(pg===9)return[["discover","My Pathway","spark"],["guide","Guide","book"],["__menu","More","list"]];
-   if(pg===10)return[["discover","My Pathway","spark"],["explore","Explore","route"],["__menu","More","list"]];
-   if(pg===11)return pt==="AP"?[["progress","Progress","trend"],["discover","My Pathway","spark"],["apexams","AP","clock"],["__menu","More","list"]]:[["progress","Progress","trend"],["discover","My Pathway","spark"],["mentors","Mentors","users"],["__menu","More","list"]];
-   return[["progress","Progress","trend"],["discover","My Pathway","spark"],["targets","Targets","target"],["__menu","More","list"]];})(),
-  mentor:[["requests","Requests","inbox"],["mentees","Mentees","users"],["__menu","More","list"]],
-  teacher:[["class","My class","users"],["__menu","More","list"]],
-  parent:[["overview","Overview","home"],["messages","Messages","msg"],["meetings","Meetings","brief"],["__menu","More","list"]]};
- const TABS=TABSETS[S.role]||TABSETS.counselor;
+ /* The tab bar is the nav, shortened — not a fourth hand-kept list. Priority
+    names which surfaces earn a thumb; roleNav decides whether they exist at
+    this grade, so the bar can never offer a screen the sidebar withholds. */
+ const TAB_PRIORITY={
+  counselor:["cohort-schedule","si-cases","meetings"],
+  student:["discover","progress","targets","stuclass","guide","explore"],
+  parent:["overview","messages","meetings"],
+  teacher:["class"],
+  mentor:["requests","mentees"]};
+ const TAB_SHORT={"cohort-schedule":"Caseload","si-cases":"Priority","discover":"My Pathway",
+  progress:"Progress",targets:"Targets",stuclass:"Classes",guide:"Guide",explore:"Explore",
+  overview:"Overview",messages:"Messages",meetings:"Meetings",class:"My class",
+  requests:"Requests",mentees:"Mentees"};
+ const roleTabNav=roleNav(S.role);
+ const TABS=[...(TAB_PRIORITY[S.role]||TAB_PRIORITY.counselor)
+   .map(id=>roleTabNav.find(n=>n[0]===id)).filter(Boolean).slice(0,3)
+   .map(n=>[n[0],TAB_SHORT[n[0]]||n[1],n[2]]),
+  ["__menu","More","list"]];
  const curKey=S.role==="counselor"?S.cv:S.role==="student"?S.sv:S.role==="parent"?S.pv:S.role==="teacher"?S.tv:S.mv;
  const navAttr=S.role==="counselor"?"data-cnav":S.role==="student"?"data-snav":S.role==="parent"?"data-pv":S.role==="teacher"?"data-tnav":"data-mnav";
  const tabbar=`<nav class="tabbar">${TABS.map(t=>{
@@ -6448,7 +6562,14 @@ function draw(){
 function bind(){
  const q=(s,f)=>document.querySelectorAll(s).forEach(f);
  const kb=(e,role,checked)=>{e.tabIndex=0;e.setAttribute("role",role);if(checked!==undefined)e.setAttribute("aria-checked",String(checked));};
- q("[data-role]",e=>e.onclick=()=>{S.role=e.dataset.role;S.open=null;S.navOpen=false;draw();});
+ /* Scoped to #root deliberately. draw() stamps data-role on <html> so the
+    night ledger can gate on html[data-role="student"], which made the bare
+    [data-role] selector match <html> itself and bind the role switcher to
+    the document. Every click anywhere in the app then bubbled up to it: a
+    second full draw() (which stamps .still and cancels the entry animation
+    the first one had just started) plus a silent S.open=null. */
+ q("#root [data-role]",e=>e.onclick=()=>{S.role=e.dataset.role;S.open=null;S.navOpen=false;draw();});
+ q("[data-palopener]",e=>e.onclick=()=>{S.palOpen=true;S.palQuery="";S.palActiveIndex=0;draw();});
  q("[data-palclose]",e=>e.onclick=()=>{S.palOpen=false;S.palQuery="";S.palActiveIndex=0;draw();});
  q("[data-palcmd]",e=>e.onclick=()=>{const action=e.dataset.palcmd;const m=(action||"").match(/^nav:(.+)$/);if(m){const key=m[1];if(S.role==="counselor")S.cv=key;else if(S.role==="student")S.sv=key;else if(S.role==="parent")S.pv=key;else if(S.role==="teacher")S.tv=key;else if(S.role==="mentor")S.mv=key;S.palOpen=false;S.palQuery="";S.palActiveIndex=0;draw();return;}if(action==="role:counselor"){S.role="counselor";S.palOpen=false;S.palQuery="";draw();return;}if(action==="role:teacher"){S.role="teacher";S.palOpen=false;S.palQuery="";draw();return;}if(action==="role:student"){S.role="student";S.palOpen=false;S.palQuery="";draw();return;}if(action==="role:parent"){S.role="parent";S.palOpen=false;S.palQuery="";draw();return;}if(action==="role:mentor"){S.role="mentor";S.palOpen=false;S.palQuery="";draw();return;}});
  q("[data-cnav]",e=>e.onclick=()=>{S.cv=e.dataset.cnav;S.open=null;S.fileId=null;S.ragFilter="all";S.navOpen=false;draw();});
@@ -6585,22 +6706,24 @@ function bind(){
   draw();});
  q("[data-start-discover]",e=>e.onclick=()=>{S.discoverStage="chat";S.chatQStep=0;S.chatAnswers={};S.chatLog=[];S.narrowAnswered=false;S.chatQueue=null;S.signalScore=0;S.goalFocus=null;draw();});
  q("[data-onb-single]",e=>e.onclick=()=>{const[id,v]=e.dataset.onbSingle.split(":");S.onbAnswers[id]=v;draw();});
+ /* A tapped option stores both the label the student saw and the tag the
+    scoring engine reads, so nothing downstream has to re-guess it. */
+ q("[data-onb-pick]",e=>e.onclick=()=>{const[id,tag]=e.dataset.onbPick.split(":");
+  const qd=ONBOARD_Q.find(x=>x.id===id);const opt=qd&&(qd.opts||[]).find(o=>o[0]===tag);
+  S.onbAnswers[id]=opt?opt[1]:tag;S.onbAnswers[id+"Tag"]=tag;draw();});
  q("[data-onb-multi]",e=>e.onclick=()=>{const[id,v]=e.dataset.onbMulti.split(":");
   const cur=S.onbAnswers[id]||[];
   S.onbAnswers[id]=cur.includes(v)?cur.filter(x=>x!==v):[...cur,v];draw();});
- q("[data-onb-slider]",e=>e.oninput=()=>{S.onbAnswers[e.dataset.onbSlider]=+e.value;});
- q("[data-onb-text]",e=>e.oninput=()=>{S.onbAnswers[e.dataset.onbText]=e.value;});
+
  q("[data-onb-next]",e=>e.onclick=()=>{
-  const slider=document.querySelector("[data-onb-slider]");if(slider)S.onbAnswers[slider.dataset.onbSlider]=+slider.value;
-  const txt=document.querySelector("[data-onb-text]");if(txt)S.onbAnswers[txt.dataset.onbText]=txt.value;
+
   if(S.onbStep<ONBOARD_Q.length-1){S.onbStep++;}else{SURVEY_COMPLETE[PARENT_ME]=true;S.discoverStage=null;S.sv=null;}
   draw();});
  q("[data-onb-back]",e=>e.onclick=()=>{if(S.onbStep>0)S.onbStep--;draw();});
  /* Skipping keeps whatever has been answered so far and lets the student into
     the portal; the questions stay reachable from My Pathway. */
  q("[data-onb-skip]",e=>e.onclick=()=>{
-  const slider=document.querySelector("[data-onb-slider]");if(slider)S.onbAnswers[slider.dataset.onbSlider]=+slider.value;
-  const txt=document.querySelector("[data-onb-text]");if(txt)S.onbAnswers[txt.dataset.onbText]=txt.value;
+
   SURVEY_COMPLETE[PARENT_ME]=true;SURVEY_SKIPPED[PARENT_ME]=true;
   S.discoverStage=null;S.sv=null;draw();});
  q("[data-onb-restart]",e=>e.onclick=()=>{
@@ -6858,17 +6981,18 @@ function bind(){
    const hit=cpqMatch(v);
    S.cpA=hit?hit.a:"I searched your assigned cohort for that. Nothing matched precisely — try one of the suggested questions below, or ask about a specific student, signal domain or deadline. I only return what sits inside your permission scope.";
    draw();},1300);});
- q("[data-step]",e=>{kb(e,"checkbox",!!S.pathDone[+e.dataset.step]);e.onclick=()=>{const i=+e.dataset.step;S.pathDone[i]=!S.pathDone[i];if(S.pathDone[i])toast("Nice move — your probability went up");draw();};});
+
  q("[data-book]",e=>e.onclick=()=>{S.modal={type:"book",id:e.dataset.book};S.selSlot=null;draw();});
  q("[data-slot]",e=>{kb(e,"radio",S.selSlot===+e.dataset.slot);e.onclick=()=>{S.selSlot=+e.dataset.slot;draw();};});
  q("[data-confirm]",e=>e.onclick=()=>{const m=MENTORS.find(x=>x.id===e.dataset.confirm);
-  if(!STU.net.find(n=>n.n===m.n))STU.net.unshift({n:m.n,r:"Mentor · "+m.firm,w:true});
-  S.modal=null;S.selSlot=null;toast("Session booked with "+m.n.split(' ')[0]+" · your counselor can see it");});
+  const net=NETWORK[PARENT_ME]||(NETWORK[PARENT_ME]=[]);
+  if(!net.find(n=>n.n===m.n))net.unshift({n:m.n,r:"Mentor · "+m.firm,w:true});
+  S.modal=null;S.selSlot=null;toast("Introduction requested with "+m.n.split(' ')[0]+" · your counselor can see it");});
  const cp=document.getElementById("cpin");if(cp)cp.onkeydown=(ev)=>{if(ev.key==="Enter")document.querySelector("[data-cpask]").click();};
 }
 
 document.addEventListener("keydown",ev=>{
- if((ev.key==="Enter"||ev.key===" ")&&document.activeElement&&document.activeElement.matches("[data-open],[data-file],[data-tflag],[data-cpq],[data-ctxpick],[data-slot],[data-step],[data-task],[data-earlystart]")){
+ if((ev.key==="Enter"||ev.key===" ")&&document.activeElement&&document.activeElement.matches("[data-open],[data-file],[data-tflag],[data-cpq],[data-ctxpick],[data-slot],[data-task],[data-earlystart]")){
   ev.preventDefault();
   document.activeElement.click();
   return;
