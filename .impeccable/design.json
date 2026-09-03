@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-03T17:25:14.797256Z",
+  "generatedAt": "2026-09-03T19:51:01.711476Z",
   "title": "Design System: CAROS — Counselor OS",
   "extensions": {
     "colorMeta": {
@@ -257,6 +257,10 @@
       {
         "name": "ledger-scroller",
         "value": "980px"
+      },
+      {
+        "name": "page-max",
+        "value": "1640px"
       }
     ]
   },
@@ -395,7 +399,8 @@
       "Do verify any new text colour against both stock and band, compositing the full ancestor chain to an opaque ground in both directions. An auditor that composites in only one direction over-reports on translucent overlays and under-reports on alpha text.",
       "Do give a new partner school exactly three values (primary, accent, paper) and let applySchool() and ink() derive the rest.",
       "Do keep the demonstration-data stamp visible whenever a real school is applied. It is gated on the school, not on a debug flag.",
-      "Do separate groups with ruling and banding."
+      "Do separate groups with ruling and banding.",
+      "Do check a layout change at 1920 and 2560, not only at 1440. Every cap in this file was set at a width where it did nothing visible."
     ],
     "donts": [
       "Don't introduce a serif. Not for a quote, not for a letter, not for a display line.",

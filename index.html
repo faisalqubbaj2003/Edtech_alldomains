@@ -54,6 +54,10 @@
  --f-content:'Libre Franklin',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
  --f-figure:'Spline Sans Mono',ui-monospace,'SF Mono',Menlo,monospace;
  --row:30px;               /* one ruled row. The banding counts in these. */
+ --page-max:1640px;        /* how wide a content page may set. The sheet
+                              itself is exempt and runs full bleed: more
+                              width there is more weeks of the run on screen,
+                              which is the whole argument of the product. */
  --topbar:60px;            /* the sticky masthead the sheet's column head parks under. */
  /* Paper is cut, not rounded. */
  --r-sm:1px; --r:2px; --r-lg:2px; --r-xl:3px; --r-pill:2px; --r-dot:50%;
@@ -567,6 +571,9 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
  letter-spacing:-.01em;margin-top:3px;font-variant-numeric:tabular-nums;line-height:1.2}
 .tallyn{font-size:11px;color:var(--ink-3);margin-top:2px;line-height:1.4}
 @media(max-width:640px){.tally>div{flex:1 1 50%;border-left:none;padding-left:0}}
+.pagewrap{max-width:var(--page-max)}
+/* The sheet is the ledger, and a ledger uses the paper it is given. */
+.pagewrap-full{max-width:none}
 .evd{display:grid;grid-template-columns:120px 1fr auto;gap:14px;align-items:start;
  padding:11px 0;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--ink-2)}
 .evd:last-child{border-bottom:none}
@@ -1816,7 +1823,7 @@ function shell(theme,nav,active,attr,footAv,footN,footR,title,sub,body){
     ${ic('search',14)}<span style="flex:1;text-align:left">Search</span>
     <kbd style="font-family:var(--f-figure);font-size:10px;color:var(--ink-3);background:var(--stock-3);border:1px solid var(--rule-2);border-radius:var(--r-sm);padding:1px 5px;flex-shrink:0">⌘K</kbd></button>
   </div>
-  <div class="pagewrap" style="padding:24px 30px 70px;max-width:1140px">${body}</div>
+  <div class="pagewrap" style="padding:24px 30px 70px">${body}</div>
  </main></div>`;}
 
 /* No eyebrow. The kicker row this used to carry was a category noun on 24 of 30
@@ -3116,6 +3123,7 @@ function sheetRow(c){
  </tr>`;}
 
 const SHEET_CHUNK=25;
+const SHEET_VIEWS=new Set(["cohort","today","cohort-schedule","cohort-all"]);
 function vSheet(){
  const pc=prioCounts();
  const list=sheetList();
@@ -6613,7 +6621,7 @@ function draw(){
       <button class="btn btn-g btn-sm" aria-label="Notifications" style="height:36px;padding:0 11px" data-toast="Notifications are up to date">${ic('inbox',15)}</button>
      </div>
     </div>
-    <div style="padding:26px 28px 72px;max-width:1180px">${body2}</div></main></div>`;
+    <div class="pagewrap${SHEET_VIEWS.has(S.cv)&&!S.open&&!S.fileId?' pagewrap-full':''}" style="padding:26px 28px 72px">${body2}</div></main></div>`;
  } else if(S.role==="teacher"){
   const nav=roleNav("teacher");
   const body3=S.tv==="tclasses"?vTMyClasses():S.tv==="tlog"?vTLog():S.tv==="classapprovals"?vTClassApprovals():vTClass();

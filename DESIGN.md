@@ -221,6 +221,8 @@ The counselor's first viewport is one continuous ruled sheet, full bleed: no gre
 
 The ledger's own grid is fixed (`table-layout:fixed`): a 34px selection gutter, a 40px margin column closed by the 2px red rule, a 322px name stub, then the week columns dividing whatever remains evenly so the run rules across the sheet rather than crowding into the right margin, then an 88px "today" column separated by a heavier rule and a 112px last-contact column. One ruled row is 30px (`--row`); rows render at 1.75 of that. The column head sticks under the masthead while 87 names scroll beneath it, and goes static below 980px where the table gets its own horizontal scroller.
 
+A content page sets to `--page-max` (1640px) and centres in the pane. **The sheet is exempt and runs full bleed** (`.pagewrap-full`, applied to the three caseload views): more width there is more weeks of the run on screen, which is the argument of the product rather than a layout preference. The earlier 1140/1180px caps were invisible at 1440 and left 488px of dead sheet at 1920 — on the caseload the ledger was using 44% of the display.
+
 Rhythm is the row, not an 8pt grid. Groups are separated by ruling and by the tier group-line, never by gaps and never by cards. Content panes cap prose around 760px.
 
 Below 640px the tally line breaks to two columns and drops its dividing rules; below 820px the masthead's palette opener stands down so the page title takes the width. 87 quiet rows are revealed in chunks of 25 rather than all at once, because `content-visibility` gives no layout containment to `display:table-row`.
@@ -292,6 +294,7 @@ Selection is the band. The caret is margin red. Scrollbars are `rule-2` on trans
 - **Do** give a new partner school exactly three values (`primary`, `accent`, `paper`) and let `applySchool()` and `ink()` derive the rest.
 - **Do** keep the demonstration-data stamp visible whenever a real school is applied. It is gated on the school, not on a debug flag, so it cannot be switched off for a cleaner screenshot.
 - **Do** separate groups with ruling and banding.
+- **Do** check a layout change at 1920 and 2560, not only at 1440. Every cap in this file was set at a width where it did nothing visible.
 
 ### Don't:
 
