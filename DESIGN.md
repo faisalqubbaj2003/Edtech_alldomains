@@ -267,7 +267,7 @@ The system's defining mark and the reason severity survives greyscale, a project
 
 ### The tally line
 
-The ledger's summary form, and the replacement for the row of hero-metric tiles this product used to open on. A single ruled strip on stock, closed top and bottom (`rule-3` above, `rule-2` below), divided into cells by hairlines: apparatus label, then the figure in the mono face at 17px, then a note. It takes **no colour argument** on purpose — the rows it replaced painted figures in tier colours those figures had no claim on, which spends the one vocabulary the product cannot afford to make decorative.
+The ledger's summary form, and the replacement for the row of hero-metric tiles this product used to open on. A single ruled strip on stock, closed on all four sides (a `rule-3` head rule above, `rule-2` on the other three edges), divided into cells by hairlines: apparatus label, then the figure in the mono face at 17px, then a note. It takes **no colour argument** on purpose — the rows it replaced painted figures in tier colours those figures had no claim on, which spends the one vocabulary the product cannot afford to make decorative.
 
 ### Cards and containers
 

@@ -562,15 +562,15 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
    it in the run and ruling underneath it, never by printing it at 27px in a
    tier colour that the figure does not belong to. */
 .tally{display:flex;flex-wrap:wrap;margin-bottom:20px;background:var(--stock);
- border-top:1px solid var(--rule-3);border-bottom:1px solid var(--rule-2)}
+ border:1px solid var(--rule-2);border-top-color:var(--rule-3)}
 .tally>div{flex:1 1 148px;padding:10px 16px;border-left:1px solid var(--rule)}
-.tally>div:first-child{border-left:none;padding-left:0}
+.tally>div:first-child{border-left:none}
 .tallyl{font-family:var(--f-apparatus);font-size:10px;font-weight:700;letter-spacing:.12em;
  text-transform:uppercase;color:var(--ink-4)}
 .tallyv{font-family:var(--f-figure);font-size:17px;font-weight:600;color:var(--ink);
  letter-spacing:-.01em;margin-top:3px;font-variant-numeric:tabular-nums;line-height:1.2}
 .tallyn{font-size:11px;color:var(--ink-3);margin-top:2px;line-height:1.4}
-@media(max-width:640px){.tally>div{flex:1 1 50%;border-left:none;padding-left:0}}
+@media(max-width:640px){.tally>div{flex:1 1 50%;border-left:none}}
 .pagewrap{max-width:var(--page-max)}
 /* The sheet is the ledger, and a ledger uses the paper it is given. */
 .pagewrap-full{max-width:none}
