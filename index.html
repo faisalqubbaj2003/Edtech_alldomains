@@ -1596,7 +1596,7 @@ function moment(o){
   ${art(o.art,o.w)}
   <div style="flex:1;min-width:200px">
    <div style="font-size:12.8px;font-weight:600;color:var(--ink);line-height:1.4">${o.title}</div>
-   <div style="font-size:11.8px;color:var(--ink-3);line-height:1.6;margin-top:4px">${o.body}</div>
+   <div style="font-size:11.8px;color:var(--ink-3);line-height:1.6;margin-top:4px;max-width:62ch">${o.body}</div>
    ${o.action?`<div style="margin-top:10px">${o.action}</div>`:''}
   </div></div>`;}
 /* A section with nothing in it still owes the reader a reason. `moment()` is
@@ -3348,7 +3348,7 @@ function vTLog(){
    decision follows from; a teacher glancing here wants to find a class and
    open its register, not read a dashboard. */
 function vTMyClasses(){
- return `<div class="arrive" style="max-width:1100px">
+ return `<div class="arrive">
  ${head("Your courses this term","Every class you teach. Open a register to log what you noticed after a lesson.")}
  <div style="overflow-x:auto"><table class="sheet" style="font-size:13px">
   <thead><tr>
@@ -3933,7 +3933,7 @@ function vStuClasses(){
  const hasGrades=grade>=10 && classes.length>0 && classes[0].grade;
  const coursesByPathway={IB:classes.filter(x=>x.pathway==="IB"),AP:classes.filter(x=>x.pathway==="AP"),Standard:classes.filter(x=>x.pathway==="Standard")};
  
- return `<div class="arrive" style="max-width:1000px">
+ return `<div class="arrive">
   <div style="padding:24px 0">
    <h1 class="stamp" style="margin:0 0 8px;font-size:24px;font-weight:600;line-height:1.2">My Classes</h1>
    <div style="font-size:13.5px;color:var(--ink-2);line-height:1.6;max-width:680px">
@@ -4022,12 +4022,12 @@ function vStuACSSelector(){
  
  const pathwayColors={IB:"var(--ok)",AP:"var(--info)",Standard:"var(--warn)"};
  
- return `<div class="arrive" style="max-width:1200px">
+ return `<div class="arrive">
   <div style="padding:24px 0">
    <div class="stamp" style="font-size:24px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:10px">
   ${ic('arrow-left',20)} ${grade===9?"AP Courses Available for Grade 9":"Select Your Courses"}
    </div>
-   <div style="font-size:13.5px;color:var(--ink-2);line-height:1.6">
+   <div style="font-size:13.5px;color:var(--ink-2);line-height:1.6;max-width:760px">
   ${grade===9?"Explore the AP courses available in Grade 9. Select the courses you want to request, then send them to your counselor and teachers for review.":`Browse all available courses for Grade ${grade}. Select the courses you want to pursue and submit for your counselor and teachers to review and approve.`}
    </div>
   </div>
@@ -4077,10 +4077,10 @@ function vStuACSSelector(){
 /* View: Teacher's class approval dashboard */
 function vTClassApprovals(){
  const pending=CLASS_APPROVALS_PENDING.filter(a=>a.status==="pending");
- return `<div class="arrive" style="max-width:1100px">
+ return `<div class="arrive">
   <div style="padding:24px 0">
    <h1 class="stamp" style="margin:0 0 8px;font-size:24px;font-weight:600;line-height:1.2">Course Selections to Review</h1>
-   <div style="font-size:13.5px;color:var(--ink-2)">Review readiness, timetable fit, and the courses you teach before recording your decision.</div>
+   <div style="font-size:13.5px;color:var(--ink-2);max-width:760px">Review readiness, timetable fit, and the courses you teach before recording your decision.</div>
   </div>
 
   ${pending.length?pending.map(a=>{
