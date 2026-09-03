@@ -1,100 +1,130 @@
-> # ⚠️ STALE — DO NOT TRUST THIS FILE
->
-> **Verified 2026-09-02: most of what this document describes does not exist in `main`.**
->
-> A bad merge destroyed Phases 1–4 of the design work. All thirteen phase branches are merged ancestors of `main`, yet their code is gone: commit `0daf069` overwrote `index.html` with a pre-Phase-1 copy, `9eb55af` restored it, and `c045a6f` clobbered it again. Confirmed **absent at runtime** on `main`: `place()`, `.still`, `art()`, `moment()`, `ILLUS`, `IC_X`, `--disp-1/2/3`, `--r-pill`, `--persona-*`, and the role-scoped command-palette search described below. `--r` is 10px, not the 8px documented here; `--r-xl` is 16px, not an alias.
->
-> Reading this file as truth has already cost real work. Everything below is **history and intent** — a description of a build that was overwritten, and of a design system now being replaced.
->
-> **Current authorities instead:**
-> - `../PHASES.md` — the work plan
-> - `PRODUCT.md` — product truth
-> - `.impeccable/surfaces/index-html.md` — the direction contract (the visual world, superseding the colour/type/shape sections below)
-> - `.impeccable/critique/` — the 2026-09-02 audit
->
-> The lost code is recoverable at commit **`39defe5`**. Phase 8 replaces this file with one written from the built world.
-
 # CAROS — Counselor OS
 
-A single-file prototype (`index.html`, vanilla JS, no build step, no backend) for an AI-native school counseling platform. Five role-based views in one shell: Counselor OS, Parent portal, Student portal ("Career OS"), Teacher portal, Mentor portal. Full product description is in `README.md`.
+A single-file prototype: `index.html`, ~7,300 lines, vanilla JS, **no build step, no backend, no test suite**. Five role surfaces in one shell — Counselor OS, Teacher, Student ("Career OS"), Parent (Family portal), Mentor Hub. Product description in `README.md`.
 
-Live deploy: https://ed-tech-orpin-ten.vercel.app/ (Vercel, auto-deploys from `main`).
+This file describes the build as it stands after Phase 8 (2026-09-03). It was rewritten from the running code, not from intention — the version it replaces described a build that had been overwritten, and reading it as truth cost real work twice.
 
-## Design direction — read before touching colors, type, or radius
+## The authorities, in order
 
-Two documents govern the visual direction. Read them before making a judgment call this file doesn't already answer:
+| File | What it owns |
+|---|---|
+| `PRODUCT.md` | Product truth — users, positioning, constraints, and the anti-fabrication rules. |
+| `DESIGN.md` | **The visual system, written from this code.** Tokens, type, the named rules, the do's and don'ts. Read before any colour, type, shape or layout decision. |
+| `.impeccable/surfaces/index-html.md` | The direction contract — the thesis, the per-school theming rule, the open questions. `DESIGN.md` is the built expression of it. |
+| `../PHASES.md` | The P0–P8 work plan and what each phase decided. Historical now, but it carries the reasoning. |
+| `.impeccable/design.json` | Machine-readable sidecar for `DESIGN.md` — tonal ramps, shadows, motion, renderable component snippets. |
 
-- **The CAROS Markup** — the diagnosis and cited references (Linear, Mercury, Attio, Ashby, Scoir vs. Naviance, Duolingo): https://claude.ai/code/artifact/9369624e-2318-4b02-aab1-9adb536e0605
-- **The CAROS Runbook** — the phased implementation plan, task by task: https://claude.ai/code/artifact/e4fab4f7-76f2-42ab-8f2f-d114cda8912f
+`.impeccable/review/` holds the Phase 8 screenshot round, desktop and mobile, daylight and night ledger.
 
-## The color system
+## Running it
 
-**Do not add a new hex value anywhere in this file without checking this list first.** Every color already has a token and a meaning. The original audit called this "seven decorative chromatic families" — that was wrong in an important way: most of it is real product logic, not decoration. Don't delete state to chase a smaller palette.
+```bash
+python3 -m http.server 8099 --directory .
+```
 
-- **Neutrals** (`--bg`, `--surface`, `--ink`, `--ink-2/3/4`, `--line`) — unchanged, not the problem.
-- **Persona accents** — one per role that's earned one: `--persona-counselor` (teal, `--brand`), `--persona-student` (violet), `--persona-parent` (rose). Teacher and Mentor don't have one yet — that's an open Phase 3 decision (Runbook 3.3/3.4), not an oversight to "fix" by giving them one.
-- **Triage severity — 5 real states, never collapse this.** `--urgent` → `--checkin` → `--review` → `--monitor` → `--good`, defined in the `PRIO` object. This is the counselor's actual caseload logic (order + SLA per state). It reads as a red→orange→amber→gray→green severity gradient by design — that's intentional, not a mistake to "fix" by making the hues more different from each other.
-- **Track distinction** — IB uses `--ok` (green), AP uses `--info` (blue), consistently. Keep it that way; don't repurpose either color for something unrelated.
-- **Concern-domain tags** (`DOMAINS` object: academic, attendance, engagement, behaviour, teacher, university, positive) — these used to be 7 hardcoded hex values with no relationship to anything else. They're now `--dom-*` tokens aliased onto the palette above (e.g. `--dom-teacher: var(--crit)`). If a new domain is ever added, alias it to an existing token — don't invent a new hue.
+Or use the Browser pane with the `caros-static` config in `.claude/launch.json` — never `bash` for a server. `S` and `draw()` are globals, so drive state directly rather than clicking:
 
-## Shape
+```js
+S.role='counselor'; S.cv='si-why'; draw();
+```
 
-Three radius tiers, nothing else: `--r` (8px, controls — buttons, inputs, chips), `--r-lg` (12px, cards/panels/modals), `--r-pill` (999px, pills/badges/avatars). `--r-xl` still exists as an alias to `--r-lg` for anything that referenced it.
+`S.cv` is the counselor's view, `S.tv` teacher, `S.sv` student, `S.pv` parent, `S.mv` mentor. `S.open` is an open case file, `S.previewGrade` the parent/student grade switcher.
 
-As of Phase 1, only the token definitions are fixed — most components still hardcode a literal `border-radius:Npx` inline rather than referencing these tokens. **Fix this incrementally, as you touch each component** (per Runbook Phase 2/3), not as a single blind find-and-replace across the file — a global pass can't tell a control from a card from context alone.
+**Demo from the deployed build, not from localhost.** The debug audit panel is gated to `localhost` / `?debug`, so a local demo puts a "UX Audit" pill over every screen.
 
-## Type
+`?school=<id>` switches the letterhead at runtime (`acs`, `demo`).
 
-- `.serif` → Fraunces (display/editorial moments), `.read` → Newsreader (long-form reading), `.mono` → JetBrains Mono (data/audit trails), default body → Inter.
-- New display-size tokens: `--disp-1` (48px), `--disp-2` (36px), `--disp-3` (28px) — Fraunces at these sizes for the screens that open a session (counselor's morning brief, parent's weekly note, etc. — Runbook 2.1, 2.3, 3.1). Don't reuse `.serif` at label-sized 15–18px for a new headline moment; that's the pattern that got it stuck as a label font instead of a display font.
-- `--read-size` (16px) / `--read-lh` (1.7) — Newsreader long-form reading defaults.
+## The three invariants
 
-## Icons
+These are not style preferences. Breaking one is a product regression.
 
-Two sets, and the split is deliberate.
+1. **The school colour is letterhead, never data.** No `--school-*` token may appear inside a severity, track or domain definition. Grep-enforced; it is checked. Full reasoning in `DESIGN.md` under The Letterhead Rule.
+2. **The five triage tiers are product logic.** Never collapse them, never re-theme them per school, never carry severity on a coloured chip — the tier stamp carries it.
+3. **All student data is synthetic, over a real school's name.** The visible demonstration-data stamp is therefore a shipping requirement, gated on a school being applied rather than on a debug flag so it cannot be switched off for a cleaner screenshot. Never fabricate testimonials, customers, outcomes, benchmarks, pricing or press.
 
-- `IP` — ~40 stock Feather-style outline icons. Everything generic uses these. **Don't replace them with custom drawings.** A product that draws all forty of its own icons reads as decorated, not designed.
-- `IC_X` — six bespoke icons for concepts CAROS owns, where the borrowed metaphor said the wrong thing: `signal` (deviation from a personal baseline band — *not* a trend arrow, which means the opposite), `caseload` (a triaged stack, not a group of people), `overnight` (a student moving between priority tiers), `trackIB` / `trackAP` (a closed hexagonal programme vs. separate independently-examined courses — **the pair only works as a pair**; that contrast is the decision a Grade 10 student is being asked to make), `mentorMatch` (two parties converging on one made connection).
+Gamification is allowed on the student side and nowhere else (reversed 2026-09-02). Do not "fix" it back toward the old prohibition.
 
-`ic()` prefers `IC_X` and falls through to `IP`. Both live on the same 24×24 grid at 1.75 stroke inherited from `svg.ico`; fill marks only the element carrying the meaning. A new bespoke icon needs a CAROS-specific concept to justify it — otherwise use the stock set.
+## How the file is organised
 
-Note the naming trap: the icon is `mentorMatch`, not `match`, because "match" already means reach/match/safety in the university data.
+Roughly: tokens and CSS (1–560), icons and the school record (850–1030), data (1050–1500), shared render helpers (1500–1830), counselor views (1860–2800), nav (2810–2910), the sheet (3000–3200), remaining role surfaces, then the router, `bind()` and the debug panel at the end.
 
-## Empty states and milestones
+### Tokens
 
-`ILLUS` holds five inline-SVG drawings on a 128×96 grid; `art()` renders one, `moment()` wraps one in a card with a title and body. Used for four states that are empty because nothing has happened *yet* (`mentor`, `early`, `fork`, `shortlist`) and one because something finally did (`offer`).
+Three layers, declared at `:root` around line 34 and documented in the comment above them: **material** (stock, band, ruling, ink, the three faces, radius), **semantic** (the five tiers, concern domains, the baseline band — never themed), **letterhead** (written by `applySchool()`, themed per school).
 
-The reason these exist isn't decoration. A Grade 9 parent opens the portal and sees almost nothing; a portal that looks broken is a portal a family stops opening — the Naviance failure the Markup cites. So each one draws the specific missing thing and says in copy **why its absence is correct at this stage**.
+A **bridge alias block** sits at the end of that declaration (`--panel`, `--card`, `--inkSoft`, `--inkMute`, `--lineSoft`, `--teal`, `--urgent`…), mapping the pre-Register vocabulary onto Register tokens. Its comment says "nothing here is meant to survive P8"; roughly 350 call sites still read through it, so **it does survive, deliberately**. Retiring it is a mechanical rename with no visual change, worth doing behind a computed-style diff, and it is not urgent — every alias resolves to the correct Register token today. Counting `var(--inkMute)` tells you about naming, not about rendering.
 
-- Warmth is a **parent-side privilege**: rose accent, Fraunces titles (`serif:true`).
-- The **student side stays restrained**: violet, Inter, no serif. A Grade 12 applying to university is a serious audience (Runbook 3.2). No characters, no confetti, no streaks — ever.
-- The `fork` illustration draws both routes at exactly equal weight on purpose, and the copy says so. Don't let a future "improvement" emphasise one branch.
+### The night ledger
 
-## Motion
+`@media (prefers-color-scheme:dark)` at line ~141, and it is **gated to `html[data-role="student"]`**. The student surface is the only one with a dark palette; the counselor stays on paper in both schemes by design. Widening it is an open product decision, and the tokens are already written for it. A dark-mode audit run on the counselor will look like the media query is broken. It is not.
 
-`draw()` rebuilds the entire tree on every state change. That means **any entry animation you add will replay on every click** unless the suppression below catches it. This was the single biggest thing making the product feel mushy.
+### Motion
 
-- `place()` decides whether a draw is an *arrival* — a different role, view, student file, grade, or a panel whose whole contents are new (the letter finishing, the co-pilot answering). Filtering, sorting, expanding, toggling and typing are **not** arrivals.
-- On a non-arrival, `.still` lands on `#root` and every entry animation is suppressed. **If you add a new entry animation, check it's covered by the `.still` selectors** — inline `animation:rise/fade/pop`, or the `.rise` / `.fade` / `.pop` / `.arrive` / `.land` classes.
-- Things that *are* the state change rather than a re-render of it stay exempt: toast, modal, palette, spinner, shimmer.
-- Anything animating **to** a value from a non-default attribute (like the baseline chart's `stroke-dashoffset:1200 → 0`) needs its end state landed explicitly in the `.still` rule, or suppression makes it invisible.
-- Only three moments are allowed to be slower and staged: what changed overnight, the letter drafting itself, the signal meter finding its level. Resist adding a fourth.
-- `prefers-reduced-motion` zeroes **both duration and delay**. Don't drop the delay reset — everything staggered here uses `backwards` fill, so a delay without it leaves content blank for up to a second.
+`draw()` rebuilds the whole tree on every state change, so **any entry animation replays on every click** unless suppression catches it.
 
-## Command palette
+- `place()` (line ~6471) fingerprints role, view, open file, grade, tab, and the panels that replace themselves wholesale (`letter`, `cpQ`, `cpLoad`, `discoverStage`, `psActiveSystem`, `onbStep`). A changed fingerprint is an *arrival*. Filtering, sorting, expanding and typing are not.
+- On a non-arrival, `.still` lands on `#root` and suppresses inline `animation:rise/fade/pop` plus the `.rise` / `.fade` / `.pop` classes. **A new entry animation must be covered by those selectors.**
+- Exempt on purpose: toast, modal, palette, spinner, shimmer — they *are* the state change.
+- Anything animating **to** a value from a non-default attribute (the baseline chart's `stroke-dashoffset`) needs its end state landed explicitly in the `.still` rule, or suppression makes it invisible.
+- `prefers-reduced-motion` zeroes **both duration and delay**. Do not drop the delay reset: staggered content uses `backwards` fill, so a delay without it leaves content blank for up to a second.
 
-⌘K / Ctrl+K, or the header search button. `palCommands()` builds the list, `palFilter()` ranks (exact prefix > word start > substring).
+### Icons and marks
 
-Two rules:
+`IP` is the single ~40-icon Feather-style set; `ic(name, size)` renders it. There is no second bespoke set. Icons are drawn, never emoji.
 
-1. **The student list is scoped to the role.** Counselor → all 87 (her caseload). Teacher → the six in their class, and their verb is *log a concern*, not *read the file*. Parent/student → their own record only. Mentor → no student search. Wiring every role to the same 87 rows builds the exact permission leak the co-pilot promises in writing it never makes.
-2. **It must not call `draw()` on each keystroke.** `palPaint()` repaints only the results list, so focus and caret survive. A full `draw()` happens once, when a command runs.
+Three families of mark do the real semantic work, and none of them is an icon:
 
-`roleNav(role)` is the single source for the grade-conditional parent/student navs — the sidebar, the parent tab bar and the palette all read it. That logic used to exist in three hand-maintained copies. **Don't add a fourth.**
+- `runMark(kind)` — one cell in a student's run: `kept` (filled, inside band), `soft` (outlined), `break` (a cross in margin red — the single accent, spent on the one cell that is the reason the sheet exists), `none`.
+- `tierStamp(prio)` / `pchip(prio)` — the tier as mark plus letter (`U C R M P`). Colour reinforces; the glyph carries.
+- `ILLUS` + `art()` / `moment()` — three geometric empty-state marks: `steady` (a run with no break), `open` (one filled cell, one waiting dashed cell), `fork` (two branches of exactly equal weight — and the copy says so; do not let a later change emphasise one branch).
 
-The global key listener is attached once at the bottom of the script, *not* in `bind()` — `bind()` re-runs on every draw and would stack a listener each time.
+### Shared render helpers
 
-## Workflow
+Use these rather than composing a new one-off:
 
-- One branch per Runbook task, named `phase-<n>.<m>-<slug>` (e.g. `phase-2.1-counselor-home`) — this is how work splits cleanly between collaborators without both people editing the same region of a 3,700-line file.
-- No test suite. Screenshot every changed view in the browser (both light content and, where relevant, the family-switcher grade variants) before calling a task done — a color or layout regression here is invisible until someone actually looks.
+- `head(title, description)` — the page head. **Two arguments.** It used to take an eyebrow; a kicker above an `<h1>` is banned outright now.
+- `tally(items)` — the ledger's summary line, `[label, figure, note]` per cell. This is the system's answer to "summarise this screen" and it replaced the hero-metric tile row on seven surfaces. It takes no colour on purpose.
+- `empty(title, why, action)` — an empty state that says why the absence is correct.
+- `chip`, `av`, `stTag`, `sparkline`, `spin`, `ic`.
+- `prioCounts()` — the one caseload truth. Do not derive a second count.
+
+### The command palette
+
+⌘K, or the masthead button. `palCommands(role)` builds, `palFilter()` ranks (exact prefix > word start > substring), `palPaint()` repaints **only the results list** so focus and caret survive.
+
+1. **The student list is scoped to the role.** Counselor sees all 87; teacher sees their class and their verb is *log a concern*, not *read the file*; parent and student see their own record; mentor has no student search. Wiring every role to the same 87 rows builds exactly the permission leak the co-pilot promises in writing it never makes.
+2. **Never call `draw()` per keystroke.** A full draw happens once, when a command runs.
+
+`roleNav(role)` is the single source for the grade-conditional parent/student navs — sidebar, parent tab bar and palette all read it. There used to be three hand-maintained copies. Do not add a fourth.
+
+The global key listener is attached once at the bottom of the script, **not** in `bind()` — `bind()` re-runs on every draw and would stack a listener each time.
+
+### Routing
+
+The counselor router is a chain of `else if(S.cv===…)` around line 6500. **Order matters and has bitten before**: a broad early condition silently shadowed `S.cv==="files"`, so the sidebar's "360° student files" opened the caseload for weeks while the function sat there working. Add new routes below the catch-alls, and check no earlier branch already claims the key.
+
+Nav entries live in `CATS` (three expandable categories), `SYSNAV` (Tools & system) and `DIMS` (the ten dimension pages, all routed through `vDim`). A view with no entry in one of those is unreachable no matter how finished it is.
+
+## Verifying a change
+
+There is no test suite, so verification is browser-driven and cheap to run:
+
+```js
+// every counselor view + every case file, watching for a thrown render
+let errs=[]; S.role='counselor';
+for(const cv of ['cohort-schedule','si-why','app-season','app-flow','files','app-letter','command']){
+  try{S.cv=cv;S.open=null;draw();}catch(e){errs.push(cv+': '+e.message);}
+}
+for(const c of S.cases){try{S.open=c.id;draw();}catch(e){errs.push(c.id+': '+e.message);}}
+errs;
+```
+
+For contrast, **composite the full ancestor chain to an opaque ground in both directions.** An auditor that does not will lie to you both ways: it over-reports on translucent light overlays (treating `rgba` backgrounds as white) and under-reports on alpha text. This has already produced one phantom 120-failure report on a surface that was clean.
+
+The mechanical detector is at `.claude/skills/impeccable/scripts/detector/detect-antipatterns-browser.js`. **The static CLI scan is useless here** — this file is almost entirely JS template literals, so an HTML parser sees no markup and returns a false clean bill. Copy the browser bundle next to `index.html`, load it with a `<script>` tag, and call `window.impeccableScan()`. Expect it to keep reporting 10–11.5px apparatus labels as undersized: that is the printed register, recorded as a deliberate exception in `DESIGN.md`.
+
+## History worth knowing
+
+`main` lost Phases 1–4 of design work to a bad merge in 2026. All thirteen phase branches are merged ancestors of `main`, yet their code was gone: `0daf069` overwrote `index.html` with a pre-Phase-1 copy, `9eb55af` restored it, `c045a6f` clobbered it again. The lost work is recoverable at commit **`39defe5`**, and P1 ported the mechanisms (`place()` / `.still`, the empty-state doctrine) forward from it.
+
+If you are ever diagnosing a "missing design system" symptom in this repo, **check git history first** — the cause has historically been that incident, not a design decision.

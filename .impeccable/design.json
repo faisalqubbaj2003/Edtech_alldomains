@@ -1,0 +1,413 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-03T17:25:14.797256Z",
+  "title": "Design System: CAROS — Counselor OS",
+  "extensions": {
+    "colorMeta": {
+      "stock": {
+        "role": "neutral",
+        "displayName": "Ledger Stock",
+        "canonical": "#FAFBF7",
+        "tonalRamp": [
+          "#131D26",
+          "#26332C",
+          "#3B4A40",
+          "#546455",
+          "#7A8E7C",
+          "#AFC3AE",
+          "#DCE8DA",
+          "#FAFBF7"
+        ]
+      },
+      "band": {
+        "role": "neutral",
+        "displayName": "The Green Bar",
+        "canonical": "#DCE8DA",
+        "tonalRamp": [
+          "#111B15",
+          "#1E2E24",
+          "#2E4436",
+          "#42604C",
+          "#5E8168",
+          "#84A88C",
+          "#B4CCB6",
+          "#DCE8DA"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Printed Ink",
+        "canonical": "#131D26",
+        "tonalRamp": [
+          "#070B0E",
+          "#131D26",
+          "#243542",
+          "#33454F",
+          "#4F636B",
+          "#7B8D94",
+          "#AEBDC2",
+          "#E4EAEC"
+        ]
+      },
+      "margin": {
+        "role": "secondary",
+        "displayName": "Margin Red",
+        "canonical": "#B0271C",
+        "tonalRamp": [
+          "#2B0906",
+          "#4A100B",
+          "#6B1811",
+          "#8C1F16",
+          "#B0271C",
+          "#D2564A",
+          "#E79288",
+          "#F6D3CE"
+        ]
+      },
+      "school-primary": {
+        "role": "primary",
+        "displayName": "ACS Pine",
+        "canonical": "#004D43",
+        "tonalRamp": [
+          "#00201C",
+          "#00302A",
+          "#003D36",
+          "#004D43",
+          "#0A6B5E",
+          "#2E9184",
+          "#6FBDB1",
+          "#C2E2DC"
+        ]
+      },
+      "school-accent": {
+        "role": "primary",
+        "displayName": "Sand Viper Gold",
+        "canonical": "#F7BD00",
+        "tonalRamp": [
+          "#3A2C00",
+          "#584200",
+          "#7A5B00",
+          "#9E7600",
+          "#C59300",
+          "#F7BD00",
+          "#FBD75E",
+          "#FDEDB5"
+        ]
+      },
+      "tier-urgent": {
+        "role": "tertiary",
+        "displayName": "Urgent Escalation",
+        "canonical": "#A81E12",
+        "tonalRamp": [
+          "#2A0705",
+          "#470D08",
+          "#67140D",
+          "#8C1810",
+          "#A81E12",
+          "#CB4E42",
+          "#E49087",
+          "#F6E4E1"
+        ]
+      },
+      "tier-checkin": {
+        "role": "tertiary",
+        "displayName": "Check-in Recommended",
+        "canonical": "#96490F",
+        "tonalRamp": [
+          "#2A1404",
+          "#452007",
+          "#632F0A",
+          "#7D3B0C",
+          "#96490F",
+          "#BE7233",
+          "#DCA672",
+          "#F5E9DC"
+        ]
+      },
+      "tier-review": {
+        "role": "tertiary",
+        "displayName": "Review",
+        "canonical": "#7A6113",
+        "tonalRamp": [
+          "#221B05",
+          "#3A2E08",
+          "#54430D",
+          "#675210",
+          "#7A6113",
+          "#A28536",
+          "#C9B274",
+          "#F2EEDC"
+        ]
+      },
+      "tier-monitor": {
+        "role": "tertiary",
+        "displayName": "Monitor",
+        "canonical": "#4A5A62",
+        "tonalRamp": [
+          "#151B1E",
+          "#232D32",
+          "#333F45",
+          "#3F4D54",
+          "#4A5A62",
+          "#728189",
+          "#A3AEB3",
+          "#E9EDEC"
+        ]
+      },
+      "tier-good": {
+        "role": "tertiary",
+        "displayName": "Positive Change",
+        "canonical": "#1C6B45",
+        "tonalRamp": [
+          "#072014",
+          "#0C3623",
+          "#134E33",
+          "#175C3C",
+          "#1C6B45",
+          "#3E9268",
+          "#78BC98",
+          "#E0EFE4"
+        ]
+      },
+      "baseline": {
+        "role": "tertiary",
+        "displayName": "Personal Baseline Band",
+        "canonical": "#8FB4A4",
+        "tonalRamp": [
+          "#1A2A23",
+          "#2A4238",
+          "#3C5C4D",
+          "#527664",
+          "#6A917D",
+          "#8FB4A4",
+          "#B7D0C4",
+          "#E1EDE7"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display · apparatus",
+        "purpose": "A case subject's name at the head of their file. Archivo Narrow only."
+      },
+      "headline": {
+        "displayName": "Headline · apparatus",
+        "purpose": "The rail's date line and section leads."
+      },
+      "title": {
+        "displayName": "Title · content",
+        "purpose": "A student's name in the ledger stub."
+      },
+      "body": {
+        "displayName": "Body · content",
+        "purpose": "Everything read in sentences. Measure capped near 760px."
+      },
+      "label": {
+        "displayName": "Label · apparatus",
+        "purpose": "Uppercase letterspaced column heads and section marks. 10px floor."
+      },
+      "figure": {
+        "displayName": "Figure · mono",
+        "purpose": "Every number, date, ratio and audit line. Tabular by default."
+      }
+    },
+    "shadows": [
+      {
+        "name": "none",
+        "value": "none",
+        "purpose": "The default, and the answer for every card, chip, button and row. A sheet lies on the desk; it does not float."
+      },
+      {
+        "name": "overlay",
+        "value": "0 10px 22px -8px rgba(19,29,38,.30),0 2px 6px -2px rgba(19,29,38,.16)",
+        "purpose": "Modals and the command palette — the only things that genuinely leave the page."
+      },
+      {
+        "name": "overlay-lifted",
+        "value": "0 20px 40px -12px rgba(19,29,38,.36),0 4px 10px -4px rgba(19,29,38,.18)",
+        "purpose": "The topmost layer only."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-arrival",
+        "value": "cubic-bezier(.22,1,.36,1)",
+        "purpose": "Exponential ease-out for arrivals and state changes."
+      },
+      {
+        "name": "rise",
+        "value": "opacity 0→1, translateY(8px)→0 over .4s",
+        "purpose": "An entry animation, played ONLY on a genuine arrival."
+      },
+      {
+        "name": "still",
+        "value": "animation:none!important",
+        "purpose": "Stamped on #root by place() for anything that is not an arrival. Filtering, sorting and typing replay nothing."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "tally-stack",
+        "value": "640px"
+      },
+      {
+        "name": "masthead-collapse",
+        "value": "820px"
+      },
+      {
+        "name": "ledger-scroller",
+        "value": "980px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "A printed instruction on the letterhead colour. 44px minimum target on every variant.",
+      "html": "<button class=\"ds-btn-p\">Acknowledge</button>",
+      "css": ".ds-btn-p{display:inline-flex;align-items:center;justify-content:center;gap:6px;font-family:var(--f-apparatus,'Archivo Narrow',sans-serif);font-size:13.5px;font-weight:600;letter-spacing:.008em;padding:9px 14px;min-height:44px;border-radius:2px;border:1px solid var(--school-primary,#004D43);background:var(--school-primary,#004D43);color:#fff;cursor:pointer;transition:background .15s ease,border-color .15s ease,transform .1s ease}.ds-btn-p:hover{background:#023A33;border-color:#023A33}.ds-btn-p:focus-visible{outline:2px solid var(--school-primary,#004D43);outline-offset:2px;box-shadow:0 0 0 4px var(--stock,#FAFBF7)}.ds-btn-p:active{transform:scale(.985)}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "The secondary action. Hover fills to the green band — the row lighting up under the hand.",
+      "html": "<button class=\"ds-btn-g\">Add context</button>",
+      "css": ".ds-btn-g{display:inline-flex;align-items:center;justify-content:center;gap:6px;font-family:var(--f-apparatus,'Archivo Narrow',sans-serif);font-size:13.5px;font-weight:600;padding:9px 14px;min-height:44px;border-radius:2px;border:1px solid var(--rule-3,#93AB93);background:var(--stock,#FAFBF7);color:var(--ink-2,#33454F);cursor:pointer;transition:background .15s ease,color .15s ease,border-color .15s ease}.ds-btn-g:hover{background:var(--band,#DCE8DA);color:var(--ink,#131D26);border-color:var(--rule-3,#93AB93)}.ds-btn-g:focus-visible{outline:2px solid var(--school-primary,#004D43);outline-offset:2px}"
+    },
+    {
+      "name": "Tier Stamp",
+      "kind": "custom",
+      "refersTo": "tier-stamp",
+      "description": "The signature mark: a glyph plus a letter, printed in the margin. Colour reinforces; the glyph carries. This is why severity survives greyscale, a projector and colour-blindness.",
+      "html": "<span class=\"ds-tstamp\" style=\"color:#A81E12\"><svg viewBox=\"0 0 12 12\" width=\"11\" height=\"11\" aria-hidden=\"true\"><rect x=\"1\" y=\"1\" width=\"10\" height=\"10\" fill=\"currentColor\"/></svg><span class=\"ds-tstamp-l\">U</span></span> <span class=\"ds-tstamp\" style=\"color:#96490F\"><svg viewBox=\"0 0 12 12\" width=\"11\" height=\"11\" aria-hidden=\"true\"><rect x=\"1\" y=\"1\" width=\"10\" height=\"10\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><rect x=\"1\" y=\"1\" width=\"5\" height=\"10\" fill=\"currentColor\"/></svg><span class=\"ds-tstamp-l\">C</span></span> <span class=\"ds-tstamp\" style=\"color:#4A5A62\"><svg viewBox=\"0 0 12 12\" width=\"11\" height=\"11\" aria-hidden=\"true\"><rect x=\"1\" y=\"1\" width=\"10\" height=\"10\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg><span class=\"ds-tstamp-l\">M</span></span>",
+      "css": ".ds-tstamp{display:inline-flex;align-items:center;gap:4px;vertical-align:-2px;font-family:var(--f-apparatus,'Archivo Narrow',sans-serif);font-weight:700;font-size:12px;line-height:1;white-space:nowrap}.ds-tstamp-l{letter-spacing:.02em;font-variant-numeric:lining-nums}"
+    },
+    {
+      "name": "Tally Line",
+      "kind": "custom",
+      "refersTo": "tally-cell",
+      "description": "The ledger's summary form and the replacement for a row of hero-metric tiles. Takes no colour argument on purpose.",
+      "html": "<div class=\"ds-tally\"><div><div class=\"ds-tallyl\">Balanced lists</div><div class=\"ds-tallyv\">67%</div><div class=\"ds-tallyn\">4 of 6 have a safety</div></div><div><div class=\"ds-tallyl\">Statements complete</div><div class=\"ds-tallyv\">33%</div><div class=\"ds-tallyn\">2 of 6 past draft 2</div></div><div><div class=\"ds-tallyl\">Docs outstanding</div><div class=\"ds-tallyv\">7</div><div class=\"ds-tallyn\">Transcripts and references</div></div></div>",
+      "css": ".ds-tally{display:flex;flex-wrap:wrap;background:var(--stock,#FAFBF7);border-top:1px solid var(--rule-3,#93AB93);border-bottom:1px solid var(--rule-2,#AFC3AE)}.ds-tally>div{flex:1 1 148px;padding:10px 16px;border-left:1px solid var(--rule,#C4D3C2)}.ds-tally>div:first-child{border-left:none;padding-left:0}.ds-tallyl{font-family:var(--f-apparatus,'Archivo Narrow',sans-serif);font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-4,#54666D)}.ds-tallyv{font-family:var(--f-figure,'Spline Sans Mono',monospace);font-size:17px;font-weight:600;color:var(--ink,#131D26);letter-spacing:-.01em;margin-top:3px;font-variant-numeric:tabular-nums;line-height:1.2}.ds-tallyn{font-size:11px;color:var(--ink-3,#4F636B);margin-top:2px;line-height:1.4}"
+    },
+    {
+      "name": "Ledger Row",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "One student's line: selection box, tier stamp closed by the red margin rule, the name stub, then the run of weekly marks.",
+      "html": "<table class=\"ds-ledger\"><tbody><tr><td class=\"ds-lg-sel\"><span class=\"ds-lg-box\"></span></td><td class=\"ds-lg-mgn\"><span class=\"ds-tstamp\" style=\"color:#A81E12\">■ U</span></td><td class=\"ds-lg-stub\"><span class=\"ds-lg-name\">Ahmed Khalifa<span class=\"ds-lg-yr\">G12</span></span><span class=\"ds-lg-sub\">Private counselor check-in</span></td><td class=\"ds-lg-wk\">▪</td><td class=\"ds-lg-wk\">▪</td><td class=\"ds-lg-wk\">✕</td><td class=\"ds-lg-wk\">✕</td></tr><tr class=\"ds-band\"><td class=\"ds-lg-sel\"><span class=\"ds-lg-box\"></span></td><td class=\"ds-lg-mgn\"><span class=\"ds-tstamp\" style=\"color:#96490F\">◧ C</span></td><td class=\"ds-lg-stub\"><span class=\"ds-lg-name\">Priya Raghunathan<span class=\"ds-lg-yr\">G12</span></span><span class=\"ds-lg-sub\">Low-key check-in about workload, not performance</span></td><td class=\"ds-lg-wk\">▪</td><td class=\"ds-lg-wk\">▪</td><td class=\"ds-lg-wk\">▪</td><td class=\"ds-lg-wk\">✕</td></tr></tbody></table>",
+      "css": ".ds-ledger{table-layout:fixed;width:100%;border-collapse:collapse;background:var(--stock,#FAFBF7);font-family:var(--f-content,'Libre Franklin',sans-serif)}.ds-ledger td{padding:0 6px;height:52px}.ds-band>td{background:var(--band,#DCE8DA)}.ds-lg-sel{width:34px;padding:0 0 0 15px}.ds-lg-box{display:block;width:16px;height:16px;border:1.5px solid var(--rule-3,#93AB93);background:var(--stock,#FAFBF7)}.ds-lg-mgn{width:52px;padding:0 9px 0 5px;border-right:2px solid var(--margin,#B0271C);font-family:var(--f-apparatus,'Archivo Narrow',sans-serif);font-weight:700;font-size:12px}.ds-lg-stub{padding-left:14px}.ds-lg-name{display:block;font-size:13.2px;font-weight:600;color:var(--ink,#131D26);line-height:1.25}.ds-lg-yr{font-family:var(--f-apparatus,'Archivo Narrow',sans-serif);font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3,#4F636B);margin-left:7px}.ds-lg-sub{display:block;font-size:11.4px;color:var(--ink-3,#4F636B);line-height:1.35;margin-top:2px}.ds-lg-wk{text-align:center;border-right:1px solid var(--rule,#C4D3C2);font-family:var(--f-figure,monospace);font-size:11px;color:var(--ink-2,#33454F)}"
+    },
+    {
+      "name": "Demonstration-Data Stamp",
+      "kind": "chip",
+      "refersTo": "tier-stamp",
+      "description": "A rubber stamp struck on the letterhead. Gated on a real school being applied, never on a debug flag, so it cannot be switched off for a cleaner screenshot.",
+      "html": "<span class=\"ds-demostamp\"><span class=\"ds-demostamp-r\">Demonstration data</span><span class=\"ds-demostamp-s\">No real student records</span></span>",
+      "css": ".ds-demostamp{display:inline-flex;flex-direction:column;justify-content:center;gap:1px;padding:3px 9px;border:1.5px double var(--school-accent,#F7BD00);border-radius:1px;font-family:var(--f-apparatus,'Archivo Narrow',sans-serif);color:var(--school-accent,#F7BD00);line-height:1.15;background:var(--letterhead,#004D43)}.ds-demostamp-r{font-size:10.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase}.ds-demostamp-s{font-size:10px;font-weight:500;letter-spacing:.075em;text-transform:uppercase;opacity:.82}"
+    },
+    {
+      "name": "Tier Filter",
+      "kind": "chip",
+      "refersTo": "button-ghost",
+      "description": "The counselor's primary filter. Real buttons with aria-pressed; the selected tier inverts to full ink rather than taking a tint.",
+      "html": "<div class=\"ds-tierbar\"><button class=\"ds-tierbtn\" aria-pressed=\"true\">All <span class=\"ds-tierbtn-n\">87</span></button><button class=\"ds-tierbtn\" aria-pressed=\"false\">■ Urgent <span class=\"ds-tierbtn-n\">3</span></button><button class=\"ds-tierbtn\" aria-pressed=\"false\">◧ Check-in <span class=\"ds-tierbtn-n\">3</span></button></div>",
+      "css": ".ds-tierbar{display:flex;flex-wrap:wrap;gap:0}.ds-tierbtn{display:inline-flex;align-items:center;gap:7px;font-family:var(--f-apparatus,'Archivo Narrow',sans-serif);font-size:12.5px;font-weight:600;padding:9px 14px;min-height:44px;background:var(--stock,#FAFBF7);border:1px solid var(--rule-2,#AFC3AE);border-right-width:0;color:var(--ink-2,#33454F);cursor:pointer;border-radius:0}.ds-tierbtn:last-child{border-right-width:1px}.ds-tierbtn:hover{background:var(--band,#DCE8DA)}.ds-tierbtn[aria-pressed=\"true\"]{background:var(--ink,#131D26);color:var(--stock,#FAFBF7);border-color:var(--ink,#131D26)}.ds-tierbtn-n{font-family:var(--f-figure,monospace);font-size:12px;letter-spacing:-.03em;color:inherit}"
+    },
+    {
+      "name": "Section Label",
+      "kind": "custom",
+      "refersTo": "tier-stamp",
+      "description": "The apparatus label — a column head, not body copy. 10px floor, wide tracking, the condensed face.",
+      "html": "<h2 class=\"ds-sechead\">Cohort signal matrix · who is showing what</h2>",
+      "css": ".ds-sechead{display:flex;align-items:center;gap:7px;margin:0 0 12px;font-family:var(--f-apparatus,'Archivo Narrow',sans-serif);font-size:11px;font-weight:600;letter-spacing:.085em;text-transform:uppercase;color:var(--ink-3,#4F636B)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Register",
+    "overview": "The thesis is one sentence, and every decision descends from it: the caseload is the ledger the school already keeps. A baseline is a run of marks. A signal is the cell where the run breaks. A counselor reads across a row until it stops being regular, opens that cell, and can say afterwards exactly why she looked there. The interface is not a dashboard reporting on a ledger; it is the ledger.\n\nThat commits the surface to green-bar accounting stock rather than paper-white, because the alternating band is doing real work — it tracks a row across eighty-seven names and eight week-columns without a single divider. It commits to a red margin rule as the one accent on the sheet, to cyan-green ruling, to blue-black printed ink, and to corners that are cut rather than rounded, because paper is cut. It commits to three sans faces and no serif anywhere.\n\nThe last point is the load-bearing refusal. The obvious rendition of a ledger — cream stock, a high-contrast serif, a terracotta accent — is precisely the look a generative tool converges on, and escaping that convergence was the entire brief. Cream and serif are the confirmed anti-reference. So is the dashboard vocabulary that preceded this world: the greeting header, the row of stat tiles, the grid of same-size rounded cards, the coloured severity chip.",
+    "keyCharacteristics": [
+      "Green-bar stock, never cream; the banding is functional, not decorative.",
+      "One accent — the red margin rule. Everything else is ink, ruling and tier.",
+      "Three sans faces with three jobs. No serif exists in this system.",
+      "Near-zero radius (1–3px). Elevation is a rule, not a shadow.",
+      "State is material before it is colour: every tier carries a printed non-colour mark.",
+      "Figures are monospaced and tabular, always. A column of numbers that does not align is not a ledger."
+    ],
+    "rules": [
+      {
+        "name": "The Letterhead Rule",
+        "body": "The school colour is letterhead, never data. No --school-* token may appear inside a severity, track or domain definition. A counselor who changes schools must not have to relearn what a colour means, and CAROS must not look like a different product at every partner.",
+        "section": "colors"
+      },
+      {
+        "name": "The Short Ramp Rule",
+        "body": "ink-4 sits only ~1.8 steps from ink, because it must still clear 4.5:1 on the green band. In print, metadata recedes by size and weight, never by washing out. Do not fix the ramp by lightening it back out — hierarchy here is typographic.",
+        "section": "colors"
+      },
+      {
+        "name": "The Paired Fill Rule",
+        "body": "Every themed or saturated fill ships with its own on-colour. A fill that flips between renditions beside a hardcoded #fff is the exact bug this prevents.",
+        "section": "colors"
+      },
+      {
+        "name": "The Both-Grounds Rule",
+        "body": "Every text token must pass AA against both the stock and the green band before it ships. This single constraint eliminated 174 measured contrast failures structurally rather than patching them one chip at a time.",
+        "section": "colors"
+      },
+      {
+        "name": "The Measured-Ratio Rule",
+        "body": "ink(hex) derives a foreground by measuring contrast, never by thresholding luminance — a mid-tone brand colour can fail white and ledger ink at 4.5. This is what keeps an arbitrary partner hex accessible instead of making each new school a fresh accessibility bug.",
+        "section": "colors"
+      },
+      {
+        "name": "The No-Serif Rule",
+        "body": "There is no serif in this system, at any size, for any purpose. A serif here would land the design exactly on the anti-reference it exists to refuse.",
+        "section": "typography"
+      },
+      {
+        "name": "The No-Eyebrow Rule",
+        "body": "Nothing sits above an <h1>. The page head is a heading and a description, nothing else. A kicker is banned outright rather than discouraged.",
+        "section": "typography"
+      },
+      {
+        "name": "The Apparatus Floor Rule",
+        "body": "10px is the floor for an uppercase letterspaced apparatus label. Anything read as a sentence sets at 11.5px or above. A mechanical detector will still report 10–11.5px apparatus as undersized; that is a recorded, deliberate exception.",
+        "section": "typography"
+      },
+      {
+        "name": "The Sentence Case Rule",
+        "body": "Uppercase belongs on the short apparatus label and stops there. A sentence never sets in caps — not a disclosure control, not a note beside a label, not a screen-reader continuation.",
+        "section": "typography"
+      },
+      {
+        "name": "The Rule-Not-Shadow Rule",
+        "body": "Declare elevation once, and on this surface it is always a rule. If a component needs to feel separated, give it ruling or a band — never a border under a soft shadow, and never a glow.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do put every figure in .fig and every printed label in .stamp. A number in the content face is a bug.",
+      "Do reach for the tally line when a screen needs to summarise. It is the system's answer to that need.",
+      "Do verify any new text colour against both stock and band, compositing the full ancestor chain to an opaque ground in both directions. An auditor that composites in only one direction over-reports on translucent overlays and under-reports on alpha text.",
+      "Do give a new partner school exactly three values (primary, accent, paper) and let applySchool() and ink() derive the rest.",
+      "Do keep the demonstration-data stamp visible whenever a real school is applied. It is gated on the school, not on a debug flag.",
+      "Do separate groups with ruling and banding."
+    ],
+    "donts": [
+      "Don't introduce a serif. Not for a quote, not for a letter, not for a display line.",
+      "Don't put a kicker, eyebrow or section number above a heading.",
+      "Don't open a screen with a row of hero-metric tiles. That template was removed from seven surfaces in this build and should not return.",
+      "Don't let a --school-* token into a tier, track, domain or baseline definition.",
+      "Don't set gold as text anywhere. It is a fill with dark ink on it.",
+      "Don't add a shadow to anything that is not a modal, the palette or a toast — and never a coloured glow.",
+      "Don't use a coloured chip to carry severity. The tier stamp carries it.",
+      "Don't set a sentence in uppercase, and don't set an apparatus label below 10px.",
+      "Don't use a sparkline, progress ring or soft rounded rectangle as a stand-in for content.",
+      "Don't widen the night ledger past html[data-role=\"student\"] without a product decision."
+    ]
+  }
+}

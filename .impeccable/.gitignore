@@ -1,3 +1,7 @@
 questions/
 live/
 build/
+
+# Generated verification artifacts: a fresh screenshot round is produced by
+# each finish pass, so the rasters live on disk rather than in history.
+review/

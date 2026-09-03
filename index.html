@@ -74,6 +74,11 @@
  --dom-academic:#1F4FA8;   --dom-attendance:#7E5A08; --dom-engagement:#4A44B8;
  --dom-behaviour:#9C441A;  --dom-teacher:#9B1F2E;    --dom-university:#0B6B60;
  --dom-positive:#1C6B45;
+ /* The five tiers have to read as marks on the dark letterhead field too, where
+    the printed tier ink is far too dark to see at all. These are the same hues
+    lifted to clear that field, and they are fixed for exactly the reason the
+    tiers themselves are: a counselor changing schools must not relearn them. */
+ --t-urgent-field:#F2857A; --t-checkin-field:#E9A24E; --t-good-field:#6FC79A;
  /* The personal baseline band — the one frame that stays level on every trace. */
  --baseline:#8FB4A4; --baseline-fill:rgba(143,180,164,.17);
 
@@ -312,8 +317,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--band-2)}
 .demostamp{display:inline-flex;flex-direction:column;justify-content:center;gap:1px;
  padding:3px 9px;border:1.5px double var(--school-accent);border-radius:var(--r-sm);
  font-family:var(--f-apparatus);color:var(--school-accent);line-height:1.15;flex-shrink:0}
-.demostamp-r{font-size:9.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase}
-.demostamp-s{font-size:8px;font-weight:500;letter-spacing:.075em;text-transform:uppercase;opacity:.82}
+.demostamp-r{font-size:10.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase}
+.demostamp-s{font-size:10px;font-weight:500;letter-spacing:.075em;text-transform:uppercase;opacity:.82}
 @media (max-width:900px){.demostamp-s{display:none}}
 
 /* ══════════ THE MARGIN STAMP ══════════
@@ -426,7 +431,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--band-2)}
 .ledger th.lg-wk,.ledger td.lg-wk{padding:0;text-align:center;border-right:1px solid var(--rule)}
 .ledger th.lg-wk:first-of-type,.ledger td.lg-wk:first-of-type{border-left:1px solid var(--rule)}
 .ledger td.lg-wk svg{margin:0 auto}
-.ledger th.lg-wk{font-size:9.5px;letter-spacing:.06em;text-align:center;color:var(--ink-4)}
+.ledger th.lg-wk{font-size:10.5px;letter-spacing:.06em;text-align:center;color:var(--ink-4)}
 /* The column head stays put while 87 names scroll under it. */
 .ledger thead th{position:sticky;top:var(--topbar,60px);z-index:8}
 /* Except once the table has its own horizontal scroller: sticky then resolves
@@ -455,7 +460,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--band-2)}
 /* The overnight column. */
 .lg-mv{display:inline-flex;align-items:center;gap:3px;font-family:var(--f-apparatus);
  font-size:11px;font-weight:700;letter-spacing:.04em;white-space:nowrap}
-.lg-new{font-family:var(--f-apparatus);font-size:9.5px;font-weight:700;letter-spacing:.09em;
+.lg-new .sr{text-transform:none;letter-spacing:normal}
+.lg-new{font-family:var(--f-apparatus);font-size:10.5px;font-weight:700;letter-spacing:.09em;
  text-transform:uppercase;color:var(--margin)}
 /* A printed rule across the sheet where the tier changes. Not a card, not a
    gap — the sheet stays continuous and the label sits in the ruling. */
@@ -470,7 +476,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--band-2)}
  font-size:11px;text-transform:none}
 /* The 72. */
 .lg-more{width:100%;text-align:left;background:none;border:none;font-family:var(--f-apparatus);
- font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);
+ font-size:12.5px;font-weight:600;letter-spacing:.01em;color:var(--ink-2);
  cursor:pointer;padding:13px 0;display:flex;align-items:center;gap:10px;min-height:44px}
 .lg-more:hover{color:var(--ink)}
 .lg-more .lg-morerule{flex:1;height:1px;background:var(--rule-2)}
@@ -546,6 +552,21 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
  padding:8px 0;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--ink-3)}
 .kv:last-child{border-bottom:none}
 .kv b{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+/* ══════════ THE TALLY LINE ══════════
+   The ledger's summary form, and the replacement for the row of hero-metric
+   tiles these views were carrying. A sheet gives a figure weight by setting
+   it in the run and ruling underneath it, never by printing it at 27px in a
+   tier colour that the figure does not belong to. */
+.tally{display:flex;flex-wrap:wrap;margin-bottom:20px;background:var(--stock);
+ border-top:1px solid var(--rule-3);border-bottom:1px solid var(--rule-2)}
+.tally>div{flex:1 1 148px;padding:10px 16px;border-left:1px solid var(--rule)}
+.tally>div:first-child{border-left:none;padding-left:0}
+.tallyl{font-family:var(--f-apparatus);font-size:10px;font-weight:700;letter-spacing:.12em;
+ text-transform:uppercase;color:var(--ink-4)}
+.tallyv{font-family:var(--f-figure);font-size:17px;font-weight:600;color:var(--ink);
+ letter-spacing:-.01em;margin-top:3px;font-variant-numeric:tabular-nums;line-height:1.2}
+.tallyn{font-size:11px;color:var(--ink-3);margin-top:2px;line-height:1.4}
+@media(max-width:640px){.tally>div{flex:1 1 50%;border-left:none;padding-left:0}}
 .evd{display:grid;grid-template-columns:120px 1fr auto;gap:14px;align-items:start;
  padding:11px 0;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--ink-2)}
 .evd:last-child{border-bottom:none}
@@ -1307,11 +1328,17 @@ const AUDIT=[
 {t:"11 Nov 09:31",who:"SYSTEM",act:"AI_DRAFT",obj:"Sara Al Mansoori",det:"Letter draft generated · labelled · pending human review"},
 {t:"07 Nov 10:15",who:"R.HADDAD",act:"CASE_CLOSED",obj:"Maryam Al Suwaidi",det:"Outcome: resolved · sustained recovery 3 weeks"}];
 
+/* These are TARGETS, not results. CAROS has never run at a school, so every
+   figure here is what the pilot is designed to test — and labelling them as
+   measured outcomes under a real school's name would be a false efficacy
+   claim, which PRODUCT.md forbids and which a photographed slide makes
+   permanent. Phrasing stays forward-looking on every row; if a figure here
+   ever becomes a measurement, it needs a source beside it. */
 const METRICS={
-detection:[["Alerts reviewed and accepted","81%","+6 pts vs last term"],["False-positive rate","14%","down 9 pts since threshold tuning"],["Median time: change to counselor aware","1.8 days","was 19 days pre-CAROS"],["Missed cases found on audit","2","of 47 reviewed"]],
-efficiency:[["Counselor hours returned per term","190 hrs","letters, triage, prep, reports"],["Meeting preparation time","4 min","was 22 min"],["Letters: write to review","10 min","was 60 min"]],
-intervention:[["Time to first review","0.9 days","target 2 days or less"],["Follow-up completion","92%","of cases with an owner"],["Concerns with documented outcome","100%","policy requirement"]],
-student:[["Attendance recovery after check-in","74%","returned to personal band"],["Application completion","96%","on or before deadline"],["Balanced lists with a safety","89%","was 61%"]]};
+detection:[["Alerts reviewed and accepted","81%","target · share the counselor acts on"],["False-positive rate","14%","ceiling · tuned against your thresholds"],["Median time: change to counselor aware","2 days","target · the interval the pilot measures"],["Cases the audit should surface","0","target · none missed on review"]],
+efficiency:[["Counselor hours returned per term","190 hrs","modelled · letters, triage, prep, reports"],["Meeting preparation time","4 min","target · from the 360° file"],["Letters: write to review","10 min","target · drafting becomes reviewing"]],
+intervention:[["Time to first review","2 days","target · under school policy"],["Follow-up completion","92%","target · of cases with an owner"],["Concerns with documented outcome","100%","policy requirement, not a measurement"]],
+student:[["Attendance recovery after check-in","74%","target · returned to personal band"],["Application completion","96%","target · on or before deadline"],["Balanced lists with a safety","95%","measured on this demonstration cohort"]]};
 
 
 /* ═══════════ THE REST OF THE ROSTER ═══════════
@@ -1407,7 +1434,11 @@ const g=id=>S.cases.find(c=>c.id===id);
 function attPct(c){const b=c&&c.baselines&&c.baselines.attendance;return b?b.series[b.series.length-1]:null;}
 function toast(m,ms){S.toast=m;draw();setTimeout(()=>{S.toast=null;draw();},ms||2600);}
 function confettiBurst(){
- const colors=['#0E9384','#6938EF','#F79009','#17B26A','#F04438','#2E90FA'];
+ /* Letterhead and material only. A concern-domain ink bursting across the
+    sheet as celebration spends a colour that has to keep meaning one thing. */
+ const cs=getComputedStyle(document.documentElement);
+ const colors=['--school-accent','--school-primary','--band-2','--rule-3','--ink-3','--school-accent']
+  .map(n=>cs.getPropertyValue(n).trim()||'#F7BD00');
  const container=document.createElement('div');
  container.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:500;overflow:hidden';
  for(let i=0;i<28;i++){
@@ -1739,7 +1770,7 @@ function roleBar(){
   <div style="display:flex;align-items:center;gap:10px">
    ${crest(28)}
    <div><div class="stamp" style="font-weight:700;font-size:15px;color:#fff;letter-spacing:.03em">CAROS</div>
-   <div class="rolebar-tag" style="font-family:var(--f-apparatus);font-size:9px;letter-spacing:.16em;color:var(--nav-txt);text-transform:uppercase;margin-top:1px">${SCHOOL.short}</div></div></div>
+   <div class="rolebar-tag" style="font-family:var(--f-apparatus);font-size:10px;letter-spacing:.16em;color:var(--nav-txt);text-transform:uppercase;margin-top:1px">${SCHOOL.short}</div></div></div>
   ${demoStamp()}
   <div style="margin-left:auto;display:flex;align-items:center;gap:14px">
    <div class="rolebar-stats" style="display:flex;align-items:center;gap:9px;font-size:11px;color:var(--nav-txt)">
@@ -1763,10 +1794,10 @@ function shell(theme,nav,active,attr,footAv,footN,footR,title,sub,body){
   <div style="padding:0 18px 16px;display:flex;align-items:center;gap:10px">
    ${crest(29)}
    <div><div class="stamp" style="font-weight:600;font-size:14.5px;color:#fff;line-height:1">${nm}</div>
-   <div style="font-size:8.5px;letter-spacing:.13em;color:var(--nav-txt);margin-top:3px">${SCHOOL.short.toUpperCase()}</div></div></div>
+   <div style="font-size:10px;letter-spacing:.13em;color:var(--nav-txt);margin-top:3px">${SCHOOL.short.toUpperCase()}</div></div></div>
   <nav style="display:flex;flex-direction:column;gap:2px;padding:0 11px">
-   ${nav.map(x=>x[0]==="_"?`<div style="font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--nav-txt);padding:14px 11px 6px;font-weight:700">${x[1]}</div>`:
-   `<button class="navitem ${active===x[0]?'on':''}" ${attr}="${x[0]}">${active===x[0]?`<span style="position:absolute;left:-11px;top:50%;transform:translateY(-50%);width:3px;height:19px;background:${bar};border-radius:var(--r-sm)"></span>`:''}${ic(x[2])}${x[1]}${x[3]?`<span style="margin-left:auto;background:${x[4]||bar};color:${x[4]?'#fff':bg};font-size:9.5px;font-weight:700;min-width:17px;height:17px;border-radius:var(--r);display:grid;place-items:center;padding:0 5px">${x[3]}</span>`:''}</button>`).join('')}
+   ${nav.map(x=>x[0]==="_"?`<div style="font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--nav-txt);padding:14px 11px 6px;font-weight:700">${x[1]}</div>`:
+   `<button class="navitem ${active===x[0]?'on':''}" ${attr}="${x[0]}">${active===x[0]?`<span style="position:absolute;left:-11px;top:50%;transform:translateY(-50%);width:3px;height:19px;background:${bar};border-radius:var(--r-sm)"></span>`:''}${ic(x[2])}${x[1]}${x[3]?`<span style="margin-left:auto;background:${x[4]||bar};color:${x[4]?'#fff':bg};font-size:10.5px;font-weight:700;min-width:17px;height:17px;border-radius:var(--r);display:grid;place-items:center;padding:0 5px">${x[3]}</span>`:''}</button>`).join('')}
   </nav>
   <div style="margin-top:auto;padding:13px 15px 0;margin:13px 11px 0;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:9px">
    ${av(footAv,theme==="student"?"student":"mentor",32)}
@@ -1856,7 +1887,7 @@ function caseCard(c,i){
   </div>
   <div style="display:flex;flex-direction:column;align-items:flex-end;gap:7px;flex-shrink:0">
    <span style="font-size:11.5px;font-weight:600;color:var(--tealDeep);display:flex;align-items:center;gap:5px">Open case ${ic('arrowR',14)}</span>
-   <span style="font-size:11.5px;color:var(--inkMute)">Last contact: ${c.lastContact}</span>
+   <span style="font-size:11.5px;color:var(--inkMute)">Last contact: ${lastContactOf(c)}</span>
    ${c.prio!=="monitor"&&c.prio!=="good"?`<span style="font-size:11.5px;color:${P.c};font-weight:600">${c.action.what}</span>`:''}
   </div></div></div>`;}
 
@@ -1876,20 +1907,20 @@ function vIntel(){
  return `<div class="fade">
  ${head("Why a student surfaces","Every signal is compared against each student's own historical pattern, not the cohort average. Weak signals across domains are combined so a pattern becomes visible before a crisis or a missed deadline.")}
 
- <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:18px">
- ${tiles.map((t,i)=>`<div class="card lift" style="padding:18px 20px;animation:rise .4s ${i*.06}s backwards">
-  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px">
-   <div><div style="display:flex;align-items:center;gap:7px;color:${DOMAINS[t.k].c};font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase">${ic(DOMAINS[t.k].ic,13)}${t.t}</div>
-   <div class="stamp" style="font-size:30px;font-weight:600;margin-top:7px;line-height:1">${t.v}</div>
-   <div style="font-size:11.5px;color:${t.bad?'var(--urgent)':'var(--good)'};font-weight:600;margin-top:3px;display:flex;align-items:center;gap:4px">${ic(t.bad?'down':'trend',12)}${t.d}</div></div>
-   <div style="flex-shrink:0;opacity:.8">${sparkline(t.series,DOMAINS[t.k].c,96,34)}</div></div>
-  <div style="border-top:1px solid var(--lineSoft);padding-top:10px">
-   ${t.det.map(([l,v])=>`<div class="kv" style="padding:6px 0"><span style="color:var(--inkMute)">${l}</span><b>${v}</b></div>`).join('')}</div>
+ <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:0 26px;margin-bottom:20px">
+ ${tiles.map((t,i)=>`<div style="padding:13px 0 15px;border-top:1px solid var(--rule-3);animation:rise .4s ${i*.06}s backwards">
+  <div class="tallyl" style="display:flex;align-items:center;gap:6px;color:${DOMAINS[t.k].c}">${ic(DOMAINS[t.k].ic,12)}${t.t}</div>
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:6px">
+   <div><span class="tallyv" style="font-size:22px">${t.v}</span>
+   <div style="font-size:11.5px;color:${t.bad?'var(--t-urgent)':'var(--t-good)'};margin-top:2px;display:flex;align-items:center;gap:4px">${ic(t.bad?'down':'trend',12)}${t.d}</div></div>
+   <div style="flex-shrink:0">${sparkline(t.series,DOMAINS[t.k].c,104,32)}</div></div>
+  <div style="margin-top:9px">
+   ${t.det.map(([l,v])=>`<div class="kv" style="padding:5px 0;font-size:12px"><span style="color:var(--ink-3)">${l}</span><b>${v}</b></div>`).join('')}</div>
  </div>`).join('')}
  </div>
 
  <div class="card" style="padding:20px;margin-bottom:18px">
-  <h3 class="sechead">${ic('layers',13)} Cohort signal matrix · who is showing what</h3>
+  <h2 class="sechead">${ic('layers',13)} Cohort signal matrix · who is showing what</h2>
   <div style="font-size:12px;color:var(--inkSoft);margin-bottom:14px;line-height:1.5">A single signal is usually noise. The engine escalates when independent domains corroborate each other. That correlation is what separates a real concern from a bad week.</div>
   <div style="overflow-x:auto"><table class="sheet" style="font-size:12px">
    <thead><tr><th style="text-align:left;padding:9px 10px;font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--inkMute);border-bottom:1px solid var(--line)">Student</th>
@@ -1917,7 +1948,7 @@ function vIntel(){
 
  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
   <div class="card" style="padding:20px">
-   <h3 class="sechead">${ic('alert',13)} Detection methods currently firing</h3>
+   <h2 class="sechead">${ic('alert',13)} Detection methods currently firing</h2>
    ${[["Personal baseline deviation","An A-grade student receives an F. Significant even where the cohort average is lower.","3 active"],
       ["Trend detection","Attendance declining 98% → 96% → 92% → 87% across successive periods.","4 active"],
       ["Persistence detection","One late arrival is noise. Repeated lateness across three weeks warrants attention.","3 active"],
@@ -1929,10 +1960,10 @@ function vIntel(){
       <div style="font-size:11.5px;color:var(--inkMute);margin-top:3px;line-height:1.5">${d}</div></div>`).join('')}
   </div>
   <div class="card" style="padding:20px">
-   <h3 class="sechead">${ic('lock',13)} What this engine will never do</h3>
+   <h2 class="sechead">${ic('lock',13)} What this engine will never do</h2>
    ${["Present a mental-health or safeguarding diagnosis","Assign a permanent risk label to a child","Take disciplinary action or remove an opportunity","Send external communication without human confirmation","Show sensitive notes outside an authorised role","Generate a safeguarding conclusion from a language model"]
      .map(x=>`<div style="display:flex;gap:9px;align-items:flex-start;padding:9px 0;font-size:12.3px;color:var(--inkSoft);border-bottom:1px solid var(--lineSoft)">${ic('x',15)}<span>${x}</span></div>`).join('')}
-   <div style="background:var(--urgentSoft);border-radius:var(--r);padding:13px 15px;margin-top:13px;font-size:11.5px;color:#8A1F2E;line-height:1.55">
+   <div style="background:var(--urgentSoft);border-radius:var(--r);padding:13px 15px;margin-top:13px;font-size:11.5px;color:var(--t-urgent-deep);line-height:1.55">
     <b>Non-negotiable.</b> CAROS detects that something meaningful has changed and explains the evidence. Trained staff decide what it means and what response is appropriate.</div>
   </div>
  </div></div>`;}
@@ -2034,7 +2065,7 @@ function vCase(c){
     ${tabs.map(([k,l])=>`<button class="tab ${tab===k?'on':''}" data-tab="${k}"${has[k]?'':' title="Nothing recorded here for '+c.name.split(' ')[0]+' yet"'}>${l}${has[k]?'':`<span class="sr">, empty</span>`}</button>`).join('')}</div>
 
    ${tab==="evidence"?`<div class="card pop" style="padding:20px">
-    <h3 class="sechead">${ic('list',13)} Contributing signals · source-linked and time-stamped</h3>
+    <h2 class="sechead">${ic('list',13)} Contributing signals · source-linked and time-stamped</h2>
     <div style="font-size:11.5px;color:var(--inkMute);margin-bottom:14px;line-height:1.5">Weight shows each signal's contribution to the current priority. Negative weights are protective or positive signals that pull the priority down.</div>
     ${!c.evidence.length?empty("No contributing signals",
       `Nothing has been recorded against ${c.name.split(' ')[0]} this term across attendance, attainment, engagement, behaviour or teacher concern. An evidence chain is built from threshold crossings, and none has happened. This is a complete record of an uneventful term, not a gap in the data.`):''}
@@ -2055,7 +2086,7 @@ function vCase(c){
     </div></div>`:''}
 
    ${tab==="baseline"?`<div class="card pop" style="padding:20px">
-    <h3 class="sechead">${ic('trend',13)} Deviation from this student's own normal</h3>
+    <h2 class="sechead">${ic('trend',13)} Deviation from this student's own normal</h2>
     <div style="font-size:11.5px;color:var(--inkMute);margin-bottom:6px;line-height:1.5">The shaded band is ${c.name.split(' ')[0]}'s established personal range. Red points sit outside it. This is the engine's central principle: a student's deviation from their own baseline matters more than their position against a cohort average.</div>
     ${!has.baseline?empty("No baseline established yet",
       `A personal band needs a run of results in the same measure before it means anything. ${c.name.split(' ')[0]}'s trace appears here once the current term's data is loaded from the school's SIS. Until then the sheet shows the weeks as unmarked rather than inventing a band.`):''}
@@ -2069,7 +2100,7 @@ function vCase(c){
     </div>`).join('')}</div>`:''}
 
    ${tab==="uni"?`<div class="card pop" style="padding:20px">
-    <h3 class="sechead">${ic('grad',13)} University journey · list balance and deadlines</h3>
+    <h2 class="sechead">${ic('grad',13)} University journey · list balance and deadlines</h2>
     ${!has.uni?empty(c.grade&&c.grade<12?"No university list yet":"No universities on the list",
       c.grade&&c.grade<12?`${c.name.split(' ')[0]} is in Grade ${c.grade}. Lists are built in Grade 12, so nothing is missing here and this file is not scored against the list-balance rule.`
       :`No targets have been added, so there is nothing to check for balance. A list with no floor is a risk worth raising; a list that does not exist yet is not.`):''}
@@ -2088,7 +2119,7 @@ function vCase(c){
    </div>`:''}
 
    ${tab==="history"?`<div class="card pop" style="padding:20px">
-    <h3 class="sechead">${ic('clock',13)} Case history · complete audit trail</h3>
+    <h2 class="sechead">${ic('clock',13)} Case history · complete audit trail</h2>
     ${S.audit.filter(a=>a.obj===c.name).concat([{t:c.opened,who:c.openedBy.includes('System')?'SYSTEM':'R.HADDAD',act:"CASE_OPENED",obj:c.name,det:c.openedBy}]).map(a=>`<div class="audit"><span style="width:88px;flex-shrink:0">${a.t}</span><span style="width:78px;flex-shrink:0;color:${a.who==='SYSTEM'?'var(--teal)':'var(--violet)'};font-weight:500">${a.who}</span><span style="width:120px;flex-shrink:0;font-weight:500">${a.act}</span><span style="flex:1">${a.det}</span></div>`).join('')}
     <div style="font-size:10.5px;color:var(--inkMute);margin-top:12px;line-height:1.5">Every access, AI recommendation and human decision is logged. Original evidence and derived interpretation are stored separately so any past flag remains auditable.</div>
    </div>`:''}
@@ -2096,14 +2127,14 @@ function vCase(c){
 
   <div style="display:flex;flex-direction:column;gap:14px">
    <div class="card" style="padding:18px;background:var(--navy);border:none;color:#fff">
-    <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#6FE0CC;font-weight:700;margin-bottom:9px;display:flex;align-items:center;gap:6px">${ic('zap',12)} Suggested next action</div>
+    <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--on-letterhead-2);font-weight:700;margin-bottom:9px;display:flex;align-items:center;gap:6px">${ic('zap',12)} Suggested next action</div>
     <div class="stamp" style="font-size:17px;font-weight:600;margin-bottom:5px">${c.action.what}</div>
-    ${c.action.when&&c.action.when!=="—"?`<div style="font-size:11.5px;color:#6FE0CC;font-weight:600;margin-bottom:10px">${c.action.when}</div>`:''}
+    ${c.action.when&&c.action.when!=="—"?`<div style="font-size:11.5px;color:var(--on-letterhead-2);font-weight:600;margin-bottom:10px">${c.action.when}</div>`:''}
     <div style="font-size:12px;color:rgba(255,255,255,.72);line-height:1.55">${c.action.why}</div>
    </div>
 
    <div class="card" style="padding:18px">
-    <h3 class="sechead">${ic('brief',13)} ${open?"Triage this case":c.prio==="good"?"Close this case":"Nothing is being asked of you"}</h3>
+    <h2 class="sechead">${ic('brief',13)} ${open?"Triage this case":c.prio==="good"?"Close this case":"Nothing is being asked of you"}</h2>
     ${open?'':`<div style="font-size:11.8px;color:var(--ink-3);line-height:1.55;margin:-3px 0 11px">${c.prio==="good"?"The signals that opened this case have recovered. The only thing outstanding is a documented outcome, the record schools most often lose.":"This case sits in "+P.label+": "+P.sla.toLowerCase()+". These controls are here if your judgement differs from the engine's."}</div>`}
     <div style="display:flex;flex-direction:column;gap:7px">
      ${c.prio==="good"?`<button class="btn btn-p" data-act="closecase:${c.id}" style="width:100%">${ic('checkC',15)} Record outcome & close</button>`:''}
@@ -2134,7 +2165,7 @@ function vCase(c){
    ${parentCard(c)}
    ${voiceCard(c)}
    <div class="card" style="padding:18px">
-    <h3 class="sechead">${ic('pencil',13)} Counselor note</h3>
+    <h2 class="sechead">${ic('pencil',13)} Counselor note</h2>
     ${(S.caseNotes[c.id]||[]).length?`<div style="margin-bottom:12px;display:flex;flex-direction:column;gap:9px">
      ${S.caseNotes[c.id].map(n=>`<div style="border-left:1px solid var(--line-3);padding:1px 0 1px 11px">
       <div style="font-size:12.3px;color:var(--ink);line-height:1.55">${n.txt}</div>
@@ -2175,7 +2206,7 @@ function ivCard(i,ix){
    <div style="background:var(--panel);border-radius:var(--r);padding:11px 13px">
     <div style="font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--inkMute);font-weight:700;margin-bottom:6px">Agreed plan</div>
     ${i.plan.map(p=>`<div style="display:flex;gap:8px;align-items:flex-start;padding:3px 0;font-size:12px;color:var(--inkSoft)">${ic('check',13)}<span>${p}</span></div>`).join('')}</div>
-   ${res?`<div style="background:var(--goodSoft);border-radius:var(--r);padding:11px 13px;margin-top:9px;font-size:12.2px;color:#075E45;line-height:1.55"><b>Outcome.</b> ${i.outcome}</div>`:''}
+   ${res?`<div style="background:var(--goodSoft);border-radius:var(--r);padding:11px 13px;margin-top:9px;font-size:12.2px;color:var(--t-good);line-height:1.55"><b>Outcome.</b> ${i.outcome}</div>`:''}
   </div>
   <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
    ${res?`<button class="btn btn-g btn-sm" data-open="${i.sid}">View case</button>`
@@ -2198,13 +2229,22 @@ function vUni(){
  return `<div class="fade">
  ${head("Where every list stands","University guidance is a complete operating system inside the platform, and its signals feed the same intelligence engine as attendance and academics.")}
 
- <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:20px">
-  ${[["Balanced lists","67%","4 of 6 have a safety","var(--checkin)"],["Statements complete","33%","2 of 6 past draft 2","var(--review)"],["On-time trajectory","83%","5 of 6","var(--good)"],["Docs outstanding","7","transcripts & references","var(--monitor)"]]
-   .map(([l,v,s,c])=>`<div class="card" style="padding:15px 17px"><div class="stamp" style="font-size:26px;font-weight:600;color:${c};line-height:1">${v}</div><div style="font-size:11.5px;font-weight:600;margin-top:4px">${l}</div><div style="font-size:10.5px;color:var(--inkMute);margin-top:2px">${s}</div></div>`).join('')}
- </div>
+ ${(()=>{
+   const listed=all.filter(c=>c.uni.targets.length);
+   const bal=listed.filter(c=>c.uni.targets.some(t=>t.b==="safety")).length;
+   const pct=(n,d2)=>d2?Math.round(n/d2*100)+"%":"—";
+   const onTime=all.filter(c=>dimDeadline(c).r!=="critical").length;
+   const docsOut=DOCS.reduce((a2,d2)=>a2+d2.teach.filter(t=>t.st!=="received").length
+     +(d2.cr==="none"?1:0)+(d2.forms==="missing"?1:0)+(d2.tr==="pending"?1:0),0);
+   return tally([
+    ["Balanced lists",pct(bal,listed.length),`${bal} of ${listed.length} with a list have a safety`],
+    ["Lists with no floor",listed.length-bal,"Every option on them is a reach"],
+    ["On-time trajectory",pct(onTime,all.length),`${onTime} of ${all.length} students`],
+    ["Docs outstanding",docsOut,"Transcripts and references"]]);
+  })()}
 
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <h3 class="sechead">${ic('clock',13)} Deadline radar</h3>
+  <h2 class="sechead">${ic('clock',13)} Deadline radar</h2>
   ${deadlines.sort((a,b)=>a.d-b.d).map((d,i)=>{
    const urgent=d.d<=10&&!d.ok;const col=d.ok?'var(--good)':d.d<=10?'var(--urgent)':'var(--review)';
    return `<div style="display:grid;grid-template-columns:auto 1fr 130px auto;gap:13px;align-items:center;padding:11px 0;border-bottom:1px solid var(--lineSoft);animation:rise .35s ${i*.04}s backwards">
@@ -2227,40 +2267,53 @@ function vUni(){
  </div>`:''}
 
  <div class="card" style="padding:20px">
-  <h3 class="sechead">${ic('list',13)} List balance by student</h3>
+  <h2 class="sechead">${ic('list',13)} List balance by student</h2>
+  <div style="display:grid;grid-template-columns:34px 1fr 190px 92px;gap:13px;align-items:end;
+   padding-bottom:6px;border-bottom:1px solid var(--rule-3)">
+   <span></span><span></span>
+   <div style="display:flex;gap:4px">${["reach","match","safety"].map(l=>
+    `<div class="tallyl" style="flex:1;text-align:center">${l}</div>`).join('')}</div>
+   <span></span></div>
   ${all.map(c=>{const r=c.uni.targets.filter(t=>t.b==="reach").length,m=c.uni.targets.filter(t=>t.b==="match").length,s=c.uni.targets.filter(t=>t.b==="safety").length;
-   return `<div class="lift" data-open="${c.id}" style="display:grid;grid-template-columns:auto 1fr 190px auto;gap:13px;align-items:center;padding:12px 0;border-bottom:1px solid var(--lineSoft);cursor:pointer">
+   return `<div class="lift" data-open="${c.id}" style="display:grid;grid-template-columns:34px 1fr 190px 92px;gap:13px;align-items:center;padding:12px 0;border-bottom:1px solid var(--rule);cursor:pointer">
     ${av(c.av,c.prio,34)}
     <div><b style="font-size:12.8px">${c.name}</b><div style="font-size:11.3px;color:var(--inkMute)">${c.goal}</div></div>
     <div style="display:flex;gap:4px;align-items:center">
      ${[["reach",r,'var(--urgent)'],["match",m,'var(--good)'],["safety",s,'var(--review)']].map(([l,n,col])=>
       `<div style="flex:1;text-align:center"><div style="height:26px;display:flex;align-items:flex-end;justify-content:center;gap:2px">${n?Array(n).fill(0).map(()=>`<span style="width:7px;height:${n?18:4}px;background:${col};border-radius:var(--r-sm)"></span>`).join(''):`<span style="width:7px;height:4px;background:var(--line);border-radius:var(--r-sm)"></span>`}</div>
-      <div style="font-size:9px;color:var(--inkMute);text-transform:uppercase;letter-spacing:.05em;margin-top:3px">${l}</div></div>`).join('')}</div>
+      </div>`).join('')}</div>
     ${s?chip("Balanced","var(--good)","var(--goodSoft)","checkC"):chip("No safety","var(--review)","var(--reviewSoft)","alert")}
    </div>`;}).join('')}
  </div></div>`;}
 
 /* ═══════════ LETTER ENGINE ═══════════ */
-const LETTER=`It is with genuine enthusiasm that I recommend Sara Al Mansoori for admission to your Economics programme. In eleven years as Head of University Counseling, few students have shown Sara's blend of quantitative ability and intellectual honesty.
+/* The panel beside this letter promises "every claim is drawn from a dated
+   entry in Sara's record". Three sentences here falsified that: an eleven-year
+   tenure that exists nowhere in the data, a cohort ranking that PRODUCT.md
+   Principle 2 forbids outright, and A-level predictions for a student the rest
+   of the product scores 39/45 on the IB. The prediction now reads from her
+   record, so the letter and her file cannot drift apart again. */
+function letterFor(c){return `It is with real enthusiasm that I recommend ${c.name} for admission to your Economics programme. Few students I have worked with show her blend of quantitative ability and intellectual honesty.
 
-Sara has consistently ranked among the strongest mathematicians in her cohort, with predicted grades of A*AA. What distinguishes her is not the grades alone but how she applies analytical thinking to the world around her. As President of the Economics Society she led a term-long study of how regional trade policy affects small businesses in Abu Dhabi, and presented her findings to parents and faculty with real composure.
+${c.name.split(" ")[0]} is predicted ${c.pred==="—"?"strongly":c.pred.replace("/"," of ")} on the IB Diploma, with Mathematics and Economics at Higher Level. What distinguishes her is not the prediction but how she applies analytical thinking to the world around her. As President of the Economics Society she led a term-long study of how regional trade policy affects small businesses in Abu Dhabi, and presented her findings to parents and faculty with real composure.
 
 When her original methodology proved flawed she did not abandon the project. She rebuilt it, teaching herself the statistical techniques required to strengthen the analysis. That willingness to be wrong in public and then do the harder work is what distinguishes students who thrive in rigorous environments.
 
-I recommend Sara without reservation.
+I recommend ${c.name.split(" ")[0]} without reservation.
 
 Yours sincerely,
-Ms. Reem Haddad
-Head of University Counseling, ${SCHOOL.short}`;
+${SCHOOL.counselor}
+${SCHOOL.role}, ${SCHOOL.short}`;}
 function vLetter(){
- const ev=["Economics Society presidency · verified activity record, 14 Sep","Trade-policy project · counselor meeting note, 3 Oct","Methodology rebuild · teacher comment, Ms. Fahri, 19 Oct","Predicted A*AA · gradebook, current","Tone matched to 6 uploaded letters by Ms. Haddad"];
+ const sara=g("s3");
+ const ev=["Economics Society presidency · verified activity record, 14 Sep","Trade-policy project · counselor meeting note, 12 Oct","Methodology rebuild · teacher comment, Ms. Fahri, 19 Oct",`Predicted ${sara.pred.replace("/"," of ")} · gradebook, current`,"Tone matched to 6 uploaded letters by "+SCHOOL.counselor];
  return `<div class="fade">
  ${head("A first draft from real evidence","Every sentence traces to a dated entry in the student's file. The engine drafts; you own the letter. Writing becomes reviewing.")}
  <div style="display:grid;grid-template-columns:1fr 300px;gap:18px;align-items:start">
   <div class="card" style="overflow:hidden">
-   <div style="display:flex;align-items:center;gap:10px;padding:13px 20px;border-bottom:1px solid var(--line);background:#FCFCFE">
+   <div style="display:flex;align-items:center;gap:10px;padding:13px 20px;border-bottom:1px solid var(--line);background:var(--stock)">
     <span style="width:8px;height:8px;border-radius:var(--r-dot);background:${S.letter==='done'?'var(--good)':'var(--monitor)'}"></span>
-    <span style="font-size:12.5px;color:var(--inkSoft)">${S.letter==='done'?'Draft ready for your review':'Sara Al Mansoori · LSE BSc Economics'}</span>
+    <span style="font-size:12.5px;color:var(--inkSoft)">${S.letter==='done'?'Draft ready for your review':`${sara.name} · LSE BSc Economics`}</span>
     ${S.letter==='done'?`<div style="margin-left:auto;display:flex;gap:7px"><button class="btn btn-g btn-sm">${ic('pencil',13)} Edit</button><button class="btn btn-p btn-sm" data-toast="Exported · logged in audit trail">${ic('doc',13)} Export</button></div>`:''}
    </div>
    ${S.letter==='idle'?`<div style="padding:56px 24px;text-align:center">
@@ -2269,26 +2322,26 @@ function vLetter(){
     <button class="btn btn-p" data-letter="go">${ic('spark',15)} Generate first draft</button></div>`:''}
    ${S.letter==='gen'?`<div style="padding:56px 24px;text-align:center">
     ${spin(34)}<div style="font-size:13px;color:var(--inkSoft);margin-top:14px;display:flex;align-items:center;justify-content:center;gap:8px">Reading the file, matching your voice ${dots()}</div>
-    <div style="max-width:70%;margin:18px auto 0">${[92,100,84,96].map(w=>`<div style="height:10px;width:${w}%;margin:0 auto 8px;background:linear-gradient(90deg,#eef0f6 25%,#f7f8fc 50%,#eef0f6 75%);background-size:1000px 100%;animation:shimmer 1.4s infinite;border-radius:var(--r-sm)"></div>`).join('')}</div></div>`:''}
-   ${S.letter==='done'?`<div class="prose pop" style="padding:32px 40px;font-size:15.5px;line-height:1.85;background:#FFFDF8">
-    ${LETTER.split('\n\n').map(p=>`<p style="margin-bottom:15px">${p}</p>`).join('')}</div>`:''}
+    <div style="max-width:70%;margin:18px auto 0">${[92,100,84,96].map(w=>`<div style="height:10px;width:${w}%;margin:0 auto 8px;background:linear-gradient(90deg,var(--stock-3) 25%,var(--stock) 50%,var(--stock-3) 75%);background-size:1000px 100%;animation:shimmer 1.4s infinite;border-radius:var(--r-sm)"></div>`).join('')}</div></div>`:''}
+   ${S.letter==='done'?`<div class="prose pop" style="padding:32px 40px;font-size:15.5px;line-height:1.85;background:var(--stock)">
+    ${letterFor(sara).split('\n\n').map(p=>`<p style="margin-bottom:15px">${p}</p>`).join('')}</div>`:''}
   </div>
   <div style="display:flex;flex-direction:column;gap:14px">
    <div class="card" style="padding:18px;background:var(--navy);border:none;color:#fff">
     <div class="stamp" style="font-size:16px;font-weight:600;margin-bottom:6px">It never invents</div>
     <div style="font-size:12px;color:rgba(255,255,255,.7);line-height:1.55;margin-bottom:14px">Every claim is drawn from a dated entry in Sara's record. If the evidence is not there, the sentence is not written.</div>
     <button class="btn" data-letter="${S.letter==='done'?'reset':'go'}" ${S.letter==='gen'?'disabled':''} style="width:100%;background:rgba(255,255,255,.14);color:#fff">${S.letter==='done'?ic('refresh',15)+' Regenerate':'Generate draft'}</button></div>
-   ${S.letter==='done'?`<div class="card pop" style="padding:18px"><h3 class="sechead">${ic('checkC',13)} Evidence used</h3>
+   ${S.letter==='done'?`<div class="card pop" style="padding:18px"><h2 class="sechead">${ic('checkC',13)} Evidence used</h2>
     ${ev.map(e=>`<div style="display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--lineSoft);font-size:11.8px;color:var(--inkSoft);line-height:1.5">${ic('checkC',14)}<span>${e}</span></div>`).join('')}</div>`:''}
-   <div class="card" style="padding:18px"><h3 class="sechead">Time returned this season</h3>
-    <div class="stamp" style="font-size:32px;font-weight:600;color:var(--teal);line-height:1">190 hrs</div>
-    <div style="font-size:12px;color:var(--inkSoft);margin-top:5px">84 letters at 60 minutes of writing each, reduced to 10 minutes of review.</div></div>
+   <div class="card" style="padding:18px"><h2 class="sechead">Time returned this season</h2>
+    <div class="tallyv" style="font-size:19px">${Math.round(S.cases.filter(c=>c.grade===12).length*50/60)} hrs</div>
+    <div style="font-size:12px;color:var(--ink-3);margin-top:5px;line-height:1.5">${S.cases.filter(c=>c.grade===12).length} leavers needing a letter, at 60 minutes of writing each, reduced to 10 minutes of review.</div></div>
   </div></div></div>`;}
 
 /* ═══════════ CO-PILOT (doc §09) ═══════════ */
 const CPQ=[
  {q:"Which students have had a major academic anomaly in the past two weeks?",a:"<b>Two students.</b> <b>Ahmed Khalifa.</b> Mathematics fell from a sustained 90% personal mean to 41% on 12 Nov, 49 points outside his band, with two results now outside it. <b>Yousef Bin Saeed.</b> Physics mock at 74%, six points below his floor, single occurrence during a heavy deadline week, so it is being held at Monitor.<br><br>Ahmed's is corroborated by attendance and a teacher concern. Yousef's is not corroborated by anything."},
- {q:"Show me students with declining attendance and no counselor contact this term.",a:"<b>Ahmed Khalifa</b> is the only match. Punctuality has fallen from 100% to 70% across eight weeks, three late arrivals in the last ten school days, and his last recorded contact is <b>none this term</b>.<br><br>Layla Haddad has zero engagement for 21 days but her attendance is unchanged at 100%, so she does not meet this filter. She is flagged separately under engagement withdrawal."},
+ {q:"Show me students with declining attendance and no recent counselor contact.",a:"<b>Ahmed Khalifa</b> is the only match. Punctuality has fallen from 100% to 70% across eight weeks, three late arrivals in the last ten school days, and his last recorded contact was a routine planning meeting on <b>2 October</b>, seven weeks before the signal opened.<br><br>Layla Haddad has zero engagement for 21 days but her attendance is unchanged at 100%, so she does not meet this filter. She is flagged separately under engagement withdrawal."},
  {q:"Which Grade 12 students still have no safety university?",a:"<b>Ahmed Khalifa.</b> Three reaches, no match or safety. Highest structural risk in the cohort with 18 days to the UCAS deadline.<br><br><b>Sara Al Mansoori.</b> One reach and three matches, but no true safety. Lower risk than Ahmed because her matches sit at 81–88%.<br><br>Recommended framing for both: add a floor, keep the ambition."},
  {q:"Prepare a 60-second briefing before my meeting with Ahmed.",a:"<b>Ahmed Khalifa · Grade 12 · Mechanical Engineering</b><br><br>Three domains moved in two weeks. Maths went from a stable A/A* to 41%. Three lates in ten days against a baseline of nearly none. Mr. Davies submitted a concern on 11 Nov describing him as unusually withdrawn and tired.<br><br>No authorised absence on file, not an exam period, no subject change. He has not asked for help and has not self-reported anything.<br><br><b>Suggested opening:</b> open-ended and low-stakes. Do not lead with the grade. Something like \"I wanted to check in — how have the last couple of weeks been?\"<br><br><b>Do not</b> speculate on cause in the meeting. Separately, his university list has no floor, but that is a second conversation, not this one."},
  {q:"Which interventions from last month have not yet been followed up?",a:"<b>All October interventions are closed.</b> Maryam Al Suwaidi's case, opened 4 Oct, resolved on 7 Nov after 34 days with sustained recovery: attendance came back from 79% to 98% and held for three weeks.<br><br>Currently open: three cases, all opened within the last 48 hours. Ahmed and Layla are due within two school days, Sara by 20 Nov. Follow-up completion this term is 92%."}];
@@ -2325,9 +2378,9 @@ function vCopilot(){
   ${CPQ.map((x,i)=>`<div class="lift" data-cpq="${i}" style="border:1px solid var(--line);border-radius:var(--r);padding:11px 14px;margin-bottom:7px;font-size:12.5px;color:var(--inkSoft);cursor:pointer;background:var(--panel)">${x.q}</div>`).join('')}
  </div>
  ${S.cpLoad?`<div class="card" style="padding:22px"><div style="display:flex;align-items:center;gap:9px;color:var(--teal);font-size:12.5px;font-weight:600;margin-bottom:14px">Searching your authorised cohort ${dots()}</div>
-  ${[88,96,72,90].map(w=>`<div style="height:10px;width:${w}%;margin-bottom:9px;background:linear-gradient(90deg,#eef0f6 25%,#f7f8fc 50%,#eef0f6 75%);background-size:1000px 100%;animation:shimmer 1.4s infinite;border-radius:var(--r-sm)"></div>`).join('')}</div>`:''}
+  ${[88,96,72,90].map(w=>`<div style="height:10px;width:${w}%;margin-bottom:9px;background:linear-gradient(90deg,var(--stock-3) 25%,var(--stock) 50%,var(--stock-3) 75%);background-size:1000px 100%;animation:shimmer 1.4s infinite;border-radius:var(--r-sm)"></div>`).join('')}</div>`:''}
  ${S.cpA&&!S.cpLoad?`<div class="card pop" style="padding:22px;background:var(--navy);border:none;color:#fff">
-  <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#6FE0CC;font-weight:700;margin-bottom:11px;display:flex;align-items:center;gap:6px">${ic('spark',12)} Co-pilot · AI-generated, review before use</div>
+  <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--on-letterhead-2);font-weight:700;margin-bottom:11px;display:flex;align-items:center;gap:6px">${ic('spark',12)} Co-pilot · AI-generated, review before use</div>
   <div style="font-size:13.5px;line-height:1.7;color:rgba(255,255,255,.9)">${S.cpA}</div>
   <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
    <button class="btn btn-sm" data-toast="Draft prepared for your review. Nothing sent." style="background:rgba(255,255,255,.14);color:#fff">${ic('pencil',13)} Draft parent email</button>
@@ -2335,7 +2388,7 @@ function vCopilot(){
    <button class="btn btn-sm" data-toast="Evidence trail opened" style="background:rgba(255,255,255,.14);color:#fff">${ic('eye',13)} Show evidence</button></div>
  </div>`:''}
  <div class="card" style="padding:18px 20px;margin-top:16px">
-  <h3 class="sechead">${ic('lock',13)} Automation boundaries</h3>
+  <h2 class="sechead">${ic('lock',13)} Automation boundaries</h2>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 22px">
   ${["No external communication without human confirmation","No safeguarding conclusion generated by the model","No student automatically disciplined or denied an opportunity","Sensitive notes never used outside their purpose","Every AI draft visibly labelled and editable","Retrieval limited to your permission scope"]
    .map(x=>`<div style="display:flex;gap:8px;align-items:flex-start;padding:7px 0;font-size:12px;color:var(--inkSoft)">${ic('checkC',14)}<span>${x}</span></div>`).join('')}</div>
@@ -2345,10 +2398,15 @@ function vCopilot(){
 function vProve(){
  const fam=[["Detection quality","radar",METRICS.detection],["Counselor efficiency","clock",METRICS.efficiency],["Intervention performance","brief",METRICS.intervention],["Student progress","trend",METRICS.student]];
  return `<div class="fade">
- ${head("Evidence that students are noticed earlier","The question a head of school asks is whether this changed anything. These are the metrics that answer it: detection quality, time returned, and whether students recovered.")}
+ ${head("What the pilot sets out to prove","The question a head of school asks is whether this changed anything. These are the targets the pilot is built to measure — detection quality, time returned, and whether students recovered. CAROS has not yet run at a school, so nothing on this page is a result.")}
+ <div class="tally" style="border-color:var(--t-review)">
+  <div style="flex:1 1 100%;padding-left:0">
+   <div class="tallyl" style="color:var(--t-review)">Targets, not measurements</div>
+   <div class="tallyn" style="font-size:12px;color:var(--ink-2);max-width:70ch">Every figure below is a target this pilot is designed to test, or a number measured on this demonstration cohort where it says so. None of it is a result from a school, because there has not been one yet.</div></div>
+ </div>
  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
  ${fam.map(([t,i,rows],ix)=>`<div class="card" style="padding:20px;animation:rise .4s ${ix*.06}s backwards">
-  <h3 class="sechead">${ic(i,13)} ${t}</h3>
+  <h2 class="sechead">${ic(i,13)} ${t}</h2>
   ${rows.map(([l,v,s])=>`<div style="padding:11px 0;border-bottom:1px solid var(--lineSoft)">
    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><span style="font-size:12.3px;color:var(--inkSoft)">${l}</span>
    <b class="stamp" style="font-size:19px;font-weight:600">${v}</b></div>
@@ -2356,13 +2414,13 @@ function vProve(){
  </div>`).join('')}
  </div>
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <h3 class="sechead">${ic('lock',13)} Trust & safety monitoring</h3>
+  <h2 class="sechead">${ic('lock',13)} Trust & safety monitoring</h2>
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
-  ${[["Access violations","0","role scope enforced"],["Unexplained alerts","0","every flag traces to evidence"],["Overturned recommendations","6","counselor downgraded, thresholds retuned"],["Disproportionate flagging","None detected","monitored across student groups"]]
+  ${[["Access violations","0","target · role scope enforced in code"],["Unexplained alerts","0","guarantee · every flag traces to evidence"],["Overturned recommendations","Tracked","counselor downgrades retune the thresholds"],["Disproportionate flagging","Monitored","reported across student groups each term"]]
    .map(([l,v,s])=>`<div style="background:var(--panel);border-radius:var(--r);padding:14px 15px"><div class="stamp" style="font-size:22px;font-weight:600;color:${v==="0"||v==="None detected"?'var(--good)':'var(--review)'};line-height:1.1">${v}</div><div style="font-size:11.5px;font-weight:600;margin-top:5px">${l}</div><div style="font-size:10.3px;color:var(--inkMute);margin-top:2px;line-height:1.4">${s}</div></div>`).join('')}</div>
  </div>
  <div class="card" style="padding:20px">
-  <h3 class="sechead">${ic('list',13)} Live audit log</h3>
+  <h2 class="sechead">${ic('list',13)} Live audit log</h2>
   ${S.audit.slice(0,9).map(a=>`<div class="audit"><span style="width:90px;flex-shrink:0">${a.t}</span><span style="width:80px;flex-shrink:0;color:${a.who==='SYSTEM'?'var(--teal)':'var(--violet)'};font-weight:500">${a.who}</span><span style="width:128px;flex-shrink:0;font-weight:500">${a.act}</span><span style="width:130px;flex-shrink:0">${a.obj}</span><span style="flex:1">${a.det}</span></div>`).join('')}
  </div></div>`;}
 
@@ -2376,6 +2434,16 @@ s3:[{d:"13 Nov",w:"System",t:"Case opened · list-balance rule",k:"sys"},{d:"6 N
 s4:[{d:"10 Nov",w:"System",t:"Monitor opened · isolated academic dip",k:"sys"},{d:"28 Oct",w:"Ms. Haddad",t:"CS pathway check-in",k:"met"}],
 s5:[{d:"7 Nov",w:"Ms. Haddad",t:"Case closed · outcome documented",k:"met"},{d:"31 Oct",w:"Ms. Haddad",t:"Weekly check-in 4 of 4",k:"met"},{d:"6 Oct",w:"Ms. Haddad",t:"Family contact · morning routine",k:"met"},{d:"4 Oct",w:"Ms. Haddad",t:"Action plan agreed",k:"met"}],
 s6:[{d:"8 Nov",w:"System",t:"Monitor opened · list-fit rule",k:"sys"},{d:"20 Oct",w:"Ms. Haddad",t:"Business pathway meeting",k:"met"}]};
+/* The file header and the contact log were two separate statements about the
+   same fact, and they disagreed: Ahmed read "None this term" above a log
+   holding a 2 Oct planning meeting and a 14 Sep induction. Where a log
+   exists it is the record, so the header reads from it. */
+function lastContactOf(c){
+ const log=(typeof CONTACTLOG!=="undefined"&&CONTACTLOG[c.id])||null;
+ if(!log)return c.lastContact;
+ const met=log.find(e=>e.k==="met");
+ return met?met.d:"None this term";}
+
 const ACTIVITIES={
 s1:["President, Economics Society (Y12–13) · verified","Term project: regional trade policy & Abu Dhabi SMEs","Maths Challenge · Gold, 2025","Volunteer numeracy tutor, 40 hrs logged"],
 s2:["Hospital volunteering, 120 hrs · verified","Biology Olympiad · Silver","Peer mentor, Year 9","St John Ambulance first aid certified"],
@@ -2418,12 +2486,12 @@ function vFileOne(c){
    ${av(c.av,c.prio,54)}
    <div style="flex:1"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
     <span class="stamp" style="font-size:23px;font-weight:600">${c.name}</span>${pchip(c.prio)}</div>
-    <div style="font-size:12px;color:var(--inkMute);margin-top:3px">${c.yr} · ${c.goal} · GPA ${c.gpa} · Predicted ${c.pred} · Last contact ${c.lastContact}</div></div>
+    <div style="font-size:12px;color:var(--inkMute);margin-top:3px">${c.yr} · ${c.goal} · GPA ${c.gpa} · Predicted ${c.pred} · Last contact ${lastContactOf(c)}</div></div>
    <div style="display:flex;gap:7px;flex-shrink:0">
     <button class="btn btn-g btn-sm" data-act="brief:${c.id}">${ic('spark',13)} 60-sec brief</button>
     <button class="btn btn-p btn-sm" data-open="${c.id}">Open case</button></div>
   </div>
-  <div style="background:linear-gradient(180deg,#FBFCFE,#fff);padding:19px 22px">
+  <div style="background:var(--stock);padding:19px 22px">
    <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px">
     <span class="chip" style="background:var(--tealSoft);color:var(--tealDeep)">${ic('spark',11)} 15-SECOND BRIEFING</span>
     <span style="font-size:11px;color:var(--inkMute)">Auto-synthesised · no counselor input required</span></div>
@@ -2436,26 +2504,26 @@ function vFileOne(c){
  ${ft==="synth"?`<div class="pop" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
   ${[["Academic","book",[["GPA",c.gpa],["Predicted grades",c.pred],["Working trend",c.baselines.academic?(c.baselines.academic.anomalyFrom<8?"Declining, outside personal band":"Stable within band"):"Stable"],["Assessment volatility",c.prio==="urgent"?"High":"Low"]]],
     ["Attendance & conduct","clock",[["Attendance",c.baselines.attendance?c.baselines.attendance.series[7]+"%":"98%"],["Punctuality",c.id==="s1"?"3 lates / 10 days":"Within baseline"],["Behaviour incidents","None this term"],["Personal band",c.baselines.attendance?c.baselines.attendance.band.join("–")+"%":"95–100%"]]],
-    ["Engagement & wellbeing","gauge",[["Platform engagement",c.baselines.engagement?(c.baselines.engagement.series[7]<30?"Withdrawn":"Active"):"Active"],["Teacher concerns",c.evidence.some(e=>e.dom==="teacher")?"1 this term":"None"],["Last seen",c.lastActive||c.lastContact],["Positive signals",c.evidence.filter(e=>e.w<0).length]]],
+    ["Engagement & wellbeing","gauge",[["Platform engagement",c.baselines.engagement?(c.baselines.engagement.series[7]<30?"Withdrawn":"Active"):"Active"],["Teacher concerns",c.evidence.some(e=>e.dom==="teacher")?"1 this term":"None"],["Last seen",c.lastActive||lastContactOf(c)],["Positive signals",c.evidence.filter(e=>e.w<0).length]]],
     ["University journey","grad",[["Target career",c.goal],["Universities listed",c.uni.targets.length],["List balance",c.uni.targets.some(t=>t.b==="safety")?"Balanced":"No safety school"],["Journey flags",c.uni.flags.length||"None"]]]
    ].map(([t,i,rows],ix)=>`<div class="card" style="padding:18px 20px;animation:rise .4s ${ix*.06}s backwards">
-    <h3 class="sechead">${ic(i,13)} ${t}</h3>
+    <h2 class="sechead">${ic(i,13)} ${t}</h2>
     ${rows.map(([l,v])=>`<div class="kv"><span style="color:var(--inkMute)">${l}</span><b>${v}</b></div>`).join('')}</div>`).join('')}
   <div class="card" style="padding:18px 20px;grid-column:span 2">
-   <h3 class="sechead">${ic('trend',13)} Verified activities & evidence base</h3>
+   <h2 class="sechead">${ic('trend',13)} Verified activities & evidence base</h2>
    <div style="font-size:11.5px;color:var(--inkMute);margin-bottom:11px;line-height:1.5">This is what the Letter Engine draws on. Nothing is written that does not appear here.</div>
    ${acts.map(a=>`<div style="display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--lineSoft);font-size:12.5px;color:var(--inkSoft)">${ic('checkC',14)}<span>${a}</span></div>`).join('')}</div>
  </div>`:''}
 
  ${ft==="signals"?`<div class="card pop" style="padding:20px">
-  <h3 class="sechead">${ic('radar',13)} All signal domains · against this student's own baseline</h3>
+  <h2 class="sechead">${ic('radar',13)} All signal domains · against this student's own baseline</h2>
   ${Object.entries(c.baselines).map(([k,b],i)=>`<div style="margin-top:${i?20:8}px;animation:rise .4s ${i*.07}s backwards">
    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="color:${DOMAINS[k].c}">${ic(DOMAINS[k].ic,14)}</span>
     <b style="font-size:12.5px">${b.label}</b>
     ${b.anomalyFrom<b.series.length?`<span class="chip" style="background:var(--urgentSoft);color:var(--urgent)">${b.series.length-b.anomalyFrom} outside band</span>`:`<span class="chip" style="background:var(--goodSoft);color:var(--good)">Within baseline</span>`}</div>
    ${baseChart(b)}</div>`).join('')}
   <div style="margin-top:18px;padding-top:15px;border-top:1px solid var(--line)">
-   <h3 class="sechead">${ic('list',13)} Every event on file this term</h3>
+   <h2 class="sechead">${ic('list',13)} Every event on file this term</h2>
    ${c.evidence.map(e=>`<div class="evd">
     <div><div style="display:flex;align-items:center;gap:5px;color:${DOMAINS[e.dom].c};font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em">${ic(DOMAINS[e.dom].ic,11)}${DOMAINS[e.dom].label}</div>
     <div class="fig" style="font-size:10px;color:var(--inkMute);margin-top:3px">${e.date}</div></div>
@@ -2464,7 +2532,7 @@ function vFileOne(c){
  </div>`:''}
 
  ${ft==="uni"?`<div class="card pop" style="padding:20px">
-  <h3 class="sechead">${ic('grad',13)} Goal → path → programmes</h3>
+  <h2 class="sechead">${ic('grad',13)} Goal → path → programmes</h2>
   <div style="background:var(--panel);border-radius:var(--r);padding:15px 17px;margin-bottom:16px">
    <div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--inkMute);font-weight:700;margin-bottom:5px">Stated long-term goal</div>
    <div class="stamp" style="font-size:18px;font-weight:600">${c.goal}</div>
@@ -2480,16 +2548,16 @@ function vFileOne(c){
 
  ${ft==="support"?`<div class="pop" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
   <div class="card" style="padding:20px">
-   <h3 class="sechead">${ic('brief',13)} Interventions</h3>
+   <h2 class="sechead">${ic('brief',13)} Interventions</h2>
    ${ivs.length?ivs.map(i=>`<div style="padding:12px 0;border-bottom:1px solid var(--lineSoft)">
     <div style="display:flex;justify-content:space-between;gap:9px;align-items:baseline"><b style="font-size:12.5px">${i.type}</b>
     ${i.status==="resolved"?chip("Resolved","var(--good)","var(--goodSoft)"):chip("Open","var(--checkin)","var(--checkinSoft)")}</div>
     <div style="font-size:11.3px;color:var(--inkMute);margin-top:3px">Opened ${i.opened} · owner ${i.owner} · ${i.status==="resolved"?"closed in "+i.resolvedIn:"due "+i.due}</div>
-    ${i.outcome?`<div style="font-size:11.8px;color:#075E45;background:var(--goodSoft);border-radius:var(--r);padding:9px 11px;margin-top:7px;line-height:1.5"><b>Outcome.</b> ${i.outcome}</div>`:''}</div>`).join('')
+    ${i.outcome?`<div style="font-size:11.8px;color:var(--t-good);background:var(--goodSoft);border-radius:var(--r);padding:9px 11px;margin-top:7px;line-height:1.5"><b>Outcome.</b> ${i.outcome}</div>`:''}</div>`).join('')
    :moment({art:"steady",title:"No interventions on file",body:`${c.name.split(" ")[0]} has not required formal support this year. This is the outcome the caseload sweep exists to protect, not a gap in the record.`})}
   </div>
   <div class="card" style="padding:20px">
-   <h3 class="sechead">${ic('clock',13)} Contact & support log</h3>
+   <h2 class="sechead">${ic('clock',13)} Contact & support log</h2>
    ${log.map((l,i)=>`<div class="tlrow"><div style="display:flex;flex-direction:column;align-items:center"><span class="tldot" style="background:${l.k==="met"?'var(--teal)':'var(--inkMute)'}"></span>${i<log.length-1?'<span class="tlline"></span>':''}</div>
     <div><div style="font-size:10.5px;color:var(--inkMute);font-weight:600">${l.d} · ${l.w}</div><div style="font-size:12.3px;color:var(--inkSoft);line-height:1.45">${l.t}</div></div></div>`).join('')}
    <div style="font-size:10.5px;color:var(--inkMute);margin-top:8px;line-height:1.45">Response-time and coverage metrics in Reporting are calculated from this log.</div>
@@ -2497,7 +2565,7 @@ function vFileOne(c){
  </div>`:''}
 
  ${ft==="access"?`<div class="card pop" style="padding:20px">
-  <h3 class="sechead">${ic('lock',13)} Minimum necessary visibility · who can see what in this file</h3>
+  <h2 class="sechead">${ic('lock',13)} Minimum necessary visibility · who can see what in this file</h2>
   <div style="font-size:12px;color:var(--inkSoft);margin-bottom:14px;line-height:1.55">Sensitive information is shown only to staff whose role requires it, with an audit trail of access and action. This panel is what you show a parent or a regulator who asks.</div>
   <div style="overflow-x:auto"><table class="sheet" style="font-size:12px">
    <thead><tr>${["Role","Signals & baselines","Concern notes","University journey","Safeguarding record"].map((h,i)=>`<th style="text-align:${i?'center':'left'};padding:9px 8px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--inkMute);border-bottom:1px solid var(--line)">${h}</th>`).join('')}</tr></thead>
@@ -2506,7 +2574,7 @@ function vFileOne(c){
      <td style="padding:10px 8px;font-weight:600;white-space:nowrap">${r[0]}</td>
      ${r.slice(1).map(v=>`<td style="padding:10px 8px;text-align:center;color:${v==="No"?'var(--inkMute)':v==="Yes"?'var(--good)':'var(--inkSoft)'};font-weight:${v==="Yes"?600:400}">${v}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
   <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line)">
-   <h3 class="sechead">${ic('list',13)} Access audit for this file</h3>
+   <h2 class="sechead">${ic('list',13)} Access audit for this file</h2>
    ${[["13 Nov 07:04","SYSTEM","Signal evaluation · automated sweep"],["12 Nov 16:22","R.HADDAD","File access · purpose: case review"],["11 Nov 14:07","M.DAVIES","Concern submitted · no file read access granted"],["2 Oct 09:40","R.HADDAD","File access · purpose: scheduled meeting prep"]]
     .map(a=>`<div class="audit"><span style="width:96px;flex-shrink:0">${a[0]}</span><span style="width:86px;flex-shrink:0;color:${a[1]==='SYSTEM'?'var(--teal)':'var(--violet)'};font-weight:500">${a[1]}</span><span style="flex:1">${a[2]}</span></div>`).join('')}</div>
  </div>`:''}
@@ -2528,19 +2596,23 @@ const TASKS=[
 {t:"Chase Ahmed's outstanding school forms",due:"25 Nov",who:"Automated",src:"Workflow",done:false},
 {t:"Close Maryam's case with a documented outcome",due:"Done",who:"You",src:"Case · positive",done:true}];
 const STMAP={sent:["var(--good)","var(--goodSoft)","Sent"],received:["var(--good)","var(--goodSoft)","Received"],final:["var(--good)","var(--goodSoft)","Final"],draft:["var(--review)","var(--reviewSoft)","Draft"],chased:["var(--checkin)","var(--checkinSoft)","Chased"],pending:["var(--checkin)","var(--checkinSoft)","Pending"],none:["var(--urgent)","var(--urgentSoft)","Not started"],complete:["var(--good)","var(--goodSoft)","Complete"],missing:["var(--urgent)","var(--urgentSoft)","Missing"]};
+/* The tally deliberately takes no colour. The rows it replaced painted their
+   figures in tier colours the figures had no claim on — "Balanced lists 67%"
+   in check-in orange — which spends the one vocabulary the product cannot
+   afford to make decorative. Figures print in ink; the note carries meaning. */
+function tally(items){return `<div class="tally">${items.map(([l,v,n])=>
+ `<div><div class="tallyl">${l}</div><div class="tallyv">${v}</div>${n?`<div class="tallyn">${n}</div>`:''}</div>`).join('')}</div>`;}
+
 function stTag(k){const[c,bg,l]=STMAP[k]||STMAP.pending;return chip(l,c,bg);}
 
 function vFlow(){
  const outstanding=DOCS.reduce((a,d)=>a+d.teach.filter(t=>t.st!=="received").length+(d.cr==="none"?1:0)+(d.forms==="missing"?1:0)+(d.tr==="pending"?1:0),0);
  return `<div class="fade">
  ${head("The administration layer, removed","This is the bucket of the counselor's job that contains no counseling value: transcripts, forms, chasing teachers, tracking who has submitted what. The system runs it so you do not have to be the person chasing everyone else.")}
- <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:18px">
-  ${[["Items outstanding",outstanding,"across 6 students","var(--checkin)"],["Auto-chases sent",23,"this term, zero manual","var(--teal)"],["Docs on time","96%","cohort average","var(--good)"],["Manual chases by you",0,"was ~40 per season","var(--good)"]]
-  .map(([l,v,s,c])=>`<div class="card" style="padding:15px 17px"><div class="stamp" style="font-size:26px;font-weight:600;color:${c};line-height:1">${v}</div><div style="font-size:11.5px;font-weight:600;margin-top:4px">${l}</div><div style="font-size:10.3px;color:var(--inkMute);margin-top:2px">${s}</div></div>`).join('')}
- </div>
+ ${tally([["Items outstanding",outstanding,"Across 6 students"],["Auto-chases sent",23,"This term, none by hand"],["Docs on time","96%","Cohort average"],["Manual chases by you",0,"Was around 40 a season"]])}
 
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <h3 class="sechead">${ic('doc',13)} Document & reference status · per student, per application</h3>
+  <h2 class="sechead">${ic('doc',13)} Document & reference status · per student, per application</h2>
   <div style="overflow-x:auto"><table class="sheet" style="font-size:12px">
    <thead><tr>${["Student","Platform","Transcript","Counselor ref","Teacher references","School forms"].map((h,i)=>`<th style="text-align:left;padding:9px 8px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--inkMute);border-bottom:1px solid var(--line)">${h}</th>`).join('')}</tr></thead>
    <tbody>${DOCS.map(d=>`<tr style="border-bottom:1px solid var(--lineSoft)">
@@ -2559,7 +2631,7 @@ function vFlow(){
 
  <div style="display:grid;grid-template-columns:1.15fr 1fr;gap:14px">
   <div class="card" style="padding:20px">
-   <h3 class="sechead">${ic('list',13)} Task list · generated from your cases</h3>
+   <h2 class="sechead">${ic('list',13)} Task list · generated from your cases</h2>
    ${TASKS.map((t,i)=>`<div style="display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:11px 0;border-bottom:${i<TASKS.length-1?'1px solid var(--lineSoft)':'none'}">
     <div data-task="${i}" style="width:22px;height:22px;border-radius:var(--r-sm);border:2px solid ${t.done?'var(--good)':'var(--line)'};background:${t.done?'var(--good)':'#fff'};display:grid;place-items:center;color:#fff;cursor:pointer">${t.done?ic('check',13):''}</div>
     <div><div style="font-size:12.5px;font-weight:${t.done?400:600};color:${t.done?'var(--inkMute)':'var(--ink)'};text-decoration:${t.done?'line-through':'none'}">${t.t}</div>
@@ -2568,7 +2640,7 @@ function vFlow(){
    <div style="font-size:10.5px;color:var(--inkMute);margin-top:11px;line-height:1.45">Reminders, form chases and scheduled reports run themselves once marked <b>Automated</b>. You only see them so nothing is invisible.</div>
   </div>
   <div class="card" style="padding:20px">
-   <h3 class="sechead">${ic('refresh',13)} What runs without you</h3>
+   <h2 class="sechead">${ic('refresh',13)} What runs without you</h2>
    ${[["Deadline nudges to students","Fires at T-21, T-14, T-7 and T-2 days per application","23 sent"],
       ["Teacher reference requests","Initial request plus two escalating reminders","11 sent"],
       ["Transcript & form packaging","Assembled per student per university, status tracked","6 active"],
@@ -2598,7 +2670,7 @@ function vArch(){
  return `<div class="fade">
  ${head("From raw school data to an explainable signal","Nothing in this system is a black box. Original evidence and derived interpretation are stored separately, so any flag from any past date can still be explained.")}
  <div class="card" style="padding:22px;margin-bottom:16px">
-  <h3 class="sechead">${ic('refresh',13)} The pipeline</h3>
+  <h2 class="sechead">${ic('refresh',13)} The pipeline</h2>
   <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:0;align-items:stretch">
   ${pipe.map(([n,t,d,i],ix)=>`<div style="position:relative;padding:0 9px;animation:rise .4s ${ix*.08}s backwards">
    <div style="background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:15px 14px;height:100%">
@@ -2612,7 +2684,7 @@ function vArch(){
  </div>
 
  <div class="card" style="padding:22px;margin-bottom:16px">
-  <h3 class="sechead">${ic('zap',13)} Worked example · one event through the pipeline</h3>
+  <h2 class="sechead">${ic('zap',13)} Worked example · one event through the pipeline</h2>
   <div style="font-size:12px;color:var(--inkSoft);margin-bottom:14px;line-height:1.5">Ahmed's Mathematics result on 12 November, traced end to end. This is the trace a head of school or a regulator can ask for at any time.</div>
   ${[["1 · Data source","iSAMS gradebook webhook fired. Raw payload: student s1, subject MATH, assessment ASM-4471, score 41, recorded 12 Nov 09:14.","mono"],
     ["2 · Normalisation","Identity matched to student profile s1. Subject mapped to canonical MATHEMATICS. Timestamp normalised. Source quality: authoritative (SIS).",""],
@@ -2626,12 +2698,12 @@ function vArch(){
 
  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
   <div class="card" style="padding:20px">
-   <h3 class="sechead">${ic('layers',13)} Core data objects</h3>
+   <h2 class="sechead">${ic('layers',13)} Core data objects</h2>
    ${objs.map(([t,d])=>`<div style="padding:10px 0;border-bottom:1px solid var(--lineSoft)">
     <b style="font-size:12.3px">${t}</b><div style="font-size:11.3px;color:var(--inkMute);margin-top:3px;line-height:1.5">${d}</div></div>`).join('')}
   </div>
   <div class="card" style="padding:20px">
-   <h3 class="sechead">${ic('shield',13)} Processing guarantees</h3>
+   <h2 class="sechead">${ic('shield',13)} Processing guarantees</h2>
    ${["Every new grade, absence or concern is evaluated immediately, never in a nightly batch",
       "Deterministic rules stay separate from probabilistic AI, so urgent school rules never depend on a language model alone",
       "Original evidence and derived interpretation stored separately, so every flag stays auditable",
@@ -2672,7 +2744,7 @@ function vPilot(){
     .map(x=>`<div style="display:flex;gap:8px;align-items:flex-start;padding:4px 0;font-size:12px;color:var(--warn-ink);line-height:1.5">${ic('check',13)}<span>${x}</span></div>`).join('')}</div></div></div>
  </div>
  <div class="card" style="padding:20px;margin-top:16px">
-  <h3 class="sechead">${ic('brief',13)} The five design principles this is built on</h3>
+  <h2 class="sechead">${ic('brief',13)} The five design principles this is built on</h2>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 20px">
   ${[["Relief before complexity","Every feature must remove work or surface something important. It must not create another dashboard staff have to remember to check."],
      ["Change detection before static judgment","A student's deviation from their own baseline is usually more meaningful than their position against a cohort average."],
@@ -2737,17 +2809,28 @@ function dimListBalance(c){const t=c.uni.targets;const s=t.filter(x=>x.b==="safe
  if(!s)return{r:"critical",v,note:"No safety school on the list"};
  if(m<1)return{r:"watch",v,note:"Thin in the middle of the list"};
  return{r:"good",v,note:"Balanced across reach, match and safety"};}
+/* A student with no application has no application cycle, so every "0" in
+   their APP row is an absence rather than a student behind. APP.tot is the
+   data's own statement of this — c.grade exists on only six of the 87 cases,
+   so gating on it silently excluded almost everybody. The same guard
+   dimListBalance already carries; without it a Grade 9 renders as
+   "Critical · act now · 0 days to deadline · Not applicable yet". */
+function inCycle(c){const a=APP[c.id];return !!a&&a.tot>0;}
+function notYet(v){return{r:"good",v:v||"Not applicable yet",note:"No application in progress yet"};}
 function dimStatement(c){const a=APP[c.id];const v=`${a.stmtLabel} · ${a.stmt}%`;
+ if(!inCycle(c))return notYet(a.stmtLabel);
  if(a.stmt===0)return{r:"critical",v,note:`Not started with ${a.days} days to deadline`};
  if(a.days<=10&&a.stmt<80)return{r:"critical",v,note:`Only ${a.days} days left at ${a.stmt}% complete`};
  if(a.stmt<90)return{r:"watch",v,note:"In progress, needs a review pass"};
  return{r:"good",v,note:"Complete and in final review"};}
 function dimDeadline(c){const a=APP[c.id];const ready=a.stmt>=90&&a.cref!=="none"&&a.forms==="complete";
  const v=`${a.days} days`;
+ if(!inCycle(c))return notYet("No deadline yet");
  if(a.days<=10&&!ready)return{r:"critical",v,note:"Deadline close and the pack is not ready"};
  if(!ready)return{r:"watch",v,note:"On the clock, items still outstanding"};
  return{r:"good",v,note:"Pack complete ahead of deadline"};}
 function dimDocs(c){const a=APP[c.id];
+ if(!inCycle(c))return notYet("Nothing requested yet");
  let out=0;if(a.tr!=="sent")out++;if(a.cref==="none")out++;if(a.forms!=="complete")out++;
  out+=a.trefs.filter(t=>t.st!=="received").length;
  const v=out===0?"All received":`${out} outstanding`;
@@ -2755,11 +2838,12 @@ function dimDocs(c){const a=APP[c.id];
  if(out>=1)return{r:"watch",v,note:"Chase in progress"};
  return{r:"good",v,note:"Nothing outstanding"};}
 function dimProgress(c){const a=APP[c.id];
+ if(!inCycle(c))return notYet("Not started");
  const parts=[a.stmt>=90?1:a.stmt/90, a.cref==="final"?1:a.cref==="draft"?.5:0, a.forms==="complete"?1:0,
   a.trefs.filter(t=>t.st==="received").length/Math.max(a.trefs.length,1), a.tr==="sent"?1:0];
  const pct=Math.round(parts.reduce((x,y)=>x+y,0)/parts.length*100);
  const v=pct+"% complete";
- if(pct<40)return{r:"critical",v,note:"Well behind the cohort at this point in the cycle"};
+ if(pct<40)return{r:"critical",v,note:"Most of the pack is still outstanding this close to the deadline"};
  if(pct<80)return{r:"watch",v,note:"Progressing but not yet secure"};
  return{r:"good",v,note:"Application pack essentially complete"};}
 function dimAttendance(c){const b=c.baselines.attendance;
@@ -2812,13 +2896,15 @@ const CATS=[
  {id:"cohort",label:"My Cohort",ic:"users",sub:[
    ["cohort-schedule","Caseload"],["flags","From teachers"],["meetings","Meetings"],["approvals","Pathway approvals"],["psreviews","Personal statements"]]},
  {id:"uni",label:"University Applications",ic:"grad",sub:[
+   ["app-season","Season overview"],
    ["app-progress","Application progress"],["app-list","List balance"],["app-deadlines","Deadlines"],
    ["app-docs","Documents & references"],["app-statement","Personal statements"],["app-letter","Letter Engine"]]},
  {id:"si",label:"Student Intelligence",ic:"radar",sub:[
-   ["si-cases","Priority cases"],["si-attendance","Attendance"],["si-punctuality","Punctuality & tardiness"],
+   ["si-cases","Priority cases"],["si-why","How detection works"],
+   ["si-attendance","Attendance"],["si-punctuality","Punctuality & tardiness"],
    ["si-academic","Academic signals"],["si-engagement","Engagement"],["si-behaviour","Behaviour & conduct"],
    ["si-interventions","Interventions"]]}];
-const SYSNAV=[["files","360° student files","layers"],["copilot","AI co-pilot","spark"],["prove","Reporting","chart"],["arch","Signal architecture","layers"],["thresholds","Thresholds","gauge"],["pilot","Pilot & rollout","route"]];
+const SYSNAV=[["files","360° student files","layers"],["app-flow","Admin & automation","refresh"],["copilot","AI co-pilot","spark"],["prove","Reporting","chart"],["arch","Signal architecture","layers"],["thresholds","Thresholds","gauge"],["pilot","Pilot & rollout","route"]];
 
 function catCounts(cat){
  /* The caseload categories answer with the tier. Only "University
@@ -2838,34 +2924,34 @@ function sidebarC(){
   <div style="padding:18px 16px 16px;display:flex;align-items:center;gap:10px">
    <div style="width:32px;height:32px;border-radius:var(--r);background:var(--school-accent);color:var(--school-on-accent);display:grid;place-items:center;font-family:var(--f-apparatus);font-weight:700;font-size:15px;box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.18)">C</div>
    <div style="min-width:0">
-    <div style="font-weight:600;font-size:13.5px;color:#fff;letter-spacing:-.012em;line-height:1.2">Counselor OS</div>
+    <div style="font-weight:600;font-size:13.5px;color:var(--on-letterhead);letter-spacing:-.012em;line-height:1.2">Counselor OS</div>
     <div style="font-family:var(--f-apparatus);font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--nav-txt);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${SCHOOL.short}</div></div>
   </div>
   <div style="height:1px;background:rgba(255,255,255,.06);margin:0 16px 12px"></div>
   <div style="padding:0 10px;display:flex;flex-direction:column;gap:2px">
   <button class="navitem ${S.cv==="cohort-schedule"?"on":""}" data-cnav="cohort-schedule" style="margin-bottom:6px">
-   ${S.cv==="cohort-schedule"?'<span style="position:absolute;left:-10px;top:50%;transform:translateY(-50%);width:2px;height:16px;background:var(--school-accent);border-radius:var(--r-pill);box-shadow:0 0 8px rgba(18,184,166,.55)"></span>':''}
+   ${S.cv==="cohort-schedule"?'<span style="position:absolute;left:-10px;top:50%;transform:translateY(-50%);width:2px;height:16px;background:var(--school-accent);border-radius:var(--r-pill)"></span>':''}
    ${ic('home',15)}<span style="font-weight:600">Home</span></button>
   ${CATS.map(cat=>{const open=S.cat[cat.id];const cc=catCounts(cat);
    return `<div style="margin:0 11px 4px">
-    <button data-cat="${cat.id}" style="display:flex;align-items:center;gap:9px;width:100%;padding:8px 10px;min-height:44px;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:inherit;text-align:left;background:${open?'rgba(255,255,255,.05)':'transparent'};color:#E2E8F0;transition:background .13s ease" onmouseover="this.style.background='rgba(255,255,255,.07)'" onmouseout="this.style.background='${open?'rgba(255,255,255,.05)':'transparent'}'">
-     <span style="opacity:.8;display:flex;color:#94A3B8">${ic(cat.ic,15)}</span>
+    <button data-cat="${cat.id}" style="display:flex;align-items:center;gap:9px;width:100%;padding:8px 10px;min-height:44px;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:inherit;text-align:left;background:${open?'rgba(255,255,255,.05)':'transparent'};color:var(--on-letterhead);transition:background .13s ease" onmouseover="this.style.background='rgba(255,255,255,.07)'" onmouseout="this.style.background='${open?'rgba(255,255,255,.05)':'transparent'}'">
+     <span style="opacity:.8;display:flex;color:var(--on-letterhead-2)">${ic(cat.ic,15)}</span>
      <span style="font-size:12.5px;font-weight:600;letter-spacing:-.008em;flex:1;line-height:1.3">${cat.label}</span>
      <span style="display:flex;gap:4px;align-items:center">
-      ${cc.critical?`<span style="font-size:10px;font-weight:600;color:#FFB0A5;background:rgba(0,0,0,.24);border-radius:var(--r-sm);padding:1px 5px;line-height:1.5;font-variant-numeric:tabular-nums">${cc.critical}</span>`:''}
-      ${cc.watch?`<span style="font-size:10px;font-weight:600;color:#FEC84B;background:rgba(220,104,3,.15);border-radius:var(--r-sm);padding:1px 5px;line-height:1.5;font-variant-numeric:tabular-nums">${cc.watch}</span>`:''}</span>
-     <span style="transform:rotate(${open?90:0}deg);transition:transform .18s cubic-bezier(.22,1,.36,1);opacity:.4;display:flex;color:#94A3B8">${ic('chevR',13)}</span></button>
+      ${cc.critical?`<span style="font-size:10px;font-weight:600;color:var(--t-urgent-field);background:rgba(0,0,0,.24);border-radius:var(--r-sm);padding:1px 5px;line-height:1.5;font-variant-numeric:tabular-nums">${cc.critical}</span>`:''}
+      ${cc.watch?`<span style="font-size:10px;font-weight:600;color:var(--t-checkin-field);background:rgba(0,0,0,.24);border-radius:var(--r-sm);padding:1px 5px;line-height:1.5;font-variant-numeric:tabular-nums">${cc.watch}</span>`:''}</span>
+     <span style="transform:rotate(${open?90:0}deg);transition:transform .18s cubic-bezier(.22,1,.36,1);opacity:.4;display:flex;color:var(--on-letterhead-2)">${ic('chevR',13)}</span></button>
     ${open?`<div style="padding:3px 0 8px 10px;margin:2px 0 0 18px;border-left:1px solid rgba(255,255,255,.07)">
      ${cat.sub.map(([k,l])=>{const on=S.cv===k;const d=DIMS[k];const cn=d?dimCounts(k):null;
       let badge="";
       if(cn){badge=`<span style="display:flex;gap:3px;margin-left:auto;align-items:center">
-        ${cn.critical?`<span title="Critical" style="width:6px;height:6px;border-radius:var(--r-dot);background:#F04438;box-shadow:0 0 0 2px rgba(240,68,56,.18)"></span>`:''}
-        ${cn.watch?`<span title="Take a look" style="width:6px;height:6px;border-radius:var(--r-dot);background:#F79009;box-shadow:0 0 0 2px rgba(247,144,9,.18)"></span>`:''}
-        ${!cn.critical&&!cn.watch?`<span title="All on track" style="width:6px;height:6px;border-radius:var(--r-dot);background:#17B26A;opacity:.6"></span>`:''}</span>`;}
-      else if(k==="cohort-schedule"||k==="si-cases"){badge=`<span style="margin-left:auto;font-size:9.5px;font-weight:700;color:var(--school-on-accent);background:var(--school-accent);border-radius:var(--r);padding:1px 6px">${needToday()}</span>`;}
-      else if(k==="si-interventions"){const n=S.ivs.filter(i=>i.status==="open").length;badge=`<span style="margin-left:auto;font-size:9.5px;font-weight:700;color:#131829;background:#3FE0BE;border-radius:var(--r);padding:1px 6px">${n}</span>`;}
+        ${cn.critical?`<span title="Critical" style="width:6px;height:6px;border-radius:var(--r-dot);background:var(--t-urgent-field)"></span>`:''}
+        ${cn.watch?`<span title="Take a look" style="width:6px;height:6px;border-radius:var(--r-dot);background:var(--t-checkin-field)"></span>`:''}
+        ${!cn.critical&&!cn.watch?`<span title="All on track" style="width:6px;height:6px;border-radius:var(--r-dot);background:var(--t-good-field);opacity:.75"></span>`:''}</span>`;}
+      else if(k==="cohort-schedule"||k==="si-cases"){badge=`<span style="margin-left:auto;font-size:10.5px;font-weight:700;color:var(--school-on-accent);background:var(--school-accent);border-radius:var(--r);padding:1px 6px">${needToday()}</span>`;}
+      else if(k==="si-interventions"){const n=S.ivs.filter(i=>i.status==="open").length;badge=`<span style="margin-left:auto;font-size:10.5px;font-weight:700;color:var(--school-on-accent);background:var(--school-accent);border-radius:var(--r);padding:1px 6px">${n}</span>`;}
       return `<button class="navitem ${on?'on':''}" data-cnav="${k}" style="padding:7px 10px;font-size:12px;gap:8px">
-       ${on?'<span style="position:absolute;left:-11px;top:50%;transform:translateY(-50%);width:2px;height:16px;background:var(--school-accent);border-radius:var(--r-pill);box-shadow:0 0 8px rgba(18,184,166,.55)"></span>':''}
+       ${on?'<span style="position:absolute;left:-11px;top:50%;transform:translateY(-50%);width:2px;height:16px;background:var(--school-accent);border-radius:var(--r-pill)"></span>':''}
        <span style="flex:1">${l}</span>${badge}</button>`;}).join('')}
     </div>`:''}
    </div>`;}).join('')}
@@ -2880,9 +2966,9 @@ function sidebarC(){
   <div style="margin-top:auto;padding:12px 14px;margin:auto 10px 8px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px">
    <div style="width:32px;height:32px;border-radius:var(--r-pill);background:var(--school-accent);display:grid;place-items:center;color:var(--school-on-accent);font-weight:700;font-family:var(--f-apparatus);font-size:11.5px;flex-shrink:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.2)">RH</div>
    <div style="min-width:0;flex:1">
-    <div style="font-size:12px;font-weight:600;color:#F1F5F9;letter-spacing:-.008em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${SCHOOL.counselor}</div>
+    <div style="font-size:12px;font-weight:600;color:var(--on-letterhead);letter-spacing:-.008em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${SCHOOL.counselor}</div>
     <div style="font-size:10.5px;color:var(--nav-txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${SCHOOL.role}</div></div>
-   <span style="color:#475569;display:flex">${ic('gauge',14)}</span></div>
+   <span style="color:var(--on-letterhead-2);display:flex">${ic('gauge',14)}</span></div>
  </aside>`;}
 
 /* ═══════════ GENERIC RAG BREAKDOWN VIEW ═══════════ */
@@ -3026,7 +3112,7 @@ function sheetRow(c){
    <span class="lg-sub">${sub}</span></button></td>
   ${run.map((w,i)=>`<td class="lg-wk" title="Week ${i+1}: ${RUNLABEL[w]}">${runMark(w,11)}<span class="sr">Week ${i+1}: ${RUNLABEL[w]}</span></td>`).join('')}
   <td class="lg-now">${sweepCell(c)}</td>
-  <td class="lg-last"><span class="fig" style="font-size:11px;color:var(--ink-3)">${c.lastContact}</span></td>
+  <td class="lg-last"><span class="fig" style="font-size:11px;color:var(--ink-3)">${lastContactOf(c)}</span></td>
  </tr>`;}
 
 const SHEET_CHUNK=25;
@@ -3145,7 +3231,7 @@ function sheetRail(){
     <span class="fig" style="font-size:11.5px;font-weight:600;color:var(--ink-2);padding-top:1px">${a.t}</span>
     <span style="min-width:0">
      <span style="display:block;font-size:12.3px;font-weight:600;color:var(--ink);line-height:1.35">${a.title}</span>
-     <span style="display:block;font-family:var(--f-apparatus);font-size:9.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:${K.c};margin-top:3px">${K.l}${a.loc?` · ${a.loc}`:''}</span></span>
+     <span style="display:block;margin-top:3px;color:${K.c}"><span style="font-family:var(--f-apparatus);font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase">${K.l}</span>${a.loc?`<span style="font-size:11px;color:var(--ink-3)"> · ${a.loc}</span>`:''}</span></span>
    </button>`;}).join('')}
  </div>
 
@@ -3276,7 +3362,7 @@ function vTClass(){
   </div>`;}).join(''):`<div style="font-size:12.3px;color:var(--ink-3);line-height:1.6">No students on this register yet.</div>`}
  </div>
  <div class="card" style="padding:16px 18px;margin-top:16px">
-  <h3 class="sechead">${ic('list',13)} What you have logged</h3>
+  <h2 class="sechead">${ic('list',13)} What you have logged</h2>
   ${TFLAGS.filter(f=>f.by.indexOf(surname)>-1).map(f=>{
    var K=FLAG_KINDS.find(function(k){return k.k===f.kind;});
    var routed=f.routed?'<div style="font-size:11px;color:var(--ok);margin-top:5px;display:flex;align-items:center;gap:5px">'+ic('checkC',12)+' '+f.routed+'</div>':'';
@@ -4673,7 +4759,7 @@ function vPathwayProposals(){
       <span style="min-width:0">
        <span style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:4px">
         <b style="font-size:15.5px;color:var(--ink)">${previewTitle}</b>
-        ${i===0?`<span class="stamp" style="font-size:9.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;background:var(--school-accent);color:var(--school-on-accent);padding:2px 7px">Strongest match</span>`:''}
+        ${i===0?`<span class="stamp" style="font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;background:var(--school-accent);color:var(--school-on-accent);padding:2px 7px">Strongest match</span>`:''}
         ${narrowKey?'':`<span class="chip" style="background:var(--stock-3);color:var(--ink-2)">${a.tag}</span>`}</span>
        ${focusLabel?`<span class="railh" style="display:block;margin:0 0 5px">${focusLabel}</span>`:''}
        <span style="display:block;font-size:13px;color:var(--ink-2);line-height:1.6;max-width:62ch">${a.blurb}</span>
@@ -4913,7 +4999,7 @@ function vPathExplorer(navAttr,uniTab,contactTab){
  const c=g(PARENT_ME);
  return `
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <h3 class="sechead">${ic('route',13)} What ${c.name.split(' ')[0]} is doing now</h3>
+  <h2 class="sechead">${ic('route',13)} What ${c.name.split(' ')[0]} is doing now</h2>
   ${c.track==="IB"?`<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--ok-bg);border:1px solid var(--ok-line);border-radius:var(--r);padding:16px">
    <span style="color:var(--ok);display:flex">${ic('checkC',22)}</span>
    <div style="flex:1;min-width:220px"><b style="font-size:14px;color:var(--ok-ink)">${c.name.split(' ')[0]} is on the full IB Diploma.</b>
@@ -4935,7 +5021,7 @@ function vPathExplorer(navAttr,uniTab,contactTab){
   </div>`}
  </div>
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <h3 class="sechead">${ic('layers',13)} IB and AP, side by side</h3>
+  <h2 class="sechead">${ic('layers',13)} IB and AP, side by side</h2>
   <div style="overflow-x:auto"><table class="ibap sheet" style="font-size:12.5px">
    <thead><tr>
     <th style="text-align:left;padding:10px;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-4);border-bottom:1px solid var(--line);width:130px"></th>
@@ -4947,7 +5033,7 @@ function vPathExplorer(navAttr,uniTab,contactTab){
     <td style="padding:12px 10px;line-height:1.6;color:var(--ink-2);vertical-align:top">${r[2]}</td></tr>`).join('')}</tbody></table></div>
  </div>
 <div class="card" style="padding:20px;margin-bottom:16px">
-  <h3 class="sechead">${ic('trend',13)} Where these choices have led</h3>
+  <h2 class="sechead">${ic('trend',13)} Where these choices have led</h2>
   <div style="font-size:12.3px;color:var(--ink-3);line-height:1.6;margin-bottom:18px">Every family faces the same question before finalising subject choices: which combination leads where? Pick a country to see real students from this school: what they took, IB or AP, and which university they now attend.</div>
 
   <div style="font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);margin-bottom:9px">Which country is she considering?</div>
@@ -5059,7 +5145,7 @@ Universities in ${cty==="UK"?"the United Kingdom":cty==="US"?"the United States"
    `;})()}
  </div>
  <div class="card" style="padding:20px">
-  <h3 class="sechead">${ic('alert',13)} The confusion we hear most often</h3>
+  <h2 class="sechead">${ic('alert',13)} The confusion we hear most often</h2>
   ${[["\u201cIs IB harder than AP?\u201d","They are difficult in different ways. IB is broader and more sustained across two years. AP is deeper in fewer subjects and concentrated around exams. Universities do not treat one as automatically stronger."],
      ["\u201cWill AP hurt her chances in the UK?\u201d","Not automatically, but UK universities usually ask for a specific number of APs at specific scores, and the requirement is less standardised. The IB maps more cleanly onto a UK offer."],
      ["\u201cCan she switch now?\u201d","In Grade 12, no. Switching pathway is a Year 11 decision at this school. This page exists so that families with younger children can make that choice with the full picture."],
@@ -5074,7 +5160,7 @@ function vApExamsStandalone(navAttr,contactTab){
  const c=g(PARENT_ME);
  return `
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <h3 class="sechead">${ic('clock',13)} AP exam schedule</h3>
+  <h2 class="sechead">${ic('clock',13)} AP exam schedule</h2>
   <div style="font-size:12.3px;color:var(--ink-3);margin-bottom:16px;line-height:1.6">Unlike the IB Diploma, which is examined once at the end of two years, AP courses are examined individually, and can fall in either Grade 11 or Grade 12. This tracks registration deadlines, exam dates, and when scores are released, for every AP course ${c.name.split(' ')[0]} is taking this year.</div>
   ${AP_EXAMS.map((e,i)=>{const col=e.status==="registered"?"var(--ok)":e.status==="registration open"?"var(--warn)":"var(--crit)";
     const bg=e.status==="registered"?"var(--ok-bg)":e.status==="registration open"?"var(--warn-bg)":"var(--crit-bg)";
@@ -5095,13 +5181,13 @@ function vApExamsStandalone(navAttr,contactTab){
 
 function vHSGuide(){
  return `<div class="card" style="padding:20px;margin-bottom:16px">
-  <h3 class="sechead">${ic('spark',13)} Welcome to ${SCHOOL.short}'s senior school</h3>
+  <h2 class="sechead">${ic('spark',13)} Welcome to ${SCHOOL.short}'s senior school</h2>
   <div style="font-size:12.5px;color:var(--ink-3);line-height:1.65;margin-bottom:8px">Grade 9 is orientation, not application. Nothing here is being tracked toward a university yet. The goal this year is simply understanding how the system works, so that the real decision in Grade 10 (IB or AP) is an informed one rather than a guess.</div>
   <div style="font-size:12.5px;color:var(--ink-3);line-height:1.65">This portal will grow with your child. Right now it explains how grading works and what is on offer. From Grade 10 it becomes a tool for choosing a path. From Grade 11 it starts tracking real progress. By Grade 12 it is centred entirely on applications, offers, and what it takes to keep them.</div>
  </div>
 
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <h3 class="sechead">${ic('trend',13)} How GPA and weighting actually work</h3>
+  <h2 class="sechead">${ic('trend',13)} How GPA and weighting actually work</h2>
   <div style="display:flex;flex-direction:column;gap:14px">
    <div style="border:1px solid var(--line);border-radius:var(--r);padding:14px 16px">
     <b style="font-size:13px">Unweighted GPA</b>
@@ -5119,7 +5205,7 @@ function vHSGuide(){
  </div>
 
  <div class="card" style="padding:20px">
-  <h3 class="sechead">${ic('book',13)} Every subject offered at this school</h3>
+  <h2 class="sechead">${ic('book',13)} Every subject offered at this school</h2>
   <div style="font-size:12.2px;color:var(--ink-3);margin-bottom:14px;line-height:1.6">This is the full catalogue across Grades 9 through 12. Not every combination is available at every level: the IB Diploma requires one subject from most groups, while AP allows any combination. Grade 10 is when this stops being a catalogue and becomes a decision.</div>
   ${COURSE_CATALOG.map(d=>`<div style="margin-bottom:14px">
    <div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--rose-2);margin-bottom:7px">${d.dept}</div>
@@ -5138,7 +5224,7 @@ ${(()=>{const stats=discoveryCohortStats();
    if(!stats.studentsWithDiscovery)return'';
    const archColors={finance:'var(--brand)',tech:'var(--info)',medicine:'var(--crit)',venture:'var(--ok)',design:'var(--rose)'};
    return `<div class="card" style="padding:22px;margin-bottom:20px;background:var(--surface-2)">
-    <h3 class="sechead">${ic('trend',13)} This year's discovery trends</h3>
+    <h2 class="sechead">${ic('trend',13)} This year's discovery trends</h2>
     <div style="font-size:12px;color:var(--ink-3);margin-bottom:16px">${stats.studentsWithDiscovery} student${stats.studentsWithDiscovery>1?'s':''} have been through discovery so far.</div>
     <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
      ${stats.archetypeCounts.map(a=>`<div style="display:flex;align-items:center;gap:10px">
@@ -5383,7 +5469,7 @@ function vPSEditor(c,rec){
   <div style="display:flex;align-items:flex-end;gap:6px;height:50px">
    ${versions.map((v,i)=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
     <div style="width:100%;background:${i===versions.length-1?'var(--brand)':'var(--surface-3)'};border-radius:var(--r-sm) 4px 0 0;height:${Math.max(6,v.score/100*40)}px"></div>
-    <span style="font-size:9.5px;color:var(--ink-4)">v${i+1}</span></div>`).join('')}
+    <span style="font-size:10.5px;color:var(--ink-4)">v${i+1}</span></div>`).join('')}
   </div>
  </div>`:''}
  <div class="card" style="padding:22px">
@@ -5418,7 +5504,7 @@ function vPSResults(c,rec){
  </div>
 
  <div class="card" style="padding:22px;margin-bottom:16px">
-  <h3 class="sechead">${ic('trend',13)} Section-by-section breakdown</h3>
+  <h2 class="sechead">${ic('trend',13)} Section-by-section breakdown</h2>
   <div style="display:flex;flex-direction:column;gap:12px">
    ${a.sections.map((s,i)=>{const prevSection=versions.length>1&&versions[versions.length-2].analysis.sections[i]&&versions[versions.length-2].analysis.sections[i].name===s.name?versions[versions.length-2].analysis.sections[i]:null;
      const sDelta=prevSection?s.score-prevSection.score:null;
@@ -5434,7 +5520,7 @@ function vPSResults(c,rec){
  </div>
 
  <div class="card" style="padding:22px;margin-bottom:16px">
-  <h3 class="sechead">${ic('checkC',13)} What actually gets students in through ${bm.label}</h3>
+  <h2 class="sechead">${ic('checkC',13)} What actually gets students in through ${bm.label}</h2>
   <div style="font-size:12px;color:var(--ink-3);margin-bottom:12px;line-height:1.5">Patterns seen across successful ${bm.region} applications: not rules, but consistent signals.</div>
   ${a.benchmarkFocus.map(f=>`<div style="display:flex;gap:9px;padding:7px 0;border-top:1px solid var(--line)">
    <span style="color:var(--ok);flex-shrink:0;margin-top:1px">${ic('checkC',14)}</span>
@@ -5442,14 +5528,14 @@ function vPSResults(c,rec){
  </div>
 
  <div class="card" style="padding:22px;margin-bottom:16px">
-  <h3 class="sechead">${ic('alert',13)} Common mistakes with ${bm.label} applications</h3>
+  <h2 class="sechead">${ic('alert',13)} Common mistakes with ${bm.label} applications</h2>
   ${a.benchmarkWeak.map(f=>`<div style="display:flex;gap:9px;padding:7px 0;border-top:1px solid var(--line)">
    <span style="color:var(--warn);flex-shrink:0;margin-top:1px">${ic('alert',14)}</span>
    <div style="font-size:12.3px;color:var(--ink-2);line-height:1.5">${f}</div></div>`).join('')}
  </div>
 
  ${a.uniNotes&&a.uniNotes.length?`<div class="card" style="padding:22px;margin-bottom:16px">
-  <h3 class="sechead">${ic('grad',13)} Specific to each university this statement reaches</h3>
+  <h2 class="sechead">${ic('grad',13)} Specific to each university this statement reaches</h2>
   <div style="font-size:12px;color:var(--ink-3);margin-bottom:12px;line-height:1.5">Even though it's one shared statement, here's what each individual admissions team specifically tends to weigh more heavily.</div>
   ${a.uniNotes.map(n=>`<div style="padding:9px 0;border-top:1px solid var(--line)">
    <b style="font-size:12.5px">${n.uni}</b>
@@ -5457,7 +5543,7 @@ function vPSResults(c,rec){
  </div>`:''}
 
  ${alumniAtTheseUnis.length?`<div class="card" style="padding:22px;margin-bottom:16px">
-  <h3 class="sechead">${ic('users',13)} Real students from this school in this group</h3>
+  <h2 class="sechead">${ic('users',13)} Real students from this school in this group</h2>
   <div style="font-size:12px;color:var(--ink-3);margin-bottom:12px;line-height:1.5">${alumniAtTheseUnis.length} student${alumniAtTheseUnis.length>1?'s':''} from ${SCHOOL.short} are already at one of these universities.</div>
   ${alumniAtTheseUnis.slice(0,3).map(al=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--line)">
    ${av(al.name.split(' ').map(w=>w[0]).join(''),"student",24,7)}
@@ -5519,7 +5605,7 @@ function vPSReviews(){
 ${(()=>{const stats=psCohortStats();
    if(!stats)return'';
    return `<div class="card" style="padding:22px;margin-bottom:20px;background:var(--surface-2)">
-    <h3 class="sechead">${ic('trend',13)} This year's personal statement patterns</h3>
+    <h2 class="sechead">${ic('trend',13)} This year's personal statement patterns</h2>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">
      <div style="background:var(--surface);border-radius:var(--r);padding:12px 14px">
       <div style="font-size:22px;font-weight:700" class="stamp">${stats.total}</div>
@@ -5595,18 +5681,18 @@ function vParent(){
    <div style="font-size:12.5px;color:var(--ink-3);margin-top:2px">${c.yr}${c.track&&c.track!=="undecided"?" · "+(c.track==="IB"?"IB Diploma":c.track+" track"):""} · Goal: ${c.goal}</div></div>
   ${chip("On track","var(--ok)","var(--ok-bg)","checkC")}
  </div>
- <div style="display:grid;grid-template-columns:repeat(${pg<=10?2:pg===11?3:4},1fr);gap:12px;margin-bottom:16px">
-  ${(()=>{
-    const trackTile=c.track==="IB"?["Predicted total","39 / 45","var(--ok)"]
-      :c.track==="AP"?["AP exams this year","4","var(--ok)"]
-      :["Path","Deciding IB or AP","var(--ink)"];
-    if(pg===9)return[["Attendance",attTxt,"var(--ok)"],["Subjects this term","7","var(--ink)"]];
-    if(pg===10)return[["Attendance",attTxt,"var(--ok)"],trackTile];
-    if(pg===11)return[["Attendance",attTxt,"var(--ok)"],trackTile,["Universities researched",c.uni.targets.length,"var(--ink)"]];
-    return[["Attendance",attTxt,"var(--ok)"],trackTile,["Universities",c.uni.targets.length,"var(--ink)"],["Eligible for","4 of 4","var(--ok)"]];
-   })()
-   .map(x=>`<div class="card" style="padding:16px 18px"><div class="stamp" style="font-size:24px;font-weight:600;color:${x[2]};line-height:1">${x[1]}</div>
-   <div style="font-size:11.5px;color:var(--ink-3);margin-top:4px">${x[0]}</div></div>`).join('')}</div>
+ ${tally((()=>{
+    const first=c.name.split(" ")[0];
+    const trackTile=c.track==="IB"?["Predicted total",c.pred&&c.pred!=="—"?c.pred.replace("/"," / "):"—",`Forecast by ${first}'s teachers`]
+      :c.track==="AP"?["AP exams this year",AP_EXAMS.length,"Registered or opening soon"]
+      :["Path","Deciding IB or AP","No commitment needed yet"];
+    const att=["Attendance",attTxt,`Against ${first}'s own record`];
+    if(pg===9)return[att,["Subjects this term",(SUBJECTS_BY[c.id]||[]).length||7,"Across the timetable"]];
+    if(pg===10)return[att,trackTile];
+    if(pg===11)return[att,trackTile,["Universities researched",c.uni.targets.length,"On the list so far"]];
+    return[att,trackTile,["Universities",c.uni.targets.length,"On the list"],
+     ["Reaches on the list",c.uni.targets.filter(t=>t.b==="reach").length,"Ambitious by design, not a warning"]];
+   })())}
 
  ${(()=>{const approvedList=S.approvedArchetypes;
    if(!approvedList||!approvedList.length)return'';
@@ -5690,10 +5776,10 @@ function vParent(){
 
  <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:14px;margin-bottom:16px;align-items:start">
   <div class="card" style="padding:20px">
-   <h3 class="sechead">${ic('clock',13)} Attendance this month</h3>
+   <h2 class="sechead">${ic('clock',13)} Attendance this month</h2>
    <div style="font-size:12px;color:var(--ink-3);margin-bottom:14px;line-height:1.5">Sun–Thu school week. ${(()=>{const days=buildNovemberCalendar();const lateN=days.filter(x=>x.status==="late").length;return c.name.split(" ")[0]+(lateN?" has attended every school day this month except "+lateN+", both with a short late arrival.":" has attended every school day this month.");})()}</div>
    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center;margin-bottom:10px">
-    ${["S","M","T","W","T","F","S"].map(d=>`<div style="font-size:9.5px;font-weight:700;color:var(--ink-4);letter-spacing:.04em;padding:3px 0">${d}</div>`).join('')}
+    ${["S","M","T","W","T","F","S"].map(d=>`<div style="font-size:10.5px;font-weight:700;color:var(--ink-4);letter-spacing:.04em;padding:3px 0">${d}</div>`).join('')}
     ${(()=>{const days=buildNovemberCalendar();const firstDow=days[0].dow;
       const blanks=Array(firstDow).fill('<div></div>').join('');
       const cells=days.map(x=>{
@@ -5713,7 +5799,7 @@ function vParent(){
    </div>
   </div>
   <div class="card" style="padding:20px">
-   <h3 class="sechead">${ic('users',13)} Mentor</h3>
+   <h2 class="sechead">${ic('users',13)} Mentor</h2>
    ${c.id==="s3"?`<div style="display:flex;gap:11px;align-items:flex-start;margin-bottom:12px">
     ${av("HR","mentor",42)}
     <div style="min-width:0"><b style="font-size:13.5px">${PARENT_MENTOR.name}</b>
@@ -5727,7 +5813,7 @@ function vParent(){
  </div>
 
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <h3 class="sechead">${ic('star',13)} What ${c.name.split(" ")[0]} has been achieving</h3>
+  <h2 class="sechead">${ic('star',13)} What ${c.name.split(" ")[0]} has been achieving</h2>
   ${(()=>{const achList=PARENT_ACHIEVEMENTS_BY_GRADE[S.previewGrade||12]||PARENT_ACHIEVEMENTS_BY_GRADE[12];
    return achList.map((a,i)=>`<div style="display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:${i<achList.length-1?'1px solid var(--line)':'none'}">
    <div style="width:30px;height:30px;border-radius:var(--r);background:var(--rose-bg);color:var(--rose);display:grid;place-items:center;flex-shrink:0">${ic(a.icon,15)}</div>
@@ -5737,14 +5823,14 @@ function vParent(){
  </div>
 
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <h3 class="sechead">${ic('clock',13)} What is coming up</h3>
+  <h2 class="sechead">${ic('clock',13)} What is coming up</h2>
   ${(pg===12?[["UCAS submission","18 days","var(--warn)"],["Personal statement final draft","This week","var(--warn)"],["Semester 1 transcript issued","20 January","var(--ink-3)"],["Parents' evening","5 December","var(--ink-3)"]]
      :pg===11?[["Semester 1 transcript issued","20 January","var(--ink-3)"],["Parents' evening","5 December","var(--ink-3)"],["University shortlist review with counselor","Next scheduled meeting","var(--ink-3)"]]
      :[["Semester 1 transcript issued","20 January","var(--ink-3)"],["Parents' evening","5 December","var(--ink-3)"],["Subject confirmation deadline","End of this term","var(--warn)"]])
    .map(x=>`<div class="kv"><span>${x[0]}</span><b style="color:${x[2]}">${x[1]}</b></div>`).join('')}
   <button class="btn btn-p btn-sm" style="margin-top:14px" data-pv="meetings">${ic('brief',13)} Book a meeting with Ms. Haddad</button></div>
  <div class="card" style="padding:20px">
-  <h3 class="sechead">${ic('shield',13)} What you can and cannot see</h3>
+  <h2 class="sechead">${ic('shield',13)} What you can and cannot see</h2>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 20px">
    <div>${["Attendance and punctuality","Working and predicted grades","Semesterly transcripts","University list, requirements and deadlines","Messages from the counselor"].map(x=>`<div style="display:flex;gap:8px;padding:7px 0;font-size:12.3px;color:var(--ink-2)">${ic('checkC',14)}<span>${x}</span></div>`).join('')}</div>
    <div>${["Private counseling notes","Teacher concern wording","Internal signal analysis","Other students' information"].map(x=>`<div style="display:flex;gap:8px;padding:7px 0;font-size:12.3px;color:var(--ink-4)">${ic('x',14)}<span>${x}</span></div>`).join('')}</div>
@@ -5781,7 +5867,7 @@ function vParent(){
 
  ${pv==="grades"?(c.track==="IB"?`
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <h3 class="sechead">${ic('doc',13)} Transcripts</h3>
+  <h2 class="sechead">${ic('doc',13)} Transcripts</h2>
   <div style="font-size:12.3px;color:var(--ink-3);margin-bottom:14px;line-height:1.55">Issued every semester and available here permanently. The current transcript includes the predicted grades teachers have released for university applications.</div>
   ${TRANSCRIPTS.map(t=>`<div style="display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line)">
    <div><b style="font-size:13px">${t.term}</b>
@@ -5794,7 +5880,7 @@ function vParent(){
   </div>`).join('')}
  </div>
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <h3 class="sechead">${ic('book',13)} Subjects, working grades and predictions</h3>
+  <h2 class="sechead">${ic('book',13)} Subjects, working grades and predictions</h2>
   <div style="font-size:12.3px;color:var(--ink-3);margin-bottom:14px;line-height:1.55">The working grade is where ${c.name.split(' ')[0]} is now. The predicted grade is what a teacher has formally submitted to universities. Universities make their offers against the prediction.</div>
   <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12.5px">
    <thead><tr>${["Subject","Level","Working","Predicted","Teacher"].map((x,i)=>`<th style="text-align:${i>1&&i<4?'center':'left'};padding:9px 10px;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-4);border-bottom:1px solid var(--line)">${x}</th>`).join('')}</tr></thead>
@@ -5811,11 +5897,11 @@ function vParent(){
    <b>Predicted total: 39 points out of 45.</b> Every university on ${c.name.split(' ')[0]}'s list asks for 38 or fewer, so on current predictions ${c.name.split(' ')[0]} is eligible everywhere applied.</div>`:''}
  </div>`:`
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <h3 class="sechead">${ic('doc',13)} Transcripts</h3>
+  <h2 class="sechead">${ic('doc',13)} Transcripts</h2>
   <div style="font-size:12.3px;color:var(--ink-3);line-height:1.6">Issued every semester and available here permanently once formal reporting periods begin.</div>
  </div>
  <div class="card" style="padding:20px">
-  <h3 class="sechead">${ic('book',13)} Subjects and course grades</h3>
+  <h2 class="sechead">${ic('book',13)} Subjects and course grades</h2>
   <div style="font-size:12.3px;color:var(--ink-3);line-height:1.65;margin-bottom:12px">${c.name.split(' ')[0]} is on the AP route, where each course is graded and examined individually rather than as a single diploma total, so there is no combined predicted score the way there is on the IB Diploma.</div>
   <div style="display:flex;gap:10px;align-items:flex-start;background:var(--info-bg);border:1px solid #B2DDFF;border-radius:var(--r);padding:13px 15px">
    ${ic('alert',15)}<div style="font-size:12px;color:var(--info-ink);line-height:1.55">For exam dates, registration deadlines and score release for each AP course, see the AP Exams tab.</div></div>
@@ -5897,7 +5983,7 @@ function vParent(){
 
  ${pv==="meetings"?`
  <div class="card" style="padding:22px;margin-bottom:16px">
-  <h3 class="sechead">${ic('brief',13)} Request a meeting with Ms. Haddad</h3>
+  <h2 class="sechead">${ic('brief',13)} Request a meeting with Ms. Haddad</h2>
   <div style="font-size:12.5px;color:var(--ink-3);line-height:1.6;margin-bottom:16px">${"Choose what you would like to discuss and add a sentence or two. The counselor receives that note together with everything relevant about "+c.name.split(" ")[0]+" before the meeting, so no one spends the first ten minutes looking things up."}</div>
   <div style="font-size:11.5px;font-weight:600;color:var(--ink-2);margin-bottom:8px">What would you like to discuss?</div>
   <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
@@ -5918,7 +6004,7 @@ function vParent(){
  </div>
 
  ${S.pmTopic?`<div class="card" style="padding:20px;margin-bottom:16px;background:var(--surface-2)">
-  <h3 class="sechead">${ic('spark',13)} What Ms. Haddad will receive before the meeting</h3>
+  <h2 class="sechead">${ic('spark',13)} What Ms. Haddad will receive before the meeting</h2>
   <div style="font-size:12.3px;color:var(--ink-3);line-height:1.6;margin-bottom:14px">This is assembled automatically. She will not need to open a single other document.</div>
   ${(()=>{const t=(MEETING_TOPICS.find(x=>x[0]===S.pmTopic)||[])[1];
    const fn=c.name.split(" ")[0];
@@ -5936,7 +6022,7 @@ function vParent(){
  </div>`:''}
 
  <div class="card" style="padding:20px">
-  <h3 class="sechead">${ic('clock',13)} Previous meetings</h3>
+  <h2 class="sechead">${ic('clock',13)} Previous meetings</h2>
   ${PARENT_MEETINGS.map(m=>`<div style="padding:13px 0;border-bottom:1px solid var(--line)">
    <div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap">
     <b style="font-size:13px">${m.topic}</b><span style="font-size:11.5px;color:var(--ink-3)">${m.when} · ${m.who}</span></div>
@@ -6026,12 +6112,11 @@ function vStuProgress(){
  const psTile=psRec?{v:"Draft "+psRec.versions.length,c:"var(--warn)"}:{v:"Not started",c:"var(--ink-3)"};
  return `<div class="fade">
  ${head("How I'm actually doing","Your grades, attendance and trajectory, the same information your counselor sees, so there are no surprises.")}
- <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">
-  ${[["Attendance",attTxt,"var(--ok)"],[c.track==="IB"?"Predicted total":c.track==="AP"?"AP exams this year":"Predicted",predDisplay,"var(--ink)"],["Statement",psTile.v,psTile.c]]
-   .map(x=>`<div class="card" style="padding:16px 18px"><div class="stamp" style="font-size:24px;font-weight:600;color:${x[2]};line-height:1">${x[1]}</div>
-   <div style="font-size:11.5px;color:var(--ink-3);margin-top:4px">${x[0]}</div></div>`).join('')}</div>
+ ${tally([["Attendance",attTxt,"Against your own record, not the year group"],
+  [c.track==="IB"?"Predicted total":c.track==="AP"?"AP exams this year":"Predicted",predDisplay,"What your teachers currently forecast"],
+  ["Statement",psTile.v,"In the Personal Statement Lab"]])}
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <h3 class="sechead">${ic('book',13)} My subjects</h3>
+  <h2 class="sechead">${ic('book',13)} My subjects</h2>
   ${c.track==="IB"?(subs?
    subs.map(s=>`<div style="display:grid;grid-template-columns:1fr 60px 90px;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)">
     <b style="font-size:13px">${s.s}<span style="font-weight:400;color:var(--ink-3)"> · ${s.lv}</span></b><span style="font-size:15px;font-weight:600;color:${s.pred>=6?'var(--ok)':s.pred>=5?'var(--warn)':'var(--crit)'}">${s.pred}</span>
@@ -6046,11 +6131,11 @@ function vStuProgress(){
   :moment({art:"fork",title:"No subject track chosen yet",body:"This fills in once IB or AP is decided. There's no wrong choice, only a better-informed one."})}
  </div>
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <h3 class="sechead">${ic('trend',13)} My attendance</h3>
+  <h2 class="sechead">${ic('trend',13)} My attendance</h2>
   ${c.baselines.attendance?baseChart(c.baselines.attendance):''}
   <div style="font-size:11.5px;color:var(--ink-3);margin-top:8px">The band is your own usual range, and you are inside it.</div></div>
  <div class="card" style="padding:20px">
-  <h3 class="sechead">${ic('msg',13)} Tell your counselor something</h3>
+  <h2 class="sechead">${ic('msg',13)} Tell your counselor something</h2>
   <div style="font-size:12.3px;color:var(--ink-3);margin-bottom:12px;line-height:1.5">Anything you want Ms. Haddad to know before your next meeting. Only she sees this, not your teachers and not your parents.</div>
   ${SREFLECT.map(r=>`<div style="background:var(--stock-3);border-left:1px solid var(--rule-2);padding:12px 14px;margin-bottom:9px">
    <div style="font-size:12.5px;color:var(--ink);line-height:1.55">${r.txt}</div>
@@ -6098,7 +6183,7 @@ function vFlagInbox(){
 function parentCard(c){
  const p=parentOf(c.id);
  return `<div class="card" style="padding:18px 20px">
-  <h3 class="sechead">${ic('heart',13)} Parent / guardian</h3>
+  <h2 class="sechead">${ic('heart',13)} Parent / guardian</h2>
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:13px">
    ${av(p.name.split(' ').slice(-1)[0].slice(0,2).toUpperCase(),"parent",38,11)}
    <div style="min-width:0"><b style="font-size:13.5px">${p.name}</b>
@@ -6321,7 +6406,7 @@ function vStuMentors(){
    ${m.path.map((p,j)=>`<span style="font-size:10.3px;background:var(--stock);border:1px solid var(--rule-2);padding:2px 7px;color:var(--ink-2)">${p}</span>${j<m.path.length-1?`<span style="color:var(--ink-4);display:flex">${ic('arrowR',10)}</span>`:''}`).join('')}</div>
   <div style="font-size:12.2px;color:var(--ink-2);line-height:1.5;margin-bottom:13px">${m.bio}</div>
   <div style="display:flex;align-items:center;gap:14px;padding-top:13px;border-top:1px solid var(--rule)">
-   <div><b class="fig" style="font-size:13px;color:var(--ink)">${m.s}</b><div style="font-size:9.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em">conversations with students here</div></div>
+   <div><b class="fig" style="font-size:13px;color:var(--ink)">${m.s}</b><div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em">conversations with students here</div></div>
    <button class="btn btn-p btn-sm" data-book="${m.id}" style="margin-left:auto;flex-shrink:0">Ask for an introduction</button></div>
  </div>`).join('')}
  </div></div>`;}
@@ -6375,13 +6460,13 @@ function vMentorMentees(){
   <div style="display:flex;gap:12px;margin-bottom:13px">${av(m.av,"student",44)}
    <div><b style="font-size:14.5px">${m.n}</b><div style="font-size:12px;color:var(--inkMute)">Goal: ${m.goal}</div></div></div>
   <div style="display:flex;align-items:center;gap:15px">
-   <div><b style="font-size:14px">${m.s}</b><div style="font-size:9.5px;color:var(--inkMute);text-transform:uppercase">${m.s===1?'session':'sessions'}</div></div>
-   <div style="flex:1"><b style="font-size:12.3px">${m.next}</b><div style="font-size:9.5px;color:var(--inkMute);text-transform:uppercase">next focus</div></div>
+   <div><b style="font-size:14px">${m.s}</b><div style="font-size:10.5px;color:var(--inkMute);text-transform:uppercase">${m.s===1?'session':'sessions'}</div></div>
+   <div style="flex:1"><b style="font-size:12.3px">${m.next}</b><div style="font-size:10.5px;color:var(--inkMute);text-transform:uppercase">next focus</div></div>
    <button class="btn btn-p btn-sm" data-toast="Opening session workspace">Message</button></div></div>`).join('')}
  </div>
- <div class="card" style="padding:20px"><h3 class="sechead">${ic('trend',13)} Your impact</h3>
-  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px">
-  ${[["34","Sessions delivered"],["4.9","Average rating"]].map(([v,l])=>`<div><div class="stamp" style="font-size:27px;font-weight:600;color:var(--teal)">${v}</div><div style="font-size:12px;color:var(--inkSoft)">${l}</div></div>`).join('')}</div></div>
+ ${tally([["Students",ms.length,"Matched by the school, not by a marketplace"],
+  ["Sessions so far",ms.reduce((a,m)=>a+m.s,0),"Logged against the two files above"],
+  ["Cost to you","None","Nobody is billing you, and nobody is billing them"]])}
  </div>`;}
 /* ═══════════ MODALS ═══════════ */
 function modalEl(){
@@ -6401,7 +6486,7 @@ function modalEl(){
   return `<div class="modalbg" data-mbg="1"><div class="modal pop" style="padding:0;overflow:hidden">
    <div style="background:var(--navy);color:#fff;padding:20px 24px">
     ${mcloseBtn('dark')}
-    <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#6FE0CC;font-weight:700;margin-bottom:7px">60-second meeting brief · AI-generated</div>
+    <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--on-letterhead-2);font-weight:700;margin-bottom:7px">60-second meeting brief · AI-generated</div>
     <div class="stamp" style="font-size:21px;font-weight:600">${c.name}</div>
     <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:3px">${c.yr} · ${c.goal} · Predicted ${c.pred}</div></div>
    <div style="padding:22px 24px">
@@ -6411,8 +6496,8 @@ function modalEl(){
     ${c.context.map(x=>`<div style="display:flex;gap:8px;padding:4px 0;font-size:12.3px;color:var(--inkSoft)">${ic('checkC',13)}<span>${x}</span></div>`).join('')}
     <div style="background:var(--tealSoft);border-radius:var(--r);padding:14px 16px;margin-top:15px">
      <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--tealDeep);font-weight:700;margin-bottom:6px">Suggested opening</div>
-     <div class="prose" style="font-size:14.5px;color:#07553f;line-height:1.6;font-style:italic">"I wanted to check in — how have the last couple of weeks been for you?"</div>
-     <div style="font-size:11.3px;color:#07553f;margin-top:8px;line-height:1.5">Open-ended and low-stakes. Do not lead with the grade, and do not speculate on cause.</div></div>
+     <div class="prose" style="font-size:14.5px;color:var(--t-good);line-height:1.6;font-style:italic">"I wanted to check in — how have the last couple of weeks been for you?"</div>
+     <div style="font-size:11.3px;color:var(--t-good);margin-top:8px;line-height:1.5">Open-ended and low-stakes. Do not lead with the grade, and do not speculate on cause.</div></div>
     <button class="btn btn-p" data-mclose="1" style="width:100%;margin-top:16px">Got it</button>
    </div></div></div>`;}
  if(m.type==="book"){const mt=MENTORS.find(x=>x.id===m.id);const slots=["Wed 3:00pm","Wed 5:00pm","Thu 4:00pm","Thu 6:00pm","Sat 11:00am","Sat 2:00pm"];
@@ -6480,7 +6565,7 @@ function draw(){
   if(S.open)body2=vCase(g(S.open));
   else if(S.fileId)body2=vFileOne(g(S.fileId));
   else if(DIMS[S.cv])body2=vDim(S.cv);
-  else if(S.cv==="cohort"||S.cv==="today"||S.cv==="files")body2=vSheet();
+  else if(S.cv==="cohort"||S.cv==="today")body2=vSheet();
   /* "Today" and "All students" were two lists of the same 87 people, and the
      counselor had to hold both. They are one sheet; the old ids still route so
      a bookmark, the palette or a stale deep link lands somewhere real. */
@@ -6494,6 +6579,9 @@ function draw(){
   else if(S.cv==="psreviews")body2=vPSReviews();
   else if(S.cv==="app-letter")body2=vLetter();
   else if(S.cv==="files")body2=vFiles();
+  else if(S.cv==="si-why")body2=vIntel();
+  else if(S.cv==="app-season")body2=vUni();
+  else if(S.cv==="app-flow")body2=vFlow();
   else if(S.cv==="copilot")body2=vCopilot();
   else if(S.cv==="prove")body2=vProve();
   else if(S.cv==="arch")body2=vArch();
@@ -6514,10 +6602,14 @@ function draw(){
         <span style="width:5px;height:5px;border-radius:var(--r-dot);background:var(--ok);display:inline-block"></span>Engine swept 07:04</span></div>
      </div>
      <div style="display:flex;align-items:center;gap:9px;flex-shrink:0">
-      <div style="display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r);padding:0 11px;height:36px;width:236px;box-shadow:var(--sh-xs)">
-       <span style="color:var(--ink-4);display:flex">${ic('search',15)}</span>
-       <input placeholder="Search students…" style="border:none;background:none;font-size:13px;width:100%;height:100%">
-       <kbd style="font-family:inherit;font-size:10px;color:var(--ink-4);background:var(--surface-3);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:1px 5px;flex-shrink:0">⌘K</kbd></div>
+      ${/* The same dead input shell() already retired, missed here because the
+           counselor's topbar is inline rather than going through shell(). It
+           had no handler of any kind: typing in the primary persona's most
+           obvious control did nothing at all. Now it opens the ⌘K palette,
+           which is already scoped to what each role may search. */''}
+      <button class="topsearch" data-palopener="1" style="width:236px" aria-label="Search students" aria-keyshortcuts="Meta+K">
+       ${ic('search',14)}<span style="flex:1;text-align:left">Search students</span>
+       <kbd style="font-family:var(--f-figure);font-size:10px;color:var(--ink-3);background:var(--stock-3);border:1px solid var(--rule-2);border-radius:var(--r-sm);padding:1px 5px;flex-shrink:0">⌘K</kbd></button>
       <button class="btn btn-g btn-sm" aria-label="Notifications" style="height:36px;padding:0 11px" data-toast="Notifications are up to date">${ic('inbox',15)}</button>
      </div>
     </div>
