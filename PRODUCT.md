@@ -8,7 +8,7 @@ web
 
 ## Users
 
-**Primary: the school counselor.** At the demo school she is Head of University Counseling, carrying a caseload of 87 students across Grades 9–12. Her situation is structural triage under scarcity: she cannot give 87 students equal attention, so her real job every morning is deciding *who needs her today* and defending that decision later. She works in bursts between meetings, on a laptop, often with a student or parent already sitting in front of her.
+**Primary: the school counselor.** At the demo school she is a High School Counselor carrying a caseload of 87 students across Grades 9–12, one of a team of four who split the high school between them. Her situation is structural triage under scarcity: she cannot give 87 students equal attention, so her real job every morning is deciding *who needs her today* and defending that decision later. She works in bursts between meetings, on a laptop, often with a student or parent already sitting in front of her.
 
 Four secondary audiences, each with a genuinely different job — not the same dashboard relabeled:
 
@@ -37,7 +37,20 @@ Competitive frame: Naviance is the incumbent schools complain about; Scoir is th
 - The application cycle is deadline-shaped and unforgiving; letters, transcripts, and offers all have dates that cannot slip.
 - Safeguarding escalation to a named Designated Safeguarding Lead is a real, consequential, logged act — not a UI state.
 - Evidence chains matter: every signal must show what fed it, because the counselor has to justify her attention to parents and leadership.
-- Academic data at pilot arrives as a termly CSV exported from the school's SIS (iSAMS / PowerSchool / Veracross shaped). No live SIS integration.
+- Academic data at pilot arrives as a termly CSV exported from the school's SIS (iSAMS / PowerSchool / Veracross shaped). No live SIS integration. **ACS runs Veracross**, so the ACS rendition names Veracross; the SIS name is a school-record field (`sis`), not a hardcoded string.
+
+### Verified ACS facts, checked against their own published sources 2026-09-04
+
+Checked because the demo carries their name, and a school notices its own vocabulary faster than it notices a feature. Re-verify before quoting any of it back to them.
+
+- **Roughly 1,200 to 1,315 students, KG1 through Grade 12**, from 80+ countries. The school's own site says ~1,315; the US State Department 2026 fact sheet, using figures the school supplied in April 2026, says ~1,200. The Saadiyat campus is built for up to 1,550.
+- **Nine counselors: four High School, three Middle School, two Elementary.** All are titled simply "Counselor" or "HS Counselor". **There is no Head of University Counseling and no separate university counseling department** — the High School Counseling Team does that work alongside everything else. The earlier persona title was invented and has been corrected.
+- No published caseload or ratio. But at a senior cohort of roughly 80 to 95, Grades 9–12 is about 320 to 380 students across four counselors, so **the demo's caseload of 87 is close to their real per-counselor load.** That figure should stay.
+- **The safeguarding role is Child Protection Officer**, not Designated Safeguarding Lead. Their Student Safeguarding and Child Protection Handbook names a "Lead Child Protection Officer" and routes concerns through the HS Principal and HS Counselors. It uses DSL nowhere. DSL is British-school vocabulary and has been moved to the unbranded rendition only.
+- **ACS offers the IB Diploma Programme, Advanced Placement, and its own ACS High School courses.** The IB-versus-AP surface is therefore well matched, but the real choice is three ways, not two. The product still models it as a binary plus "undecided".
+- The school publishes that 95% of each senior class attends university and 89% are accepted to their top choice. **These are ACS's claims, not ours.** Do not restate them as CAROS outcomes.
+
+No real ACS student, family or staff member is represented anywhere in the build. The counselor, the safeguarding lead and every family are fictional, and stay fictional.
 - Four destination systems are modelled: UK, US, UAE, Canada. Canada is deliberate — domestic-vs-international tuition by passport is the clearest demonstration of the fee-status logic.
 
 ## Capabilities and Constraints

@@ -959,7 +959,13 @@ const SCHOOLS={
  acs:{
   id:"acs", real:true,
   name:"American Community School of Abu Dhabi", short:"ACS Abu Dhabi", initials:"ACS",
-  counselor:"Ms. Reem Haddad", role:"Head of University Counseling", dsl:"Mr. J. Okonkwo (DSL)",
+  counselor:"Ms. Reem Haddad", role:"High School Counselor",
+  safeLead:"Mr. J. Okonkwo (Child Protection Officer)",
+  /* ACS's own vocabulary, taken from their published staff directory and
+     safeguarding handbook: counselors are "HS Counselor", the safeguarding
+     role is Child Protection Officer, and the SIS is Veracross. A school
+     notices its own words faster than it notices a feature. */
+  dept:"High School Counseling", sis:"Veracross", safeguarding:"Child Protection Officer",
   /* Read from the school's own production stylesheet, not from a brand guide.
      primary 9.25:1 on the stock and 8.34:1 on the band; white on it is 9.80,
      which is also what fixes the 2.63:1 avatar failure measured on 2026-09-02.
@@ -974,7 +980,9 @@ const SCHOOLS={
  demo:{
   id:"demo", real:false,
   name:"Meridian International School", short:"Meridian", initials:"MIS",
-  counselor:"Ms. Reem Haddad", role:"Head of University Counseling", dsl:"Mr. J. Okonkwo (DSL)",
+  counselor:"Ms. Reem Haddad", role:"Head of University Counseling",
+  safeLead:"Mr. J. Okonkwo (DSL)",
+  dept:"University Counseling", sis:"iSAMS", safeguarding:"Designated Safeguarding Lead",
   brand:{primary:"#1F3A5F", primaryDeep:"#152740", accent:"#C9A227"}
  }
 };
@@ -1085,6 +1093,9 @@ function liftForDark(hex,against){
  return '#FFFFFF';
 }
 try{ applySchool(new URLSearchParams(location.search).get('school')||'acs'); }catch(e){ applySchool('acs'); }
+/* Read once, after the school is applied and before the evidence data below
+   interpolates them. The school switcher only runs at load, so this is safe. */
+const SIS=SCHOOL.sis, SAFE=SCHOOL.safeguarding;
 /* ══════════ THE RUN AND THE BREAK ══════════
    The product's thesis, reduced to the one primitive the sheet is built from.
    A week is KEPT when every baseline that student has sits inside that
@@ -1139,9 +1150,9 @@ const STUDENTS=[
   attendance:{label:"Punctuality (on-time %)",band:[94,100],series:[100,100,98,100,96,88,76,70],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:5},
   engagement:{label:"Platform engagement",band:[60,100],series:[88,84,90,77,61,42,30,18],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"",anomalyFrom:4}},
  evidence:[
-  {dom:"academic",src:"Gradebook · iSAMS",date:"12 Nov",txt:"Mathematics assessment recorded 41%, 49 points below his personal 8-week mean of 90%.",w:34},
-  {dom:"academic",src:"Gradebook · iSAMS",date:"5 Nov",txt:"Mathematics 74%, his first result outside his personal band in 22 months.",w:14},
-  {dom:"attendance",src:"Attendance · iSAMS",date:"4–13 Nov",txt:"Three late arrivals in ten school days; personal baseline is 0–1 per term.",w:19},
+  {dom:"academic",src:`Gradebook · ${SIS}`,date:"12 Nov",txt:"Mathematics assessment recorded 41%, 49 points below his personal 8-week mean of 90%.",w:34},
+  {dom:"academic",src:`Gradebook · ${SIS}`,date:"5 Nov",txt:"Mathematics 74%, his first result outside his personal band in 22 months.",w:14},
+  {dom:"attendance",src:`Attendance · ${SIS}`,date:"4–13 Nov",txt:"Three late arrivals in ten school days; personal baseline is 0–1 per term.",w:19},
   {dom:"teacher",src:"Teacher concern · Mr. Davies",date:"11 Nov",txt:"Structured concern submitted: unusually withdrawn in class, not engaging with group work, appears tired.",w:22},
   {dom:"engagement",src:"CAROS platform",date:"Rolling 14d",txt:"Platform engagement fell 79% versus his own six-week average; two abandoned tasks.",w:11}],
  action:{what:"Private counselor check-in",when:"Within 2 school days",why:"Cross-domain change with independent teacher corroboration. Ahmed has not requested support and has not self-reported."},
@@ -1161,7 +1172,7 @@ const STUDENTS=[
   {dom:"engagement",src:"CAROS platform",date:"Rolling 21d",txt:"No login for 21 consecutive days. Personal baseline is 4.2 logins per week across the previous 14 months.",w:44},
   {dom:"university",src:"University Journey OS",date:"22 Oct",txt:"Personal statement stalled at draft 1 (35%). No edits in 21 days.",w:26},
   {dom:"university",src:"Deadline radar",date:"Live",txt:"UCAT booking not confirmed; window closes in 9 days. Medicine deadlines are earliest in the cycle.",w:22},
-  {dom:"positive",src:"Gradebook · iSAMS",date:"Rolling",txt:"Attainment stable at A*/A*. No academic deterioration detected.",w:-8}],
+  {dom:"positive",src:`Gradebook · ${SIS}`,date:"Rolling",txt:"Attainment stable at A*/A*. No academic deterioration detected.",w:-8}],
  action:{what:"Short, encouraging check-in to confirm the UCAT booking",when:"Within 2 school days",why:"Time-bound external deadline. Low-pressure contact is proportionate; nothing indicates academic risk."},
  uni:{targets:[{u:"UCL Medical School",c:"MBBS",p:58,b:"reach"},{u:"King's College London",c:"MBBS",p:64,b:"match"},{u:"Khalifa University",c:"MBBS",p:79,b:"match"}],
   flags:["UCAT booking unconfirmed","Personal statement stalled 21 days"]},
@@ -1193,8 +1204,8 @@ const STUDENTS=[
  baselines:{academic:{label:"Physics (working grade)",band:[78,92],series:[86,88,84,90,87,85,88,74],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:7},
   engagement:{label:"Platform engagement",band:[55,95],series:[70,74,68,80,72,76,71,73],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"",anomalyFrom:99}},
  evidence:[
-  {dom:"academic",src:"Gradebook · iSAMS",date:"10 Nov",txt:"Physics mock 74%, six points below his personal band floor of 78%. Single occurrence.",w:22},
-  {dom:"positive",src:"Attendance · iSAMS",date:"Rolling",txt:"Attendance 99%; no punctuality change.",w:-10},
+  {dom:"academic",src:`Gradebook · ${SIS}`,date:"10 Nov",txt:"Physics mock 74%, six points below his personal band floor of 78%. Single occurrence.",w:22},
+  {dom:"positive",src:`Attendance · ${SIS}`,date:"Rolling",txt:"Attendance 99%; no punctuality change.",w:-10},
   {dom:"positive",src:"CAROS platform",date:"Yesterday",txt:"Active and progressing his personal statement.",w:-8}],
  action:{what:"No action required, monitoring continues",when:"Auto-review in 14 days",why:"Isolated signal, low confidence, plausible contextual explanation already on file."},
  uni:{targets:[{u:"University of Edinburgh",c:"BSc CS",p:76,b:"match"},{u:"University of Manchester",c:"BSc CS",p:84,b:"match"},{u:"University of Bath",c:"BSc CS",p:89,b:"safety"}],flags:["Statement could be more differentiated"]},
@@ -1208,7 +1219,7 @@ const STUDENTS=[
  baselines:{attendance:{label:"Attendance",band:[93,100],series:[97,95,88,81,79,86,94,98],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:99},
   university:{label:"Application completeness",band:[40,100],series:[30,38,42,50,63,78,89,95],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:99}},
  evidence:[
-  {dom:"positive",src:"Attendance · iSAMS",date:"Rolling 3w",txt:"Attendance recovered from 79% to 98%, back inside her personal band.",w:-40},
+  {dom:"positive",src:`Attendance · ${SIS}`,date:"Rolling 3w",txt:"Attendance recovered from 79% to 98%, back inside her personal band.",w:-40},
   {dom:"positive",src:"University Journey OS",date:"7 Nov",txt:"Portfolio complete and approved; statement in final review.",w:-30},
   {dom:"positive",src:"Teacher feedback",date:"5 Nov",txt:"Two teachers noted marked improvement in participation.",w:-20}],
  action:{what:"Close the case with a documented outcome",when:"This week",why:"All target signals recovered and sustained for three weeks."},
@@ -1233,7 +1244,7 @@ const STUDENTS=[
  signal:12,window:"Ongoing",severity:"Low",nocause:true,
  context:["New to the senior school this year","No subject pathway chosen yet"],
  baselines:{attendance:{label:"Attendance",band:[95,100],series:[98,99,97,100,98,99,100,98],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:99}},
- evidence:[{dom:"positive",src:"Attendance · iSAMS",date:"Rolling",txt:"Attendance steady and within a normal first-term range.",w:-6}],
+ evidence:[{dom:"positive",src:`Attendance · ${SIS}`,date:"Rolling",txt:"Attendance steady and within a normal first-term range.",w:-6}],
  action:{what:"No action required",when:"—",why:"Routine first-year monitoring only."},
  uni:{targets:[],flags:[]},
  stage:"monitor",lastContact:"—",openedBy:"System · routine",opened:"—"},
@@ -1245,7 +1256,7 @@ const STUDENTS=[
  context:["Pathway decision due end of this term","Attending IB and AP information sessions"],
  baselines:{attendance:{label:"Attendance",band:[94,100],series:[97,98,96,99,97,98,97,99],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:99},
    academic:{label:"Overall attainment",band:[80,94],series:[86,88,85,89,87,90,88,89],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:99}},
- evidence:[{dom:"positive",src:"Gradebook · iSAMS",date:"Rolling",txt:"Attainment stable and within personal band across all current subjects.",w:-8}],
+ evidence:[{dom:"positive",src:`Gradebook · ${SIS}`,date:"Rolling",txt:"Attainment stable and within personal band across all current subjects.",w:-8}],
  action:{what:"No action required, routine pathway guidance on request",when:"—",why:"No concern signals; decision support only."},
  uni:{targets:[],flags:[]},
  stage:"monitor",lastContact:"3 weeks ago",openedBy:"System · routine",opened:"—"},
@@ -1257,7 +1268,7 @@ const STUDENTS=[
  context:["On AP track since Year 10","First AP exams this coming May"],
  baselines:{attendance:{label:"Attendance",band:[95,100],series:[98,97,99,98,100,97,98,99],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:99},
    academic:{label:"Overall attainment",band:[82,96],series:[90,91,89,92,90,93,91,92],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:99}},
- evidence:[{dom:"positive",src:"Gradebook · iSAMS",date:"Rolling",txt:"Strong and stable attainment across AP courses this term.",w:-9}],
+ evidence:[{dom:"positive",src:`Gradebook · ${SIS}`,date:"Rolling",txt:"Strong and stable attainment across AP courses this term.",w:-9}],
  action:{what:"No action required",when:"—",why:"Routine monitoring only."},
  uni:{targets:[{u:"Georgia Tech",c:"BS Computer Science",p:70,b:"match"}],flags:[]},
  stage:"monitor",lastContact:"5 days ago",openedBy:"System · routine",opened:"—"},
@@ -1281,9 +1292,9 @@ const STUDENTS=[
   {dom:"teacher",src:"Teacher concern · Ms. Bianchi",date:"20 Nov",txt:"Left the lesson twice without asking. Declined to say why. Not a pattern she has seen from him in two years of teaching him.",w:31},
   {dom:"teacher",src:"Teacher concern · Mr. Osei",date:"22 Nov",txt:"Named a specific ongoing conflict with two students in the year group. Tariq asked him not to pass it on.",w:29},
   {dom:"teacher",src:"Teacher concern · Ms. Iqbal",date:"23 Nov",txt:"Sitting apart from his usual group at lunch for the second week. Flat affect, declined to talk.",w:18},
-  {dom:"behaviour",src:"Conduct log · iSAMS",date:"18–23 Nov",txt:"Seven conduct points in two weeks against a two-year baseline of zero to two.",w:22},
-  {dom:"attendance",src:"Attendance · iSAMS",date:"Rolling 2w",txt:"Attendance 84% this week, from a sustained 96–100%. Two afternoons unaccounted for.",w:17}],
- action:{what:"Refer to the Designated Safeguarding Lead",when:"Route now under school policy",why:"Three independent staff reports inside seven days, one naming a peer conflict Tariq asked to be kept confidential. This is above the counselor's threshold to hold. Refer first; a pastoral conversation follows the DSL's direction, it does not precede it."},
+  {dom:"behaviour",src:`Conduct log · ${SIS}`,date:"18–23 Nov",txt:"Seven conduct points in two weeks against a two-year baseline of zero to two.",w:22},
+  {dom:"attendance",src:`Attendance · ${SIS}`,date:"Rolling 2w",txt:"Attendance 84% this week, from a sustained 96–100%. Two afternoons unaccounted for.",w:17}],
+ action:{what:`Refer to the ${SAFE}`,when:"Route now under school policy",why:`Three independent staff reports inside seven days, one naming a peer conflict Tariq asked to be kept confidential. This is above the counselor's threshold to hold. Refer first; a pastoral conversation follows the ${SAFE}'s direction, it does not precede it.`},
  uni:{targets:[],flags:[]},
  stage:"triage",lastContact:"None this term",openedBy:"System · corroboration rule",opened:"24 Nov, 07:04"},
 
@@ -1296,10 +1307,10 @@ const STUDENTS=[
   engagement:{label:"Platform engagement",band:[50,95],series:[38,62,74,71,68,55,41,29],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"",anomalyFrom:6},
   academic:{label:"Overall attainment",band:[78,92],series:[84,86,88,87,85,86,84,83],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:99}},
  evidence:[
-  {dom:"attendance",src:"Attendance · iSAMS",date:"Rolling 2w",txt:"Attendance 79%, thirteen points below her personal floor. The decline is the same week-on-week slope recorded before the October intervention.",w:38},
+  {dom:"attendance",src:`Attendance · ${SIS}`,date:"Rolling 2w",txt:"Attendance 79%, thirteen points below her personal floor. The decline is the same week-on-week slope recorded before the October intervention.",w:38},
   {dom:"attendance",src:"Case history · CAROS",date:"14 Oct",txt:"Prior case closed as resolved after attendance held at 96% for three weeks. Recovery lasted five weeks before reversing.",w:27},
   {dom:"engagement",src:"CAROS platform",date:"Rolling 14d",txt:"Engagement fell from 68 to 29 across the same fortnight as the attendance decline.",w:19},
-  {dom:"positive",src:"Gradebook · iSAMS",date:"Rolling",txt:"Attainment still inside her band; the academic work has not yet followed.",w:-11}],
+  {dom:"positive",src:`Gradebook · ${SIS}`,date:"Rolling",txt:"Attainment still inside her band; the academic work has not yet followed.",w:-11}],
  action:{what:"Reopen the case and contact the family the same day",when:"Route now under school policy",why:"A repeat inside the monitoring window means the first plan addressed the symptom and not the cause. Do not restate the October plan. The conversation is about what changed five weeks ago."},
  uni:{targets:[{u:"Royal Veterinary College",c:"BVetMed",p:52,b:"reach"},{u:"University of Nottingham",c:"BVMedSci",p:71,b:"match"},{u:"University of Surrey",c:"BVMSci",p:83,b:"safety"}],
   flags:["Reference deadline in 12 days","Attendance may affect the school reference"]},
@@ -1315,9 +1326,9 @@ const STUDENTS=[
   academic:{label:"Overall attainment",band:[88,100],series:[94,95,96,96,97,97,98,98],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:99}},
  evidence:[
   {dom:"engagement",src:"CAROS platform",date:"Rolling 11d",txt:"Eleven consecutive nights with activity logged after 01:00. Her own baseline is zero to two nights per week.",w:33},
-  {dom:"attendance",src:"Attendance · iSAMS",date:"Rolling 3w",txt:"First-period punctuality fell from 100% to 80%. No lateness recorded to any later lesson.",w:26},
+  {dom:"attendance",src:`Attendance · ${SIS}`,date:"Rolling 3w",txt:"First-period punctuality fell from 100% to 80%. No lateness recorded to any later lesson.",w:26},
   {dom:"teacher",src:"Teacher comment · Dr. Reid",date:"19 Nov",txt:"Volunteered that she had not slept before a practical. Work was still the best in the class.",w:14},
-  {dom:"positive",src:"Gradebook · iSAMS",date:"Rolling",txt:"Attainment rising across all six subjects; predicted grades revised upward this term.",w:-13}],
+  {dom:"positive",src:`Gradebook · ${SIS}`,date:"Rolling",txt:"Attainment rising across all six subjects; predicted grades revised upward this term.",w:-13}],
  action:{what:"Low-key check-in about workload, not performance",when:"Within 2 school days",why:"Every signal is individually within tolerance, so there is nothing to correct and nothing to warn her about. Open on the timetable and the Extended Essay deadline, not on the grades."},
  uni:{targets:[{u:"University of Oxford",c:"BA Biomedical Sciences",p:44,b:"reach"},{u:"Imperial College London",c:"BSc Biomedical",p:63,b:"match"},{u:"University of Edinburgh",c:"BSc Biomedical",p:86,b:"safety"}],
   flags:["Extended Essay due in 16 days"]},
@@ -1332,10 +1343,10 @@ const STUDENTS=[
   engagement:{label:"Platform engagement",band:[45,90],series:[72,68,75,70,66,50,38,31],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"",anomalyFrom:6},
   attendance:{label:"Attendance",band:[93,100],series:[97,98,96,99,97,98,96,97],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:99}},
  evidence:[
-  {dom:"academic",src:"Gradebook · iSAMS",date:"Rolling 3w",txt:"Coursework submission fell from 94% to 33%. Two Mathematics deadlines missed, the exact subject the offer names.",w:36},
+  {dom:"academic",src:`Gradebook · ${SIS}`,date:"Rolling 3w",txt:"Coursework submission fell from 94% to 33%. Two Mathematics deadlines missed, the exact subject the offer names.",w:36},
   {dom:"university",src:"University Journey OS",date:"4 Nov",txt:"Conditional offer logged: University of Manchester, BSc Economics, AAB including Mathematics.",w:24},
   {dom:"engagement",src:"CAROS platform",date:"Rolling 19d",txt:"Engagement halved in the fortnight following the offer.",w:18},
-  {dom:"positive",src:"Attendance · iSAMS",date:"Rolling",txt:"Attendance unchanged at 97%; he is in the building and in lessons.",w:-12}],
+  {dom:"positive",src:`Attendance · ${SIS}`,date:"Rolling",txt:"Attendance unchanged at 97%; he is in the building and in lessons.",w:-12}],
   action:{what:"Check-in on what the conditional offer requires",when:"Within 2 school days",why:"He is not disengaged from school, only from the work the offer is conditional on. The conversation is the offer letter itself. The grades are not banked, and Mathematics is the named condition."},
  uni:{targets:[{u:"University of Manchester",c:"BSc Economics",p:84,b:"match",offer:"Conditional · AAB incl. Mathematics"},{u:"University of Leeds",c:"BSc Economics",p:88,b:"match"},{u:"University of Reading",c:"BSc Economics",p:93,b:"safety"}],
   flags:["Conditional offer at risk: AAB including Mathematics"]},
@@ -1352,7 +1363,7 @@ const STUDENTS=[
   {dom:"university",src:"Documents & references",date:"Live",txt:"Two of three references outstanding. Mr. Yilmaz chased 8 and 17 November; Ms. Fahri chased 15 November. No response logged.",w:34},
   {dom:"university",src:"Deadline radar",date:"Live",txt:"UCAS deadline in 11 days. School policy asks for all references filed by T-14.",w:21},
   {dom:"positive",src:"Essay workspace",date:"8 Nov",txt:"Personal statement complete and in final review; portfolio submitted.",w:-16},
-  {dom:"positive",src:"Gradebook · iSAMS",date:"Rolling",txt:"Attainment stable and inside her band across all subjects.",w:-10}],
+  {dom:"positive",src:`Gradebook · ${SIS}`,date:"Rolling",txt:"Attainment stable and inside her band across all subjects.",w:-10}],
  action:{what:"Escalate the two outstanding references to the Head of Sixth Form",when:"This week",why:"Chasing the same two teachers a third time has not worked. Noor cannot act on this and should not be asked to. The next step is a line manager, not a student meeting."},
  uni:{targets:[{u:"The Bartlett, UCL",c:"BSc Architecture",p:59,b:"reach"},{u:"University of Sheffield",c:"BA Architecture",p:80,b:"match"},{u:"American University of Sharjah",c:"BArch",p:92,b:"safety"}],
   flags:["Two references outstanding at T-11 days"]},
@@ -1368,7 +1379,7 @@ const STUDENTS=[
   academic:{label:"Overall attainment",band:[76,92],series:[84,81,78,74,77,82,85,87],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:99}},
  evidence:[
   {dom:"positive",src:"CAROS platform",date:"Rolling 3w",txt:"Engagement recovered from 29 to 76 and has held inside his band for three consecutive weeks.",w:-34},
-  {dom:"positive",src:"Attendance · iSAMS",date:"Rolling 3w",txt:"Attendance back to 98% from a low of 85%.",w:-25},
+  {dom:"positive",src:`Attendance · ${SIS}`,date:"Rolling 3w",txt:"Attendance back to 98% from a low of 85%.",w:-25},
   {dom:"positive",src:"Teacher comment · Mr. Yilmaz",date:"18 Nov",txt:"Working with the extension group rather than alone. Volunteered an answer in class for the first time this year.",w:-19}],
  action:{what:"Record the mid-point outcome and let the plan run",when:"Acknowledge",why:"Three weeks of recovery is evidence, not a conclusion. Closing now would end the monitoring window ten weeks early, which is what the relapse rule exists to prevent."},
  uni:{targets:[],flags:[]},
@@ -2226,9 +2237,9 @@ function vCase(c){
        <div style="display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--crit-ink)">${ic('shield',14)} Escalated to ${c.escalated.to}</div>
        <div style="font-size:11px;color:var(--crit-ink);margin-top:5px;line-height:1.5">${c.escalated.when} · ${c.escalated.by}</div>
        <div style="font-size:11.5px;color:var(--crit-ink);margin-top:7px;line-height:1.55">"${c.escalated.reason}"</div>
-       <div style="font-size:10.3px;color:var(--inkMute);margin-top:8px;line-height:1.45">Already routed. A second escalation would duplicate the referral. Add anything further as a case note, or contact ${SCHOOL.dsl} directly.</div>
-      </div>`:`<button class="btn btn-u" data-escalateopen="${c.id}" style="width:100%">${ic('shield',15)} Escalate to DSL…</button>
-      <div style="font-size:10.3px;color:var(--inkMute);line-height:1.45;margin-top:6px">Routes to ${SCHOOL.dsl} under school safeguarding policy and writes a permanent audit entry. You will see exactly what is sent before anything leaves this screen. CAROS never makes this decision for you.</div>`}
+       <div style="font-size:10.3px;color:var(--inkMute);margin-top:8px;line-height:1.45">Already routed. A second escalation would duplicate the referral. Add anything further as a case note, or contact ${SCHOOL.safeLead} directly.</div>
+      </div>`:`<button class="btn btn-u" data-escalateopen="${c.id}" style="width:100%">${ic('shield',15)} Escalate to ${SAFE}…</button>
+      <div style="font-size:10.3px;color:var(--inkMute);line-height:1.45;margin-top:6px">Routes to ${SCHOOL.safeLead} under school safeguarding policy and writes a permanent audit entry. You will see exactly what is sent before anything leaves this screen. CAROS never makes this decision for you.</div>`}
      </div>
     </div>
    </div>
@@ -2757,7 +2768,7 @@ function vArch(){
  <div class="card" style="padding:22px;margin-bottom:16px">
   <h2 class="sechead">${ic('zap',13)} Worked example · one event through the pipeline</h2>
   <div style="font-size:12px;color:var(--inkSoft);margin-bottom:14px;line-height:1.5">Ahmed's Mathematics result on 12 November, traced end to end. This is the trace a head of school or a regulator can ask for at any time.</div>
-  ${[["1 · Data source","iSAMS gradebook webhook fired. Raw payload: student s1, subject MATH, assessment ASM-4471, score 41, recorded 12 Nov 09:14.","mono"],
+  ${[["1 · Data source",`${SIS} gradebook webhook fired. Raw payload: student s1, subject MATH, assessment ASM-4471, score 41, recorded 12 Nov 09:14.`,"mono"],
     ["2 · Normalisation","Identity matched to student profile s1. Subject mapped to canonical MATHEMATICS. Timestamp normalised. Source quality: authoritative (SIS).",""],
     ["3 · Feature layer","Personal 8-week mean 90.0%. Deviation −49.0 points. Personal band floor 82%. Second consecutive result outside band. Persistence: 14 days.",""],
     ["4 · Intelligence","Baseline deviation rule triggered at 3.1σ. Cross-signal correlation found attendance decline and a teacher concern in the same window. Confidence 86%. Contextual suppression checked: no exam period, no authorised absence, no subject change.",""],
@@ -3423,7 +3434,7 @@ function vTClass(){
  <div class="card" style="padding:15px 18px;margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
   <div style="width:34px;height:34px;border-radius:var(--r);background:var(--brand-3);display:grid;place-items:center;color:var(--brand-2);flex-shrink:0">${ic('checkC',17)}</div>
   <div style="flex:1;min-width:200px;font-size:12.3px;color:var(--ink-2);line-height:1.5">
-   <b style="color:var(--ink)">Grades and attendance come from iSAMS automatically.</b> You are never asked to re-enter data the school already holds, only the thing a system cannot see.</div>
+   <b style="color:var(--ink)">Grades and attendance come from ${SIS} automatically.</b> You are never asked to re-enter data the school already holds, only the thing a system cannot see.</div>
  </div>
  ${TEACHER.classes.length>1?`<div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px" role="tablist" aria-label="Class">
   ${TEACHER.classes.map(c=>`<button class="tab ${c.id===cls.id?'on':''}" data-tclass="${c.id}" role="tab" aria-selected="${c.id===cls.id}">${c.code}</button>`).join('')}
@@ -5919,7 +5930,7 @@ function vParent(){
   <div style="display:flex;align-items:center;gap:11px;padding:15px 20px;border-bottom:1px solid var(--line);background:var(--surface-2)">
    ${av("RH","mentor",36)}
    <div style="flex:1"><b style="font-size:13.5px">Ms. Reem Haddad</b>
-    <div style="font-size:11px;color:var(--ink-3)">Head of University Counseling · usually replies within a few hours</div></div>
+    <div style="font-size:11px;color:var(--ink-3)">${SCHOOL.role} · usually replies within a few hours</div></div>
    <button class="btn btn-g btn-sm" data-pv="meetings">${ic('brief',13)} Book a meeting instead</button>
   </div>
   <div id="pmthread" style="padding:22px 24px;max-height:440px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;background:var(--surface)">
@@ -6284,8 +6295,8 @@ function voiceCard(c){
  </div>`;}
 
 /* ═══════════ MERGE + ASSIGN — explicit, never automatic ═══════════ */
-const STAFF=[{id:"rh",n:"Ms. Reem Haddad",r:"Head of University Counseling (you)"},
- {id:"jo",n:"Mr. J. Okonkwo",r:"Designated Safeguarding Lead"},
+const STAFF=[{id:"rh",n:"Ms. Reem Haddad",r:SCHOOL.role+" (you)"},
+ {id:"jo",n:"Mr. J. Okonkwo",r:SCHOOL.safeguarding},
  {id:"ap",n:"Ms. A. Pereira",r:"Grade 12 Pastoral Lead"},
  {id:"ks",n:"Mr. K. Suleiman",r:"Assistant Counselor"}];
 
@@ -6310,7 +6321,7 @@ function mergeModal(){
    <button class="btn btn-p" data-mergego="${c.id}" ${pick?'':'disabled'} style="width:100%;margin-top:14px">${ic('merge',15)} ${pick?'Confirm merge':'Choose something to merge with'}</button>
   </div></div></div>`;}
 
-/* ── Escalation to the DSL: the one irreversible action in the counselor's
+/* ── Escalation to the safeguarding lead: the one irreversible action in the counselor's
    surface. It notifies a named safeguarding lead and writes a permanent audit
    entry, so it gets a confirm that shows the whole referral, a required reason
    in the counselor's own words, and a post-state that cannot double-fire. ── */
@@ -6321,13 +6332,13 @@ function escalateModal(){
  const ok=reason.length>=12;
  return `<div class="modalbg" data-mbg="1"><div class="modal">
   <div style="padding:20px 22px 0">${mcloseBtn()}
-   <div class="stamp" style="font-size:19px;font-weight:600">Escalate ${c.name} to the DSL</div>
+   <div class="stamp" style="font-size:19px;font-weight:600">Escalate ${c.name} to the ${SAFE}</div>
    <div style="font-size:12.3px;color:var(--ink-3);margin:4px 0 16px;line-height:1.5">This is a safeguarding referral. It cannot be undone from CAROS, and it is the only action here that reaches someone outside this screen.</div></div>
   <div style="padding:0 22px 22px">
    <div style="border:1px solid var(--line-2);border-radius:var(--r);overflow:hidden;margin-bottom:16px">
     <div style="background:var(--surface-3);padding:9px 14px;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3)">What will be sent</div>
     <div style="padding:13px 14px;display:flex;flex-direction:column;gap:9px;font-size:12.3px;line-height:1.5">
-     <div style="display:flex;gap:10px"><span style="width:74px;flex-shrink:0;color:var(--ink-3)">To</span><b>${SCHOOL.dsl}</b></div>
+     <div style="display:flex;gap:10px"><span style="width:74px;flex-shrink:0;color:var(--ink-3)">To</span><b>${SCHOOL.safeLead}</b></div>
      <div style="display:flex;gap:10px"><span style="width:74px;flex-shrink:0;color:var(--ink-3)">Student</span><span>${c.name} · ${c.yr}</span></div>
      <div style="display:flex;gap:10px"><span style="width:74px;flex-shrink:0;color:var(--ink-3)">From</span><span>${SCHOOL.counselor}</span></div>
      <div style="display:flex;gap:10px"><span style="width:74px;flex-shrink:0;color:var(--ink-3)">Case</span><span style="color:var(--ink-2)">${c.headline}</span></div>
@@ -6336,10 +6347,10 @@ function escalateModal(){
    </div>
    <label for="escreason" style="display:block;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">Why you are escalating <span style="color:var(--crit)">· required</span></label>
    <textarea id="escreason" data-escreason="1" placeholder="In your own words: what you are concerned about, and what prompted this now." style="width:100%;min-height:96px;border:1px solid ${reason.length&&!ok?'var(--crit)':'var(--line-2)'};border-radius:var(--r);padding:12px;font-size:13px;line-height:1.55;resize:vertical;color:var(--ink);font-family:inherit">${S.escReason||''}</textarea>
-   <div aria-live="polite" style="font-size:11.3px;color:${reason.length&&!ok?'var(--crit)':'var(--ink-4)'};margin-top:6px;line-height:1.45">${!reason.length?'The DSL reads this first. It becomes part of the permanent record.':ok?'This is recorded verbatim in the audit log and sent with the referral.':'A little more. The DSL needs to know what prompted this, not just that something did.'}</div>
+   <div aria-live="polite" style="font-size:11.3px;color:${reason.length&&!ok?'var(--crit)':'var(--ink-4)'};margin-top:6px;line-height:1.45">${!reason.length?'The ${SAFE} reads this first. It becomes part of the permanent record.':ok?'This is recorded verbatim in the audit log and sent with the referral.':'A little more. The ${SAFE} needs to know what prompted this, not just that something did.'}</div>
    <div style="display:flex;gap:9px;margin-top:18px">
     <button class="btn btn-g" data-mclose="1" style="flex:1">Cancel</button>
-    <button class="btn btn-u" data-escalatego="${c.id}" ${ok?'':'disabled'} style="flex:1.4">${ic('shield',15)} ${ok?'Send to '+SCHOOL.dsl.split(' (')[0]:'Add a reason first'}</button>
+    <button class="btn btn-u" data-escalatego="${c.id}" ${ok?'':'disabled'} style="flex:1.4">${ic('shield',15)} ${ok?'Send to '+SCHOOL.safeLead.split(' (')[0]:'Add a reason first'}</button>
    </div>
   </div></div></div>`;}
 
@@ -6673,7 +6684,7 @@ function draw(){
        <span>${SCHOOL.name}</span><span style="opacity:.5">/</span>
        <span style="color:var(--ink-3);font-weight:500">Grades 9–12 · ${S.cases.length} students</span></div>
       <div style="display:flex;align-items:center;gap:9px">
-       <span style="font-size:15px;font-weight:600;letter-spacing:-.016em;color:var(--ink)">University Counseling</span>
+       <span style="font-size:15px;font-weight:600;letter-spacing:-.016em;color:var(--ink)">${SCHOOL.dept}</span>
        <span class="chip" style="background:var(--ok-bg);color:var(--ok);border-color:var(--ok-line)">
         <span style="width:5px;height:5px;border-radius:var(--r-dot);background:var(--ok);display:inline-block"></span>Engine swept 07:04</span></div>
      </div>
@@ -6893,10 +6904,10 @@ function bind(){
  q("[data-escalatego]",e=>e.onclick=()=>{
   const c=g(e.dataset.escalatego),reason=(S.escReason||"").trim();
   if(!c||reason.length<12||c.escalated)return;
-  c.escalated={to:SCHOOL.dsl,by:SCHOOL.counselor,reason,when:new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+" "+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})};
-  logAudit("R.HADDAD","ESCALATED_DSL",c.name,"Routed to "+SCHOOL.dsl+" under school policy · reason: "+reason);
+  c.escalated={to:SCHOOL.safeLead,by:SCHOOL.counselor,reason,when:new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+" "+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})};
+  logAudit("R.HADDAD","ESCALATED_SAFEGUARDING",c.name,"Routed to "+SCHOOL.safeLead+" under school policy · reason: "+reason);
   S.modal=null;S.escReason="";
-  toast("Escalated to "+SCHOOL.dsl+" · referral and reason written to the audit log",4200);});
+  toast("Escalated to "+SCHOOL.safeLead+" · referral and reason written to the audit log",4200);});
  q("[data-assignpick]",e=>e.onclick=()=>{S.assignPick=e.dataset.assignpick;draw();});
  q("[data-assigngo]",e=>e.onclick=()=>{const c=g(e.dataset.assigngo);const s=STAFF.find(x=>x.id===S.assignPick);
    if(s){const prev=c.owner;c.owner=s.n;logAudit("R.HADDAD","CASE_REASSIGNED",c.name,prev+" → "+s.n);
