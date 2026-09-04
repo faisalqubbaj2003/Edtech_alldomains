@@ -33,7 +33,7 @@ colors:
   dom-university: "#0B6B60"
   baseline: "#8FB4A4"
   school-primary: "#004D43"
-  school-accent: "#F7BD00"
+  school-accent: "#EFE6D2"
   school-on-accent: "#131D26"
 typography:
   display:
@@ -149,7 +149,9 @@ The palette is three layers, and only one of them may ever be themed. This split
 ### Primary
 
 - **ACS Pine** (`{colors.school-primary}`): the letterhead. Masthead, sidebar field, links, focus ring, active nav bar, primary button. Themed per partner school. It is the only colour in the system that changes between schools.
-- **Sand Viper Gold** (`{colors.school-accent}`): the crest, the demonstration-data stamp, the active-item bar, count badges. A **fill only** — it measures 1.62:1 as text on stock and must never be set as type. It always ships with `school-on-accent` as its foreground.
+- **Bone** (`{colors.school-accent}`): the crest, the demonstration-data stamp, the active-item bar, count badges. A **fill only** — it must never be set as type. It always ships with `school-on-accent` as its foreground.
+
+  Replaced Sand Viper Gold on 2026-09-04. The gold was doing four unrelated jobs at once — school crest, student avatars, letterhead furniture and the synthetic-data marker — so it had stopped signifying any of them. Bone reads 7.9:1 on the letterhead field, against the gold's 5.71:1, but only **1.19:1 against the stock** where the gold managed 1.70:1. Every bone fill that lands on the sheet therefore carries a `rule-2` hairline; the five on-stock offer and sign-off stamps were amended when the token changed. Cool accents were tested first and rejected: pine is a dark blue-green, so a blue or a pine tint has luminance contrast against it but no hue contrast, and the demonstration-data stamp visibly receded.
 
 ### Secondary
 
@@ -304,7 +306,8 @@ Selection is the band. The caret is margin red. Scrollbars are `rule-2` on trans
 - **Don't** put a kicker, eyebrow or section number above a heading.
 - **Don't** open a screen with a row of hero-metric tiles — big figure, small label, supporting stat, accent colour. That template was removed from seven surfaces in this build and should not return.
 - **Don't** let a `--school-*` token into a tier, track, domain or baseline definition.
-- **Don't** set gold as text anywhere. It is a fill with dark ink on it.
+- **Don't** set the school accent as text anywhere. It is a fill with dark ink on it.
+- **Don't** put a bone fill on the stock without a hairline — at 1.19:1 the block has no edge of its own.
 - **Don't** add a shadow to anything that is not a modal, the palette or a toast — and never a coloured glow.
 - **Don't** use a coloured chip to carry severity. The tier stamp carries it.
 - **Don't** set a sentence in uppercase, and don't set an apparatus label below 10px.

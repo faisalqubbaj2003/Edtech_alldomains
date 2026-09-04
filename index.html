@@ -89,7 +89,7 @@
  /* ── LETTERHEAD · overwritten by applySchool(). ACS is the seeded default. */
  /* --school-src* are written inline by applySchool(); the literals below are
     the ACS seed, so the sheet is correct before a single line of JS runs. */
- --school-src:#004D43; --school-src-deep:#023A33; --school-src-lift:#4FA898; --school-src-accent:#F7BD00;
+ --school-src:#004D43; --school-src-deep:#023A33; --school-src-lift:#4FA898; --school-src-accent:#EFE6D2;
  --school-field:#004D43; --school-field-dark:#00302A;
  --school-primary:var(--school-src);
  /* Read through a *-paper source, never written directly by applySchool: an
@@ -102,7 +102,10 @@
  --letterhead:var(--school-field);
  --on-letterhead:var(--school-on-field,#FFFFFF);
  --on-letterhead-2:var(--school-on-field-mute,#C6D8D4);
- --school-accent:var(--school-src-accent); /* gold: a fill only. 1.62:1 as text — never text. */
+ /* Bone: a fill only, and paler than the gold it replaced. It reads 7.9:1 on
+    the letterhead field but only 1.19:1 against the stock, so every bone fill
+    that lands on the sheet carries its own hairline. Never set it as text. */
+ --school-accent:var(--school-src-accent);
  --school-on-accent:#131D26;
  --school-tint:var(--school-tint-paper,rgba(0,77,67,.04)); /* the bounded ~4% material tint. */
 
@@ -313,17 +316,28 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 3px var(--school-primary)}
 input[type=range]::-webkit-slider-thumb:hover{background:var(--band-2)}
 
-/* ══════════ THE DEMONSTRATION-DATA STAMP ══════════
-   A rubber stamp struck on the letterhead: double-ruled, letterspaced, set
-   in the apparatus face. Deliberately part of the printed world rather than
-   a warning banner, because the version that looks like it belongs is the
-   version that survives a live demo instead of being switched off. */
-.demostamp{display:inline-flex;flex-direction:column;justify-content:center;gap:1px;
- padding:3px 9px;border:1.5px double var(--school-accent);border-radius:var(--r-sm);
- font-family:var(--f-apparatus);color:var(--school-accent);line-height:1.15;flex-shrink:0}
-.demostamp-r{font-size:10.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase}
-.demostamp-s{font-size:10px;font-weight:500;letter-spacing:.075em;text-transform:uppercase;opacity:.82}
-@media (max-width:900px){.demostamp-s{display:none}}
+/* ══════════ THE HEADER FRAME ══════════
+   An ink rule closing the letterhead strip on all four sides, so the header
+   reads as a struck block rather than a bar bleeding off the window edge.
+   Ink, not black: this system has no pure black, and #131D26 is the printed
+   ink every other rule on the sheet is already drawn in. border-box keeps
+   the strip at its declared 52px instead of growing by the border. */
+.rolebar{box-sizing:border-box;border:2px solid var(--ink)}
+
+/* ══════════ THE DEMONSTRATION-DATA STRIP ══════════
+   Moved off the letterhead on 2026-09-04 so the header reads as one clean
+   block. It is unchanged in every way that matters: still gated on the school
+   record's `real` flag rather than on a debug flag, still present on every
+   surface at every role, and still impossible to switch off for a cleaner
+   screenshot. It simply closes the sheet at the foot instead of sitting
+   beside the crest — ink ground and paper type, the same printed frame the
+   header now carries, turned to the bottom edge. */
+.demofoot{flex-shrink:0;display:flex;align-items:center;justify-content:center;gap:10px;
+ height:22px;background:var(--ink);color:var(--stock);line-height:1;
+ font-family:var(--f-apparatus);font-size:10px;font-weight:700;
+ letter-spacing:.15em;text-transform:uppercase}
+.demofoot-s{font-weight:500;letter-spacing:.075em;opacity:.8}
+@media (max-width:900px){.demofoot-s{display:none}}
 
 /* ══════════ THE MARGIN STAMP ══════════
    The tier as it prints on the sheet: a mark and a letter, set in the
@@ -792,9 +806,14 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
  /* the Discover chat's input row must always clear the fixed bottom tab bar */
  .discover-chat-input{margin-bottom:calc(78px + env(safe-area-inset-bottom))}
 
+ /* The root stops being a 100vh flex column here, so an in-flow strip would
+    land at the end of the document rather than the foot of the screen. Pin
+    it, and stand the tab bar on top of it — that way nothing has to guess
+    the tab bar's height. */
+ .demofoot{position:fixed;left:0;right:0;bottom:0;z-index:240}
  .tabbar{
   display:grid;grid-auto-flow:column;grid-auto-columns:1fr;
-  position:fixed;left:0;right:0;bottom:0;z-index:230;
+  position:fixed;left:0;right:0;bottom:22px;z-index:230;
   background:var(--glass-bg);
   backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);
   border-top:1px solid var(--line-2);
@@ -936,7 +955,7 @@ const SCHOOLS={
      which is also what fixes the 2.63:1 avatar failure measured on 2026-09-02.
      accent is gold: 9.47:1 as a fill behind dark ink, 1.62:1 as text — so it
      ships as a pair and the failing combination is unreachable. */
-  brand:{primary:"#004D43", primaryDeep:"#023A33", accent:"#F7BD00"}
+  brand:{primary:"#004D43", primaryDeep:"#023A33", accent:"#EFE6D2"}
  },
  /* The unbranded rendition: the sheet with no school over it. */
  demo:{
@@ -1469,7 +1488,7 @@ function confettiBurst(){
     sheet as celebration spends a colour that has to keep meaning one thing. */
  const cs=getComputedStyle(document.documentElement);
  const colors=['--school-accent','--school-primary','--band-2','--rule-3','--ink-3','--school-accent']
-  .map(n=>cs.getPropertyValue(n).trim()||'#F7BD00');
+  .map(n=>cs.getPropertyValue(n).trim()||'#EFE6D2');
  const container=document.createElement('div');
  container.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:500;overflow:hidden';
  for(let i=0;i<28;i++){
@@ -1789,9 +1808,9 @@ function crest(sz){
    so it reads as part of the ledger rather than as a banner bolted on top. */
 function demoStamp(){
  if(!SCHOOL.real) return '';
- return `<span class="demostamp" title="Every student record in this environment is synthetic. No real ACS student, family or staff member is represented.">
-  <span class="demostamp-r">Demonstration data</span>
-  <span class="demostamp-s">No real student records</span></span>`;
+ return `<div class="demofoot" role="note" title="Every student record in this environment is synthetic. No real ACS student, family or staff member is represented.">
+  <span>Demonstration data</span>
+  <span class="demofoot-s">No real student records</span></div>`;
 }
 
 function roleBar(){
@@ -1802,7 +1821,6 @@ function roleBar(){
    ${crest(28)}
    <div><div class="stamp" style="font-weight:700;font-size:15px;color:#fff;letter-spacing:.03em">CAROS</div>
    <div class="rolebar-tag" style="font-family:var(--f-apparatus);font-size:10px;letter-spacing:.16em;color:var(--nav-txt);text-transform:uppercase;margin-top:1px">${SCHOOL.short}</div></div></div>
-  ${demoStamp()}
   <div style="margin-left:auto;display:flex;align-items:center;gap:14px">
    <div class="rolebar-stats" style="display:flex;align-items:center;gap:9px;font-size:11px;color:var(--nav-txt)">
     <span style="display:flex;align-items:center;gap:5px"><span class="pulsedot" style="width:7px;height:7px;border-radius:var(--r-dot);background:var(--t-urgent)"></span><b class="fig" style="color:#fff;font-weight:500">${pc.urgent}</b> urgent</span>
@@ -2138,7 +2156,7 @@ function vCase(c){
     ${c.uni.targets.map(t=>{const col=t.b==="reach"?'var(--urgent)':t.b==="match"?'var(--good)':'var(--review)';
      return `<div style="padding:12px 0;border-bottom:1px solid var(--lineSoft)">
       <div style="display:flex;justify-content:space-between;align-items:baseline"><div><b style="font-size:13px">${t.u}</b><div style="font-size:11.5px;color:var(--inkMute)">${t.c}</div>
-       ${t.offer?`<div style="display:inline-flex;align-items:center;gap:5px;margin-top:5px;font-family:var(--f-apparatus);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--school-on-accent);background:var(--school-accent);padding:2px 7px">${ic('checkC',11)} Offer held · ${t.offer}</div>`:''}</div>
+       ${t.offer?`<div style="display:inline-flex;align-items:center;gap:5px;margin-top:5px;font-family:var(--f-apparatus);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--school-on-accent);background:var(--school-accent);box-shadow:inset 0 0 0 1px var(--rule-2);padding:2px 7px">${ic('checkC',11)} Offer held · ${t.offer}</div>`:''}</div>
       <div style="text-align:right"><span class="stamp" style="font-size:19px;font-weight:600;color:${col}">${t.p}%</span>
       <div>${chip(t.b.toUpperCase(),col,t.b==="reach"?'var(--urgentSoft)':t.b==="match"?'var(--goodSoft)':'var(--reviewSoft)')}</div></div></div>
       <div style="margin-top:7px">${meter(t.p,col)}</div></div>`;}).join('')}
@@ -4791,7 +4809,7 @@ function vPathwayProposals(){
       <span style="min-width:0">
        <span style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:4px">
         <b style="font-size:15.5px;color:var(--ink)">${previewTitle}</b>
-        ${i===0?`<span class="stamp" style="font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;background:var(--school-accent);color:var(--school-on-accent);padding:2px 7px">Strongest match</span>`:''}
+        ${i===0?`<span class="stamp" style="font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;background:var(--school-accent);color:var(--school-on-accent);box-shadow:inset 0 0 0 1px var(--rule-2);padding:2px 7px">Strongest match</span>`:''}
         ${narrowKey?'':`<span class="chip" style="background:var(--stock-3);color:var(--ink-2)">${a.tag}</span>`}</span>
        ${focusLabel?`<span class="railh" style="display:block;margin:0 0 5px">${focusLabel}</span>`:''}
        <span style="display:block;font-size:13px;color:var(--ink-2);line-height:1.6;max-width:62ch">${a.blurb}</span>
@@ -4861,7 +4879,7 @@ function vGamifiedRoadmap(){
   </div>`:''}
 
   <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:12px">
-   <span class="stamp" style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:var(--school-accent);color:var(--school-on-accent);padding:3px 8px">Signed off by ${SCHOOL.counselor}</span>
+   <span class="stamp" style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:var(--school-accent);color:var(--school-on-accent);box-shadow:inset 0 0 0 1px var(--rule-2);padding:3px 8px">Signed off by ${SCHOOL.counselor}</span>
    <span class="railh" style="margin:0">${focusStamp}</span>
   </div>
   <h1 class="stamp" style="margin:0 0 6px;font-size:26px;font-weight:600;line-height:1.15">${roadmapTitle}</h1>
@@ -6382,7 +6400,7 @@ function vStuTargets(){
  ${held.map(t=>{const o=OFFERS[t.u];const cond=o.status==="conditional";
   return `<div style="border:1.5px solid var(--rule-3);background:var(--stock);margin-bottom:18px">
    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 16px;background:var(--band);border-bottom:1px solid var(--rule)">
-    <span class="stamp" style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:var(--school-accent);color:var(--school-on-accent);padding:3px 8px">${cond?"Conditional offer held":"Offer held"}</span>
+    <span class="stamp" style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:var(--school-accent);color:var(--school-on-accent);box-shadow:inset 0 0 0 1px var(--rule-2);padding:3px 8px">${cond?"Conditional offer held":"Offer held"}</span>
     ${o.date?`<span class="fig" style="font-size:11.5px;color:var(--ink-3)">${o.date}</span>`:''}
    </div>
    <div style="padding:15px 16px 16px">
@@ -6409,7 +6427,7 @@ function vStuTargets(){
     <td><span class="lstamp${decided?' on':''}" aria-hidden="true">${decided?"O":B[0]}</span><span class="sr">${decided?"Offer held":B[1]}</span></td>
     <td style="color:var(--ink);font-weight:600">${t.u}</td>
     <td>${t.c}</td>
-    <td>${decided?`<span class="stamp" style="font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;background:var(--school-accent);color:var(--school-on-accent);padding:2px 7px">Offer held</span>`:B[1]}</td>
+    <td>${decided?`<span class="stamp" style="font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;background:var(--school-accent);color:var(--school-on-accent);box-shadow:inset 0 0 0 1px var(--rule-2);padding:2px 7px">Offer held</span>`:B[1]}</td>
     <td class="num">${decided?`<span style="color:var(--ink-4)">—</span>`:t.p+"%"}</td>
    </tr>`;}).join('')}
   </tbody></table></div>
@@ -6725,7 +6743,7 @@ function draw(){
  const tabbar=`<nav class="tabbar">${TABS.map(t=>{
    const on=t[0]!=="__menu"&&curKey===t[0];
    return `<button class="tabitem ${on?'on':''}" ${t[0]==="__menu"?'data-navopen="1"':navAttr+'="'+t[0]+'"'}>${ic(t[2],20)}<span>${t[1]}</span>${t[0]==="si-cases"&&prioCounts().urgent?`<i class="tabdot"></i>`:''}</button>`;}).join('')}</nav>`;
- R.innerHTML=`<a href="#main" class="skip-link">Skip to main content</a><div class="navscrim" data-navclose="1"></div><div${S.palOpen?' aria-hidden="true"':''} style="height:100vh;display:flex;flex-direction:column">${roleBar()}${sb}</div>${S.palOpen?tabbar.replace('<nav class="tabbar">','<nav class="tabbar" aria-hidden="true">'):tabbar}${palOpen}${modalEl()}${tflagModal()}${meetModal()}${mergeModal()}${assignModal()}${bulkAssignModal()}${escalateModal()}${S.toast?`<div class="toastbar pop" role="status" aria-live="polite">${ic('checkC',17)}${S.toast}</div>`:''}`;
+ R.innerHTML=`<a href="#main" class="skip-link">Skip to main content</a><div class="navscrim" data-navclose="1"></div><div${S.palOpen?' aria-hidden="true"':''} style="height:100vh;display:flex;flex-direction:column">${roleBar()}${sb}${demoStamp()}</div>${S.palOpen?tabbar.replace('<nav class="tabbar">','<nav class="tabbar" aria-hidden="true">'):tabbar}${palOpen}${modalEl()}${tflagModal()}${meetModal()}${mergeModal()}${assignModal()}${bulkAssignModal()}${escalateModal()}${S.toast?`<div class="toastbar pop" role="status" aria-live="polite">${ic('checkC',17)}${S.toast}</div>`:''}`;
  if(S.palOpen){palPaint(S.palQuery||"",S.role);setTimeout(()=>{const palInput=document.getElementById("palInput");if(palInput){palInput.focus();palInput.selectionStart=palInput.selectionEnd=palInput.value.length;}} ,0);}
  bind();
 }
