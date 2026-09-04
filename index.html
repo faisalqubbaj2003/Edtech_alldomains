@@ -323,6 +323,10 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--band-2)}
    ink every other rule on the sheet is already drawn in. border-box keeps
    the strip at its declared 52px instead of growing by the border. */
 .rolebar{box-sizing:border-box;border:2px solid var(--ink)}
+/* The letterhead column takes the same rule down both edges. Its top and
+   bottom are already closed by the header frame above it and the strip below,
+   so bordering those sides here would only double the line. */
+.sidebar{box-sizing:border-box;border-left:2px solid var(--ink);border-right:2px solid var(--ink)}
 
 /* ══════════ THE DEMONSTRATION-DATA STRIP ══════════
    Moved off the letterhead on 2026-09-04 so the header reads as one clean
@@ -945,6 +949,12 @@ function ic(n,s){s=s||17;return '<svg class="ico" viewBox="0 0 24 24" style="wid
    demonstration-data stamp — deliberately NOT a debug flag, because the whole
    point is that it cannot be switched off for a cleaner screenshot. Every
    student, family, mark and message in this build is synthetic. */
+/* The ACS rosette, cut from the horizontal lockup the school supplies and
+   recoloured to paper for the dark letterhead field. Inlined at 128px so the
+   prototype still runs offline from a double-clicked file, which is a stated
+   product constraint: a linked asset would break that the moment it moved. */
+const ACS_MARK="data:image/png;base64,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";
+
 const SCHOOLS={
  acs:{
   id:"acs", real:true,
@@ -953,9 +963,12 @@ const SCHOOLS={
   /* Read from the school's own production stylesheet, not from a brand guide.
      primary 9.25:1 on the stock and 8.34:1 on the band; white on it is 9.80,
      which is also what fixes the 2.63:1 avatar failure measured on 2026-09-02.
-     accent is gold: 9.47:1 as a fill behind dark ink, 1.62:1 as text — so it
-     ships as a pair and the failing combination is unreachable. */
-  brand:{primary:"#004D43", primaryDeep:"#023A33", accent:"#EFE6D2"}
+     accent is bone since 2026-09-04: 7.9:1 on the letterhead field behind
+     dark ink, and never set as type, so it ships as a pair and the failing
+     combination is unreachable. `mark` is the school's own rosette, cut out
+     of the horizontal lockup and recoloured to paper for the dark field. */
+  brand:{primary:"#004D43", primaryDeep:"#023A33", accent:"#EFE6D2"},
+  mark:ACS_MARK
  },
  /* The unbranded rendition: the sheet with no school over it. */
  demo:{
@@ -1793,7 +1806,16 @@ function palPaint(query,role){
    than a borrowed logo file — which also means the next partner school gets a
    correct crest from its brand record alone, with no asset to chase. */
 function crest(sz){
- const s=sz||28, i=SCHOOL.initials||"—";
+ const s=sz||28;
+ /* A school that ships its own mark gets the mark, struck straight onto the
+    letterhead field with no plate behind it. Everything else falls back to the
+    initials block, which is what an unbranded rendition wants anyway. The
+    asset is inlined at 128px and drawn at 32 because this artwork is fine
+    line work: below roughly 40px at 1x its strokes fall under a pixel and
+    antialias to a grey blob, so the retina headroom is doing real work. */
+ if(SCHOOL.mark) return `<img src="${SCHOOL.mark}" alt="" aria-hidden="true"
+  width="${s}" height="${s}" style="width:${s}px;height:${s}px;flex-shrink:0;display:block">`;
+ const i=SCHOOL.initials||"—";
  return `<span aria-hidden="true" style="width:${s}px;height:${s}px;flex-shrink:0;display:grid;place-items:center;
   background:var(--school-accent);color:var(--school-on-accent);border-radius:var(--r-sm);
   font-family:var(--f-apparatus);font-weight:700;font-size:${(s*.36).toFixed(1)}px;letter-spacing:.02em;
@@ -1818,7 +1840,7 @@ function roleBar(){
  const pc=prioCounts();
  return `<div class="rolebar" style="height:52px;background:var(--navy);display:flex;align-items:center;padding:0 18px;gap:15px;flex-shrink:0;z-index:60">
   <div style="display:flex;align-items:center;gap:10px">
-   ${crest(28)}
+   ${crest(32)}
    <div><div class="stamp" style="font-weight:700;font-size:15px;color:#fff;letter-spacing:.03em">CAROS</div>
    <div class="rolebar-tag" style="font-family:var(--f-apparatus);font-size:10px;letter-spacing:.16em;color:var(--nav-txt);text-transform:uppercase;margin-top:1px">${SCHOOL.short}</div></div></div>
   <div style="margin-left:auto;display:flex;align-items:center;gap:14px">
@@ -1841,7 +1863,7 @@ function shell(theme,nav,active,attr,footAv,footN,footR,title,sub,body){
  return `<div class="shell" style="flex:1;display:flex;overflow:hidden">
  <aside class="sidebar" style="width:218px;background:${bg};display:flex;flex-direction:column;padding:18px 0;flex-shrink:0;overflow-y:auto">
   <div style="padding:0 18px 16px;display:flex;align-items:center;gap:10px">
-   ${crest(29)}
+   ${crest(32)}
    <div><div class="stamp" style="font-weight:600;font-size:14.5px;color:#fff;line-height:1">${nm}</div>
    <div style="font-size:10px;letter-spacing:.13em;color:var(--nav-txt);margin-top:3px">${SCHOOL.short.toUpperCase()}</div></div></div>
   <nav style="display:flex;flex-direction:column;gap:2px;padding:0 11px">
@@ -2969,9 +2991,13 @@ function catCounts(cat){
  return o2;}
 
 function sidebarC(){
- return `<aside class="sidebar" style="width:252px;background:var(--letterhead);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;border-right:1px solid rgba(255,255,255,.06)">
+ /* The white hairline this column used to carry on its right edge is gone:
+    the .sidebar rule now closes both edges in ink, and an inline border here
+    would outrank it. The crest is the school's mark, same as every other
+    role's letterhead gets from shell(). */
+ return `<aside class="sidebar" style="width:252px;background:var(--letterhead);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto">
   <div style="padding:18px 16px 16px;display:flex;align-items:center;gap:10px">
-   <div style="width:32px;height:32px;border-radius:var(--r);background:var(--school-accent);color:var(--school-on-accent);display:grid;place-items:center;font-family:var(--f-apparatus);font-weight:700;font-size:15px;box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.18)">C</div>
+   ${crest(32)}
    <div style="min-width:0">
     <div style="font-weight:600;font-size:13.5px;color:var(--on-letterhead);letter-spacing:-.012em;line-height:1.2">Counselor OS</div>
     <div style="font-family:var(--f-apparatus);font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--nav-txt);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${SCHOOL.short}</div></div>
