@@ -55,7 +55,22 @@ No real ACS student, family or staff member is represented anywhere in the build
 
 ## Capabilities and Constraints
 
-**Confirmed functionality:** caseload triage and case detail; signal intelligence against personal baselines; 360° student files; recommendation-letter engine; AI co-pilot over the caseload; reporting to leadership; parent portal (transcripts, university requirements, cost of attendance, offer tracking, counselor messaging and meeting requests); student portal (pathway discovery, IB/AP choice, progress, university targets, personal statement lab); teacher concern logging; mentor session requests.
+**Confirmed functionality:** caseload triage and case detail; signal intelligence against personal baselines; 360° student files; recommendation-letter engine; AI co-pilot over the caseload; reporting to leadership; parent portal (transcripts, university requirements, cost of attendance, offer tracking, counselor messaging and meeting requests); student portal (pathway discovery, IB/AP choice, progress, university targets, personal statement lab); teacher concern logging; mentor session requests; **IB subject selection and CAS** (see below).
+
+### The IB module, added 2026-09-10
+
+Driven by a counselor meeting with Mr. Diaz at ACS, and the first part of the product shaped by a named user's own workflow rather than by a design review. His process today is verbal choices written into a notebook, carried to the counselors, then worked up by hand into whether a course can run. He wants to keep the conversation and hand back the clerical half.
+
+- **Subject selection** runs as a round with an open and close date. A Grade 10 student fills six group slots, chooses a level, and writes a reason against each choice. The reason is required, because it is what turns the counselor's meeting from collection into guidance.
+- **The rules are deterministic tables**, per the trust spine: group coverage, HL count, period clashes, prerequisites, stated-goal alignment and whether the course will run. Nothing that gates a submission is model output.
+- **Sign-off is subject teacher, then coordinator.** A teacher answers only the level question and only for subjects they teach. The coordinator decides the whole selection.
+- **The conversation is a gate.** A selection cannot be approved until a dated, attributed record of the review meeting exists. This is a product rule, not a UI state, and it is the point of the module.
+- **The coordinator is a counselor view, not a sixth role**, matching the verified ACS structure.
+- **CAS** covers the three strands, the seven learning outcomes, hours as a school-level expectation (the IB itself no longer specifies 150), reflections, and a coordinator view of who has stopped and in which strand. Interests are captured where they are used rather than in the three-tap sign-in gate, and matched to browsable school activities with the match's reason shown.
+
+**A second population exists, and must stay separate.** The caseload is 87 students across Grades 9–12 belonging to one counselor. The Diploma cohort is the school's IB population across three year groups (Grade 10 choosing, Grades 11 and 12 in the programme). They answer different questions and no screen may total them together.
+
+The IB subject catalogue, its descriptions, the school activities behind CAS and both cohorts are synthetic demonstration content. No ACS course list, programme or co-curricular offering is represented.
 
 **Technical constraints:** one self-contained `index.html`. Vanilla JS, no framework, no build step, no backend, no package manager, no test suite. All data in memory; refresh resets the demo. Must run offline from a double-clicked file. `draw()` rebuilds the whole tree on every state change — this is the governing performance and motion constraint.
 

@@ -614,6 +614,133 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
 .tab:hover{color:var(--ink-2)}
 .tab.on{background:var(--stock);color:var(--ink);border-color:var(--rule-3);border-bottom-color:var(--stock)}
 
+/* ══════════ THE FORM ══════════
+   The diploma's own entry form, printed. Six ruled slots with the group
+   number struck in the margin and the red rule down the left edge, which
+   is the same device the caseload uses and the reason this reads as one
+   product rather than as a module bolted on. An unfilled slot is dashed
+   rather than blank: waiting, not missing.
+
+   Nothing in here is a card. Groups separate by ruling, and the only
+   containers are the ones that hold a real edge. */
+.sheetbox{background:var(--stock);border:1px solid var(--rule-2);border-top:1.5px solid var(--rule-3)}
+.sheetbox>*+*{border-top:1px solid var(--rule)}
+.selform{background:var(--stock);border:1px solid var(--rule-2);border-top:1.5px solid var(--rule-3);
+ border-left:2px solid var(--margin)}
+.selslot+.selslot{border-top:1px solid var(--rule)}
+.selslot.void{background:var(--stock-3)}
+.selrow,.selrow-static,.casent{display:flex;align-items:flex-start;gap:13px;padding:13px 16px}
+.selrow-static:nth-child(even),.casent:nth-child(even){background:var(--band)}
+.selrow-t{font-size:13.2px;font-weight:600;color:var(--ink);line-height:1.3}
+.selrow-n{font-size:11.8px;color:var(--ink-3);line-height:1.55;margin-top:2px;max-width:70ch}
+.selrow-r{display:flex;gap:7px;align-items:center;flex-shrink:0;margin-left:auto}
+.selwhy{padding:0 16px 14px 58px;background:inherit}
+.selwhy textarea{font-size:12.5px;min-height:58px;line-height:1.5}
+/* The level, printed rather than chipped. It is not severity, so it takes
+   the ledger stamp's register and never a tier colour. */
+.lvstamp{display:inline-block;font-family:var(--f-apparatus);font-size:10px;font-weight:700;
+ letter-spacing:.085em;text-transform:uppercase;color:var(--ink-2);
+ border:1px solid var(--rule-3);background:var(--stock);padding:2px 5px;vertical-align:2px;white-space:nowrap}
+
+/* ══════════ THE CHOOSER ══════════ */
+.selchoose{padding:4px 16px 16px 58px;background:var(--stock-2);border-top:1px dashed var(--rule-2)}
+.opt{border:1px solid var(--rule);background:var(--stock);padding:11px 13px}
+.opt+.opt{margin-top:8px}
+.opt:hover{border-color:var(--rule-3)}
+.opt.on{border-color:var(--school-primary);box-shadow:inset 2px 0 0 var(--school-primary)}
+.opt.dim{opacity:.55}
+.opt-h{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.opt-lv{display:flex;gap:7px;margin-left:auto;flex-shrink:0}
+.lvbtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+ min-width:62px;min-height:44px;padding:5px 8px;cursor:pointer;font-family:inherit;
+ border:1px solid var(--rule-3);background:var(--stock);color:var(--ink-2);border-radius:var(--r-sm)}
+.lvbtn:hover:not(:disabled){background:var(--band);color:var(--ink)}
+.lvbtn:disabled{opacity:.45;cursor:not-allowed}
+.lvbtn.on{background:var(--school-primary);border-color:var(--school-primary);color:var(--school-on-primary)}
+.lvbtn-l{font-family:var(--f-apparatus);font-size:11.5px;font-weight:700;letter-spacing:.08em}
+.lvbtn-p{font-size:10px;opacity:.8}
+.lvbtn-w{font-size:9.5px;font-family:var(--f-apparatus);letter-spacing:.05em;color:var(--margin)}
+.lvbtn.on .lvbtn-w{color:var(--school-on-primary)}
+.opt-more{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-top:8px}
+/* A small printed link still owes a 44px target. The mark stays the size
+   the row wants; the hit area is the part that grows. */
+.linkish{background:none;border:none;padding:0;min-height:44px;display:inline-flex;align-items:center;
+ cursor:pointer;font-family:var(--f-apparatus);
+ font-size:10.5px;font-weight:600;letter-spacing:.085em;text-transform:uppercase;color:var(--school-primary);
+ text-decoration:underline;text-underline-offset:3px}
+.opt-desc{margin-top:10px;border-top:1px solid var(--rule);padding-top:11px;display:grid;gap:9px}
+.opt-desc .dl{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;align-items:baseline}
+.opt-desc .dl p{margin:0;font-size:12.3px;color:var(--ink-2);line-height:1.6;max-width:68ch}
+@media(max-width:640px){.opt-desc .dl{grid-template-columns:1fr;gap:2px}
+ .selwhy,.selchoose{padding-left:16px}
+ /* The right-hand column of a ruled row is a column only while there is
+    room for one. On a phone it becomes the next line rather than pushing
+    the page sideways, which is what a 348px meta block did to the CAS
+    list at 375. */
+ .selrow,.selrow-static,.casent{flex-wrap:wrap}
+ .selrow-r{margin-left:34px;width:100%;flex-shrink:1;align-items:center!important;
+  justify-content:flex-start;flex-wrap:wrap;row-gap:4px}
+ .selrow-r .fig{white-space:normal}}
+
+/* ══════════ THE CHECK ══════════
+   Findings print as marks, not as coloured banners. A cross in margin red
+   stops the form, a question mark in ink is worth a conversation, a tick
+   is already right. Colour reinforces the mark; the mark carries it. */
+.checklist{background:var(--stock);border:1px solid var(--rule-2);border-top:1.5px solid var(--rule-3)}
+.checkrow{display:flex;gap:12px;padding:12px 16px;align-items:flex-start}
+.checkrow+.checkrow{border-top:1px solid var(--rule)}
+.checkmark{width:21px;height:21px;flex-shrink:0;display:grid;place-items:center;
+ font-family:var(--f-apparatus);font-size:12px;font-weight:700;line-height:1;
+ border:1.5px solid var(--rule-3);background:var(--stock);color:var(--ink-3)}
+.checkrow.block .checkmark{border-color:var(--margin);color:var(--margin)}
+.checkrow.block{background:var(--stock-3)}
+.checkrow.ask .checkmark{border-color:var(--ink-3);color:var(--ink-2)}
+.selsend{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:22px;
+ padding:16px 18px;background:var(--stock);border:1px solid var(--rule-2);border-left:2px solid var(--margin)}
+
+/* ══════════ TEACHER REVIEW ══════════ */
+.revcard{background:var(--stock);border:1px solid var(--rule-2);border-top:1.5px solid var(--rule-3);margin-bottom:18px}
+.revhead{display:flex;gap:13px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--rule);flex-wrap:wrap}
+.revbody+.revbody{border-top:1px solid var(--rule)}
+.revask{display:flex;gap:13px;align-items:flex-start;padding:14px 16px}
+.revwhy{padding:0 16px 12px 50px}
+.revwhy p{margin:4px 0 0;font-size:12.8px;color:var(--ink);line-height:1.6;max-width:66ch}
+.revrec{padding:0 16px 14px 50px}
+.revrec .appa{display:block;margin-bottom:6px}
+.sheet.mini td{height:auto;padding:7px 10px;font-size:12px}
+.revacts{display:flex;gap:8px;flex-wrap:wrap;padding:0 16px 15px 50px}
+.revconfirm{margin:0 16px 16px 50px;padding:14px 16px;background:var(--stock-3);border:1px solid var(--rule-2);
+ border-left:2px solid var(--margin)}
+.revdone{display:flex;gap:12px;align-items:flex-start;margin:0 16px 15px 50px;padding:12px 14px;background:var(--band)}
+@media(max-width:640px){.revwhy,.revrec,.revacts{padding-left:16px}
+ .revconfirm,.revdone{margin-left:16px}}
+
+/* ══════════ CAS ══════════ */
+.casrun{background:var(--stock);border:1px solid var(--rule-2);padding:14px 16px}
+.run i.gap{background:var(--stock-3);border-style:dotted}
+.run-sm i{width:9px;height:14px}
+.tagrow{display:flex;flex-wrap:wrap;gap:7px}
+.tagbtn{min-height:44px;padding:8px 12px;cursor:pointer;font-family:inherit;font-size:12.3px;font-weight:500;
+ border:1px solid var(--rule-3);background:var(--stock);color:var(--ink-2);border-radius:var(--r-sm)}
+.tagbtn:hover{background:var(--band);color:var(--ink)}
+.tagbtn.on{background:var(--school-primary);border-color:var(--school-primary);color:var(--school-on-primary);font-weight:600}
+
+/* ══════════ THE SELECTION SHEET ══════════
+   Six ruled cells per student, one per diploma group. A row of subject
+   codes reads across exactly the way a run of weeks does on the caseload,
+   and the eye stops in the same place: the cell that is empty. */
+.ibsheet th.ibg,.ibsheet td.ibg{width:74px;padding:0 4px;text-align:center;border-right:1px solid var(--rule)}
+.ibsheet th.ibg:first-of-type,.ibsheet td.ibg:first-of-type{border-left:1px solid var(--rule)}
+.ibsheet th.ibg{text-align:center;color:var(--ink-4)}
+.ibcell{display:inline-flex;flex-direction:column;align-items:center;line-height:1.1;
+ font-family:var(--f-figure);font-size:10.5px;letter-spacing:-.01em;color:var(--ink-2)}
+.ibcell em{font-style:normal;font-family:var(--f-apparatus);font-size:9.5px;letter-spacing:.06em;color:var(--ink-4)}
+.ibcell.hl{color:var(--ink);font-weight:600}
+.ibcell.hl em{color:var(--ink-3)}
+.ibcell.void{color:var(--rule-3)}
+.filterbar{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px;
+ border-bottom:1.5px solid var(--rule-3);padding-bottom:0}
+
 /* ══════════ MISC ══════════ */
 .dots span{display:inline-block;width:4px;height:4px;border-radius:var(--r-dot);background:var(--brand);
  animation:glow 1.15s ease-in-out infinite;margin-right:3px}
@@ -1249,7 +1376,7 @@ const STUDENTS=[
  uni:{targets:[],flags:[]},
  stage:"monitor",lastContact:"—",openedBy:"System · routine",opened:"—"},
 
-{id:"s10",name:"Maya Rahman",yr:"Grade 10",av:"MR",grade:10,track:"undecided",prio:"monitor",owner:"Ms. Haddad",goal:"Considering Economics or Engineering",gpa:"3.7",pred:"—",
+{id:"s10",name:"Maya Rahman",yr:"Grade 10",av:"MR",grade:10,track:"undecided",prio:"monitor",owner:"Ms. Haddad",goal:"Considering Economics or Engineering",gpa:"3.7",pred:"—",mathSet:"foundation",
  headline:"Deciding between the IB Diploma and an AP-based pathway this term.",
  plain:"Grade 10 is when this decision gets made, and Maya has not chosen a pathway yet. Nothing here indicates a concern. This is the exploration stage the portal is built to support.",
  signal:18,window:"Ongoing",severity:"Low",nocause:true,
@@ -1494,7 +1621,12 @@ sortBy:"prio",noteDraft:{},caseNotes:{},escReason:"",selSlot:null,
 uniOpen:"",pmTopic:"",pmSlot:null,pmNote:"",pathDegree:"",pathCountry:"UK",previewGrade:12,previewTrack:"IB",earlyStart:false,
 discoverStage:null,onbStep:0,onbAnswers:{},chatLog:[],chatStep:0,rankedArchetypes:null,selectedArchetypes:[],pathwaysSubmitted:false,activeArchetype:null,roadmapProgress:{},
 fileId:null,fileTab:"synth",
-cat:{cohort:true,uni:false,si:false,sys:false},ragFilter:"all",
+cat:{cohort:true,uni:false,ib:false,si:false,sys:false},ragFilter:"all",
+/* IB selection round and CAS. `selOpen` and `selDesc` are disclosures
+   inside a panel, so they are deliberately not arrivals; `selStu` and
+   `casStu` replace the panel wholesale and are. */
+selOpen:null,selDesc:null,selFilter:"act",selShown:25,selStu:null,
+demSort:"risk",demWho:null,casFilter:"flag",casShown:25,casStu:null,casAll:false,tSign:null,
 sheetTier:"all",sheetRosterShown:0,sel:[],
 navOpen:false,q:"",pv:"overview",tKind:"concern",tTags:[],tNote:"",mKind:"Check-in",mOut:"Ongoing",mergePick:null,assignPick:null,tv:"class",tClass:"c1",
 rQ:"",rSort:"priority",rFilt:"all",
@@ -1723,10 +1855,17 @@ function roleNav(role){
  }
  if(role==="student"){
   const nav=[["discover","My Pathway","spark"]];
-  if(grade===9)nav.push(["guide","High School Guide","book"],["stuclass","My Classes","book"]);
+  if(grade===9)nav.push(["guide","High School Guide","book"],["stuclass","My subjects","book"],["stucas","Activities","users"]);
   else{
    if(grade>=11)nav.push(["progress","My progress","trend"]);
-   nav.push(["stuclass","My Classes","book"]);
+   /* Grade 10 is the selection round, so this entry is the form itself
+      rather than a record of a timetable that does not exist yet. */
+   nav.push([ "stuclass",grade===10?"Choose my subjects":"My subjects","book"]);
+   /* CAS is a diploma requirement, and the activities behind it are open
+      to every student. An AP student sees the opportunities and is told
+      plainly that none of it is assessed for them, which is truer than
+      hiding the page and cheaper than explaining it in a corridor. */
+   nav.push(["stucas",track==="IB"&&grade>=11?"CAS":"Activities & CAS","users"]);
    if(grade===12)nav.push(["targets","University targets","target"]);
    nav.push(["explore","Choosing IB or AP","route"]);
    if(grade>=11)nav.push(["pslab","Personal Statement Lab","doc"]);
@@ -1742,7 +1881,7 @@ function roleNav(role){
     reference a teacher opens far less often. "My Classes" used to sit first
     in this list while the app itself opened straight to the register — the
     nav order was still pointing at the card grid it no longer led with. */
- if(role==="teacher")return [["class","My Class Register","users"],["tclasses","My Classes","book"],["classapprovals","Course Approvals","check"],["tlog","What I've logged","list"]];
+ if(role==="teacher")return [["class","My Class Register","users"],["tclasses","My Classes","book"],["classapprovals","Subject choices","check"],["tlog","What I've logged","list"]];
  if(role==="mentor")return [["requests","Session Requests","inbox",MENTOR_REQS.length],["mentees","My Mentees","users"]];
  return [["cohort-schedule","Caseload","users"],["si-cases","Priority","alert"],["meetings","Meetings","brief"],["flags","Flags","inbox"]];
 }
@@ -2981,6 +3120,11 @@ const CATS=[
    ["app-season","Season overview"],
    ["app-progress","Application progress"],["app-list","List balance"],["app-deadlines","Deadlines"],
    ["app-docs","Documents & references"],["app-statement","Personal statements"],["app-letter","Letter Engine"]]},
+ /* The coordinator's work, inside the console the counseling team already
+    has open. ACS runs no separate coordination department, so this is a
+    category rather than a sixth role. */
+ {id:"ib",label:"IB Diploma",ic:"route",sub:[
+   ["ib-selections","Subject selections"],["ib-demand","Which courses can run"],["ib-cas","CAS progress"]]},
  {id:"si",label:"Student Intelligence",ic:"radar",sub:[
    ["si-cases","Priority cases"],["si-why","How detection works"],
    ["si-attendance","Attendance"],["si-punctuality","Punctuality & tardiness"],
@@ -3975,223 +4119,1396 @@ function getStudentClasses(sid){
  }
 }
 
-/* Pending class approvals workflow */
+/* ═══════════════════════════════════════════════════════════════════
+   THE IB DIPLOMA — SUBJECT SELECTION, REVIEW AND CAS
+   ═══════════════════════════════════════════════════════════════════
+   Built from a counselor meeting at ACS on 2026-09-10, so it is the first
+   part of this product shaped by a named user's own workflow rather than
+   by a design review.
+
+   What happens today: students tell the coordinator their intended
+   subjects out loud, he writes them into a notebook, carries the notebook
+   to the counselors, and staff then work out by hand whether each course
+   can run. He wants to keep the conversation and hand back the clerical
+   half, so that he opens a submitted selection already knowing what a
+   student chose and can spend the meeting asking why.
+
+   Two rules govern everything below.
+
+   Rules decide, the model writes. Every gate on a submission is a
+   deterministic table: group coverage, HL count, periods, prerequisites.
+   Nothing here is generated, and nothing on the demand sheet is stored —
+   the counts are tallied from the cohort's own selections on every
+   render, because the hardcoded 67% the P8 tally printed over a table of
+   87 is the exact failure this module would repeat at scale.
+
+   The conversation is a gate. A selection cannot be approved until the
+   review meeting is recorded against it. That is the whole point of the
+   module, and it is why "record the conversation" is a workflow state
+   rather than a note field. */
+
+const IB_GROUPS=[
+ {n:1,id:"g1",label:"Language and literature",note:"Your strongest language, studied as a subject in its own right."},
+ {n:2,id:"g2",label:"Language acquisition",note:"A second language, taken at the level you are ready for rather than the level that sounds best."},
+ {n:3,id:"g3",label:"Individuals and societies",note:"How people, money, power and the past behave."},
+ {n:4,id:"g4",label:"Sciences",note:"One experimental science. The lab work is assessed, not just the exam."},
+ {n:5,id:"g5",label:"Mathematics",note:"Two routes. Which route you take matters more than which level."},
+ {n:6,id:"g6",label:"Arts, or a sixth subject",note:"An arts subject, or a second subject from groups 1 to 4."}];
+
+/* The subject catalogue. `per` is the period each level runs at, and it is
+   what makes a clash real rather than decorative: two subjects a student
+   has chosen at the same period cannot both be taken, and the form says so
+   on the option before it is picked rather than after.
+   `min` and `cap` are the school's own thresholds for running a class.
+   `needs` is the prerequisite, expressed as a course and a mark so the
+   check is a comparison rather than an opinion. */
+const IB_SUBJECTS=[
+ {id:"ENL",g:"g1",name:"English A: Literature",lv:["HL","SL"],t:"Mr. Adeyemi",per:{HL:"P2",SL:"P2"},min:10,cap:24,
+  about:"Thirteen works read closely, across at least three literary forms and several centuries.",
+  like:"You read more than you have read before, and you write about far less of it than you read. Most weeks are one text, one argument, and a seminar where you are expected to have a position.",
+  assess:"Two exams, a taught oral, and an essay you write over the second year.",
+  hard:"The volume of reading is the part students underestimate. The writing is a skill you build; the reading is time you have to find."},
+ {id:"ELL",g:"g1",name:"English A: Language and literature",lv:["HL","SL"],t:"Mr. Adeyemi",per:{HL:"P2",SL:"P5"},min:10,cap:24,
+  about:"Half literature, half how language works in advertising, speeches, journalism and images.",
+  like:"You will spend a week on a novel and the next on a campaign poster, using the same tools on both. Students who find pure literature airless often prefer this one.",
+  assess:"Two exams, a taught oral, and a comparative essay at Higher Level.",
+  hard:"The non-literary half looks easier and is not. Analysing an advert well is harder than analysing a poem badly."},
+ {id:"ARA",g:"g1",name:"Arabic A: Literature",lv:["HL","SL"],t:"Ms. Nasser",per:{HL:"P5",SL:"P5"},min:8,cap:20,
+  about:"Literature in Arabic, for students whose Arabic is a first language rather than a school subject.",
+  like:"Seminar-shaped, in Arabic throughout, with classical and modern texts sitting beside each other.",
+  assess:"Two exams, a taught oral, and a written essay.",
+  hard:"Written register. Speaking Arabic at home is not the same as writing literary analysis in it."},
+ {id:"ARB",g:"g2",name:"Arabic B",lv:["HL","SL"],t:"Ms. Nasser",per:{HL:"P6",SL:"P6"},min:8,cap:22,
+  about:"Arabic as an acquired language, built around five themes from identity to sharing the planet.",
+  like:"Speaking every lesson. The course is organised around what you can do with the language, so a quiet term is a term you lose.",
+  assess:"Reading and writing exams, plus a recorded individual oral.",
+  hard:"If Arabic is your home language this is the wrong course, and the school will say so."},
+ {id:"FRB",g:"g2",name:"French B",lv:["HL","SL"],t:"Ms. Laurent",per:{HL:"P6",SL:"P6"},min:8,cap:22,
+  about:"French built on at least two years of prior study, across the same five themes.",
+  like:"Lessons run in French. The first term is uncomfortable and the third is not.",
+  assess:"Reading and writing exams, plus a recorded individual oral.",
+  hard:"Higher Level adds two literary works, which is a genuine step up rather than more of the same."},
+ {id:"SPB",g:"g2",name:"Spanish B",lv:["HL","SL"],t:"Ms. Garcia",per:{HL:"P6",SL:"P6"},min:8,cap:22,
+  about:"Spanish built on prior study, across the same five themes.",
+  like:"Lessons run in Spanish, with a lot of speaking and a steady diet of authentic text.",
+  assess:"Reading and writing exams, plus a recorded individual oral.",
+  hard:"Vocabulary load is relentless and it does not respond to cramming."},
+ {id:"SPI",g:"g2",name:"Spanish ab initio",lv:["SL"],t:"Ms. Garcia",per:{SL:"P3"},min:8,cap:20,
+  about:"Spanish from the beginning, for students who have not studied it before.",
+  like:"Two years from nothing to holding a conversation. Fast, structured, and unforgiving about missed weeks.",
+  assess:"Reading and writing exams, plus a recorded individual oral.",
+  hard:"It is only open to genuine beginners, and eligibility is checked."},
+ {id:"ECO",g:"g3",name:"Economics",lv:["HL","SL"],t:"Ms. Fahri",per:{HL:"P3",SL:"P3"},min:10,cap:24,
+  about:"Microeconomics, macroeconomics, the global economy and development, taught around real policy.",
+  like:"Diagrams, then arguments about what the diagrams leave out. You will be asked to evaluate rather than describe from the first month.",
+  assess:"Exams, plus a portfolio of three commentaries written on real news articles.",
+  hard:"Higher Level adds quantitative work. Students who chose it to avoid mathematics find that out in the second term."},
+ {id:"BUS",g:"g3",name:"Business management",lv:["HL","SL"],t:"Mr. Haddad",per:{HL:"P4",SL:"P4"},min:10,cap:24,
+  about:"How organisations are financed, run, marketed and changed.",
+  like:"Case studies, most weeks, on companies you have heard of. More writing than students expect and more accounting than they expect.",
+  assess:"Exams, plus a research project on one organisation at Higher Level.",
+  hard:"The finance unit. It is arithmetic with vocabulary attached, and it separates the class."},
+ {id:"HIS",g:"g3",name:"History",lv:["HL","SL"],t:"Ms. Sharma",per:{HL:"P3",SL:"P1"},min:10,cap:24,
+  about:"One thematic world-history study, one regional depth study, and a piece of independent research.",
+  like:"Argument every week, from sources that disagree with each other. The essays are long and get longer.",
+  assess:"Exams, plus a historical investigation you choose and research yourself.",
+  hard:"Timed essay writing. Knowing the material and writing it in forty-five minutes are separate skills."},
+ {id:"PSY",g:"g3",name:"Psychology",lv:["HL","SL"],t:"Ms. Johnson",per:{HL:"P5",SL:"P4"},min:10,cap:24,
+  about:"Behaviour explained biologically, cognitively and socioculturally, taught through the studies themselves.",
+  like:"You learn studies the way a science student learns experiments: method, findings, and what the method could not show.",
+  assess:"Exams, plus an experimental study you run and write up.",
+  hard:"It is a science, not a discussion subject, and the command word is almost always evaluate."},
+ {id:"GPO",g:"g3",name:"Global politics",lv:["HL","SL"],t:"Ms. Sharma",per:{HL:"P4",SL:"P2"},min:8,cap:20,
+  about:"Power, sovereignty, human rights, development and peace, tested against current cases.",
+  like:"The reading is the news. Class runs as structured disagreement, and you are expected to argue a position that is not your own.",
+  assess:"Exams, plus an engagement activity you take part in and analyse.",
+  hard:"Small cohort most years, so there is nowhere to hide in a seminar."},
+ {id:"BIO",g:"g4",name:"Biology",lv:["HL","SL"],t:"Dr. Reid",per:{HL:"P2",SL:"P4"},min:10,cap:24,
+  about:"Cells, molecular biology, genetics, ecology, physiology, and how biological knowledge is built.",
+  like:"Lab most weeks. The content volume at Higher Level is the largest of any science here, and it accumulates rather than resets.",
+  assess:"Exams, plus an individual scientific investigation.",
+  hard:"Sheer volume. Falling four weeks behind in Biology is harder to recover than in any other subject on this list."},
+ {id:"CHE",g:"g4",name:"Chemistry",lv:["HL","SL"],t:"Dr. Chen",per:{HL:"P4",SL:"P2"},min:10,cap:22,
+  about:"Structure, bonding, energetics, kinetics, equilibrium and organic chemistry.",
+  like:"Problem sets. Chemistry rewards doing questions rather than reading notes, and the practical work is precise.",
+  assess:"Exams, plus an individual scientific investigation.",
+  hard:"It is the most mathematical of the three sciences, and Higher Level organic chemistry is a memory load."},
+ {id:"PHY",g:"g4",name:"Physics",lv:["HL","SL"],t:"Dr. Reid",per:{HL:"P5",SL:"P5"},min:10,cap:22,
+  about:"Mechanics, waves, fields, energy and one option topic, taught mathematically throughout.",
+  like:"Derivation and problem solving, with the laboratory used to test what the algebra claims.",
+  assess:"Exams, plus an individual scientific investigation.",
+  hard:"Physics HL alongside Mathematics: applications is a combination that fights itself. Take analysis and approaches if you can."},
+ {id:"CSC",g:"g4",name:"Computer science",lv:["HL","SL"],t:"Mr. Patel",per:{HL:"P6",SL:"P1"},min:8,cap:20,
+  about:"How machines compute, plus a solution you design and build for a real client.",
+  like:"Half theory that looks like discrete mathematics, half a two-year software project with a person waiting on it.",
+  assess:"Exams, plus the developed solution and its documentation.",
+  hard:"The project has a real deadline and no way to compress it. Students who start it late lose marks they cannot recover."},
+ {id:"DES",g:"g4",name:"Design technology",lv:["HL","SL"],t:"Mr. Patel",per:{HL:"P1",SL:"P3"},min:8,cap:18,
+  about:"Design thinking, materials, manufacturing and sustainability, with a major design project.",
+  like:"Workshop time and iteration. You will build things that do not work before you build one that does.",
+  assess:"Exams, plus a design project carried through prototyping.",
+  hard:"It reads as the practical option and is assessed as a science."},
+ {id:"MAA",g:"g5",name:"Mathematics: analysis and approaches",lv:["HL","SL"],t:"Mr. J. Davies",per:{HL:"P1",SL:"P1"},min:12,cap:24,
+  about:"Algebra, functions, trigonometry, calculus and proof, taught for mathematical reasoning.",
+  like:"Calculus arrives early and never leaves. Higher Level is the most demanding course in the diploma by hours.",
+  assess:"Exams, plus a mathematical exploration you write yourself.",
+  hard:"Engineering, physics, computer science and most economics degrees ask for this route, so it is chosen for reasons other than enjoyment more often than any other subject here.",
+  needs:{course:"extended mathematics",pct:85,lv:"HL"}},
+ {id:"MAI",g:"g5",name:"Mathematics: applications and interpretation",lv:["HL","SL"],t:"Mr. Yilmaz",per:{HL:"P1",SL:"P4"},min:10,cap:24,
+  about:"Modelling, statistics and applied calculus, taught with technology in hand throughout.",
+  like:"You will use a graphing calculator constantly and model situations that come with messy numbers.",
+  assess:"Exams, plus a mathematical exploration you write yourself.",
+  hard:"Some engineering and physics courses will not accept it, even at Higher Level. Check the universities before choosing it."},
+ {id:"VIS",g:"g6",name:"Visual arts",lv:["HL","SL"],t:"Ms. Wilson",per:{HL:"P4",SL:"P6"},min:8,cap:18,
+  about:"Studio practice, comparative study of other artists, and a resolved body of work.",
+  like:"Studio time, a process journal that is genuinely assessed, and an exhibition at the end with your own commentary beside each piece.",
+  assess:"A comparative study, the process portfolio, and the exhibition. No written exam.",
+  hard:"The workload is continuous rather than seasonal. There is nothing to revise and nowhere to catch up."},
+ {id:"MUS",g:"g6",name:"Music",lv:["HL","SL"],t:"Ms. Bianchi",per:{HL:"P5",SL:"P1"},min:6,cap:16,
+  about:"Performing, composing and researching music across several traditions.",
+  like:"You will perform, write, and defend both. Practice happens outside lessons and the course assumes it.",
+  assess:"Recorded performance and composition portfolios, plus a contemporary music enquiry.",
+  hard:"It expects existing instrumental or vocal ability. Starting from nothing in Grade 11 is very hard."},
+ {id:"THE",g:"g6",name:"Theatre",lv:["HL","SL"],t:"Ms. Wilson",per:{HL:"P2",SL:"P4"},min:6,cap:16,
+  about:"Theatre made, directed and researched, not theatre read.",
+  like:"Rehearsal, collaboration and deadlines that involve other people. Missing a session costs four other students their session.",
+  assess:"A research presentation, a collaborative project, and a director's notebook.",
+  hard:"Group assessment. Your mark depends partly on people who are not you."},
+ {id:"FIL",g:"g6",name:"Film",lv:["SL"],t:"Ms. Wilson",per:{SL:"P2"},min:6,cap:16,
+  about:"Film history and theory, alongside films you make.",
+  like:"Watching closely and shooting badly, then shooting less badly. Editing takes longer than anyone plans for.",
+  assess:"A comparative study, a portfolio of production work, and a short film.",
+  hard:"Equipment time is finite and shared, so the students who book early are the ones who finish."}];
+
+/* The three parts nobody chooses. They are on the form because leaving
+   them off the form is how a student meets them for the first time in
+   October of Grade 11. */
+const DP_CORE=[
+ ["TOK","Theory of knowledge","A taught course in how you know what you claim to know, assessed by an exhibition and a 1,600-word essay."],
+ ["EE","Extended essay","A 4,000-word piece of independent research in a subject you choose, with a supervisor."],
+ ["CAS","Creativity, activity, service","Eighteen months of engagement across three strands, with reflection. Tracked in this portal from the first week of Grade 11."]];
+
+const IBS=id=>IB_SUBJECTS.find(s=>s.id===id)||null;
+const IB_BY_GROUP=gid=>IB_SUBJECTS.filter(s=>s.g===gid);
+/* Group 6 is the arts, or a second subject from groups 1 to 4. The rule is
+   real IB structure, so the sixth slot offers a genuinely wider list. */
+const SLOT6=()=>IB_SUBJECTS.filter(s=>s.g==="g6"||["g1","g2","g3","g4"].includes(s.g));
+
+/* What a stated goal actually requires, as a table rather than as advice.
+   The check this feeds never blocks a submission: a fifteen-year-old is
+   allowed to want two things at once. It raises the question the
+   coordinator should ask, which is the whole brief. */
+const GOAL_NEEDS={
+ "Engineering":{need:["MAA"],want:["PHY"],say:"Engineering courses in the UK and the UAE ask for analysis and approaches, and almost all of them ask for physics."},
+ "Mechanical Engineering":{need:["MAA"],want:["PHY"],say:"Mechanical engineering asks for analysis and approaches, and physics at Higher Level at the more selective universities."},
+ "Medicine":{need:["BIO","CHE"],want:[],say:"Medicine asks for chemistry and biology, and most schools want both at Higher Level."},
+ "Veterinary Medicine":{need:["BIO","CHE"],want:[],say:"Veterinary medicine asks for chemistry and biology, usually both at Higher Level."},
+ "Dentistry":{need:["BIO","CHE"],want:[],say:"Dentistry asks for chemistry and biology at Higher Level."},
+ "Biomedical Science":{need:["BIO"],want:["CHE"],say:"Biomedical science asks for biology, and chemistry is expected at most universities."},
+ "Computer Science":{need:["MAA"],want:["CSC"],say:"Computer science asks for analysis and approaches at Higher Level almost everywhere."},
+ "Economics":{need:["MAA"],want:["ECO"],say:"Economics at the more selective universities asks for analysis and approaches at Higher Level."},
+ "Investment Banking":{need:["MAA"],want:["ECO"],say:"The economics and finance degrees this route runs through ask for analysis and approaches."},
+ "Finance":{need:["MAA"],want:["ECO"],say:"Finance degrees ask for mathematics, and analysis and approaches is the route they expect."},
+ "Architecture":{need:[],want:["VIS","PHY"],say:"Architecture asks for a portfolio. Visual arts is the usual route to one, and some schools ask for mathematics or physics."},
+ "Law":{need:[],want:["HIS","GPO"],say:"Law asks for no specific subject, and it asks for evidence you can build an argument in writing."},
+ "Psychology":{need:[],want:["PSY","BIO"],say:"Psychology is a science at most universities, so at least one science is usually expected."},
+ "Mathematics":{need:["MAA"],want:[],say:"Mathematics degrees ask for analysis and approaches at Higher Level without exception."},
+ "Business & Management":{need:[],want:["ECO","BUS"],say:"Business degrees rarely require a named subject, though mathematics is asked for by the quantitative ones."}};
+
+/* ── The Diploma cohort ────────────────────────────────────────────
+   A different population from the counselor's caseload, and it must stay
+   different. The caseload is 87 students across Grades 9 to 12 belonging
+   to one counselor; this is the school's IB Diploma population across
+   three year groups. Two numbers that mean different things must never be
+   made to look like one number. Every screen below names which it holds. */
+const SEL_ROUND={year:"2027 / 28",opened:"10 November",closes:"5 December",
+ coordinator:"Mr. A. Diaz",role:"IB Diploma Programme Coordinator",
+ minNote:"A course runs at 8 students or more in most subjects, 6 in the arts.",
+ deadlineIn:11};
+const DPC=[];
+const CASREC={};
+const SELREC={};
+(function(){
+ const first=["Aaliyah","Rashid","Noor","Mariam","Hamdan","Salma","Faris","Dana","Khalid","Reem","Hessa","Adam","Latifa","Shaikha","Yasin","Amna","Bilal","Saeed","Layan","Idris","Huda","Nasser","Mira","Jamal","Rania","Kareem","Malek","Aisha","Lina","Hadi","Yara","Sultan","Nadia","Leen","Majid","Rana","Anas","Dima","Waleed","Sana","Basel","Hala","Ziad","Karim","Joud","Samir","Tala","Ruba","Ammar","Ibrahim","Salwa","Marwan","Lamia","Zeina","Farida","Rayan","Tamer","Iman","Saif","Dalia","Munir","Amal","Nabil","Rima","Jad","Elias","Yara","Kenza","Omar","Sasha","Nour"];
+ const last=["Al Marri","Rahman","Al Zaabi","Nasser","Al Hashimi","Khoury","Bin Rashid","Saleh","Al Ameri","Mensah","Darwish","Kassem","Al Nuaimi","Habib","Al Dhaheri","Younis","Al Qasimi","Barakat","Al Falasi","Shamsi","Al Kaabi","Odeh","Al Mazrouei","Sabbagh","Iqbal","Demir","Okafor","Lindqvist","Moreau","Tanaka"];
+ let seed=20261110;const rnd=()=>{seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;};
+ const pick=a=>a[Math.floor(rnd()*a.length)];
+ /* Weighted so the demand sheet tells the truth about a real school: a few
+    subjects oversubscribed, a long middle, and three or four that will not
+    run. An even spread would make the viability screen pointless. */
+ const W={ENL:26,ELL:16,ARA:9,ARB:18,FRB:14,SPB:16,SPI:6,
+  ECO:26,BUS:22,HIS:14,PSY:20,GPO:5,
+  BIO:26,CHE:18,PHY:16,CSC:12,DES:5,
+  MAA:34,MAI:22,VIS:10,MUS:4,THE:5,FIL:4};
+ const wpick=list=>{const tot=list.reduce((a,s)=>a+(W[s.id]||8),0);let r=rnd()*tot;
+  for(const s of list){r-=(W[s.id]||8);if(r<=0)return s;}return list[list.length-1];};
+ const goals=["Medicine","Engineering","Computer Science","Economics","Law","Architecture","Business & Management","Psychology","Biomedical Science","Mathematics","Finance","Dentistry"];
+ const used=new Set(["Maya Rahman","Sara Al Mansoori","Tariq Al Balushi","Ivan Petrov","Fahad Al Otaibi"]);
+ const nameGen=()=>{let nm,guard=0;do{nm=pick(first)+" "+pick(last);guard++;}while(used.has(nm)&&guard<50);used.add(nm);return nm;};
+ /* One selection, built to the diploma's own rules, including the
+    timetable. Choosing subjects first and levels afterwards produced
+    selections the form itself would have refused: two thirds of the
+    cohort carried a period clash, so the coordinator could not approve
+    them and the rules panel contradicted the status above it. Level and
+    period are decided together, slot by slot, against the periods already
+    taken. */
+ const buildPicks=()=>{
+  for(let attempt=0;attempt<40;attempt++){
+   const picks={},used=[],taken=[];
+   /* which three slots carry Higher Level is decided first, because it is
+      what makes a period free or not */
+   const slots=IB_GROUPS.map(gr=>gr.id);
+   const hlSlots=slots.slice();
+   for(let i=hlSlots.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[hlSlots[i],hlSlots[j]]=[hlSlots[j],hlSlots[i]];}
+   const wantHL=new Set(hlSlots.slice(0,3));
+   let ok=true;
+   slots.forEach(gid=>{
+    if(!ok)return;
+    /* Roughly two in five take an arts subject as their sixth. Drawing
+       slot 6 from the whole of groups 1 to 6 by weight alone emptied the
+       arts entirely, and a school where nobody takes music, theatre or
+       visual arts is not a school. */
+    let pool=(gid==="g6"?SLOT6():IB_BY_GROUP(gid)).filter(s=>!taken.includes(s.id));
+    if(gid==="g6"&&rnd()<.42){const arts=pool.filter(s=>s.g==="g6");if(arts.length)pool=arts;}
+    const want=wantHL.has(gid)?"HL":"SL";
+    let cand=pool.filter(s=>s.lv.includes(want)&&!used.includes(s.per[want]));
+    /* a slot whose subjects offer only one level still has to be filled */
+    if(!cand.length)cand=pool.filter(s=>s.lv.some(lv=>!used.includes(s.per[lv])));
+    if(!cand.length){ok=false;return;}
+    const s=wpick(cand);
+    const lv=s.lv.includes(want)&&!used.includes(s.per[want])?want
+     :s.lv.find(x=>!used.includes(s.per[x]));
+    picks[gid]={s:s.id,lv};used.push(s.per[lv]);taken.push(s.id);});
+   if(!ok)continue;
+   const hl=Object.values(picks).filter(p=>p.lv==="HL").length;
+   if(hl===3||hl===4)return picks;
+  }
+  return null;};
+ /* Grade 10 carries the one piece of record the level question actually
+    turns on: which mathematics set they sit in this year, and their mark
+    in it. Without it a teacher is asked whether a student can carry
+    Higher Level next to a panel that says nothing at all, which is the
+    version of this screen that gets ignored. */
+ const addYear=(yr,n,named)=>{
+  named.forEach(x=>DPC.push(Object.assign({yr,named:true},x)));
+  for(let i=0;i<n;i++){
+   const nm=nameGen(),id="dp"+yr+"_"+i;
+   const rec={id,name:nm,av:nm.split(" ").map(w=>w[0]).slice(0,2).join(""),yr,goal:pick(goals)};
+   if(yr===10){rec.mathSet=rnd()<.62?"extended mathematics":"foundation";
+    rec.mark=Math.round((rec.mathSet==="extended mathematics"?72:62)+rnd()*26);}
+   DPC.push(rec);
+  }};
+ addYear(10,81,[{id:"s10",name:"Maya Rahman",av:"MR",goal:"Considering Economics or Engineering",mathSet:"foundation",mark:85}]);
+ addYear(11,56,[{id:"s12",name:"Tariq Al Balushi",av:"TB",goal:"Law"},{id:"s17",name:"Ivan Petrov",av:"IP",goal:"Mathematics"}]);
+ addYear(12,60,[{id:"s3",name:"Sara Al Mansoori",av:"SA",goal:"Investment Banking"}]);
+ /* Grade 10 carries a live selection round; Grades 11 and 12 are in the
+    diploma already and carry a CAS record instead. */
+ const stateFor=()=>{const r=rnd();
+  return r<.17?"draft":r<.30?"none":r<.62?"submitted":r<.80?"signed":r<.90?"approved":"changes";};
+ /* A state has to bring its own evidence with it. An approved selection
+    with no conversation recorded against it would contradict, on the very
+    screen that enforces the rule, the one rule this module exists to
+    enforce; a "teachers have answered" row with no answers on it would
+    contradict its own column. Both are the class of defect the finish
+    reviewer found five of in P8, so the generator carries the sub-state
+    rather than only the label. */
+ const WHY_STOCK=["It is the one I look forward to.","I want to keep this route open.",
+  "My teacher this year said I would do well in it.","It is what the course I am aiming at asks for.",
+  "I am better at it than I expected to be.","I would rather carry a subject I enjoy than one that looks strategic."];
+ const NOTE_HL=["Consistent all year and asks good questions. Ready for it.",
+  "Strong on the written work. I have no concerns at Higher Level.",
+  "Has done the harder extension work all term without being asked."];
+ const NOTE_SL=["Capable, but the pace at Higher Level would cost the rest of the diploma.",
+  "I would rather see a strong Standard Level grade than a struggle at Higher."];
+ DPC.filter(d=>d.yr===10).forEach(d=>{
+  const st=d.id==="s10"?"draft":stateFor();
+  if(st==="none"){SELREC[d.id]={sid:d.id,status:"none",picks:{},why:{},goalNote:"",signs:{},talk:null,log:[],v:0};return;}
+  const picks=buildPicks();
+  if(!picks){SELREC[d.id]={sid:d.id,status:"none",picks:{},why:{},goalNote:"",signs:{},talk:null,log:[],v:0};return;}
+  /* drawn without replacement: three identical sentences on one form is
+     what generated content looks like, and a reader spots it before they
+     read any of them */
+  const bag=WHY_STOCK.slice();
+  for(let i=bag.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[bag[i],bag[j]]=[bag[j],bag[i]];}
+  const why={};Object.keys(picks).forEach((k,i)=>{why[k]=st==="draft"&&rnd()<.4?"":bag[i%bag.length];});
+  const sent=["12 Nov","14 Nov","17 Nov","19 Nov","21 Nov"][Math.floor(rnd()*5)];
+  const rec={sid:d.id,status:st,picks,why,goalNote:"",signs:{},talk:null,
+   submitted:st==="draft"?null:sent,log:[],v:st==="draft"?0:1};
+  if(st!=="draft")rec.log.push({when:sent,who:d.name,what:"Selection sent, version 1. Six subjects, "+Object.values(picks).filter(p=>p.lv==="HL").length+" at Higher Level."});
+  /* every state past "with teachers" has its teachers' answers on file */
+  if(["signed","approved","changes"].includes(st)){
+   Object.values(picks).filter(p=>p.lv==="HL").forEach(p=>{
+    const s=IBS(p.s),hl=rnd()<.82;
+    rec.signs[p.s]={by:s.t,verdict:hl?"hl":"sl",when:["18 Nov","19 Nov","20 Nov"][Math.floor(rnd()*3)],
+     note:hl?pick(NOTE_HL):pick(NOTE_SL)};});}
+  if(st==="approved"){
+   rec.talk={when:"21 Nov",by:"Mr. A. Diaz",
+    note:"Talked the whole selection through. The reasons on the form held up when I asked about them, and the Higher Levels are the right three."};
+   rec.log.unshift({when:"21 Nov",who:"Mr. A. Diaz",what:"Review conversation recorded. "+rec.talk.note});
+   rec.log.unshift({when:"21 Nov",who:"Mr. A. Diaz",what:"Selection approved. Six subjects confirmed for "+SEL_ROUND.year+"."});}
+  if(st==="changes"){
+   rec.returnNote="One of your Higher Levels needs a rethink after what your teacher wrote. Come and see me before you change it.";
+   rec.log.unshift({when:"20 Nov",who:"Mr. A. Diaz",what:"Sent back for a change. "+rec.returnNote});}
+  SELREC[d.id]=rec;
+ });
+ /* CAS. The run is the same cell the counselor reads across the caseload,
+    turned the other way: a month with recorded engagement is a filled
+    cell, a thin month is an outline, an empty month is a rule. No red,
+    because the break in the run is the caseload's one accent and a
+    quiet CAS month is not a safeguarding signal. */
+ const casMonths=yr=>yr===12?18:8;
+ DPC.filter(d=>d.yr>10).forEach(d=>{
+  const m=casMonths(d.yr),run=[];
+  /* Most of a cohort is fine. If the coordinator's "needs a nudge" list
+     holds four students in five, it is a roster rather than a list, and
+     nobody reads it twice. */
+  const health=rnd()<.72?"ok":rnd()<.6?"slow":"stalled";
+  for(let i=0;i<m;i++){
+   const r=rnd(),late=i>=m-3;
+   run.push(health==="ok"?(r<.84?"kept":"soft")
+    :health==="slow"?(r<.5?"kept":r<.84?"soft":"none")
+    :(late?"none":r<.45?"kept":r<.7?"soft":"none"));}
+  /* Hours track the run, and Grade 11 is eight months in rather than
+     eighteen, so its totals are smaller without being behind. */
+  const base=d.yr===12?{ok:34,slow:20,stalled:11}:{ok:16,slow:10,stalled:5};
+  const h=k=>Math.round(base[health]*(.7+rnd()*.8));
+  const hrs={c:h(),a:h(),s:Math.round(h()*(rnd()<.3?.4:1))};
+  CASREC[d.id]={hrs,run,
+   outcomes:health==="ok"?4+Math.floor(rnd()*4):health==="slow"?2+Math.floor(rnd()*3):Math.floor(rnd()*3),
+   last:health==="ok"?["This week","Last week","2 weeks ago"][Math.floor(rnd()*3)]
+    :health==="slow"?["3 weeks ago","4 weeks ago","6 weeks ago"][Math.floor(rnd()*3)]
+    :["9 weeks ago","11 weeks ago","14 weeks ago"][Math.floor(rnd()*3)],
+   pending:health==="ok"?(rnd()<.7?0:1):Math.floor(rnd()*3),entries:null};
+ });
+})();
+
+/* ── The four named students, authored rather than generated ────────
+   Maya is mid-draft with the sixth slot still open, which is the state
+   the selection form has to be good at. Her mathematics is the live
+   question: analysis and approaches at Higher Level is offered from the
+   extended set and she sits in the foundation set, so the prerequisite
+   check raises it, her teacher answers it, and the coordinator has
+   something specific to ask her about. That chain is the module. */
+SELREC.s10={sid:"s10",status:"draft",v:0,submitted:null,talk:null,signs:{},log:[],
+ goalNote:"I want to keep economics and engineering both open for another year, because I do not want to choose between them yet.",
+ picks:{g1:{s:"ENL",lv:"SL"},g2:{s:"FRB",lv:"SL"},g3:{s:"ECO",lv:"HL"},g4:{s:"PHY",lv:"HL"},g5:{s:"MAA",lv:"HL"},g6:null},
+ why:{g1:"I read a lot anyway and I would rather be examined on books than on adverts.",
+  g2:"I have done four years of French and dropping it now would waste them.",
+  g3:"The economics taster this term was the only class I have thought about afterwards.",
+  g4:"If I do end up going for engineering I will need physics, and I would rather have it and not need it.",
+  g5:"Everything I am considering asks for analysis and approaches, so it is not really a choice.",
+  g6:""}};
+const CAS_STRANDS=[["c","Creativity","Anything that stretches you creatively, with a process you can point at."],
+ ["a","Activity","Physical exertion that contributes to a healthy lifestyle. Rehearsal counts, and so does the walk-in."],
+ ["s","Service","Unpaid work that meets a real need, decided with the people it serves rather than for them."]];
+/* The seven learning outcomes, in the IB's own order. A student meets them
+   over the whole programme, not per activity. */
+const CAS_OUTCOMES=["Identify your own strengths and areas for growth",
+ "Show that you have undertaken a new challenge","Plan and initiate an activity",
+ "Show perseverance and commitment","Work collaboratively with others",
+ "Engage with issues of global significance","Recognise and consider the ethics of what you do"];
+/* Hours are the school's own expectation, not an IB rule. The IB asks for a
+   balanced engagement across eighteen months and evidence of the seven
+   outcomes; it stopped specifying 150 hours. Saying so is cheaper than
+   letting a student believe a number is a regulation. */
+const CAS_HOURS_NOTE="Hours are this school's own expectation, roughly 50 across each strand over 18 months. The IB itself asks for a balanced 18-month engagement and evidence of the seven outcomes rather than a total.";
+
+/* What the school runs. Every entry here is demonstration content: these
+   are plausible school activities, not a list of anything ACS actually
+   offers, and the demonstration stamp on the letterhead covers them. */
+const CAS_OPPS=[
+ {id:"o1",n:"Senior concert band",st:"c",tags:["music"],when:"Tue and Thu, 15:30",lead:"Ms. Bianchi",spots:6,about:"Rehearsal twice a week, two concerts a year, and a section you are responsible for. Grade 6 standard or above on your instrument."},
+ {id:"o2",n:"Chamber ensemble",st:"c",tags:["music"],when:"Wed, 16:00",lead:"Ms. Bianchi",spots:2,about:"Four to six players, no conductor, and you choose the repertoire. It asks for more independence than the band."},
+ {id:"o3",n:"Spring production",st:"c",tags:["theatre"],when:"Rehearsals from January",lead:"Ms. Wilson",spots:14,about:"Cast and crew both count. Lighting, sound and stage management carry the same weight as a speaking part."},
+ {id:"o4",n:"Studio open hours",st:"c",tags:["art"],when:"Mon and Thu, 15:30",lead:"Ms. Wilson",spots:10,about:"Unstructured studio access with a teacher present. Bring your own project; the point is the hours, not the brief."},
+ {id:"o5",n:"Film society",st:"c",tags:["art","writing"],when:"Fri, 15:30",lead:"Ms. Wilson",spots:8,about:"Screen, argue, and shoot one short a term. The society runs the school's end-of-year screening."},
+ {id:"o6",n:"Debate squad",st:"c",tags:["debate","writing"],when:"Mon, 16:00",lead:"Ms. Sharma",spots:4,about:"Weekly practice and four competitive fixtures a year, including one travelling."},
+ {id:"o7",n:"Swim squad",st:"a",tags:["sport"],when:"Mornings, 06:30",lead:"Coach Almeida",spots:5,about:"Four mornings a week before school. The commitment is the training, not the meets."},
+ {id:"o8",n:"Senior football",st:"a",tags:["sport"],when:"Tue and Thu, 16:00",lead:"Coach Almeida",spots:3,about:"League season from October, with a squad rotation rather than a fixed eleven."},
+ {id:"o9",n:"Basketball",st:"a",tags:["sport"],when:"Mon and Wed, 16:00",lead:"Coach Nkemdirim",spots:7,about:"Two sessions a week and a place in the inter-school league if you want one."},
+ {id:"o10",n:"Duke of Edinburgh, Silver",st:"a",tags:["sport","outdoors"],when:"Monthly, plus two expeditions",lead:"Mr. Patel",spots:12,about:"Navigation training through the year and two expeditions. It covers all three strands if you plan it that way."},
+ {id:"o11",n:"Beach and mangrove clean-up",st:"s",tags:["environment","outdoors"],when:"One Saturday a month",lead:"Dr. Reid",spots:20,about:"Run with a local group. It is the easiest service to start and the easiest to let lapse, so plan a term of it rather than a morning."},
+ {id:"o12",n:"Maths tutoring, Grades 6 to 8",st:"s",tags:["service","code"],when:"Wed, 15:30",lead:"Mr. Yilmaz",spots:6,about:"One younger student, the same one each week, for a term. Requires a commitment form and a short induction."},
+ {id:"o13",n:"Coding club, middle school",st:"s",tags:["code","tech"],when:"Thu, 15:30",lead:"Mr. Patel",spots:4,about:"You teach it rather than attend it. Session plans are yours to write, with support."},
+ {id:"o14",n:"Community garden partnership",st:"s",tags:["environment","service"],when:"Alternate Saturdays",lead:"Ms. Fahri",spots:10,about:"A standing partnership with a community centre. The need is decided with them at the start of each term."},
+ {id:"o15",n:"Student-run investment society",st:"c",tags:["business","debate"],when:"Tue, 15:30",lead:"Ms. Fahri",spots:9,about:"A tracked paper portfolio, a weekly pitch, and a written case every member has to defend."}];
+const CAS_TAGS=[["music","Music"],["sport","Sport"],["theatre","Theatre and performance"],["art","Art and making"],["writing","Writing and media"],["debate","Debating and public speaking"],["code","Coding and building"],["service","Working with people"],["environment","Environment"],["outdoors","Outdoors"],["business","Business and markets"]];
+/* Seeded so a demo does not open on an empty interest list, and stored per
+   student so the grade switcher does not carry one student's answers into
+   another's record. */
+const CAS_INTERESTS={s3:["debate","business","sport"],s11:["code","sport"],s10:["music","environment"],s12:["writing","service"],s17:["code","outdoors"]};
+
+/* Sara's record, authored. She is the product's deepest student and her CAS
+   tells the same story her case file does: strong, engaged, and quietly
+   overcommitted, with service the strand that slipped while she was busy
+   being excellent at the other two. */
+CASREC.s3={hrs:{c:64,a:52,s:14},outcomes:5,last:"3 weeks ago",pending:2,
+ run:["kept","kept","kept","kept","soft","kept","kept","kept","kept","kept","soft","kept","kept","soft","none","none","soft","kept"],
+ entries:[
+  {d:"4 Nov",st:"c",n:"Investment society",h:2,ref:true,note:"Presented the tariff case to the society and had two of the arguments taken apart. I had been treating the protective tariff as the whole story and it is not."},
+  {d:"28 Oct",st:"a",n:"Swim squad",h:4,ref:false,note:""},
+  {d:"21 Oct",st:"c",n:"Debate squad",h:3,ref:true,note:"First time chairing rather than speaking. Keeping other people to time is harder than arguing, and I was worse at it than I expected."},
+  {d:"14 Oct",st:"a",n:"Swim squad",h:4,ref:false,note:""},
+  {d:"12 Jun",st:"s",n:"Maths tutoring, Grades 6 to 8",h:6,ref:true,note:"Last term of tutoring Hessa. She went from asking me for the answer to asking me why the method works, which is the only measurable thing I have done all year."}]};
+CASREC.s12={hrs:{c:12,a:30,s:4},outcomes:2,last:"7 weeks ago",pending:1,
+ run:["kept","soft","kept","none","soft","none","none","none"],entries:[
+  {d:"1 Oct",st:"a",n:"Senior football",h:3,ref:false,note:""},
+  {d:"18 Sep",st:"c",n:"Film society",h:2,ref:true,note:"Shot the opening for the short. Editing took four times as long as filming."}]};
+CASREC.s17={hrs:{c:34,a:26,s:22},outcomes:5,last:"This week",pending:0,
+ run:["kept","kept","soft","kept","kept","kept","kept","kept"],entries:[
+  {d:"18 Nov",st:"s",n:"Coding club, middle school",h:2,ref:true,note:"Rewrote the session plan after last week went badly. Eleven year olds do not want to be told the theory first, which I should have worked out sooner."},
+  {d:"11 Nov",st:"a",n:"Basketball",h:2,ref:false,note:""},
+  {d:"6 Nov",st:"c",n:"Chamber ensemble",h:2,ref:true,note:"We chose the Shostakovich. It is beyond us and we have five months."}]};
+
+/* ── The rules ──────────────────────────────────────────────────────
+   Everything a submission is gated on, as comparisons. `block` stops a
+   submission; `ask` is surfaced to the student and carried into the
+   coordinator's meeting prep as a question rather than a fault. */
+function selPicks(rec){return IB_GROUPS.map(gr=>[gr,rec.picks?rec.picks[gr.id]:null]).filter(x=>x[1]&&x[1].s);}
+function selHL(rec){return selPicks(rec).filter(([,p])=>p.lv==="HL").length;}
+function selPeriod(p){const s=IBS(p.s);return s?s.per[p.lv]:null;}
+/* Which of a student's own chosen subjects a candidate would collide with,
+   at a given level. Shown on the option before it is picked, because a
+   timetable clash discovered after submission is the notebook problem in a
+   new costume. */
+function selClashWith(rec,subId,lv,skipGroup){
+ const s=IBS(subId);if(!s||!s.per[lv])return [];
+ return selPicks(rec).filter(([gr,p])=>gr.id!==skipGroup&&p.s!==subId&&selPeriod(p)===s.per[lv]).map(([,p])=>IBS(p.s).name);}
+function selCheck(rec,stu){
+ const out=[],picks=rec.picks||{},hl=selHL(rec);
+ const missing=IB_GROUPS.filter(gr=>!picks[gr.id]||!picks[gr.id].s);
+ if(missing.length)out.push({k:"block",t:missing.length===1?"One slot is still open":missing.length+" slots are still open",
+  d:missing.map(gr=>gr.label).join(", ")+". A diploma is six subjects and the form will not go anywhere until all six are filled."});
+ else out.push({k:"ok",t:"Six subjects, one from each group",d:"Group 6 is "+IBS(picks.g6.s).name+", taken as your sixth subject."});
+ if(missing.length===0){
+  if(hl<3)out.push({k:"block",t:"Only "+hl+" at Higher Level",d:"A diploma needs three at Higher Level, or four. Raise "+(3-hl)+" more."});
+  else if(hl>4)out.push({k:"block",t:hl+" at Higher Level",d:"Four is the maximum, and three is what almost everyone takes. Drop "+(hl-4)+" to Standard Level."});
+  else out.push({k:"ok",t:hl+" at Higher Level, "+(6-hl)+" at Standard",d:hl===4?"Four Higher Levels is allowed and it is a heavy year. Worth talking through.":"The standard shape."});
+ }
+ const byPeriod={};selPicks(rec).forEach(([gr,p])=>{const per=selPeriod(p);if(!per)return;(byPeriod[per]=byPeriod[per]||[]).push(IBS(p.s).name+" "+p.lv);});
+ const clashes=Object.entries(byPeriod).filter(([,v])=>v.length>1);
+ if(clashes.length)clashes.forEach(([per,v])=>out.push({k:"block",t:"Two subjects in "+per,d:v.join(" and ")+" are timetabled against each other. One of them has to change."}));
+ else if(selPicks(rec).length)out.push({k:"ok",t:"No timetable clash",d:"All "+selPicks(rec).length+" run in different periods."});
+ const noWhy=selPicks(rec).filter(([gr])=>!(rec.why&&(rec.why[gr.id]||"").trim()));
+ if(noWhy.length)out.push({k:"block",t:noWhy.length===1?"One subject has no reason written":noWhy.length+" subjects have no reason written",
+  d:"Your coordinator reads these before he meets you, and the meeting is better when he has. A sentence is enough."});
+ else if(selPicks(rec).length)out.push({k:"ok",t:"A reason on every subject",d:"These go to your coordinator with the selection."});
+ /* prerequisite, as a comparison against the record rather than a view */
+ selPicks(rec).forEach(([gr,p])=>{const s=IBS(p.s);
+  /* No record of the feeder set is not the same as being in the wrong one,
+     so a student the school has no data for is not warned about. */
+  if(s.needs&&p.lv===s.needs.lv&&stu&&stu.mathSet){const set=stu.mathSet;
+   if(set!==s.needs.course)out.push({k:"ask",q:"Talk me through "+s.name+" at Higher Level. What makes you think you can carry it?",t:s.name+" at Higher Level",
+    d:"It is offered from the "+s.needs.course+" set, and you are in the "+set+" set this year. Your teacher answers this one when the selection reaches him, so it is worth writing down why you want it."});}});
+ /* the goal check, which never blocks */
+ const goalKey=stu&&Object.keys(GOAL_NEEDS).find(k=>(stu.goal||"").includes(k));
+ if(goalKey&&selPicks(rec).length>=4){const G=GOAL_NEEDS[goalKey],have=selPicks(rec).map(([,p])=>p.s);
+  const short=G.need.filter(id=>!have.includes(id));
+  if(short.length)out.push({k:"ask",t:"You said "+goalKey.toLowerCase()+", and "+short.map(id=>IBS(id).name).join(" and ")+" is not on the form",d:G.say,
+   /* the question travels with the finding. Re-deriving it by splitting
+      the rendered title dropped every subject after the first and left a
+      stray space where the join had been. */
+   q:"You said "+goalKey.toLowerCase()+". What made you leave "+short.map(id=>IBS(id).name).join(" and ")+" off?"});
+  else out.push({k:"ok",t:"Your subjects support what you said you want",d:G.say});}
+ /* viability, counted rather than stored */
+ selPicks(rec).forEach(([gr,p])=>{const v=subjectViable(p.s),s=IBS(p.s);
+  if(v.under)out.push({k:"ask",q:"If "+s.name+" does not run, what is your second choice?",t:s.name+" may not run next year",
+   d:(v.n?"Only "+v.n+" students have chosen it so far and it needs "+s.min+".":"Nobody else has chosen it yet, and it needs "+s.min+".")+" The decision is made when the round closes on "+SEL_ROUND.closes+", and you would be asked for a second choice then."});});
+ return out;}
+function selBlockers(rec,stu){return selCheck(rec,stu).filter(f=>f.k==="block");}
+
+/* Demand is counted, never stored. Every figure on the viability sheet and
+   every "may not run" warning in the student's form comes through here. */
+function demandFor(subId,lv){
+ let n=0,draft=0;
+ Object.values(SELREC).forEach(r=>{
+  if(!r.picks)return;
+  Object.values(r.picks).forEach(p=>{if(p&&p.s===subId&&(!lv||p.lv===lv)){if(r.status==="draft")draft++;else n++;}});});
+ return {n:n+draft,firm:n,draft};}
+/* Whether a course runs is a question about the subject, not about a
+   level: a school that cannot fill Theatre does not run Theatre, and the
+   HL and SL groups within a subject that does run are a timetabling
+   problem rather than an existence one. Getting this wrong printed
+   nineteen subjects as at risk, most of them one student short of a
+   threshold that was never meant to apply per level. */
+function subjectViable(subId){const s=IBS(subId),d=demandFor(subId,null);
+ return {n:d.n,firm:d.firm,draft:d.draft,min:s.min,under:d.n<s.min};}
+function subjectViableRow(s){return Object.assign({s},subjectViable(s.id));}
+function demandRows(){
+ const rows=[];
+ IB_SUBJECTS.forEach(s=>{const v=subjectViable(s.id);
+  s.lv.forEach(lv=>{
+   const d=demandFor(s.id,lv);
+   rows.push({s,lv,n:d.n,firm:d.firm,draft:d.draft,per:s.per[lv],tot:v.n,
+    state:v.under?"under":d.n>s.cap?"over":"ok"});});});
+ return rows;}
+function selCounts(){
+ const c={none:0,draft:0,submitted:0,signed:0,changes:0,approved:0};
+ DPC.filter(d=>d.yr===10).forEach(d=>{const r=SELREC[d.id];c[r?r.status:"none"]=(c[r?r.status:"none"]||0)+1;});
+ return c;}
+/* Waiting on the coordinator specifically. A selection still with its
+   teachers is not waiting on him, and counting it as though it were is how
+   a queue stops meaning anything. */
+function selWaiting(){return DPC.filter(d=>d.yr===10&&SELREC[d.id]&&SELREC[d.id].status==="signed").length;}
+
+/* CAS, summarised the same way for a named record and a generated one. */
+function casSum(sid){
+ const r=CASREC[sid];if(!r)return null;
+ /* `hrs` is the running total across the programme; `entries` is the
+    recent log, not the whole of it. Deriving the totals from the visible
+    entries would have printed five hours under a heading claiming
+    eighteen months, which is the same class of error as a stored count
+    that disagrees with the table under it, arrived at from the other
+    direction. */
+ const hrs=r.hrs;
+ const total=hrs.c+hrs.a+hrs.s;
+ const yr=(DPC.find(x=>x.id===sid)||{}).yr;
+ const floor=yr===12?18:8;
+ const thin=CAS_STRANDS.filter(([k])=>hrs[k]<floor).map(([,l])=>l);
+ const pending=r.entries?r.entries.filter(e=>!e.ref).length:r.pending;
+ const gap=r.run.slice(-3).every(x=>x==="none");
+ return {hrs,total,thin,floor,pending,gap,run:r.run,outcomes:r.outcomes,last:r.last,entries:r.entries||[]};}
+/* What counts as thin depends on how far in they are. A Grade 11 eight
+   months into an eighteen-month programme with twelve hours in a strand is
+   on schedule; the same figure in Grade 12 is a problem. One threshold for
+   both flagged four students in five, which is a list nobody reads. */
+function casStalled(sid){const s=casSum(sid);if(!s)return null;
+ if(s.gap)return "No entry for three months";
+ if(s.thin.length>1)return s.thin.join(" and ")+" both thin";
+ if(s.pending>1)return s.pending+" reflections outstanding";
+ return null;}
+/* One thin strand is worth seeing and is not worth a flag. Everything that
+   was merely worth seeing used to raise one, and the coordinator's list
+   came back holding four students in five, which is a roster rather than a
+   list of people to speak to. */
+function casNote(sid){const s=casSum(sid);if(!s)return null;
+ if(s.thin.length===1)return s.thin[0]+" running behind the other two";
+ if(s.pending===1)return "One reflection outstanding";
+ return null;}
+function casMatches(sid){
+ const tags=CAS_INTERESTS[sid]||[];
+ if(!tags.length)return [];
+ return CAS_OPPS.map(o=>({o,hit:o.tags.filter(t=>tags.includes(t))}))
+  .filter(x=>x.hit.length).sort((a,b)=>b.hit.length-a.hit.length);}
+const CASTAG=t=>(CAS_TAGS.find(x=>x[0]===t)||[t,t])[1];
+const STRANDL=k=>(CAS_STRANDS.find(s=>s[0]===k)||["","",""])[1];
+
+/* Retained: the pathway-approval queue the discovery flow writes into. It
+   is a different object from a subject selection and the two must not be
+   folded together — one is a roadmap, the other is a timetable. */
 let CLASS_APPROVALS_PENDING=[];
 
-/* View: Student's current classes dashboard */
-function vStuClasses(){
+/* ═══════════ THE STUDENT'S SUBJECTS ═══════════
+   One screen, not two. The version this replaces opened on a summary of
+   courses and put the actual choosing behind a button labelled "Select My
+   Courses", which is the noun-page pattern P7 spent a phase removing: the
+   screen that works opens on the thing you came to do. For a Grade 10 in
+   an open round, the form is the page. */
+function vStuSubjects(){
  const c=g(S.open||PARENT_ME);
- if(!c) return `<div style="padding:40px;text-align:center;color:var(--ink-3)">No student selected</div>`;
+ if(!c)return empty("No student selected","Pick a grade above to open a student's portal.");
  const grade=c.grade||12;
+ const rec=SELREC[c.id];
+ if(grade===10&&rec)return vSelForm(rec,c);
+ return vStuSubjectRecord(c,grade);}
+
+/* Grades 11 and 12 are past the choosing. What they need from this screen
+   is the record: what they take, at what level, with whom, and what it is
+   currently worth. Grade 9 is two years out and gets the shape of the
+   decision rather than a form they cannot fill. */
+function vStuSubjectRecord(c,grade){
  const classes=getStudentClasses(c.id);
- const unis=c.uni?.targets||[];
- const hasGrades=grade>=10 && classes.length>0 && classes[0].grade;
- const coursesByPathway={IB:classes.filter(x=>x.pathway==="IB"),AP:classes.filter(x=>x.pathway==="AP"),Standard:classes.filter(x=>x.pathway==="Standard")};
- 
- return `<div class="arrive">
-  <div style="padding:24px 0">
-   <h1 class="stamp" style="margin:0 0 8px;font-size:24px;font-weight:600;line-height:1.2">My Classes</h1>
-   <div style="font-size:13.5px;color:var(--ink-2);line-height:1.6;max-width:680px">
-    ${grade===9?"Explore available AP courses for your future academics. Select courses you want to pursue starting next year to send to your counselor and teachers for guidance.":"Your current classes, grades, and what your target universities are looking for. Select your AP, IB, or Standard combination to send to your counselor and teachers for approval."}
-   </div>
-  </div>
-
-  ${hasGrades?`<div class="card" style="padding:0;overflow:hidden;margin-bottom:24px">
-   <div style="background:linear-gradient(135deg, var(--violet-bg) 0%, rgba(155,140,255,.04) 100%);padding:18px;border-bottom:1px solid var(--line)">
-    <div style="font-weight:600;color:var(--violet-2);font-size:12px;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px">Current courses (Grade ${grade})</div>
-    <div style="font-size:13px;color:var(--ink)">${classes.length} courses taken · ${classes[0].scale==="ib"?"Predicted total: "+classes.reduce((a,b)=>a+(b.grade||0),0)+" / 42 subject points":"Average: "+Math.round(classes.reduce((a,b)=>a+(b.avg||0),0)/classes.length)+"%"}</div>
-   </div>
-   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1px;background:var(--line)">
-    ${classes.map((cl,i)=>`<div style="background:var(--stock);padding:14px;border-bottom:${i<classes.length-1?'1px solid var(--line)':'none'}">
-     <div style="font-weight:600;font-size:13px;color:var(--ink);margin-bottom:4px">${cl.name}</div>
-     <div style="font-size:11px;color:var(--ink-3);margin-bottom:8px">${cl.teacher} · Period ${cl.period}</div>
-     ${cl.grade?`<div style="display:flex;gap:12px;align-items:center">
-      <div style="display:flex;align-items:center;gap:6px">
-       <div style="font-size:18px;font-weight:700;color:var(--violet)">${cl.scale==="ib"?cl.grade:cl.grade+"%"}</div>
-       <div style="font-size:10px;color:var(--ink-3)">${cl.scale==="ib"?"of 7 · cohort "+cl.avg:"avg "+cl.avg+"%"}</div>
-      </div>
-     </div>`:""}
-    </div>`).join('')}
-   </div>
-  </div>`:""}
-
-  ${grade===9?`<div style="margin-bottom:24px">
-   <div style="font-weight:600;color:var(--ink);font-size:14px;margin-bottom:12px">Available AP courses for Grade 10+</div>
-   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:16px">
-    ${coursesByPathway.AP.slice(0,6).map((c,i)=>`<div class="card" style="padding:14px">
-     <div style="font-weight:600;color:var(--ink);font-size:13px;margin-bottom:2px">${c.name}</div>
-     <div style="font-size:11px;color:var(--ink-3);margin-bottom:8px">${c.teacher} · Period ${c.period}</div>
-     <div style="font-size:11px;color:var(--info);font-weight:600">AP Pathway</div>
-    </div>`).join("")}
-   </div>
-  </div>`:""}
-
-  ${unis.length>0?`<div style="margin-bottom:24px">
-   <div style="font-weight:600;color:var(--ink);font-size:14px;margin-bottom:12px">Entry requirements for your target universities</div>
-   ${unis.map(uni=>{
-    const req=UNI_COURSE_REQUIREMENTS[uni.u]||{ib:"Not specified",ap:"Not specified",standard:"Not specified"};
-    return `<div class="card" style="padding:16px;margin-bottom:10px">
-     <div style="font-weight:600;color:var(--ink);font-size:13px;margin-bottom:6px">${uni.u}</div>
-     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;font-size:12px">
-      <div>
-       <div style="color:var(--ink-3);font-size:10px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">IB Pathway</div>
-       <div style="color:var(--ink);line-height:1.5">${req.ib}</div>
-      </div>
-      <div>
-       <div style="color:var(--ink-3);font-size:10px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">AP Pathway</div>
-       <div style="color:var(--ink);line-height:1.5">${req.ap}</div>
-      </div>
-      <div>
-       <div style="color:var(--ink-3);font-size:10px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Standard</div>
-       <div style="color:var(--ink);line-height:1.5">${req.standard}</div>
-      </div>
-     </div>
-    </div>`;
-   }).join('')}`:""}
-  </div>
-
-  <div style="display:flex;gap:12px">
-   <button data-snav="stuacs" style="flex:1;padding:12px;background:var(--violet);color:var(--on-violet);border:none;border-radius:var(--r);font-weight:600;cursor:pointer;font-size:14px">
-    ${grade===9?"Explore AP Courses":"Select My Courses"}
-   </button>
-   <button style="flex:1;padding:12px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:var(--r);font-weight:600;cursor:pointer;font-size:14px">
-    View Approvals
-   </button>
-  </div>
+ const ib=c.track==="IB";
+ const first=classes[0]||{};
+ const total=ib&&first.scale==="ib"?classes.reduce((a,b)=>a+(b.grade||0),0):null;
+ if(grade===9)return `<div class="fade">
+  ${head("Two years before you choose, and worth seeing now",
+   "You will pick six diploma subjects in Grade 10, or an AP-based route instead. Nothing here needs a decision yet. It is here so the choice is not the first time you meet it.")}
+  <h2 class="sechead">What a diploma is made of</h2>
+  <div class="sheetbox">${IB_GROUPS.map(gr=>`<div class="selrow-static">
+   <span class="lstamp void">${gr.n}</span>
+   <div style="min-width:0"><div class="selrow-t">${gr.label}</div>
+    <div class="selrow-n">${gr.note}</div></div>
+   <div class="selrow-r fig">${IB_BY_GROUP(gr.id).length} on offer</div></div>`).join("")}</div>
+  <h2 class="sechead" style="margin-top:26px">And three parts nobody chooses</h2>
+  <div class="sheetbox">${DP_CORE.map(([k,n,d])=>`<div class="selrow-static">
+   <span class="lstamp">${k==="CAS"?"C":k==="EE"?"E":"T"}</span>
+   <div style="min-width:0"><div class="selrow-t">${n}</div><div class="selrow-n">${d}</div></div></div>`).join("")}</div>
+  <div style="margin-top:22px">${moment({art:"fork",title:"The real choice is a year and a half away",
+   body:"Your counselor opens this conversation in Grade 10, and the portal will walk you through it then. Until then the useful thing is to keep your options open in mathematics and in a language, because those two are the hardest to pick up late.",
+   action:`<button class="btn btn-g btn-sm" data-snav="explore">Read how IB and AP differ</button>`})}</div>
+ </div>`;
+ return `<div class="fade">
+  ${head(ib?"What you are carrying this year":"Your courses this year",
+   ib?`Six subjects, three at Higher Level, plus theory of knowledge, the extended essay and CAS.${c.pred&&c.pred!=="—"?" Your predicted total is "+c.pred+".":""}`
+     :"Your AP courses, the teacher for each, and where your grade currently sits against the class.")}
+  ${classes.length?`${tally([["Subjects",String(classes.length),ib?"the diploma shape":"AP route"],
+   ...(total?[["Predicted",String(total)+" / 42","subject points, before the core"]]:[]),
+   ["At higher level",String(classes.filter(x=>/HL/.test(x.name)).length||"—"),ib?"of six":"not applicable"]])}
+  <h2 class="sechead" style="margin-top:24px">Subject by subject</h2>
+  <div class="sheetscroll"><table class="sheet"><thead><tr>
+   <th style="width:38%">Subject</th><th>Teacher</th><th>Period</th>
+   <th class="num">${first.scale==="ib"?"Grade":"Mark"}</th><th class="num">Class</th></tr></thead>
+   <tbody>${classes.map(cl=>`<tr>
+    <td><span style="font-weight:600;color:var(--ink)">${cl.name}</span></td>
+    <td>${cl.teacher}</td><td>${cl.period}</td>
+    <td class="num">${cl.grade!=null?(cl.scale==="ib"?cl.grade:cl.grade+"%"):"—"}</td>
+    <td class="num" style="color:var(--ink-4)">${cl.avg!=null?(cl.scale==="ib"?cl.avg:cl.avg+"%"):"—"}</td>
+   </tr>`).join("")}</tbody></table></div>`
+  :empty("No timetable loaded yet","Your subjects appear here once the school's termly export has run. Nothing is missing on your side.")}
+  ${ib?`<div style="margin-top:26px"><h2 class="sechead">The core</h2>
+  <div class="sheetbox">${DP_CORE.map(([k,n,d])=>`<div class="selrow-static">
+   <span class="lstamp">${k==="CAS"?"C":k==="EE"?"E":"T"}</span>
+   <div style="min-width:0"><div class="selrow-t">${n}</div><div class="selrow-n">${d}</div></div>
+   ${k==="CAS"?`<div class="selrow-r"><button class="btn btn-g btn-sm" data-snav="stucas">Open your CAS record</button></div>`:""}</div>`).join("")}</div></div>`:""}
  </div>`;}
 
-/* View: ACS (Advanced Course Selection) — student picks individual courses */
-function vStuACSSelector(){
- const c=g(S.open||PARENT_ME);
- if(!c) return `<div style="padding:40px">No student selected</div>`;
- const grade=c.grade||12;
- const allCourses=COURSES_BY_GRADE[grade]||[];
- const selected=S.selectedCourses||[];
- 
- // Group courses by pathway
- const coursesByPath={
-  IB:allCourses.filter(x=>x.pathway==="IB"),
-  AP:allCourses.filter(x=>x.pathway==="AP"),
-  Standard:allCourses.filter(x=>x.pathway==="Standard")
- };
- 
- const pathwayColors={IB:"var(--ok)",AP:"var(--info)",Standard:"var(--warn)"};
- 
- return `<div class="arrive">
-  <div style="padding:24px 0">
-   <div class="stamp" style="font-size:24px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:10px">
-  ${ic('arrow-left',20)} ${grade===9?"AP Courses Available for Grade 9":"Select Your Courses"}
-   </div>
-   <div style="font-size:13.5px;color:var(--ink-2);line-height:1.6;max-width:760px">
-  ${grade===9?"Explore the AP courses available in Grade 9. Select the courses you want to request, then send them to your counselor and teachers for review.":`Browse all available courses for Grade ${grade}. Select the courses you want to pursue and submit for your counselor and teachers to review and approve.`}
-   </div>
-  </div>
+/* ═══════════ THE SELECTION FORM ═══════════
+   A form, printed. Six ruled slots with the group number struck in the
+   margin, an open slot dashed rather than blank, and the chooser opening
+   inside the row it belongs to rather than in a modal. The check runs
+   underneath as a list of printed findings: a cross in margin red for
+   something that stops the form, an ink rule for something worth asking
+   about, a tick for something already right.
 
-  <div style="background:var(--surface);padding:14px;border-radius:var(--r);margin-bottom:20px;display:flex;justify-content:space-between;align-items:center">
-   <div style="font-size:13px;color:var(--ink)">
-    <b style="color:var(--violet);font-weight:700">${selected.length} courses selected</b>
-   </div>
-   <div style="display:flex;gap:8px;font-size:11px;color:var(--ink-2)">
-    <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--ok);border-radius:var(--r-dot)"></span> IB</span>
-    <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--info);border-radius:var(--r-dot)"></span> AP</span>
-    <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--warn);border-radius:var(--r-dot)"></span> Standard</span>
-   </div>
-  </div>
+   The whole reason the descriptions are here rather than in a handbook is
+   Mr. Diaz's own sentence: students should be able to read what a subject
+   will be like before they choose it. */
+function vSelForm(rec,stu){
+ const findings=selCheck(rec,stu),blocks=findings.filter(f=>f.k==="block");
+ const chosen=selPicks(rec),hl=selHL(rec);
+ const withWhy=chosen.filter(([gr])=>(rec.why[gr.id]||"").trim()).length;
+ /* A selection sent back for a change has to be editable again, or the
+    request-changes workflow is a message rather than a workflow. Only
+    "with teachers", "waiting on the coordinator" and "confirmed" are
+    read-only states. */
+ const submitted=["submitted","signed","approved"].includes(rec.status);
+ const returned=rec.status==="changes";
+ const openG=S.selOpen;
+ return `<div class="fade">
+  ${head(submitted?statusHead(rec):"Choosing your six subjects",
+   submitted?statusLine(rec,stu)
+   :`The round closes on ${SEL_ROUND.closes}, ${SEL_ROUND.deadlineIn} days from now. Fill the six slots, say why you picked each one, and send it to ${SEL_ROUND.coordinator}. He reads the reasons before he meets you, so the meeting can be about the choice rather than about writing it down.`)}
+  ${tally([["Slots filled",chosen.length+" of 6",chosen.length===6?"complete":"keep going"],
+   ["Higher level",String(hl),hl===3||hl===4?"a legal diploma":"needs to be 3 or 4"],
+   ["Reasons written",withWhy+" of "+chosen.length,withWhy===chosen.length&&chosen.length?"all done":"required to send"],
+   ["Round closes",SEL_ROUND.closes,SEL_ROUND.deadlineIn+" days"]])}
 
-  ${Object.entries(coursesByPath).map(([pathway,courses])=>courses.length>0?`
-  <div style="margin-bottom:24px">
-   <div style="font-weight:600;color:var(--ink);font-size:14px;margin-bottom:12px;display:flex;align-items:center;gap:8px">
-    <span style="width:10px;height:10px;background:${pathwayColors[pathway]};border-radius:var(--r-dot)"></span>
-    ${grade===9&&pathway==="AP"?"AP Courses Available for Grade 9":`${pathway} Courses (${courses.length})`}
-   </div>
-   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
-    ${courses.map((course,i)=>{
-       const courseId=`${pathway}_${i}`;
-     const isSelected=selected.includes(courseId);
-       return `<div class="card" style="padding:14px;cursor:pointer;opacity:${isSelected?1:0.85};transition:opacity .2s" data-course="${courseId}">
-      <div style="display:flex;gap:10px">
-         <input type="checkbox" data-coursechk="${courseId}" style="margin-top:2px;cursor:pointer" ${isSelected?"checked":""}>
-       <div style="flex:1">
-          <div style="font-weight:600;color:var(--ink);font-size:13px;margin-bottom:2px">${course.name}</div>
-          <div style="font-size:11px;color:var(--ink-3);margin-bottom:6px">${course.subject} · ${course.teacher}</div>
-          <div style="font-size:11px;color:${pathwayColors[pathway]};font-weight:600">${pathway} · Period ${course.period}</div>
+  ${returned&&rec.returnNote?`<div class="selsend" style="margin-top:22px">
+   <span class="checkmark" aria-hidden="true" style="border-color:var(--margin);color:var(--margin)">!</span>
+   <div style="min-width:0;flex:1">
+    <div class="selrow-t">What ${SEL_ROUND.coordinator} asked you to change</div>
+    <div class="prose" style="font-size:12.8px;color:var(--ink);line-height:1.6;margin-top:4px;max-width:66ch">${rec.returnNote}</div>
+   </div></div>`:""}
+  ${submitted?vSelSubmittedPanel(rec,stu):""}
+
+  <h2 class="sechead" style="margin-top:26px">Your six subjects</h2>
+  <div class="selform">
+   ${IB_GROUPS.map(gr=>{
+     const p=rec.picks[gr.id],s=p&&p.s?IBS(p.s):null,open=openG===gr.id;
+     const list=gr.id==="g6"?SLOT6():IB_BY_GROUP(gr.id);
+     return `<div class="selslot${s?"":" void"}">
+      <div class="selrow">
+       <span class="lstamp${s?" on":" void"}">${gr.n}</span>
+       <div style="min-width:0;flex:1">
+        <div class="appa" style="color:var(--ink-4)">${gr.label}</div>
+        ${s?`<div class="selrow-t" style="margin-top:2px">${s.name}
+          <span class="lvstamp">${p.lv}</span></div>
+         <div class="selrow-n">${s.t} <span class="fig">· ${s.per[p.lv]}</span></div>`
+        :`<div class="selrow-n" style="margin-top:3px">${gr.note}</div>`}
        </div>
+       ${submitted?"":`<div class="selrow-r">
+        <button class="btn ${s?"btn-g":"btn-p"} btn-sm" data-selopen="${gr.id}" aria-expanded="${open}">${open?"Close":s?"Change":"Choose"}</button>
+        ${s?`<button class="btn btn-g btn-sm" data-selclear="${gr.id}" aria-label="Clear ${gr.label}">${ic("x",14)}</button>`:""}
+       </div>`}
       </div>
-       </div>`;
-    }).join("")}
-   </div>
+      ${s&&!submitted?`<div class="selwhy">
+       <label class="appa" for="why-${gr.id}" style="color:var(--ink-3)">Why this subject</label>
+       <textarea id="why-${gr.id}" data-selwhy="${gr.id}" rows="2" placeholder="One sentence. What made you pick it, or what you want it for."
+        style="width:100%;box-sizing:border-box;resize:vertical;margin-top:5px">${(rec.why[gr.id]||"").replace(/</g,"&lt;")}</textarea>
+      </div>`:s&&submitted&&(rec.why[gr.id]||"").trim()?`<div class="selwhy"><div class="appa" style="color:var(--ink-3)">Why you picked it</div>
+       <div class="prose" style="font-size:12.3px;color:var(--ink-2);margin-top:4px;line-height:1.55">${rec.why[gr.id]}</div></div>`:""}
+      ${open?vSelChooser(gr,list,rec,stu):""}
+     </div>`;}).join("")}
   </div>
-  `:"").join("")}
 
-  <div style="display:flex;gap:12px">
-   <button data-snav="stuclass" style="flex:1;padding:12px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:var(--r);font-weight:600;cursor:pointer">Back</button>
-    <button data-sendapproval style="flex:1;padding:12px;background:var(--violet);color:var(--on-violet);border:none;border-radius:var(--r);font-weight:600;cursor:pointer;opacity:${selected.length>0?1:0.5};pointer-events:${selected.length>0?"auto":"none"}">Send ${selected.length} Courses for Approval</button>
+  <h2 class="sechead" style="margin-top:26px">Every diploma also carries these</h2>
+  <div class="sheetbox">${DP_CORE.map(([k,n,d])=>`<div class="selrow-static">
+   <span class="lstamp">${k==="CAS"?"C":k==="EE"?"E":"T"}</span>
+   <div style="min-width:0"><div class="selrow-t">${n}</div><div class="selrow-n">${d}</div></div></div>`).join("")}</div>
+
+  <h2 class="sechead" style="margin-top:26px">The check</h2>
+  <div class="checklist">
+   ${findings.length?findings.map(f=>`<div class="checkrow ${f.k}">
+    <span class="checkmark" aria-hidden="true">${f.k==="block"?"&#10005;":f.k==="ask"?"?":"&#10003;"}</span>
+    <div style="min-width:0"><div class="selrow-t">${f.t}</div><div class="selrow-n">${f.d}</div>
+    <span class="sr">${f.k==="block"?"Blocks submission":f.k==="ask"?"Worth a conversation":"Satisfied"}</span></div>
+   </div>`).join(""):empty("Nothing to check yet","Fill a slot and the diploma rules, your timetable and your stated goal are all checked here as you go.")}
+  </div>
+
+  ${submitted?"":`<div class="selsend">
+   <div style="min-width:0;flex:1">
+    <div class="selrow-t">${blocks.length?blocks.length+(blocks.length===1?" thing still stops this":" things still stop this"):returned?"Ready to send again":"Ready to send"}</div>
+    <div class="selrow-n">${blocks.length?"The check above says what each one is.":`It goes to ${SEL_ROUND.coordinator} and to the teachers of any subject you asked for at Higher Level. You can still change it until ${SEL_ROUND.closes}.`}</div>
+   </div>
+   <button class="btn btn-p" data-selsubmit="${rec.sid}" ${blocks.length?"disabled":""}>${returned?"Send it again":"Send my selection"}</button>
+  </div>`}
+ </div>`;}
+
+function statusHead(rec){
+ return {submitted:"Sent, and waiting on your teachers",
+  signed:"Your teachers have answered",
+  changes:"Your coordinator has asked for a change",
+  approved:"Your subjects are confirmed"}[rec.status]||"Your selection";}
+function statusLine(rec,stu){
+ return {submitted:"Sent on "+rec.submitted+". The teachers of your Higher Level subjects answer first, then "+SEL_ROUND.coordinator+" meets you before anything is confirmed.",
+  signed:"Your Higher Level teachers have recorded their view. "+SEL_ROUND.coordinator+" meets you next, and nothing is confirmed until he does.",
+  changes:"Your form is open again. Change what he asked about, and send it back. Nothing else you wrote has been lost.",
+  approved:"Confirmed on "+(rec.talk?rec.talk.when:rec.submitted)+". These are the subjects you start in Grade 11."}[rec.status]||"";}
+
+/* What the student sees after sending: the teachers' answers, the state of
+   the conversation, and a way to book it. Silence after a submission is
+   the thing that makes students ask a counselor in a corridor. */
+function vSelSubmittedPanel(rec,stu){
+ const hlPicks=Object.values(rec.picks).filter(p=>p&&p.lv==="HL");
+ return `<div class="sheetbox" style="margin-top:22px">
+  ${hlPicks.map(p=>{const s=IBS(p.s),sg=rec.signs[p.s];
+   return `<div class="selrow-static">
+    <span class="lstamp${sg?" on":" void"}">${sg?"&#10003;":"·"}</span>
+    <div style="min-width:0"><div class="selrow-t">${s.name} at Higher Level</div>
+     <div class="selrow-n">${sg?`<b style="color:var(--ink-2)">${sg.by}</b>, ${sg.when}. ${sg.note}`:s.t+" has not answered yet."}</div></div>
+    ${sg?`<div class="selrow-r"><span class="lvstamp">${sg.verdict==="hl"?"Supported at HL":sg.verdict==="sl"?"Suggests SL":"Concern raised"}</span></div>`:""}
+   </div>`;}).join("")}
+  <div class="selrow-static">
+   <span class="lstamp${rec.talk?" on":" void"}">${rec.talk?"&#10003;":"?"}</span>
+   <div style="min-width:0"><div class="selrow-t">The conversation with ${SEL_ROUND.coordinator}</div>
+    <div class="selrow-n">${rec.talk?`Recorded ${rec.talk.when}. ${rec.talk.note}`:"Nothing is confirmed until this happens. He will ask you why you chose what you chose, so the reasons you wrote are the ones he starts from."}</div></div>
+   ${rec.talk?"":`<div class="selrow-r">${rec.booked?`<span class="lvstamp">Requested</span>`:`<button class="btn btn-g btn-sm" data-selbook="${rec.sid}">Ask for a slot</button>`}</div>`}
   </div>
  </div>`;}
 
-/* View: Teacher's class approval dashboard */
-function vTClassApprovals(){
- const pending=CLASS_APPROVALS_PENDING.filter(a=>a.status==="pending");
- return `<div class="arrive">
-  <div style="padding:24px 0">
-   <h1 class="stamp" style="margin:0 0 8px;font-size:24px;font-weight:600;line-height:1.2">Course Selections to Review</h1>
-   <div style="font-size:13.5px;color:var(--ink-2);max-width:760px">Review readiness, timetable fit, and the courses you teach before recording your decision.</div>
+/* The chooser. Every option carries its own period and, when it would
+   collide with something already on this student's form, says what it
+   collides with before the choice is made rather than after.
+
+   It also leads with what fits. By the sixth slot a student is holding
+   five periods, so most of the catalogue clashes with something and a
+   flat alphabetical list reads as a wall of refusals. Splitting it says
+   the true and useful thing instead: here is what your timetable still
+   has room for, and here is what it does not, with the reason. */
+function vSelChooser(gr,list,rec,stu){
+ const cur=rec.picks[gr.id];
+ const taken=selPicks(rec).filter(([g2])=>g2.id!==gr.id).map(([,p])=>p.s);
+ const used=selPicks(rec).filter(([g2])=>g2.id!==gr.id).map(([,p])=>selPeriod(p)).filter(Boolean);
+ const free=["P1","P2","P3","P4","P5","P6"].filter(x=>!used.includes(x));
+ /* a subject fits if any level it offers is free and it is not already held */
+ const fits=[],blocked=[];
+ list.forEach(s=>{
+  const openLv=s.lv.filter(lv=>!selClashWith(rec,s.id,lv,gr.id).length);
+  (taken.includes(s.id)||!openLv.length?blocked:fits).push({s,openLv});});
+ const opt=({s,openLv})=>{
+  const already=taken.includes(s.id);
+  const openDesc=S.selDesc===s.id;
+  const via=subjectViable(s.id);
+  return `<div class="opt${cur&&cur.s===s.id?" on":""}${already||!openLv.length?" dim":""}">
+   <div class="opt-h">
+    <div style="min-width:0;flex:1">
+     <div class="selrow-t">${s.name}${already?` <span class="selrow-n" style="display:inline">already your group ${IB_GROUPS.find(x=>x.id===s.g).n} subject</span>`:""}</div>
+     <div class="selrow-n">${s.about}</div>
+    </div>
+    <div class="opt-lv">
+     ${s.lv.map(lv=>{
+      const clash=selClashWith(rec,s.id,lv,gr.id);
+      return `<button class="lvbtn${cur&&cur.s===s.id&&cur.lv===lv?" on":""}" data-selpick="${gr.id}:${s.id}:${lv}" ${already||clash.length?"disabled":""}
+       title="${lv} runs in ${s.per[lv]}${clash.length?". Clashes with "+clash.join(", "):""}">
+       <span class="lvbtn-l">${lv}</span>
+       <span class="lvbtn-p fig">${s.per[lv]}</span>
+       ${clash.length?`<span class="lvbtn-w">taken</span>`:via.under?`<span class="lvbtn-w">may not run</span>`:""}
+      </button>`;}).join("")}
+    </div>
+   </div>
+   <div class="opt-more">
+    <button class="linkish" data-seldesc="${s.id}" aria-expanded="${openDesc}">${openDesc?"Less":"What it is like"}</button>
+    ${already?"":!openLv.length?`<span class="selrow-n">${s.lv.map(lv=>selClashWith(rec,s.id,lv,gr.id).length?s.per[lv]+" is your "+selClashWith(rec,s.id,lv,gr.id)[0]:null).filter(Boolean).join(". ")}.</span>`
+     :s.needs?`<span class="selrow-n">Offered from the ${s.needs.course} set at ${s.needs.lv}.</span>`:""}
+   </div>
+   ${openDesc?`<div class="opt-desc">
+    <div class="dl"><span class="appa">The year</span><p>${s.like}</p></div>
+    <div class="dl"><span class="appa">Assessed by</span><p>${s.assess}</p></div>
+    <div class="dl"><span class="appa">The hard part</span><p>${s.hard}</p></div>
+    <div class="dl"><span class="appa">Taught by</span><p>${s.t}. ${via.under?"Chosen by "+via.n+" so far and it needs "+via.min+", so it may not run.":"Running next year, with "+via.n+" so far."}</p></div>
+   </div>`:""}
+  </div>`;};
+ return `<div class="selchoose">
+  <div class="appa" style="color:var(--ink-4);margin-bottom:4px">${gr.id==="g6"?"An arts subject, or a second subject from groups 1 to 4":"On offer in "+gr.label.toLowerCase()}</div>
+  ${used.length?`<div class="selrow-n" style="margin-bottom:10px">Your other subjects fill ${used.slice().sort().join(", ")}, so ${free.length?"anything at "+free.join(" or ")+" fits":"nothing else fits without changing one of them"}.</div>`:""}
+  ${fits.length?fits.map(opt).join(""):empty("Nothing fits alongside your other five","Every subject in this group is timetabled against something you have already chosen. Change one of the other slots and come back, or ask your coordinator whether the blocks can move.")}
+  ${blocked.length?`<div class="appa" style="color:var(--ink-4);margin:16px 0 8px">Timetabled against what you have already chosen</div>${blocked.map(opt).join("")}`:""}
+ </div>`;}
+
+/* ═══════════ TEACHER: THE LEVEL QUESTION ═══════════
+   A teacher is not asked to approve a diploma. They are asked the one
+   question they are the only person in the building who can answer: can
+   this student carry my subject at Higher Level. So the queue is scoped to
+   the subjects they teach, it shows the student's own reason beside their
+   mark, and the answer is a level rather than a verdict on the whole form.
+
+   The three buttons this replaces were Approve, Request changes and
+   Decline, each firing on one click with no confirmation. Declining a
+   fifteen-year-old's subject choice in one click, with an optional note,
+   was the last unguarded consequential action left in the file. */
+function teacherQueue(){
+ const mine=[];
+ DPC.filter(d=>d.yr===10).forEach(d=>{
+  const rec=SELREC[d.id];if(!rec||!["submitted","signed","changes"].includes(rec.status))return;
+  /* The teacher is asked the Higher Level question and only that. A
+     Standard Level choice in the same subject needs no answer from
+     anyone, and putting it in this queue as a card that cannot be wrong
+     turned a page of decisions into a page of acknowledgements. */
+  const subs=Object.entries(rec.picks||{}).filter(([,p])=>p&&p.s&&p.lv==="HL"&&IBS(p.s).t===TEACHER.name).map(([gid,p])=>({gid,p}));
+  if(subs.length)mine.push({d,rec,subs});});
+ return mine;}
+/* Standard Level choices in this teacher's subject: context for the size
+   of next year's cohort, deliberately not a queue. */
+function slCount(){let n=0;
+ DPC.filter(d=>d.yr===10).forEach(d=>{const rec=SELREC[d.id];if(!rec||rec.status==="none")return;
+  Object.values(rec.picks||{}).forEach(p=>{if(p&&p.s&&p.lv==="SL"&&IBS(p.s).t===TEACHER.name)n++;});});
+ return n;}
+function vTSelReview(){
+ const all=teacherQueue();
+ const waiting=all.filter(x=>x.subs.some(s=>!x.rec.signs[s.p.s]));
+ const done=all.filter(x=>x.subs.every(s=>x.rec.signs[s.p.s]));
+ const cls=TEACHER.classes.find(c=>/Grade 10/.test(c.label));
+ return `<div class="fade">
+  ${head(waiting.length?"Grade 10 wants to take your subject next year":"Every level question has been answered",
+   `${TEACHER.subject} selections for ${SEL_ROUND.year}. You are asked about the level, not about the rest of the diploma. ${SEL_ROUND.coordinator} decides the selection once you and the student have both answered.`)}
+  ${tally([["Waiting on you",String(waiting.length),waiting.length?"before "+SEL_ROUND.closes:"nothing outstanding"],
+   ["Answered",String(done.length),"this round"],
+   ["At higher level",String(all.length),"the only ones you are asked about"],
+   ["At standard level",String(slCount()),"no answer needed"]])}
+  ${waiting.length?`<h2 class="sechead" style="margin-top:26px">Waiting on you</h2>
+  ${waiting.map(x=>vTSelCard(x,cls)).join("")}`
+  :`<div style="margin-top:24px">${moment({art:"steady",title:"Nothing waiting on you",
+    body:"A selection lands here when a Grade 10 student picks "+TEACHER.subject.toLowerCase()+" and sends their form. This page only ever holds the ones still waiting on your answer, so it empties as you work.",
+    action:`<button class="btn btn-g btn-sm" data-tnav="class">Back to the register</button>`})}</div>`}
+  ${done.length?`<h2 class="sechead" style="margin-top:30px">Already answered</h2>
+  <div class="sheetbox">${done.map(x=>{const sg=x.rec.signs[x.subs[0].p.s];
+   return `<div class="selrow-static">
+    <span class="lstamp on">&#10003;</span>
+    <div style="min-width:0"><div class="selrow-t">${x.d.name}</div>
+     <div class="selrow-n">${IBS(x.subs[0].p.s).name} ${x.subs[0].p.lv} · ${sg?sg.note:""}</div></div>
+    <div class="selrow-r"><span class="lvstamp">${sg&&sg.verdict==="hl"?"Supported at HL":sg&&sg.verdict==="sl"?"Suggested SL":"Concern"}</span></div>
+   </div>`;}).join("")}</div>`:""}
+ </div>`;}
+
+function vTSelCard(x,cls){
+ const {d,rec,subs}=x;
+ const stu=g(d.id);
+ const confirm=S.tSign&&S.tSign.sid===d.id?S.tSign:null;
+ const mark=(()=>{ if(!cls)return null;
+  const inClass=cls.students&&cls.students.includes(d.id);
+  return inClass?{avg:cls.avg,label:cls.label}:null;})();
+ return `<div class="revcard">
+  <div class="revhead">
+   ${av(d.av,"student",38)}
+   <div style="min-width:0;flex:1">
+    <div class="selrow-t" style="font-size:14px">${d.name}</div>
+    <div class="selrow-n">Grade 10 · ${d.goal} · sent ${rec.submitted}</div>
+   </div>
+   ${stu?`<button class="btn btn-g btn-sm" data-tflag="${d.id}">Log a concern</button>`:""}
+  </div>
+  ${subs.map(({gid,p})=>{const s=IBS(p.s),why=(rec.why[gid]||"").trim();
+   const prereq=s.needs&&p.lv===s.needs.lv&&d.mathSet&&d.mathSet!==s.needs.course?s:null;
+   return `<div class="revbody">
+    <div class="revask">
+     <span class="lstamp on">${p.lv}</span>
+     <div style="min-width:0">
+      <div class="selrow-t">${s.name}, asked for at ${p.lv==="HL"?"Higher":"Standard"} Level</div>
+      <div class="selrow-n">${s.per[p.lv]} · ${prereq?`<b style="color:var(--ink)">They sit in the ${d.mathSet} set, and this is offered from the ${s.needs.course} set.</b> That is the question, and you are the one who can answer it.`:s.needs&&p.lv===s.needs.lv?"Offered from the "+s.needs.course+" set, which they are in":"No prerequisite set"}</div>
+     </div>
+    </div>
+    ${why?`<div class="revwhy"><div class="appa" style="color:var(--ink-4)">In their words</div>
+     <p class="prose">${why}</p></div>`:empty("No reason written","The form asks for one and this student sent it before writing it. Worth asking in the lesson.")}
+    <div class="revrec">
+     <div class="appa" style="color:var(--ink-4)">What you already know</div>
+     <div class="sheetscroll"><table class="sheet mini"><tbody>
+      ${mark?`<tr><td>Your class</td><td>${mark.label}</td><td class="num">${mark.avg}%</td></tr>`:""}
+      ${d.mathSet?`<tr><td>Set this year</td><td>${d.mathSet==="foundation"?"Foundation":"Extended"} ${TEACHER.subject.toLowerCase()}</td><td class="num">${d.mark?d.mark+"%":"—"}</td></tr>`:""}
+      ${stu&&stu.baselines&&stu.baselines.academic?`<tr><td>Attainment band</td><td>Personal band ${stu.baselines.academic.band[0]} to ${stu.baselines.academic.band[1]}${stu.baselines.academic.unit}</td><td class="num">${stu.baselines.academic.series.slice(-1)[0]}${stu.baselines.academic.unit}</td></tr>`:""}
+      ${!stu&&!d.mathSet?`<tr><td colspan="3" style="color:var(--ink-4)">This student is not on your register, so the portal shows you nothing beyond the request itself.</td></tr>`:""}
+      ${!stu&&d.mathSet?`<tr><td>Not your register</td><td colspan="2" style="color:var(--ink-4)">Their set and mark come from the termly export. Everything else about them stays with their counselor.</td></tr>`:""}
+     </tbody></table></div>
+    </div>
+    ${confirm&&confirm.sub===p.s?`<div class="revconfirm">
+     <div class="selrow-t">${confirm.verdict==="hl"?"Record that "+d.name.split(" ")[0]+" can carry "+s.name+" at Higher Level":confirm.verdict==="sl"?"Suggest Standard Level instead of Higher":"Raise a concern about this choice"}</div>
+     <div class="selrow-n">This goes to ${d.name.split(" ")[0]}, to ${SEL_ROUND.coordinator}, and onto the selection's record with your name and today's date. ${confirm.verdict==="hl"?"":"It does not change their form on its own. They can keep the choice, and the coordinator decides."}</div>
+     <label class="appa" for="signnote" style="color:var(--ink-3);display:block;margin-top:10px">Your note${confirm.verdict==="hl"?", optional":", required"}</label>
+     <textarea id="signnote" data-signnote="1" rows="2" placeholder="${confirm.verdict==="hl"?"Anything the coordinator should know.":"What you have seen that led you here."}" style="width:100%;box-sizing:border-box;margin-top:5px">${(S.tSign.note||"").replace(/</g,"&lt;")}</textarea>
+     <div style="display:flex;gap:8px;margin-top:11px">
+      <button class="btn ${confirm.verdict==="hl"?"btn-p":"btn-d"}" data-signgo="1">${confirm.verdict==="hl"?"Record it":confirm.verdict==="sl"?"Send the suggestion":"Send the concern"}</button>
+      <button class="btn btn-g" data-signcancel="1">Cancel</button>
+     </div>
+    </div>`:rec.signs[p.s]?`<div class="revdone">
+     <span class="lstamp on">&#10003;</span>
+     <div><div class="selrow-t">${rec.signs[p.s].verdict==="hl"?"Supported at Higher Level":rec.signs[p.s].verdict==="sl"?"Standard Level suggested":"Concern raised"}</div>
+     <div class="selrow-n">${rec.signs[p.s].by}, ${rec.signs[p.s].when}. ${rec.signs[p.s].note}</div></div>
+    </div>`:`<div class="revacts">
+     <button class="btn btn-p" data-sign="${d.id}:${p.s}:hl">${p.lv==="HL"?"They can carry it at Higher Level":"Happy at this level"}</button>
+     ${p.lv==="HL"?`<button class="btn btn-g" data-sign="${d.id}:${p.s}:sl">Suggest Standard Level</button>`:""}
+     <button class="btn btn-g" data-sign="${d.id}:${p.s}:concern">Raise a concern</button>
+    </div>`}
+   </div>`;}).join("")}
+ </div>`;}
+
+/* ═══════════ CAS ═══════════
+   The IB stopped specifying 150 hours; what it asks for is eighteen months
+   of balanced engagement and evidence of seven learning outcomes. Schools
+   still count hours, so this counts them and says whose rule they are.
+
+   The run across the top is the same cell the counselor reads across the
+   caseload, going the other way: on the sheet a run is broken by a signal,
+   here it is built a month at a time. No red in it. A quiet month in CAS is
+   not a safeguarding signal and must not be printed like one. */
+function vStuCAS(){
+ const c=g(S.open||PARENT_ME);
+ if(!c)return empty("No student selected","Pick a grade above to open a student's portal.");
+ const ib=c.track==="IB",sum=casSum(c.id),tags=CAS_INTERESTS[c.id]||[],matches=casMatches(c.id);
+ return `<div class="fade">
+  ${head(ib&&sum?"Where your CAS stands":ib?"Your CAS record opens in Grade 11":"What is on offer, and what fits you",
+   ib&&sum?`Creativity, activity and service, over the eighteen months of the diploma. ${CAS_HOURS_NOTE}`
+   :ib?"CAS runs across Grades 11 and 12. Until then this page is here so you can see what the school actually offers and start something you would have joined anyway."
+   :c.track==="AP"?"CAS is a requirement of the IB Diploma, and you are on the AP route, so none of this is assessed for you. The activities are open to every student in the school and universities read them the same way."
+   :"CAS is part of the IB Diploma. You have not chosen a pathway yet, so nothing here is assessed for you either way. The activities are open to every student in the school, and joining one now costs you nothing whichever route you take.")}
+
+  ${ib&&sum?`${tally([["Creativity",sum.hrs.c+" h",sum.hrs.c<sum.floor?"thin for this stage":"on track"],
+   ["Activity",sum.hrs.a+" h",sum.hrs.a<sum.floor?"thin for this stage":"on track"],
+   ["Service",sum.hrs.s+" h",sum.hrs.s<sum.floor?"thin for this stage":"on track"],
+   ["Outcomes met",sum.outcomes+" of 7","across the programme"]])}
+
+  <h2 class="sechead" style="margin-top:26px">Month by month</h2>
+  <div class="casrun">
+   <div class="run">${sum.run.map(k=>`<i class="${k==="kept"?"in":k==="soft"?"":"gap"}" title="${k==="kept"?"Recorded engagement":k==="soft"?"A light month":"Nothing recorded"}"></i>`).join("")}</div>
+   <div class="selrow-n" style="margin-top:8px">${sum.gap?"Three months with nothing recorded. That is the gap your coordinator sees, and it is easier to close now than in Grade 12.":"A filled cell is a month with something recorded against it. The point is the run, not any one month."}</div>
   </div>
 
-  ${pending.length?pending.map(a=>{
-   const student=g(a.sid)||{};
-   const catalog=COURSES_BY_GRADE[student.grade]||[];
-   const requested=(a.courses||[]).map(name=>catalog.find(course=>course.name===name)||{name,subject:"Course",teacher:"Assigned after review",pathway:"Standard",period:"TBD"});
-   const periods=requested.reduce((all,course)=>{all[course.period]=(all[course.period]||0)+1;return all;},{});
-   const conflicts=Object.entries(periods).filter(([,count])=>count>1);
-   const teacherCourses=requested.filter(course=>course.teacher===TEACHER.name).length;
-   return `<div class="card" style="padding:0;margin-bottom:18px;overflow:hidden">
-    <div style="padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;align-items:flex-start">
-     <div style="display:flex;gap:12px;align-items:center">
-      ${av(a.av||student.av||"ST","student",40)}
-      <div>
-       <div style="font-weight:650;color:var(--ink);font-size:15px">${a.student}</div>
-       <div style="font-size:12px;color:var(--ink-3);margin-top:3px">Grade ${student.grade||"-"} · ${student.goal||"Pathway exploration"} · Submitted ${a.when}</div>
+  <h2 class="sechead" style="margin-top:26px">Your recent entries</h2>
+  ${sum.entries.length?`<div class="sheetbox">${sum.entries.map(e=>`<div class="casent">
+   <span class="lstamp">${e.st.toUpperCase()}</span>
+   <div style="min-width:0;flex:1">
+    <div class="selrow-t">${e.n} <span class="selrow-n" style="display:inline">${STRANDL(e.st)}</span></div>
+    ${e.ref?`<p class="prose" style="font-size:12.3px;color:var(--ink-2);margin:5px 0 0;line-height:1.6;max-width:66ch">${e.note}</p>`
+     :`<div class="selrow-n" style="margin-top:3px">No reflection written. An entry without one does not count toward an outcome.</div>`}
+   </div>
+   <div class="selrow-r"><span class="fig" style="font-size:13px;color:var(--ink-2)">${e.h} h</span>
+    <span class="fig selrow-n">${e.d}</span></div>
+  </div>`).join("")}</div>
+  ${sum.pending?`<div style="margin-top:12px">${empty(sum.pending===1?"One entry is still missing its reflection":sum.pending+" entries are still missing a reflection",
+   "The hours are recorded either way. The reflection is what an outcome is evidenced from, so an entry without one sits outside the seven.",
+   `<button class="btn btn-g btn-sm" data-casreflect="1">Write the missing reflections</button>`)}</div>`:""}`
+  :empty("Nothing recorded yet","Your first entry can be something you already do. Record it, write two sentences about it, and the eighteen months start counting.",
+   `<button class="btn btn-p btn-sm" data-caslog="1">Record something</button>`)}
+
+  <h2 class="sechead" style="margin-top:26px">The seven outcomes</h2>
+  <div class="sheetbox">${CAS_OUTCOMES.map((o,i)=>`<div class="selrow-static">
+   <span class="lstamp${i<sum.outcomes?" on":" void"}">${i<sum.outcomes?"&#10003;":i+1}</span>
+   <div style="min-width:0"><div class="selrow-t">${o}</div>
+    <div class="selrow-n">${i<sum.outcomes?"Evidenced in a reflection you have already written.":"Not evidenced yet."}</div></div>
+  </div>`).join("")}</div>
+
+  <div style="display:flex;gap:9px;margin-top:20px;flex-wrap:wrap">
+   <button class="btn btn-p" data-caslog="1">Record an activity</button>
+   <button class="btn btn-g" data-snav="stuclass">Back to your subjects</button>
+  </div>`:""}
+
+  <h2 class="sechead" style="margin-top:${ib&&sum?"32px":"6px"}">What you actually do</h2>
+  <div class="sheetbox" style="padding:16px 18px">
+   <div class="selrow-n" style="margin-bottom:11px">The three questions you answered when you signed in were about where you might work one day. These are about what you enjoy, which is a different question and the one that matches you to something worth joining. ${tags.length?"Change them whenever they stop being true.":""}</div>
+   <div class="tagrow">
+    ${CAS_TAGS.map(([id,label])=>`<button class="tagbtn${tags.includes(id)?" on":""}" data-castag="${id}" aria-pressed="${tags.includes(id)}">${label}</button>`).join("")}
+   </div>
+  </div>
+
+  <h2 class="sechead" style="margin-top:26px">${tags.length?"What fits":"What the school runs"}</h2>
+  ${tags.length?`<div class="sheetbox">${matches.map(({o,hit})=>`<div class="casent">
+   <span class="lstamp">${o.st.toUpperCase()}</span>
+   <div style="min-width:0;flex:1">
+    <div class="selrow-t">${o.n} <span class="selrow-n" style="display:inline">${STRANDL(o.st)}</span></div>
+    <div class="selrow-n">${o.about}</div>
+    <div class="selrow-n" style="margin-top:4px"><b style="color:var(--ink-2)">Shown because</b> you picked ${hit.map(CASTAG).join(" and ").toLowerCase()}.</div>
+   </div>
+   <div class="selrow-r" style="align-items:flex-end">
+    <span class="fig selrow-n">${o.when}</span>
+    <span class="fig selrow-n">${o.spots} place${o.spots===1?"":"s"}</span>
+    <button class="btn btn-g btn-sm" data-casjoin="${o.id}">Ask to join</button>
+   </div>
+  </div>`).join("")}</div>
+  ${matches.length<CAS_OPPS.length?`<div style="margin-top:12px">${empty((CAS_OPPS.length-matches.length)+" more the school runs",
+   "Everything else on the list, whether or not it matches what you picked above. A CAS activity you would have done anyway is not a worse one.",
+   `<button class="btn btn-g btn-sm" data-casall="1">${S.casAll?"Hide them":"Show all "+CAS_OPPS.length}</button>`)}</div>`:""}
+  ${S.casAll?`<div class="sheetbox" style="margin-top:12px">${CAS_OPPS.filter(o=>!matches.some(m=>m.o.id===o.id)).map(o=>`<div class="casent">
+   <span class="lstamp">${o.st.toUpperCase()}</span>
+   <div style="min-width:0;flex:1"><div class="selrow-t">${o.n}</div><div class="selrow-n">${o.about}</div></div>
+   <div class="selrow-r" style="align-items:flex-end"><span class="fig selrow-n">${o.when}</span>
+    <button class="btn btn-g btn-sm" data-casjoin="${o.id}">Ask to join</button></div>
+  </div>`).join("")}</div>`:""}`
+  :`<div class="sheetbox">${CAS_OPPS.map(o=>`<div class="casent">
+   <span class="lstamp">${o.st.toUpperCase()}</span>
+   <div style="min-width:0;flex:1"><div class="selrow-t">${o.n} <span class="selrow-n" style="display:inline">${STRANDL(o.st)}</span></div>
+    <div class="selrow-n">${o.about}</div></div>
+   <div class="selrow-r" style="align-items:flex-end"><span class="fig selrow-n">${o.when}</span>
+    <span class="fig selrow-n">${o.lead}</span>
+    <button class="btn btn-g btn-sm" data-casjoin="${o.id}">Ask to join</button></div>
+  </div>`).join("")}</div>`}
+ </div>`;}
+
+/* ═══════════════════════════════════════════════════════════════════
+   THE COORDINATOR — SELECTIONS, VIABILITY, CAS
+   ═══════════════════════════════════════════════════════════════════
+   Three counselor views, not a sixth role. ACS has no separate
+   coordination department: the high school counseling team does this work
+   alongside everything else, so it belongs in the console they already
+   have open rather than behind another login.
+
+   Two populations live on these screens and they must never be made to
+   look like one. The caseload is 87 students belonging to one counselor,
+   across Grades 9 to 12. The Diploma cohort is the school's IB population
+   across three year groups. Every heading below says which it is holding,
+   because a number that answers a different question from the one beside
+   it is how a dashboard starts lying. */
+const SEL_STATE={
+ none:{l:"·",t:"Not started",n:"Nothing submitted, and the round is still open."},
+ draft:{l:"D",t:"Drafting",n:"Started, not sent."},
+ submitted:{l:"S",t:"With teachers",n:"Sent. Waiting on the teachers of the Higher Level subjects."},
+ signed:{l:"T",t:"Waiting on you",n:"Teachers have answered. It needs the conversation."},
+ changes:{l:"R",t:"Returned",n:"You asked for a change. Back with the student."},
+ approved:{l:"A",t:"Confirmed",n:"Conversation recorded and selection approved."}};
+const SEL_FILTERS=[["act","Waiting on you"],["sent","Sent"],["not","Not started"],["all","Everyone"]];
+const selWithTeachers=()=>DPC.filter(d=>d.yr===10&&SELREC[d.id]&&SELREC[d.id].status==="submitted").length;
+function selRows(){
+ const f=S.selFilter||"act";
+ return DPC.filter(d=>d.yr===10).map(d=>({d,rec:SELREC[d.id]||{status:"none",picks:{},why:{},signs:{}}}))
+  .filter(({rec})=>f==="all"?true:f==="act"?rec.status==="signed"
+   :f==="sent"?["submitted","signed","approved","changes"].includes(rec.status):["none","draft"].includes(rec.status))
+  .sort((a,b)=>{const o={signed:0,submitted:1,changes:2,draft:3,approved:4,none:5};
+   return (o[a.rec.status]-o[b.rec.status])||a.d.name.localeCompare(b.d.name);});}
+
+function vSelQueue(){
+ if(S.selStu)return vSelStudent(S.selStu);
+ const rows=selRows(),c=selCounts(),shown=Math.min(rows.length,S.selShown||25);
+ const round=DPC.filter(d=>d.yr===10).length;
+ return `<div class="fade">
+  ${head("What Grade 10 has chosen, and who is still waiting",
+   `The ${SEL_ROUND.year} round. ${round} students in the year group, closing ${SEL_ROUND.closes}. This is the Diploma cohort, not your caseload.`)}
+  ${tally([["Waiting on you",String(selWaiting()),"teachers have answered"],
+   ["With teachers",String(selWithTeachers()),"not yours yet"],
+   ["Confirmed",String(c.approved),"conversation recorded"],
+   ["Not started",String(c.none+c.draft),SEL_ROUND.deadlineIn+" days left"]])}
+  <div class="filterbar" role="group" aria-label="Filter selections">
+   ${SEL_FILTERS.map(([k,l])=>`<button class="tab${(S.selFilter||"act")===k?" on":""}" data-selfilter="${k}" aria-pressed="${(S.selFilter||"act")===k}">${l}</button>`).join("")}
+  </div>
+  ${rows.length?`<div class="sheetscroll"><table class="sheet ibsheet"><thead><tr>
+   <th class="lg-mgn"><span class="sr">State</span></th>
+   <th style="width:220px">Student</th>
+   ${IB_GROUPS.map(gr=>`<th class="ibg" title="${gr.label}">${gr.n}</th>`).join("")}
+   <th class="num">HL</th><th style="width:150px">Teachers</th><th style="width:130px">Conversation</th>
+  </tr></thead><tbody>
+   ${rows.slice(0,shown).map(({d,rec})=>{
+    const st=SEL_STATE[rec.status],hl=selHL(rec);
+    const hlSubs=Object.values(rec.picks||{}).filter(p=>p&&p.lv==="HL");
+    const signed=hlSubs.filter(p=>rec.signs&&rec.signs[p.s]).length;
+    return `<tr>
+     <td class="lg-mgn"><span class="lstamp${rec.status==="approved"?" on":rec.status==="none"?" void":""}" title="${st.t}">${st.l}</span></td>
+     <td><button class="lg-open" data-selstu="${d.id}"><span class="lg-name">${d.name}</span>
+      <span class="lg-sub">${st.t}${rec.submitted?" · "+rec.submitted:""}</span></button></td>
+     ${IB_GROUPS.map(gr=>{const p=rec.picks&&rec.picks[gr.id];
+      return `<td class="ibg">${p&&p.s?`<span class="ibcell${p.lv==="HL"?" hl":""}" title="${IBS(p.s).name} ${p.lv}">${p.s}<em>${p.lv}</em></span>`:`<span class="ibcell void" aria-label="not chosen">–</span>`}</td>`;}).join("")}
+     <td class="num">${hl||"–"}</td>
+     <td>${hlSubs.length?`<span class="fig">${signed} of ${hlSubs.length}</span> answered`:"<span style='color:var(--ink-4)'>none needed</span>"}</td>
+     <td>${rec.talk?`<span class="fig">${rec.talk.when}</span>`:rec.status==="signed"?`<b style="color:var(--ink)">Not yet</b>`:`<span style="color:var(--ink-4)">–</span>`}</td>
+    </tr>`;}).join("")}
+  </tbody></table></div>
+  ${rows.length>shown?`<button class="btn btn-g" style="margin-top:14px" data-selmore="1">Show ${Math.min(25,rows.length-shown)} more of ${rows.length}</button>`:""}`
+  :`<div style="margin-top:22px">${moment({art:"open",title:selEmptyTitle(),body:selEmptyBody(),
+    action:`<button class="btn btn-g btn-sm" data-selfilter="all">Show everyone</button>`})}</div>`}
+ </div>`;}
+function selEmptyTitle(){const f=S.selFilter||"act";
+ return f==="act"?"Nothing is waiting on you":f==="not"?"Everyone has started":f==="sent"?"Nothing has been sent yet":"No students in this year group";}
+function selEmptyBody(){const f=S.selFilter||"act";
+ return f==="act"?"A selection reaches this list once the teachers of its Higher Level subjects have answered. Until then it is with them, and the list is empty because the work is elsewhere rather than because nothing is happening."
+  :f==="not"?"Every student in the year group has at least opened their form. The round still closes on "+SEL_ROUND.closes+"."
+  :f==="sent"?"The round opened on "+SEL_ROUND.opened+". Submissions land here as they arrive, with the timetable check already run."
+  :"The Grade 10 year group is empty in this rendition.";}
+
+/* ── Meeting prep ───────────────────────────────────────────────────
+   The screen Mr. Diaz described without naming: open a student already
+   knowing what they chose, so the meeting is spent asking why.
+
+   It prints questions, never answers. Everything under "What to ask"
+   carries what raised it, because a question a counselor cannot source is
+   one she cannot use in front of a fifteen-year-old. */
+function vSelStudent(sid){
+ const d=DPC.find(x=>x.id===sid);if(!d)return empty("No such student","This selection is not in the current round.");
+ const rec=SELREC[sid]||{status:"none",picks:{},why:{},signs:{}};
+ const stu=g(sid),st=SEL_STATE[rec.status];
+ const findings=selCheck(rec,stu||d),asks=findings.filter(f=>f.k==="ask");
+ const hlSubs=Object.entries(rec.picks||{}).filter(([,p])=>p&&p.lv==="HL");
+ const questions=[];
+ if(rec.goalNote)questions.push({q:"You wrote that you want to keep two routes open. Which one would you drop if the timetable made you?",src:"Their own note on the form"});
+ asks.forEach(a=>{if(a.q)questions.push({q:a.q,src:a.d});});
+ hlSubs.forEach(([,p])=>{const sg=rec.signs&&rec.signs[p.s];
+  if(sg&&sg.verdict!=="hl")questions.push({q:IBS(p.s).t.split(" ").slice(-1)[0]+" suggested Standard Level. Have you spoken to him?",src:sg.by+", "+sg.when+": "+sg.note});});
+ return `<div class="fade">
+  <button class="btn btn-g btn-sm" style="margin-bottom:14px" data-selback="1">${ic("arrow-left",14)} All selections</button>
+  ${head("Before you meet "+d.name,
+   `Grade 10 · ${d.goal} · ${rec.submitted?"sent "+rec.submitted:"nothing sent yet"} · ${st.n}`)}
+  ${stu?`<div class="sheetbox" style="margin-bottom:20px"><div class="selrow-static">
+   ${av(d.av,"counselor",38)}
+   <div style="min-width:0;flex:1"><div class="selrow-t">${d.name} is on your caseload</div>
+    <div class="selrow-n">${stu.headline||""}</div></div>
+   <div class="selrow-r"><button class="btn btn-g btn-sm" data-file="${sid}">Open the case file</button></div>
+  </div></div>`:""}
+
+  <h2 class="sechead">What they chose, and why</h2>
+  <div class="selform">
+   ${IB_GROUPS.map(gr=>{const p=rec.picks&&rec.picks[gr.id],s=p&&p.s?IBS(p.s):null,why=(rec.why&&rec.why[gr.id]||"").trim();
+    return `<div class="selslot${s?"":" void"}">
+     <div class="selrow">
+      <span class="lstamp${s?" on":" void"}">${gr.n}</span>
+      <div style="min-width:0;flex:1">
+       <div class="appa" style="color:var(--ink-4)">${gr.label}</div>
+       ${s?`<div class="selrow-t" style="margin-top:2px">${s.name} <span class="lvstamp">${p.lv}</span></div>
+        <div class="selrow-n">${s.t} <span class="fig">· ${s.per[p.lv]}</span></div>`
+       :`<div class="selrow-n" style="margin-top:3px">Not chosen.</div>`}
       </div>
      </div>
-     <span style="background:var(--info-bg);color:var(--info);padding:5px 10px;border-radius:var(--r-pill);font-size:10px;font-weight:700;letter-spacing:.04em">PENDING REVIEW</span>
-    </div>
-    <div style="display:grid;grid-template-columns:minmax(0,1fr) 280px">
-     <div style="padding:18px 20px">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px">
-       <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3)">Requested courses</div>
-       <div style="font-size:12px;color:var(--ink-2)">${requested.length} courses · ${teacherCourses} taught by you</div>
-      </div>
-      <div style="display:grid;gap:7px">
-       ${requested.length?requested.map(course=>`<div style="display:grid;grid-template-columns:minmax(0,1fr) 92px 62px;gap:10px;align-items:center;padding:10px 11px;border:1px solid var(--line);border-radius:var(--r);font-size:12px">
-        <div><div style="font-weight:600;color:var(--ink)">${course.name}</div><div style="font-size:11px;color:var(--ink-3);margin-top:2px">${course.subject} · ${course.teacher}${course.teacher===TEACHER.name?" · Your class":""}</div></div>
-        <span style="color:${course.pathway==="IB"?"var(--ok)":course.pathway==="AP"?"var(--info)":"var(--warn)"};font-weight:700;font-size:11px">${course.pathway}</span>
-        <span style="color:${periods[course.period]>1?"var(--crit)":"var(--ink-2)"};font-size:11px;font-weight:600">${course.period}</span>
-       </div>`).join(""):`<div style="font-size:12px;color:var(--ink-3)">No individual courses were included in this request.</div>`}
-      </div>
-      ${conflicts.length?`<div style="margin-top:12px;padding:10px 12px;background:var(--crit-bg);border:1px solid var(--crit-line);border-radius:var(--r);font-size:12px;color:var(--crit)"><b>Timetable conflict:</b> ${conflicts.map(([period,count])=>`${count} courses in ${period}`).join(", ")}. Request changes before approving.</div>`:`<div style="margin-top:12px;font-size:12px;color:var(--ok);font-weight:600">No timetable conflicts detected.</div>`}
-     </div>
-     <aside style="padding:18px;border-left:1px solid var(--line);background:var(--surface)">
-      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);margin-bottom:12px">Readiness snapshot</div>
-      <div style="display:grid;gap:11px;font-size:12px">
-       <div><div style="font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em">Current pathway</div><div style="font-weight:600;color:var(--ink);margin-top:3px">${student.track||"Undecided"}</div></div>
-       <div><div style="font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em">Academic record</div><div style="font-weight:600;color:var(--ink);margin-top:3px">GPA ${student.gpa||"Not available"}</div></div>
-       <div><div style="font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em">Your decision scope</div><div style="font-weight:600;color:var(--ink);margin-top:3px">${teacherCourses?`${teacherCourses} requested course${teacherCourses>1?"s":""}`:"No assigned course yet"}</div></div>
-      </div>
-     </aside>
-    </div>
-    <div style="padding:14px 20px;border-top:1px solid var(--line);background:var(--surface)">
-     <label style="display:block;font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Decision note for student and counselor</label>
-     <textarea data-approvalnote="${a.id}" placeholder="Add a reason, prerequisite, or suggested alternative…" style="width:100%;box-sizing:border-box;min-height:54px;resize:vertical;padding:9px 10px;border:1px solid var(--line);border-radius:var(--r);margin-bottom:10px"></textarea>
-     <div style="display:flex;gap:8px">
-      <button data-classapprove="${a.id}" style="flex:1;padding:10px;background:var(--ok);color:var(--on-ok);border:none;border-radius:var(--r);font-weight:600;cursor:pointer;font-size:12px">Approve selection</button>
-      <button data-classchanges="${a.id}" style="flex:1;padding:10px;background:var(--warn);color:var(--on-warn);border:none;border-radius:var(--r);font-weight:600;cursor:pointer;font-size:12px">Request changes</button>
-      <button data-classreject="${a.id}" style="flex:1;padding:10px;background:var(--crit);color:var(--on-crit);border:none;border-radius:var(--r);font-weight:600;cursor:pointer;font-size:12px">Decline</button>
-      <button data-classrequest="${a.id}" class="btn btn-g btn-sm" title="Message student">${ic("msg",15)}</button>
-     </div>
-    </div>
-   </div>`;
-  }).join(''):`<div class="card" style="padding:24px">${moment({art:"steady",title:"Nothing waiting on you",body:"A course selection lands here the moment a student sends one from their portal, with the timetable check already run. This page only ever holds what's still waiting on a decision. It empties again as soon as you make one."})}</div>`}
+     ${why?`<div class="selwhy"><div class="appa" style="color:var(--ink-3)">In their words</div>
+      <p class="prose" style="font-size:12.5px;color:var(--ink-2);margin:4px 0 0;line-height:1.6;max-width:66ch">${why}</p></div>`
+     :s?`<div class="selwhy"><div class="selrow-n">No reason written for this one.</div></div>`:""}
+    </div>`;}).join("")}
+  </div>
+  ${rec.goalNote?`<div class="sheetbox" style="margin-top:14px;padding:16px 18px">
+   <div class="appa" style="color:var(--ink-4)">What they said they want from the whole thing</div>
+   <p class="prose" style="font-size:13px;color:var(--ink);margin:6px 0 0;line-height:1.6;max-width:66ch">${rec.goalNote}</p></div>`:""}
+
+  <h2 class="sechead" style="margin-top:26px">What to ask</h2>
+  ${questions.length?`<div class="checklist">${questions.map(q=>`<div class="checkrow ask">
+   <span class="checkmark" aria-hidden="true">?</span>
+   <div style="min-width:0"><div class="selrow-t">${q.q}</div>
+    <div class="selrow-n"><b style="color:var(--ink-3)">Raised by</b> ${q.src}</div></div>
+  </div>`).join("")}</div>
+  <div class="selrow-n" style="margin-top:10px;max-width:66ch">These are questions, not findings. The portal has no view on whether ${d.name.split(" ")[0]} should take these subjects, and the rules it does check are printed below.</div>`
+  :empty("Nothing to raise","Every rule this round checks is satisfied and the stated goal matches the subjects. The conversation is still required before the selection is confirmed.")}
+
+  <h2 class="sechead" style="margin-top:26px">The rules, checked</h2>
+  <div class="checklist">${findings.map(f=>`<div class="checkrow ${f.k}">
+   <span class="checkmark" aria-hidden="true">${f.k==="block"?"&#10005;":f.k==="ask"?"?":"&#10003;"}</span>
+   <div style="min-width:0"><div class="selrow-t">${f.t}</div><div class="selrow-n">${f.d}</div></div>
+  </div>`).join("")}</div>
+
+  ${hlSubs.length?`<h2 class="sechead" style="margin-top:26px">What the teachers said</h2>
+  <div class="sheetbox">${hlSubs.map(([,p])=>{const sg=rec.signs&&rec.signs[p.s],s=IBS(p.s);
+   return `<div class="selrow-static">
+    <span class="lstamp${sg?" on":" void"}">${sg?"&#10003;":"·"}</span>
+    <div style="min-width:0"><div class="selrow-t">${s.name} at Higher Level</div>
+     <div class="selrow-n">${sg?`<b style="color:var(--ink-2)">${sg.by}</b>, ${sg.when}. ${sg.note}`:s.t+" has not answered yet."}</div></div>
+    ${sg?`<div class="selrow-r"><span class="lvstamp">${sg.verdict==="hl"?"Supported at HL":sg.verdict==="sl"?"Suggests SL":"Concern"}</span></div>`:""}
+   </div>`;}).join("")}</div>`:""}
+
+  <h2 class="sechead" style="margin-top:26px">The decision</h2>
+  <div class="sheetbox">
+   <div class="selrow-static">
+    <span class="lstamp${rec.talk?" on":" void"}">${rec.talk?"&#10003;":"1"}</span>
+    <div style="min-width:0;flex:1"><div class="selrow-t">Record the conversation</div>
+     <div class="selrow-n">${rec.talk?`${rec.talk.when}, ${rec.talk.by}. ${rec.talk.note}`:"Nothing can be approved before this. It is the step the notebook used to be, and it is the only one the portal will not do for you."}</div></div>
+    ${rec.talk?"":`<div class="selrow-r"><button class="btn btn-p btn-sm" data-seltalk="${sid}">Record it</button></div>`}
+   </div>
+   <div class="selrow-static">
+    <span class="lstamp${rec.status==="approved"?" on":" void"}">${rec.status==="approved"?"&#10003;":"2"}</span>
+    <div style="min-width:0;flex:1"><div class="selrow-t">${rec.status==="approved"?"Confirmed":"Approve, or send it back"}</div>
+     <div class="selrow-n">${rec.status==="approved"?"These are the subjects "+d.name.split(" ")[0]+" starts in Grade 11. Timetabling reads the confirmed selections when the round closes.":rec.talk?"":"Available once the conversation is recorded."}</div></div>
+    ${rec.status!=="approved"?`<div class="selrow-r">
+     <button class="btn btn-p btn-sm" data-selapprove="${sid}" ${rec.talk&&!selBlockers(rec,stu||d).length?"":"disabled"}>Approve</button>
+     <button class="btn btn-g btn-sm" data-selreturn="${sid}">Request a change</button></div>`:""}
+   </div>
+  </div>
+
+  <h2 class="sechead" style="margin-top:26px">Trail</h2>
+  ${(rec.log&&rec.log.length)?`<div class="sheetbox">${rec.log.map(l=>`<div class="selrow-static">
+   <span class="fig selrow-n" style="width:74px;flex-shrink:0">${l.when}</span>
+   <div style="min-width:0"><div class="selrow-t">${l.what}</div><div class="selrow-n">${l.who}</div></div>
+  </div>`).join("")}</div>`
+  :empty("Nothing recorded against this selection yet","Every submission, teacher answer, conversation and decision writes a dated line here with a name on it. It is what a parent asking why gets shown.")}
+ </div>`;}
+
+/* ── Viability ──────────────────────────────────────────────────────
+   The half of the notebook problem that is arithmetic. Every figure is
+   counted from the cohort's own selections at render time; none is
+   stored, because the moment one is, it starts disagreeing with the table
+   underneath it. */
+function vSelDemand(){
+ const rows=demandRows().filter(r=>r.n>0||r.state==="under");
+ const sort=S.demSort||"risk";
+ const order={under:0,over:1,ok:2};
+ rows.sort((a,b)=>sort==="n"?b.n-a.n:sort==="name"?a.s.name.localeCompare(b.s.name)
+  :(order[a.state]-order[b.state])||b.n-a.n);
+ /* Viability is per subject, so the at-risk list is too. Listing it per
+    level printed the same course twice and counted it twice in the tally
+    above, which is how a screen ends up claiming nineteen courses are in
+    danger when six are. */
+ const under=IB_SUBJECTS.map(subjectViableRow).filter(v=>v.under)
+  .sort((a,b)=>a.n-b.n);
+ const over=rows.filter(r=>r.state==="over");
+ const clashes=[];
+ ["P1","P2","P3","P4","P5","P6"].forEach(per=>{
+  /* one row per subject in a period. HL and SL of the same subject often
+     run in the same block, and listing both made a subject look
+     timetabled against itself. */
+  const seen=new Set(),inPer=[];
+  rows.filter(r=>r.per===per&&r.n>0).forEach(r=>{if(!seen.has(r.s.id)){seen.add(r.s.id);inPer.push(r);}});
+  if(inPer.length>1)clashes.push({per,rows:inPer});});
+ const c=selCounts(),sent=c.submitted+c.signed+c.approved+c.changes;
+ return `<div class="fade">
+  ${head("Which courses can run next year",
+   `Counted from ${sent+c.draft} Grade 10 selections, ${sent} of them sent and ${c.draft} still in draft. ${SEL_ROUND.minNote} Nothing here is a decision: the round closes ${SEL_ROUND.closes}.`)}
+  ${tally([["Below minimum",String(under.length),under.length===1?"subject would not run":"subjects would not run"],
+   ["Over cap",String(over.length),"teaching groups too large"],
+   ["Counted",String(sent+c.draft)+" of "+DPC.filter(d=>d.yr===10).length,"drafts included, marked"],
+   ["Round closes",SEL_ROUND.closes,SEL_ROUND.deadlineIn+" days"]])}
+  ${under.length?`<h2 class="sechead" style="margin-top:26px">Below the minimum to run</h2>
+  <div class="sheetbox">${under.map(v=>`<div class="selrow-static">
+   <span class="lstamp void">${v.n}</span>
+   <div style="min-width:0;flex:1"><div class="selrow-t">${v.s.name}</div>
+    <div class="selrow-n">${v.n} chosen across both levels, ${v.min} needed. ${v.n?`${v.n===1?"One student is":"These "+v.n+" students are"} carrying a subject that may not exist next year, and their form already says so.`:"Nobody has chosen it this round."}</div></div>
+   ${v.n?`<div class="selrow-r"><button class="btn btn-g btn-sm" data-demwho="${v.s.id}">${S.demWho===v.s.id?"Hide":"Who chose it"}</button></div>`:""}
+  </div>
+  ${S.demWho===v.s.id?`<div class="selwhy">${demWhoList(v)}</div>`:""}`).join("")}</div>`:""}
+
+  <h2 class="sechead" style="margin-top:26px">Every subject on offer</h2>
+  <div class="filterbar" role="group" aria-label="Sort subjects">
+   ${[["risk","At risk first"],["n","Most chosen"],["name","By name"]].map(([k,l])=>
+    `<button class="tab${sort===k?" on":""}" data-demsort="${k}" aria-pressed="${sort===k}">${l}</button>`).join("")}
+  </div>
+  <div class="sheetscroll"><table class="sheet"><thead><tr>
+   <th style="width:32%">Subject</th><th>Level</th><th>Period</th>
+   <th class="num">This level</th><th class="num">Draft</th><th class="num">Subject</th><th class="num">Min</th><th class="num">Cap</th><th style="width:140px">Standing</th>
+  </tr></thead><tbody>
+   ${rows.map(r=>`<tr>
+    <td><span style="font-weight:600;color:var(--ink)">${r.s.name}</span></td>
+    <td><span class="lvstamp">${r.lv}</span></td>
+    <td class="fig">${r.per}</td>
+    <td class="num">${r.firm}</td><td class="num" style="color:var(--ink-4)">${r.draft||"–"}</td>
+    <td class="num">${r.tot}</td>
+    <td class="num" style="color:var(--ink-4)">${r.s.min}</td><td class="num" style="color:var(--ink-4)">${r.s.cap}</td>
+    <td>${r.state==="under"?`<b style="color:var(--margin)">Below minimum</b>`
+     :r.state==="over"?`<b style="color:var(--ink)">Over cap by ${r.n-r.s.cap}</b>`:"Runs"}</td>
+   </tr>`).join("")}
+  </tbody></table></div>
+
+  <h2 class="sechead" style="margin-top:30px">Where the timetable is tight</h2>
+  <div class="selrow-n" style="margin-bottom:12px;max-width:66ch">Every subject in a period is a subject nobody can take alongside the others in it. A student who wants two of these has to drop one, and they find that out on their own form rather than in August.</div>
+  <div class="sheetscroll"><table class="sheet"><thead><tr>
+   <th style="width:90px">Period</th><th>Subjects timetabled against each other, and how many chose each</th>
+  </tr></thead><tbody>
+   ${clashes.map(c2=>{
+    /* Not "students affected": the form refuses two subjects in one
+       period, so that count was always zero. Not the number of students
+       in the period either, which is every student in the year group and
+       therefore the same figure on every row. What decides whether a
+       block can move is which subjects inside it are large. */
+    const inBlock=c2.rows.map(r=>({r,n:demandFor(r.s.id,r.lv).n})).sort((a,b)=>b.n-a.n);
+    return `<tr><td class="fig" style="font-weight:600;color:var(--ink)">${c2.per}</td>
+    <td>${inBlock.map(({r,n})=>`<span style="white-space:nowrap">${r.s.name} <span class="lvstamp">${r.lv}</span> <span class="fig" style="color:${n>=20?"var(--ink)":"var(--ink-4)"};font-weight:${n>=20?600:400}">${n}</span></span>`).join(" &middot; ")}</td>
+    </tr>`;}).join("")}
+  </tbody></table></div>
+ </div>`;}
+function demWhoList(r){
+ const who=DPC.filter(d=>d.yr===10).filter(d=>{const rec=SELREC[d.id];
+  return rec&&rec.picks&&Object.values(rec.picks).some(p=>p&&p.s===r.s.id);});
+ if(!who.length)return `<div class="selrow-n">Nobody has chosen it this round.</div>`;
+ return `<div class="appa" style="color:var(--ink-4);margin-bottom:6px">Would need a second choice</div>
+  <div style="display:flex;flex-wrap:wrap;gap:7px">${who.map(d=>
+   `<button class="btn btn-g btn-sm" data-selstu="${d.id}">${d.name}</button>`).join("")}</div>`;}
+
+/* ── CAS across the cohort ──────────────────────────────────────────
+   The coordinator's question is not how many hours the cohort has logged.
+   It is which students have stopped, and which strand they stopped in. */
+function vCasCohort(){
+ if(S.casStu)return vCasDetail(S.casStu);
+ const cohort=DPC.filter(d=>d.yr>10).map(d=>({d,sum:casSum(d.id),flag:casStalled(d.id)}));
+ const flagged=cohort.filter(x=>x.flag);
+ const gap=cohort.filter(x=>x.sum&&x.sum.gap);
+ const f=S.casFilter||"flag";
+ const rows=(f==="flag"?flagged:f==="g11"?cohort.filter(x=>x.d.yr===11):f==="g12"?cohort.filter(x=>x.d.yr===12):cohort)
+  .sort((a,b)=>(b.sum?b.sum.gap:0)-(a.sum?a.sum.gap:0)||a.d.name.localeCompare(b.d.name));
+ const shown=Math.min(rows.length,S.casShown||25);
+ return `<div class="fade">
+  ${head(gap.length?gap.length+" students have recorded nothing for three months":"Every diploma student is still moving in CAS",
+   `Grades 11 and 12 of the Diploma cohort, ${cohort.length} students. ${CAS_HOURS_NOTE}`)}
+  ${tally([["Nothing for 3 months",String(gap.length),"the gap that costs a diploma"],
+   ["A strand running thin",String(cohort.filter(x=>x.sum&&x.sum.thin.length).length),"balance is the requirement"],
+   ["Reflections outstanding",String(cohort.reduce((a,x)=>a+(x.sum?x.sum.pending:0),0)),"hours without evidence"],
+   ["In the cohort",String(cohort.length),"Grades 11 and 12"]])}
+  <div class="filterbar" role="group" aria-label="Filter CAS cohort">
+   ${[["flag","Needs a nudge"],["g11","Grade 11"],["g12","Grade 12"],["all","Everyone"]].map(([k,l])=>
+    `<button class="tab${f===k?" on":""}" data-casfilter="${k}" aria-pressed="${f===k}">${l}</button>`).join("")}
+  </div>
+  ${rows.length?`<div class="sheetscroll"><table class="sheet"><thead><tr>
+   <th class="lg-mgn"><span class="sr">Standing</span></th>
+   <th style="width:200px">Student</th><th style="width:190px">The run</th>
+   <th class="num">C</th><th class="num">A</th><th class="num">S</th>
+   <th class="num">Outcomes</th><th style="width:180px">What is missing</th><th style="width:100px">Last entry</th>
+  </tr></thead><tbody>
+   ${rows.slice(0,shown).map(({d,sum,flag})=>`<tr>
+    <td class="lg-mgn"><span class="lstamp${flag?"":" on"}" title="${flag||"On track"}">${flag?"!":"&#10003;"}</span></td>
+    <td><button class="lg-open" data-casstu="${d.id}"><span class="lg-name">${d.name}</span>
+     <span class="lg-sub">Grade ${d.yr} · ${d.goal}</span></button></td>
+    <td><div class="run run-sm">${sum.run.map(k=>`<i class="${k==="kept"?"in":k==="soft"?"":"gap"}"></i>`).join("")}</div></td>
+    <td class="num">${sum.hrs.c}</td><td class="num">${sum.hrs.a}</td><td class="num">${sum.hrs.s}</td>
+    <td class="num">${sum.outcomes} / 7</td>
+    <td>${flag?`<b style="color:var(--ink)">${flag}</b>`:casNote(d.id)?`<span style="color:var(--ink-3)">${casNote(d.id)}</span>`:"<span style='color:var(--ink-4)'>Nothing</span>"}</td>
+    <td class="fig" style="color:var(--ink-3)">${sum.last}</td>
+   </tr>`).join("")}
+  </tbody></table></div>
+  ${rows.length>shown?`<button class="btn btn-g" style="margin-top:14px" data-casmore="1">Show ${Math.min(25,rows.length-shown)} more of ${rows.length}</button>`:""}
+  <div class="selrow-n" style="margin-top:14px;max-width:70ch">C, A and S are hours recorded against creativity, activity and service. A filled cell in the run is a month with something recorded in it. The run carries no red: a quiet month in CAS is not a safeguarding signal and is not printed like one.</div>`
+  :`<div style="margin-top:22px">${moment({art:"steady",title:"Nobody needs a nudge",
+   body:"Every student in Grades 11 and 12 has recorded something in the last three months and no strand has run thin. This list holds only the students a coordinator would otherwise have to find by reading every record.",
+   action:`<button class="btn btn-g btn-sm" data-casfilter="all">Show the whole cohort</button>`})}</div>`}
+ </div>`;}
+
+/* One student's CAS, as the coordinator reads it. A generated record has
+   hours and a run and no entries; an authored one has the reflections
+   too. The view says which it is looking at rather than printing an empty
+   list under a heading, because a blank panel reads as broken. */
+function vCasDetail(sid){
+ const d=DPC.find(x=>x.id===sid);if(!d)return empty("No such student","This student is not in the Diploma cohort.");
+ const sum=casSum(sid),flag=casStalled(sid),stu=g(sid);
+ return `<div class="fade">
+  <button class="btn btn-g btn-sm" style="margin-bottom:14px" data-casback="1">${ic("arrow-left",14)} CAS across the cohort</button>
+  ${head(flag?d.name+", and what has stalled":d.name+" is moving through CAS",
+   `Grade ${d.yr} · ${d.goal} · last entry ${sum.last}. ${flag?flag+".":"Nothing outstanding."}`)}
+  ${tally([["Creativity",sum.hrs.c+" h",sum.hrs.c<sum.floor?"thin for this stage":"on track"],
+   ["Activity",sum.hrs.a+" h",sum.hrs.a<sum.floor?"thin for this stage":"on track"],
+   ["Service",sum.hrs.s+" h",sum.hrs.s<sum.floor?"thin for this stage":"on track"],
+   ["Outcomes",sum.outcomes+" of 7","evidenced in reflections"]])}
+  <h2 class="sechead" style="margin-top:26px">Month by month</h2>
+  <div class="casrun"><div class="run">${sum.run.map(k=>
+   `<i class="${k==="kept"?"in":k==="soft"?"":"gap"}" title="${k==="kept"?"Recorded engagement":k==="soft"?"A light month":"Nothing recorded"}"></i>`).join("")}</div>
+   <div class="selrow-n" style="margin-top:8px">${sum.gap?"The last three months are empty. This is the pattern that turns into a diploma problem in Grade 12, and it is the reason to send a message now rather than in March.":"A filled cell is a month with something recorded against it."}</div></div>
+  <h2 class="sechead" style="margin-top:26px">Recent entries</h2>
+  ${sum.entries.length?`<div class="sheetbox">${sum.entries.map(e=>`<div class="casent">
+   <span class="lstamp">${e.st.toUpperCase()}</span>
+   <div style="min-width:0;flex:1"><div class="selrow-t">${e.n} <span class="selrow-n" style="display:inline">${STRANDL(e.st)}</span></div>
+    ${e.ref?`<p class="prose" style="font-size:12.3px;color:var(--ink-2);margin:5px 0 0;line-height:1.6;max-width:66ch">${e.note}</p>`
+     :`<div class="selrow-n" style="margin-top:3px">No reflection. Hours recorded, nothing evidenced.</div>`}</div>
+   <div class="selrow-r"><span class="fig" style="font-size:13px;color:var(--ink-2)">${e.h} h</span><span class="fig selrow-n">${e.d}</span></div>
+  </div>`).join("")}</div>`
+  :empty("Entry-level detail is not in this rendition for "+d.name.split(" ")[0],
+   "The totals and the run above are this student's own. Individual entries and reflections are authored for the four named demonstration students, and the rest of the cohort carries summary figures only.")}
+  <div style="display:flex;gap:9px;margin-top:20px;flex-wrap:wrap">
+   <button class="btn btn-p" data-casnudge="${sid}">Message ${d.name.split(" ")[0]}</button>
+   ${stu?`<button class="btn btn-g" data-file="${sid}">Open the case file</button>`:""}
+  </div>
  </div>`;}
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -6354,6 +7671,132 @@ function escalateModal(){
    </div>
   </div></div></div>`;}
 
+/* ── The selection round's three consequential moments ──────────────
+   Sending a selection, recording the conversation, and sending one back.
+   Each names what will happen and to whom before it happens, which is the
+   discipline the escalation modal set and the one the old course-approval
+   buttons had none of: they approved or declined a fifteen-year-old's
+   subject choice on a single click. */
+function selModal(){
+ if(!S.modal||!["selsubmit","seltalk","selreturn"].includes(S.modal.type))return "";
+ const sid=S.modal.id,rec=SELREC[sid];if(!rec)return "";
+ const d=DPC.find(x=>x.id===sid)||{name:"This student"};
+ const first=d.name.split(" ")[0];
+ if(S.modal.type==="selsubmit"){
+  const hl=Object.values(rec.picks).filter(p=>p&&p.lv==="HL");
+  const teachers=[...new Set(hl.map(p=>IBS(p.s).t))];
+  return `<div class="modalbg" data-mbg="1"><div class="modal">
+   <div style="padding:20px 22px 0">${mcloseBtn()}
+    <div class="stamp" style="font-size:19px;font-weight:600">Send your selection</div>
+    <div style="font-size:12.3px;color:var(--ink-3);margin:4px 0 16px;line-height:1.55">You can still change it until ${SEL_ROUND.closes}. Sending it now is what starts the two things that take time: your teachers answering, and a slot in ${SEL_ROUND.coordinator}'s diary.</div></div>
+   <div style="padding:0 22px 22px">
+    <div class="sheetbox" style="margin-bottom:16px">
+     ${IB_GROUPS.filter(gr=>rec.picks[gr.id]&&rec.picks[gr.id].s).map(gr=>{const p=rec.picks[gr.id],s=IBS(p.s);
+      return `<div class="selrow-static" style="padding:9px 13px">
+       <span class="lstamp on">${gr.n}</span>
+       <div style="min-width:0;flex:1"><div class="selrow-t">${s.name}</div>
+        <div class="selrow-n">${s.t} <span class="fig">· ${s.per[p.lv]}</span></div></div>
+       <div class="selrow-r"><span class="lvstamp">${p.lv}</span></div></div>`;}).join("")}
+    </div>
+    <div class="checklist" style="margin-bottom:16px">
+     <div class="checkrow ok"><span class="checkmark">&#10003;</span><div>
+      <div class="selrow-t">Goes to ${SEL_ROUND.coordinator}</div>
+      <div class="selrow-n">With the reason you wrote against each subject. He reads them before he meets you.</div></div></div>
+     <div class="checkrow ok"><span class="checkmark">&#10003;</span><div>
+      <div class="selrow-t">Goes to ${teachers.length?teachers.join(" and "):"no teacher, since nothing is at Higher Level"}</div>
+      <div class="selrow-n">${teachers.length?"Only for the subjects you asked for at Higher Level. They answer the level question, not the rest of your form.":"Standard Level choices do not need a teacher's answer."}</div></div></div>
+     <div class="checkrow ask"><span class="checkmark">?</span><div>
+      <div class="selrow-t">Nothing is confirmed until you have talked to him</div>
+      <div class="selrow-n">That is deliberate. The meeting is the point, and this form exists so it does not have to start with writing your choices down.</div></div></div>
+    </div>
+    <div style="display:flex;gap:9px">
+     <button class="btn btn-g" data-mclose="1" style="flex:1">Keep editing</button>
+     <button class="btn btn-p" data-selsend="${sid}" style="flex:1.4">Send it</button>
+    </div>
+   </div></div></div>`;}
+ if(S.modal.type==="seltalk"){
+  const note=(S.selTalkNote||"").trim(),ok=note.length>=10;
+  return `<div class="modalbg" data-mbg="1"><div class="modal">
+   <div style="padding:20px 22px 0">${mcloseBtn()}
+    <div class="stamp" style="font-size:19px;font-weight:600">Record your conversation with ${first}</div>
+    <div style="font-size:12.3px;color:var(--ink-3);margin:4px 0 16px;line-height:1.55">This is the step the notebook used to be. It is dated, it carries your name, and it is what a parent asking why gets shown. Nothing about ${first}'s selection can be approved until it exists.</div></div>
+   <div style="padding:0 22px 22px">
+    <label for="talknote" class="appa" style="display:block;color:var(--ink-3);margin-bottom:7px">What you agreed, in your words · required</label>
+    <textarea id="talknote" data-talknote="1" placeholder="What ${first} said about the choice, what you asked, and what you both decided." style="width:100%;min-height:104px;border:1px solid ${note.length&&!ok?"var(--margin)":"var(--rule-2)"};padding:12px;font-size:13px;line-height:1.55;resize:vertical;font-family:inherit;box-sizing:border-box">${S.selTalkNote||""}</textarea>
+    <div aria-live="polite" style="font-size:11.3px;color:var(--ink-4);margin-top:6px;line-height:1.45">${ok?"Recorded verbatim against the selection and in the audit log.":"A sentence is enough. It is read by the next person who opens this record, which may not be you."}</div>
+    <div style="display:flex;gap:9px;margin-top:18px">
+     <button class="btn btn-g" data-mclose="1" style="flex:1">Cancel</button>
+     <button class="btn btn-p" data-talkgo="${sid}" ${ok?"":"disabled"} style="flex:1.4">Record it</button>
+    </div>
+   </div></div></div>`;}
+ const note=(S.selReturnNote||"").trim(),ok=note.length>=10;
+ return `<div class="modalbg" data-mbg="1"><div class="modal">
+  <div style="padding:20px 22px 0">${mcloseBtn()}
+   <div class="stamp" style="font-size:19px;font-weight:600">Send ${first}'s selection back</div>
+   <div style="font-size:12.3px;color:var(--ink-3);margin:4px 0 16px;line-height:1.55">Their form reopens and they can change it. Nothing they have written is deleted, and the reason you give is the first thing they see.</div></div>
+  <div style="padding:0 22px 22px">
+   <label for="retnote" class="appa" style="display:block;color:var(--ink-3);margin-bottom:7px">What needs to change, and why · required</label>
+   <textarea id="retnote" data-retnote="1" placeholder="Name the slot and the reason. A student who cannot tell which subject you mean will change the wrong one." style="width:100%;min-height:96px;border:1px solid ${note.length&&!ok?"var(--margin)":"var(--rule-2)"};padding:12px;font-size:13px;line-height:1.55;resize:vertical;font-family:inherit;box-sizing:border-box">${S.selReturnNote||""}</textarea>
+   <div style="display:flex;gap:9px;margin-top:18px">
+    <button class="btn btn-g" data-mclose="1" style="flex:1">Cancel</button>
+    <button class="btn btn-d" data-returngo="${sid}" ${ok?"":"disabled"} style="flex:1.4">Send it back</button>
+   </div>
+  </div></div></div>`;}
+
+/* Recording CAS, and writing the reflection that turns hours into
+   evidence. Both are real: the entry lands in the record, the hours move,
+   the month fills, and the outcome count can only rise on a reflection.
+   A control that toasts and changes nothing is the defect this module was
+   supposed to stop repeating. */
+function casModal(){
+ if(!S.modal||!["caslog","casreflect"].includes(S.modal.type))return "";
+ const sid=S.open||PARENT_ME,rec=CASREC[sid];if(!rec)return "";
+ if(S.modal.type==="casreflect"){
+  const missing=(rec.entries||[]).map((e,i)=>({e,i})).filter(x=>!x.e.ref);
+  return `<div class="modalbg" data-mbg="1"><div class="modal">
+   <div style="padding:20px 22px 0">${mcloseBtn()}
+    <div class="stamp" style="font-size:19px;font-weight:600">${missing.length?"Two minutes each":"Everything has a reflection"}</div>
+    <div style="font-size:12.3px;color:var(--ink-3);margin:4px 0 16px;line-height:1.55">The hours are already recorded. A reflection is what an outcome is evidenced from, so an entry without one sits outside the seven.</div></div>
+   <div style="padding:0 22px 22px">
+    ${missing.length?missing.map(({e,i})=>`<div style="margin-bottom:16px">
+     <div class="selrow-t">${e.n}</div>
+     <div class="selrow-n" style="margin-bottom:6px">${STRANDL(e.st)} · ${e.h} h · ${e.d}</div>
+     <textarea data-refnote="${i}" rows="3" placeholder="What you did, what was harder than you expected, and what you would do differently." style="width:100%;box-sizing:border-box;font-size:13px;line-height:1.55;font-family:inherit;padding:10px">${((S.refDraft||{})[i]||"").replace(/</g,"&lt;")}</textarea>
+     <button class="btn btn-p btn-sm" style="margin-top:8px" data-refsave="${i}" ${((S.refDraft||{})[i]||"").trim().length>=10?"":"disabled"}>Save this one</button>
+    </div>`).join(""):empty("Nothing outstanding","Every entry in your record carries a reflection.")}
+   </div></div></div>`;}
+ const f=S.casForm||{strand:"c",opp:"",hrs:2,note:""};
+ const o=CAS_OPPS.find(x=>x.id===f.opp);
+ const note=(f.note||"").trim();
+ return `<div class="modalbg" data-mbg="1"><div class="modal">
+  <div style="padding:20px 22px 0">${mcloseBtn()}
+   <div class="stamp" style="font-size:19px;font-weight:600">Record an activity</div>
+   <div style="font-size:12.3px;color:var(--ink-3);margin:4px 0 16px;line-height:1.55">Something you have already done, not something you plan to. ${CAS_HOURS_NOTE}</div></div>
+  <div style="padding:0 22px 22px">
+   <div class="appa" style="color:var(--ink-3);margin-bottom:7px">Which activity</div>
+   <div class="sheetbox" style="max-height:210px;overflow:auto;margin-bottom:16px">
+    ${/* Selection is a ruled line, not a deeper fill. P3 settled this on the
+        caseload for a reason that applies here too: --band-2 is a fourth
+        ground, and the faint inks do not clear 4.5:1 on it. */""}
+    ${CAS_OPPS.map(x=>`<button class="selrow-static" data-casform="opp:${x.id}" aria-pressed="${f.opp===x.id}"
+     style="width:100%;text-align:left;background:${f.opp===x.id?"var(--band)":"transparent"};border:none;cursor:pointer;font-family:inherit;box-shadow:${f.opp===x.id?"inset 2px 0 0 var(--school-primary)":"none"}">
+     <span class="lstamp${f.opp===x.id?" on":""}">${x.st.toUpperCase()}</span>
+     <span style="min-width:0"><span class="selrow-t" style="display:block">${x.n}</span>
+      <span class="selrow-n" style="display:block">${STRANDL(x.st)} · ${x.lead}</span></span></button>`).join("")}
+   </div>
+   <div class="appa" style="color:var(--ink-3);margin-bottom:7px">Hours</div>
+   <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px">
+    ${[1,2,3,4,6,8].map(h=>`<button class="tagbtn${(f.hrs||2)===h?" on":""}" data-casform="hrs:${h}" aria-pressed="${(f.hrs||2)===h}"><span class="fig">${h}</span> h</button>`).join("")}
+   </div>
+   <label for="casnote" class="appa" style="display:block;color:var(--ink-3);margin-bottom:7px">Your reflection · optional now, needed for an outcome</label>
+   <textarea id="casnote" data-casnote="1" rows="3" placeholder="What you did, what was harder than you expected, and what you would do differently." style="width:100%;box-sizing:border-box;font-size:13px;line-height:1.55;font-family:inherit;padding:10px">${(f.note||"").replace(/</g,"&lt;")}</textarea>
+   <div aria-live="polite" style="font-size:11.3px;color:var(--ink-4);margin-top:6px">${note.length>=10?"This entry will evidence a learning outcome.":"Without one the hours still count, and nothing is evidenced."}</div>
+   <div style="display:flex;gap:9px;margin-top:18px">
+    <button class="btn btn-g" data-mclose="1" style="flex:1">Cancel</button>
+    <button class="btn btn-p" data-cassave="1" ${f.opp?"":"disabled"} style="flex:1.4">${f.opp?"Record "+(f.hrs||2)+" hours against "+o.n:"Pick an activity first"}</button>
+   </div>
+  </div></div></div>`;}
+
 /* Bulk reassignment. The same staff list and the same confirmation discipline
    as the single-case modal — it names every student before it moves any. */
 function bulkAssignModal(){
@@ -6615,7 +8058,11 @@ function place(){return [S.role,S.cv,S.sv,S.pv,S.tv,S.tClass,S.mv,S.open,S.fileI
     only the first advance animated — the router sets discoverStage during
     render, one step after place() has already read it — and the rest changed
     with no transition at all. */
- S.onbStep].join("|");}
+ S.onbStep,
+ /* Opening one student's selection or CAS record replaces the panel the
+    same way a case file does. Expanding a group inside the form does not,
+    so `selOpen` and `selDesc` stay out of this list on purpose. */
+ S.selStu,S.casStu].join("|");}
 
 /* ═══════════ RENDER ═══════════ */
 function draw(){
@@ -6666,6 +8113,9 @@ function draw(){
   else if(S.cv==="psreviews")body2=vPSReviews();
   else if(S.cv==="app-letter")body2=vLetter();
   else if(S.cv==="files")body2=vFiles();
+  else if(S.cv==="ib-selections")body2=vSelQueue();
+  else if(S.cv==="ib-demand")body2=vSelDemand();
+  else if(S.cv==="ib-cas")body2=vCasCohort();
   else if(S.cv==="si-why")body2=vIntel();
   else if(S.cv==="app-season")body2=vUni();
   else if(S.cv==="app-flow")body2=vFlow();
@@ -6703,7 +8153,7 @@ function draw(){
     <div class="pagewrap${SHEET_VIEWS.has(S.cv)&&!S.open&&!S.fileId?' pagewrap-full':''}" style="padding:26px 28px 72px">${body2}</div></main></div>`;
  } else if(S.role==="teacher"){
   const nav=roleNav("teacher");
-  const body3=S.tv==="tclasses"?vTMyClasses():S.tv==="tlog"?vTLog():S.tv==="classapprovals"?vTClassApprovals():vTClass();
+  const body3=S.tv==="tclasses"?vTMyClasses():S.tv==="tlog"?vTLog():S.tv==="classapprovals"?vTSelReview():vTClass();
   sb=shell("teacher",nav,S.tv,"data-tnav","JD",TEACHER.name,TEACHER.subject,"Teacher portal",TEACHER.name+" · "+TEACHER.subject,body3);
  } else if(S.role==="parent"){
   const nav=roleNav("parent");
@@ -6724,13 +8174,13 @@ function draw(){
   }
  else {
   const nav=roleNav("student");
-  const validSv=[...nav.map(x=>x[0]),"stuacs"];
+  const validSv=nav.map(x=>x[0]);
   const sv=validSv.includes(S.sv)?S.sv:nav[0][0];
   let body;
   if(sv==="discover")body=vDiscoverFlow();
   else if(sv==="guide")body=`<div class="fade">${vHSGuide()}</div>`;
-  else if(sv==="stuclass")body=vStuClasses();
-  else if(sv==="stuacs")body=vStuACSSelector();
+  else if(sv==="stuclass")body=vStuSubjects();
+  else if(sv==="stucas")body=vStuCAS();
   else if(sv==="explore")body=`<div class="fade">${head("Choosing IB or AP")}${vPathExplorer("data-snav","targets","mentors")}</div>`;
   else if(sv==="progress")body=vStuProgress();
   else if(sv==="targets")body=vStuTargets();
@@ -6780,7 +8230,7 @@ function draw(){
  const tabbar=`<nav class="tabbar">${TABS.map(t=>{
    const on=t[0]!=="__menu"&&curKey===t[0];
    return `<button class="tabitem ${on?'on':''}" ${t[0]==="__menu"?'data-navopen="1"':navAttr+'="'+t[0]+'"'}>${ic(t[2],20)}<span>${t[1]}</span>${t[0]==="si-cases"&&prioCounts().urgent?`<i class="tabdot"></i>`:''}</button>`;}).join('')}</nav>`;
- R.innerHTML=`<a href="#main" class="skip-link">Skip to main content</a><div class="navscrim" data-navclose="1"></div><div${S.palOpen?' aria-hidden="true"':''} style="height:100vh;display:flex;flex-direction:column">${roleBar()}${sb}${demoStamp()}</div>${S.palOpen?tabbar.replace('<nav class="tabbar">','<nav class="tabbar" aria-hidden="true">'):tabbar}${palOpen}${modalEl()}${tflagModal()}${meetModal()}${mergeModal()}${assignModal()}${bulkAssignModal()}${escalateModal()}${S.toast?`<div class="toastbar pop" role="status" aria-live="polite">${ic('checkC',17)}${S.toast}</div>`:''}`;
+ R.innerHTML=`<a href="#main" class="skip-link">Skip to main content</a><div class="navscrim" data-navclose="1"></div><div${S.palOpen?' aria-hidden="true"':''} style="height:100vh;display:flex;flex-direction:column">${roleBar()}${sb}${demoStamp()}</div>${S.palOpen?tabbar.replace('<nav class="tabbar">','<nav class="tabbar" aria-hidden="true">'):tabbar}${palOpen}${modalEl()}${tflagModal()}${meetModal()}${mergeModal()}${assignModal()}${bulkAssignModal()}${escalateModal()}${selModal()}${casModal()}${S.toast?`<div class="toastbar pop" role="status" aria-live="polite">${ic('checkC',17)}${S.toast}</div>`:''}`;
  if(S.palOpen){palPaint(S.palQuery||"",S.role);setTimeout(()=>{const palInput=document.getElementById("palInput");if(palInput){palInput.focus();palInput.selectionStart=palInput.selectionEnd=palInput.value.length;}} ,0);}
  bind();
 }
@@ -6821,62 +8271,188 @@ function bind(){
     switcher. Folds the tv jump in so either entry point lands on the register
     itself, not just on the right class within whichever view was already open. */
  q("[data-tclass]",e=>e.onclick=()=>{S.tClass=e.dataset.tclass;S.tv="class";S.navOpen=false;draw();});
- /* ── teacher: class approvals workflow ── */
- const approvalNote=id=>{
-   const field=document.querySelector(`[data-approvalnote="${id}"]`);
-   return field?field.value.trim():"";
- };
- q("[data-classapprove]",e=>e.onclick=()=>{
-   const id=e.dataset.classapprove;const a=CLASS_APPROVALS_PENDING.find(request=>request.id===id);if(a){a.status="approved";a.decisionNote=approvalNote(id);a.reviewedBy=TEACHER.name;
-   toast(a.student+"'s course selection approved");}draw();});
- q("[data-classreject]",e=>e.onclick=()=>{
-   const id=e.dataset.classreject;const a=CLASS_APPROVALS_PENDING.find(request=>request.id===id);if(a){a.status="rejected";a.decisionNote=approvalNote(id);a.reviewedBy=TEACHER.name;
-   toast(a.student+"'s course selection rejected");}draw();});
- q("[data-classchanges]",e=>e.onclick=()=>{
-   const id=e.dataset.classchanges;const a=CLASS_APPROVALS_PENDING.find(request=>request.id===id);if(a){a.status="changes_requested";a.decisionNote=approvalNote(id)||"Please revise your course selection.";a.reviewedBy=TEACHER.name;
-   toast("Changes requested from "+a.student);}draw();});
- q("[data-classrequest]",e=>e.onclick=()=>{
-   const id=e.dataset.classrequest;const a=CLASS_APPROVALS_PENDING.find(request=>request.id===id);if(a)toast("Message draft opened for "+a.student);});
-  /* ── course selection ── */
-  q("[data-coursechk]",e=>e.onchange=()=>{
-    const courseId=e.dataset.coursechk;
-    S.selectedCourses=S.selectedCourses||[];
-    if(e.checked){
-      if(!S.selectedCourses.includes(courseId))S.selectedCourses.push(courseId);
-    } else {
-      S.selectedCourses=S.selectedCourses.filter(x=>x!==courseId);
-    }
-    draw();});
-  q("[data-course]",e=>e.onclick=event=>{
-    if(event.target.matches("input[type='checkbox']"))return;
-    const courseId=e.dataset.course;
-    const chk=e.querySelector("input[type='checkbox']");
-    if(chk){chk.checked=!chk.checked;chk.dispatchEvent(new Event('change'));}});
-  q("[data-sendapproval]",e=>e.onclick=()=>{
-    const student=g(S.open||PARENT_ME);
-    const grade=student.grade||12;
-    const allCourses=COURSES_BY_GRADE[grade]||[];
-    const selected=S.selectedCourses||[];
-    if(!student||!selected.length) return;
-    
-    // Build course list from selections
-    const selectedCourses=[];
-    selected.forEach(courseId=>{
-      const[pathway,idx]=courseId.split("_");
-      const courses=allCourses.filter(x=>x.pathway===pathway);
-      if(courses[+idx])selectedCourses.push(courses[+idx].name);
-    });
-    
-    CLASS_APPROVALS_PENDING.unshift({
-      student:student.name,av:student.av,
-      courses:selectedCourses,
-      courseCount:selected.length,
-      status:"pending",when:"Today",sid:student.id,
-      counselor_reviewed:false,
-      teachers:["Mr. Yilmaz","Ms. Fahri","Mr. Adeyemi"]
-    });
-    S.sv="stuclass";S.selectedCourses=[];
-    toast("Course selection ("+selected.length+" courses) sent to your counselor and teachers");draw();});
+ /* ── the selection form ────────────────────────────────────────────
+    `draw()` rebuilds the whole tree, so a textarea has to survive it. The
+    reason field writes straight into the record on every keystroke and
+    only redraws when written-or-not flips, because that boolean is what
+    the check panel and the send button are gated on. Caret and focus are
+    restored by hand, the same way the case note does it. */
+ const selRecOf=sid=>SELREC[sid];
+ q("[data-selopen]",e=>e.onclick=()=>{const gid=e.dataset.selopen;
+   S.selOpen=S.selOpen===gid?null:gid;S.selDesc=null;draw();});
+ q("[data-seldesc]",e=>e.onclick=()=>{const id=e.dataset.seldesc;
+   S.selDesc=S.selDesc===id?null:id;draw();});
+ q("[data-selpick]",e=>e.onclick=()=>{
+   const [gid,sub,lv]=e.dataset.selpick.split(":");
+   const rec=selRecOf(S.open||PARENT_ME);if(!rec)return;
+   rec.picks[gid]={s:sub,lv};rec.why[gid]=rec.why[gid]||"";
+   S.selOpen=null;S.selDesc=null;draw();});
+ q("[data-selclear]",e=>e.onclick=()=>{
+   const gid=e.dataset.selclear,rec=selRecOf(S.open||PARENT_ME);if(!rec)return;
+   rec.picks[gid]=null;delete rec.why[gid];draw();});
+ q("[data-selwhy]",e=>{e.oninput=()=>{
+   const gid=e.dataset.selwhy,rec=selRecOf(S.open||PARENT_ME);if(!rec)return;
+   const was=!!(rec.why[gid]||"").trim(),now=!!e.value.trim();
+   rec.why[gid]=e.value;
+   if(was!==now){const pos=e.selectionStart;draw();
+     const f=document.getElementById("why-"+gid);if(f){f.focus();f.setSelectionRange(pos,pos);}}};});
+ q("[data-selsubmit]",e=>e.onclick=()=>{S.modal={type:"selsubmit",id:e.dataset.selsubmit};draw();});
+ q("[data-selsend]",e=>e.onclick=()=>{
+   const sid=e.dataset.selsend,rec=SELREC[sid];if(!rec)return;
+   const stu=g(sid)||{name:"Student"};
+   const resubmit=rec.status==="changes";
+   /* A teacher answered a question about a specific subject at a specific
+      level. If the student has since changed either, that answer is about
+      something that no longer exists and must not be carried forward as
+      though it still applied. */
+   Object.keys(rec.signs||{}).forEach(sub=>{
+    const still=Object.values(rec.picks||{}).some(p=>p&&p.s===sub&&p.lv==="HL");
+    if(!still)delete rec.signs[sub];});
+   rec.status="submitted";rec.v=(rec.v||0)+1;rec.returnNote="";
+   rec.submitted=DAY.short;
+   rec.log=rec.log||[];
+   rec.log.unshift({when:rec.submitted,who:stu.name,
+     what:(resubmit?"Sent again after a change was asked for, version ":"Selection sent, version ")+rec.v+". Six subjects, "+selHL(rec)+" at Higher Level."});
+   logAudit(stu.name.toUpperCase().replace(/ /g,"."),"SUBJECTS_SENT",stu.name,"IB selection v"+rec.v+" sent to "+SEL_ROUND.coordinator);
+   S.modal=null;
+   toast("Sent to "+SEL_ROUND.coordinator);});
+ q("[data-selbook]",e=>e.onclick=()=>{
+   const rec=SELREC[e.dataset.selbook];if(!rec)return;rec.booked=true;
+   rec.log=rec.log||[];rec.log.unshift({when:DAY.short,who:(g(rec.sid)||{}).name||"Student",what:"Asked for a review slot."});
+   toast("Slot requested. It lands in his diary with your selection attached.");});
+
+ /* ── teacher: the level question ──────────────────────────────────
+    Three buttons replaced by an inline confirm that names what is sent
+    and to whom, with a required note on the two answers that change a
+    student's plan. The version this replaces declined a subject choice
+    on a single click. */
+ q("[data-sign]",e=>e.onclick=()=>{
+   const [sid,sub,verdict]=e.dataset.sign.split(":");
+   S.tSign={sid,sub,verdict,note:""};draw();});
+ q("[data-signcancel]",e=>e.onclick=()=>{S.tSign=null;draw();});
+ q("[data-signnote]",e=>{e.oninput=()=>{if(S.tSign)S.tSign.note=e.value;};});
+ q("[data-signgo]",e=>e.onclick=()=>{
+   const t=S.tSign;if(!t)return;
+   const rec=SELREC[t.sid];if(!rec)return;
+   const note=(t.note||"").trim();
+   if(t.verdict!=="hl"&&note.length<8){toast("A note is required on this one");return;}
+   const d=DPC.find(x=>x.id===t.sid)||{name:"the student"};
+   rec.signs=rec.signs||{};
+   rec.signs[t.sub]={by:TEACHER.name,verdict:t.verdict,when:DAY.short,
+     note:note||"No further comment."};
+   const hl=Object.values(rec.picks).filter(p=>p&&p.lv==="HL");
+   if(hl.every(p=>rec.signs[p.s])&&rec.status==="submitted")rec.status="signed";
+   rec.log=rec.log||[];
+   rec.log.unshift({when:DAY.short,who:TEACHER.name,
+     what:IBS(t.sub).name+": "+(t.verdict==="hl"?"supported at Higher Level":t.verdict==="sl"?"Standard Level suggested":"concern raised")+(note?". "+note:"")});
+   logAudit("M.DAVIES","SUBJECT_SIGNOFF",d.name,IBS(t.sub).name+" · "+t.verdict);
+   S.tSign=null;
+   toast(t.verdict==="hl"?"Recorded for "+d.name.split(" ")[0]:"Sent to "+d.name.split(" ")[0]+" and "+SEL_ROUND.coordinator);});
+
+ /* ── coordinator: queue, meeting prep, decisions ── */
+ q("[data-selfilter]",e=>e.onclick=()=>{S.selFilter=e.dataset.selfilter;S.selShown=25;draw();});
+ q("[data-selmore]",e=>e.onclick=()=>{S.selShown=(S.selShown||25)+25;draw();});
+ /* These are real <button> elements, so they need no kb() stamp: a
+    redundant role="button" and tabindex on a button is noise, and kb() on
+    a row element is what broke the caseload's column associations once. */
+ q("[data-selstu]",e=>e.onclick=()=>{S.selStu=e.dataset.selstu;S.cv="ib-selections";draw();});
+ q("[data-selback]",e=>e.onclick=()=>{S.selStu=null;draw();});
+ q("[data-seltalk]",e=>e.onclick=()=>{S.modal={type:"seltalk",id:e.dataset.seltalk};S.selTalkNote="";draw();});
+ q("[data-talknote]",e=>{e.oninput=()=>{const was=(S.selTalkNote||"").trim().length>=10,now=e.value.trim().length>=10;
+   S.selTalkNote=e.value;
+   if(was!==now){const pos=e.selectionStart;draw();const f=document.getElementById("talknote");if(f){f.focus();f.setSelectionRange(pos,pos);}}};});
+ q("[data-talkgo]",e=>e.onclick=()=>{
+   const sid=e.dataset.talkgo,rec=SELREC[sid];if(!rec)return;
+   const d=DPC.find(x=>x.id===sid)||{name:"Student"};
+   const when=DAY.short;
+   rec.talk={when,by:SCHOOL.counselor,note:(S.selTalkNote||"").trim()};
+   rec.log=rec.log||[];rec.log.unshift({when,who:SCHOOL.counselor,what:"Review conversation recorded. "+rec.talk.note});
+   logAudit("R.HADDAD","SUBJECT_REVIEW",d.name,"Selection conversation recorded");
+   S.modal=null;S.selTalkNote="";
+   toast("Recorded. You can approve "+d.name.split(" ")[0]+"'s selection now.");});
+ q("[data-selapprove]",e=>e.onclick=()=>{
+   const sid=e.dataset.selapprove,rec=SELREC[sid];if(!rec||!rec.talk)return;
+   const d=DPC.find(x=>x.id===sid)||{name:"Student"};
+   rec.status="approved";
+   rec.log=rec.log||[];rec.log.unshift({when:DAY.short,who:SCHOOL.counselor,what:"Selection approved. Six subjects confirmed for "+SEL_ROUND.year+"."});
+   logAudit("R.HADDAD","SUBJECTS_APPROVED",d.name,"IB selection confirmed for "+SEL_ROUND.year);
+   toast(d.name.split(" ")[0]+"'s subjects are confirmed");});
+ q("[data-selreturn]",e=>e.onclick=()=>{S.modal={type:"selreturn",id:e.dataset.selreturn};S.selReturnNote="";draw();});
+ q("[data-retnote]",e=>{e.oninput=()=>{const was=(S.selReturnNote||"").trim().length>=10,now=e.value.trim().length>=10;
+   S.selReturnNote=e.value;
+   if(was!==now){const pos=e.selectionStart;draw();const f=document.getElementById("retnote");if(f){f.focus();f.setSelectionRange(pos,pos);}}};});
+ q("[data-returngo]",e=>e.onclick=()=>{
+   const sid=e.dataset.returngo,rec=SELREC[sid];if(!rec)return;
+   const d=DPC.find(x=>x.id===sid)||{name:"Student"};
+   rec.status="changes";rec.returnNote=(S.selReturnNote||"").trim();
+   rec.log=rec.log||[];rec.log.unshift({when:DAY.short,who:SCHOOL.counselor,what:"Sent back for a change. "+rec.returnNote});
+   logAudit("R.HADDAD","SUBJECTS_RETURNED",d.name,"Change requested on IB selection");
+   S.modal=null;S.selReturnNote="";
+   toast("Sent back to "+d.name.split(" ")[0]);});
+ q("[data-demsort]",e=>e.onclick=()=>{S.demSort=e.dataset.demsort;draw();});
+ q("[data-demwho]",e=>e.onclick=()=>{const k=e.dataset.demwho;S.demWho=S.demWho===k?null:k;draw();});
+
+ /* ── CAS ── */
+ q("[data-casfilter]",e=>e.onclick=()=>{S.casFilter=e.dataset.casfilter;S.casShown=25;draw();});
+ q("[data-casmore]",e=>e.onclick=()=>{S.casShown=(S.casShown||25)+25;draw();});
+ q("[data-casstu]",e=>e.onclick=()=>{S.casStu=e.dataset.casstu;draw();});
+ q("[data-casback]",e=>e.onclick=()=>{S.casStu=null;draw();});
+ q("[data-casnudge]",e=>e.onclick=()=>{const d=DPC.find(x=>x.id===e.dataset.casnudge);
+   logAudit("R.HADDAD","CAS_NUDGE",d?d.name:"Student","Message sent about CAS progress");
+   toast("Message drafted to "+(d?d.name.split(" ")[0]:"the student"));});
+ q("[data-castag]",e=>e.onclick=()=>{
+   const t=e.dataset.castag,sid=S.open||PARENT_ME;
+   const cur=CAS_INTERESTS[sid]=CAS_INTERESTS[sid]||[];
+   const i=cur.indexOf(t);if(i>-1)cur.splice(i,1);else cur.push(t);
+   draw();});
+ q("[data-casall]",e=>e.onclick=()=>{S.casAll=!S.casAll;draw();});
+ q("[data-casjoin]",e=>e.onclick=()=>{
+   const o=CAS_OPPS.find(x=>x.id===e.dataset.casjoin);if(!o)return;
+   toast("Sent to "+o.lead+". They confirm the place, not the portal.");});
+ q("[data-caslog]",e=>e.onclick=()=>{S.modal={type:"caslog"};S.casForm={strand:"c",opp:"",hrs:2,note:""};draw();});
+ q("[data-casreflect]",e=>e.onclick=()=>{S.modal={type:"casreflect"};draw();});
+ q("[data-refnote]",e=>{e.oninput=()=>{S.refDraft=S.refDraft||{};
+   const k=e.dataset.refnote,was=(S.refDraft[k]||"").trim().length>=10,now=e.value.trim().length>=10;
+   S.refDraft[k]=e.value;
+   if(was!==now){const pos=e.selectionStart;draw();const f=document.querySelector('[data-refnote="'+k+'"]');if(f){f.focus();f.setSelectionRange(pos,pos);}}};});
+ q("[data-refsave]",e=>e.onclick=()=>{
+   const k=e.dataset.refsave,sid=S.open||PARENT_ME,rec=CASREC[sid];if(!rec||!rec.entries)return;
+   const ent=rec.entries[+k];if(!ent)return;
+   const txt=((S.refDraft||{})[k]||"").trim();if(txt.length<10)return;
+   ent.note=txt;ent.ref=true;rec.pending=Math.max(0,(rec.pending||1)-1);
+   /* A reflection is what an outcome is evidenced from, so writing one can
+      genuinely move the count. It stops at seven. */
+   rec.outcomes=Math.min(7,(rec.outcomes||0)+1);
+   S.refDraft={};if(!rec.entries.some(x=>!x.ref))S.modal=null;
+   logAudit((g(sid)||{name:"STUDENT"}).name.toUpperCase().replace(/ /g,"."),"CAS_REFLECTION",(g(sid)||{}).name||sid,ent.n);
+   toast("Reflection saved against "+ent.n);});
+ q("[data-casform]",e=>e.onclick=()=>{const [k,v]=e.dataset.casform.split(":");
+   S.casForm=S.casForm||{};S.casForm[k]=k==="hrs"?+v:v;draw();});
+ q("[data-casnote]",e=>{e.oninput=()=>{S.casForm=S.casForm||{};
+   const was=(S.casForm.note||"").trim().length>=10,now=e.value.trim().length>=10;
+   S.casForm.note=e.value;
+   if(was!==now){const pos=e.selectionStart;draw();const f=document.getElementById("casnote");if(f){f.focus();f.setSelectionRange(pos,pos);}}};});
+ q("[data-cassave]",e=>e.onclick=()=>{
+   const sid=S.open||PARENT_ME,rec=CASREC[sid],f=S.casForm||{};
+   if(!rec||!f.opp)return;
+   const o=CAS_OPPS.find(x=>x.id===f.opp);
+   const when=DAY.short;
+   const note=(f.note||"").trim();
+   rec.entries=rec.entries||[];
+   rec.entries.unshift({d:when,st:o?o.st:(f.strand||"c"),n:o?o.n:"Own activity",h:f.hrs||2,ref:note.length>=10,note});
+   const st=o?o.st:(f.strand||"c");
+   rec.hrs[st]=(rec.hrs[st]||0)+(f.hrs||2);
+   /* the month this lands in is now a month with something in it */
+   rec.run[rec.run.length-1]="kept";
+   /* An outcome is evidenced by a reflection, wherever the reflection is
+      written. Counting it only on the catch-up path made the same two
+      sentences worth an outcome in one place and nothing in the other. */
+   if(note)rec.outcomes=Math.min(7,(rec.outcomes||0)+1);
+   else rec.pending=(rec.pending||0)+1;
+   logAudit((g(sid)||{name:"STUDENT"}).name.toUpperCase().replace(/ /g,"."),"CAS_ENTRY",(g(sid)||{}).name||sid,
+     (o?o.n:"Own activity")+" · "+(f.hrs||2)+"h · "+(note?"reflection written":"no reflection"));
+   S.modal=null;S.casForm=null;
+   toast(note?"Recorded, with your reflection":"Recorded. The hours count, the reflection is what evidences an outcome.");});
  q("[data-mergeopen]",e=>e.onclick=()=>{S.modal={type:"merge",id:e.dataset.mergeopen};S.mergePick=null;draw();});
  q("[data-mergepick]",e=>e.onclick=()=>{S.mergePick=e.dataset.mergepick;draw();});
  q("[data-mergego]",e=>e.onclick=()=>{const c=g(e.dataset.mergego);const p=(S.mergePick||"").split(":");

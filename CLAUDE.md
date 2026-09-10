@@ -88,6 +88,24 @@ Use these rather than composing a new one-off:
 - `chip`, `av`, `stTag`, `sparkline`, `spin`, `ic`.
 - `prioCounts()` — the one caseload truth. Do not derive a second count.
 
+### The IB module (P9, 2026-09-10)
+
+Subject selection and CAS, sitting across three roles. Data and rules live together in one block; the views are with their own role's surfaces.
+
+- `IB_SUBJECTS` is the catalogue: 23 subjects, each with its group, the levels it offers, the period it runs at **per level**, a minimum to run, a cap, a prerequisite where there is one, and four pieces of prose (`about`, `like`, `assess`, `hard`). `IBS(id)` looks one up.
+- `SELREC[sid]` is one student's selection, `CASREC[sid]` one student's CAS. `DPC` is the Diploma cohort, 201 records across Grades 10, 11 and 12.
+- **`selCheck(rec, stu)` is the rule engine** and the only place a submission is gated. It returns `{k:"block"|"ask"|"ok"}` findings. `block` stops the form; `ask` is a question the coordinator is handed, never a fault. Add a rule here, not in a view.
+- **`demandFor` / `subjectViable` / `demandRows` count at render time.** Nothing about demand is stored. Whether a course runs is a question about the **subject**, not about a level — counting per level printed nineteen at-risk courses where there are five.
+- `casSum(sid)` reads `hrs` as the running programme total and `entries` as the recent log. **They are not the same number and deriving one from the other is wrong in both directions.**
+
+Three product rules the code enforces:
+
+1. **A selection cannot be approved before the conversation is recorded.** `data-selapprove` is disabled without `rec.talk`. This is the module's reason to exist.
+2. **A teacher answers the level question only, for their own subjects.** `teacherQueue()` filters to `p.lv==="HL"` and `IBS(p.s).t===TEACHER.name`.
+3. **Two populations, never totalled.** The caseload is 87 students of one counselor; `DPC` is the school's IB cohort. Every heading says which it holds.
+
+New shared vocabulary: `.selform` / `.selslot` / `.selrow` (the printed entry form, red margin rule down the left), `.checklist` / `.checkrow` (findings as marks, cross in margin red for a blocker), `.lvstamp` (HL/SL as a ledger stamp, never a tier colour), `.ibsheet` / `.ibcell` (six subject-code cells per row, read across like a run of weeks), `.opt` / `.lvbtn` (the chooser).
+
 ### The command palette
 
 ⌘K, or the masthead button. `palCommands(role)` builds, `palFilter()` ranks (exact prefix > word start > substring), `palPaint()` repaints **only the results list** so focus and caret survive.
