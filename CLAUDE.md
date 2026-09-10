@@ -106,6 +106,20 @@ Three product rules the code enforces:
 
 New shared vocabulary: `.selform` / `.selslot` / `.selrow` (the printed entry form, red margin rule down the left), `.checklist` / `.checkrow` (findings as marks, cross in margin red for a blocker), `.lvstamp` (HL/SL as a ledger stamp, never a tier colour), `.ibsheet` / `.ibcell` (six subject-code cells per row, read across like a run of weeks), `.opt` / `.lvbtn` (the chooser).
 
+### The Extended Essay (P10, 2026-09-10)
+
+Sits beside the selection module and shares its vocabulary.
+
+- `EE_MILESTONES` is the schedule, with days relative to `DAY` per year group, so the whole thing moves with the demo's today. `EE_DATES` prints them; three milestones carry `rppf:true` and are the IB's mandatory reflection sessions.
+- `EEREC[sid]` is one student's essay. `eeNext`, `eeStalled`, `eeNote` and `eeNudge` are the derived states; `eeLoad`, `eeQueue` and `eeSupervising` are counted at render time, never stored.
+- **Drift is not the same as pending.** A proposal sitting with a teacher for two days is fine; one sitting for more than `EE_WAIT_DAYS` is not. Getting this wrong puts most of a year group on the coordinator's list.
+- **Every research question is authored and unique**, checked globally and per supervisor. The upper cohort is sized to the pool. If you add students, write questions first.
+- Capacity **warns and never blocks**, by product decision. An assignment made over the guide records that it was.
+
+The student's three core parts are one section, `vStuCore`, with tabs. It appears only for IB students in Grades 11 and 12; everyone else keeps the single activities page. TOK is described and explicitly not tracked, and the page says so.
+
+**The Grade 11 demo forks.** `S.previewTrack` switches the student portal between Fahad (AP) and Ivan (Diploma). It applies to the student role only: the parent portal keeps Fahad's family, whose content is authored around AP. Any student the switcher can reach needs an entry in `SURVEY_COMPLETE` or the onboarding gate swallows the portal.
+
 ### The command palette
 
 ⌘K, or the masthead button. `palCommands(role)` builds, `palFilter()` ranks (exact prefix > word start > substring), `palPaint()` repaints **only the results list** so focus and caret survive.
@@ -136,6 +150,8 @@ for(const cv of ['cohort-schedule','si-why','app-season','app-flow','files','app
 for(const c of S.cases){try{S.open=c.id;draw();}catch(e){errs.push(c.id+': '+e.message);}}
 errs;
 ```
+
+**Audit form fields, not only text.** A contrast sweep that walks text nodes cannot see an `<input>` or `<textarea>` value, and for a long time every field in the student's night ledger was white on white at 1.14:1 while three separate sweeps reported zero failures. An auditor can only fail what it can see; when one reports clean, ask what it is structurally unable to look at.
 
 For contrast, **composite the full ancestor chain to an opaque ground in both directions.** An auditor that does not will lie to you both ways: it over-reports on translucent light overlays (treating `rgba` backgrounds as white) and under-reports on alpha text. This has already produced one phantom 120-failure report on a surface that was clean.
 

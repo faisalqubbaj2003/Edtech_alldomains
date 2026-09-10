@@ -304,7 +304,17 @@ button{color:inherit}
 .btn-u:hover:not(:disabled){background:var(--t-urgent-deep);border-color:var(--t-urgent-deep)}
 
 /* ══════════ FORM ══════════ */
-input,textarea,select{font-family:inherit;font-size:13px;color:var(--ink);letter-spacing:-.006em}
+/* The ground has to come from the same layer as the text on it. This rule
+   set `color` from a token that inverts on the night ledger and left the
+   background to the user agent, which is white in every rendition, so
+   every field a student typed into was white ink on white paper at
+   1.14:1. It was invisible to a contrast sweep because a field's value is
+   not a text node, which is worth remembering about any auditor: it can
+   only fail what it can see. Same category as `button{color:inherit}`,
+   and closed the same way. Inline backgrounds still win where a field
+   deliberately sets its own. */
+input,textarea,select{font-family:inherit;font-size:13px;color:var(--ink);letter-spacing:-.006em;
+ background:var(--stock)}
 input::placeholder,textarea::placeholder{color:var(--ink-4)}
 textarea:focus-visible,input:focus-visible,select:focus-visible{outline:none;border-color:var(--brand)!important;box-shadow:0 0 0 3px var(--brand-3)}
 select{cursor:pointer;-webkit-appearance:none;appearance:none;
@@ -422,8 +432,20 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--band-2)}
     must survive, so the run scrolls sideways under a head that does not: a
     sticky head inside a horizontal scroller resolves against that scroller
     and parks itself over the first row. */
- .sheetscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+ /* `contain:paint` is what actually holds the sheet inside its scroller.
+    Without it one of these tables escaped its container and widened the
+    whole document on a phone, while an identically structured one on
+    another surface did not, which is the kind of difference not worth
+    tracing: the guarantee is cheaper than the diagnosis. */
+ .sheetscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;contain:paint}
  .ledger{min-width:830px}
+ /* `.sheet` computes overflow-x:auto, so a table whose columns will not
+    fit becomes its own scroll container: the content spills, the box
+    stays at 100%, and the .sheetscroll around it sees nothing to scroll.
+    The caseload has always avoided this with an explicit floor. Any
+    other sheet with more columns than a phone can hold needs the same
+    one, which is what `.wide` is. */
+ .sheet.wide{min-width:660px}
  .lg-grplab{white-space:nowrap}
 }
 /* The tier filters. Real buttons — this is the counselor's primary control and
@@ -740,6 +762,30 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
 .ibcell.void{color:var(--rule-3)}
 .filterbar{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px;
  border-bottom:1.5px solid var(--rule-3);padding-bottom:0}
+.tabmark{display:inline-grid;place-items:center;width:15px;height:15px;margin-left:5px;
+ border:1.5px solid var(--margin);color:var(--margin);
+ font-family:var(--f-apparatus);font-size:10px;font-weight:700;line-height:1}
+
+/* ══════════ THE CHECKPOINT NUDGE ══════════
+   A checkpoint that has passed and one that is about to are different
+   states and print differently: the late one takes the margin rule and
+   the cross, which is the same accent the caseload spends on a break in
+   a run. The one that is merely near takes ink. */
+.nudge{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;margin-bottom:20px;
+ background:var(--stock);border:1px solid var(--rule-2)}
+.nudge.late{border-left:2px solid var(--margin);background:var(--stock-3)}
+.nudge.late .checkmark{border-color:var(--margin);color:var(--margin)}
+.nudge.soon{border-left:2px solid var(--rule-3)}
+
+/* ══════════ THE ESSAY SUBJECT PICKER ══════════ */
+.eegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:8px}
+.eesub{display:flex;gap:11px;align-items:flex-start;text-align:left;padding:11px 12px;min-height:44px;
+ cursor:pointer;font-family:inherit;background:var(--stock);border:1px solid var(--rule);border-radius:var(--r-sm)}
+.eesub:hover{border-color:var(--rule-3);background:var(--band)}
+.eesub.on{border-color:var(--school-primary);box-shadow:inset 2px 0 0 var(--school-primary);background:var(--band)}
+.eesub-c{flex-shrink:0;display:grid;place-items:center;width:34px;height:22px;
+ border:1px solid var(--rule-3);background:var(--stock);font-size:10.5px;color:var(--ink-2)}
+.eesub.on .eesub-c{background:var(--school-primary);border-color:var(--school-primary);color:var(--school-on-primary)}
 
 /* ══════════ MISC ══════════ */
 .dots span{display:inline-block;width:4px;height:4px;border-radius:var(--r-dot);background:var(--brand);
@@ -1443,7 +1489,12 @@ const STUDENTS=[
   flags:["Reference deadline in 12 days","Attendance may affect the school reference"]},
  stage:"triage",lastContact:"5 weeks ago",openedBy:"System · relapse rule",opened:"24 Nov, 07:04"},
 
-{id:"s14",name:"Priya Raghunathan",yr:"Grade 12",av:"PR",prio:"checkin",owner:"Ms. Haddad",goal:"Biomedical Science",gpa:"4.0",pred:"A*A*A*",
+/* Her context has always read "four HL subjects and the Extended Essay",
+   which is the IB, while her prediction read A*A*A*, which is not. The
+   two cannot both describe one student. She is the Diploma cohort's
+   Grade 12 anchor now, and the Extended Essay her case file has always
+   named is the load the engine was reading without being able to name. */
+{id:"s14",name:"Priya Raghunathan",yr:"Grade 12",av:"PR",grade:12,track:"IB",prio:"checkin",owner:"Ms. Haddad",goal:"Biomedical Science",gpa:"4.0",pred:"43/45",
  headline:"Every individual signal is healthy. The pattern across them is not: eleven consecutive nights of platform activity after 01:00, and punctuality fraying in first period only.",
  plain:"Nothing here would raise a flag on its own, which is why it is worth a conversation. Priya's grades are the strongest in the year and rising. The engine is reading the cost of holding them: work displaced into the night, and the first lesson of the day paying for it. There is no crisis and no failure to point at, so this is a check-in, not an intervention.",
  signal:69,window:"11 days",severity:"Medium",nocause:true,
@@ -1618,7 +1669,7 @@ audit:JSON.parse(JSON.stringify(AUDIT)),
 toast:null,modal:null,cpQ:null,cpA:null,cpLoad:false,
 letter:"idle",thresh:{acad:2,att:3,eng:14,persist:3},
 sortBy:"prio",noteDraft:{},caseNotes:{},escReason:"",selSlot:null,
-uniOpen:"",pmTopic:"",pmSlot:null,pmNote:"",pathDegree:"",pathCountry:"UK",previewGrade:12,previewTrack:"IB",earlyStart:false,
+uniOpen:"",pmTopic:"",pmSlot:null,pmNote:"",pathDegree:"",pathCountry:"UK",previewGrade:12,previewTrack:"AP",earlyStart:false,
 discoverStage:null,onbStep:0,onbAnswers:{},chatLog:[],chatStep:0,rankedArchetypes:null,selectedArchetypes:[],pathwaysSubmitted:false,activeArchetype:null,roadmapProgress:{},
 fileId:null,fileTab:"synth",
 cat:{cohort:true,uni:false,ib:false,si:false,sys:false},ragFilter:"all",
@@ -1627,6 +1678,10 @@ cat:{cohort:true,uni:false,ib:false,si:false,sys:false},ragFilter:"all",
    `casStu` replace the panel wholesale and are. */
 selOpen:null,selDesc:null,selFilter:"act",selShown:25,selStu:null,
 demSort:"risk",demWho:null,casFilter:"flag",casShown:25,casStu:null,casAll:false,tSign:null,
+/* Extended Essay. `coreTab`, `eeStu` and `eeOpen` each replace a panel
+   wholesale, so all three are arrivals; the rest are disclosures. */
+coreTab:"ee",eeDraft:null,eeAct:null,eeOpen:null,eeRefl:null,
+eeFilter:"risk",eeShown:25,eeStu:null,eeAssign:null,eeAssignTo:null,
 sheetTier:"all",sheetRosterShown:0,sel:[],
 navOpen:false,q:"",pv:"overview",tKind:"concern",tTags:[],tNote:"",mKind:"Check-in",mOut:"Ongoing",mergePick:null,assignPick:null,tv:"class",tClass:"c1",
 rQ:"",rSort:"priority",rFilt:"all",
@@ -1865,7 +1920,10 @@ function roleNav(role){
       to every student. An AP student sees the opportunities and is told
       plainly that none of it is assessed for them, which is truer than
       hiding the page and cheaper than explaining it in a corridor. */
-   nav.push(["stucas",track==="IB"&&grade>=11?"CAS":"Activities & CAS","users"]);
+   /* One section rather than three items. Where all three parts are real
+      it is the Diploma core; elsewhere it stays the activities page it
+      already was. */
+   nav.push(["stucas",track==="IB"&&grade>=11?"Diploma core":"Activities & CAS","users"]);
    if(grade===12)nav.push(["targets","University targets","target"]);
    nav.push(["explore","Choosing IB or AP","route"]);
    if(grade>=11)nav.push(["pslab","Personal Statement Lab","doc"]);
@@ -1881,7 +1939,7 @@ function roleNav(role){
     reference a teacher opens far less often. "My Classes" used to sit first
     in this list while the app itself opened straight to the register — the
     nav order was still pointing at the card grid it no longer led with. */
- if(role==="teacher")return [["class","My Class Register","users"],["tclasses","My Classes","book"],["classapprovals","Subject choices","check"],["tlog","What I've logged","list"]];
+ if(role==="teacher")return [["class","My Class Register","users"],["tclasses","My Classes","book"],["classapprovals","Subject choices","check"],["ee","Extended essays","doc"],["tlog","What I've logged","list"]];
  if(role==="mentor")return [["requests","Session Requests","inbox",MENTOR_REQS.length],["mentees","My Mentees","users"]];
  return [["cohort-schedule","Caseload","users"],["si-cases","Priority","alert"],["meetings","Meetings","brief"],["flags","Flags","inbox"]];
 }
@@ -3124,7 +3182,7 @@ const CATS=[
     has open. ACS runs no separate coordination department, so this is a
     category rather than a sixth role. */
  {id:"ib",label:"IB Diploma",ic:"route",sub:[
-   ["ib-selections","Subject selections"],["ib-demand","Which courses can run"],["ib-cas","CAS progress"]]},
+   ["ib-selections","Subject selections"],["ib-demand","Which courses can run"],["ib-ee","Extended essays"],["ib-cas","CAS progress"]]},
  {id:"si",label:"Student Intelligence",ic:"radar",sub:[
    ["si-cases","Priority cases"],["si-why","How detection works"],
    ["si-attendance","Attendance"],["si-punctuality","Punctuality & tardiness"],
@@ -3652,7 +3710,11 @@ const FAMILY_STUDENT_ID={9:"s9",10:"s10",11:"s11",12:"s3"}; const DISCOVER_TRANS
    costs 36 questions before anyone sees the portal. The questions stay
    reachable from My Pathway, and any student not listed here still meets the
    gate on first sign-in. */
-const SURVEY_COMPLETE={s3:true,s9:true,s10:true,s11:true};
+/* Every student the portal can actually open. Ivan joined the switcher
+   with the Grade 11 Diploma fork, and without him here that fork lands on
+   the onboarding quiz instead of on his portal, which is the same defect
+   P0 fixed for the original four. */
+const SURVEY_COMPLETE={s3:true,s9:true,s10:true,s11:true,s12:true,s17:true};
 const SURVEY_SKIPPED={};
 let PARENT_ME="s3"; /* resolved dynamically each render based on the selected grade */
 
@@ -3923,7 +3985,10 @@ function gradeSwitcher(){
   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
    <div style="display:flex;background:var(--surface-3);border-radius:var(--r);padding:3px;gap:2px">
     ${grades.map(gr=>`<button data-pgrade="${gr}" style="padding:6px 12px;min-height:44px;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;background:${S.previewGrade===gr?'var(--surface)':'transparent'};color:${S.previewGrade===gr?'var(--ink)':'var(--ink-3)'};box-shadow:${S.previewGrade===gr?'var(--sh-xs)':'none'}">Grade ${gr}</button>`).join('')}
-   </div></div>
+   </div>
+   ${S.role==="student"&&S.previewGrade===11?`<div style="display:flex;background:var(--surface-3);border-radius:var(--r);padding:3px;gap:2px">
+    ${[["AP","Fahad, AP"],["IB","Ivan, Diploma"]].map(([k,l])=>`<button data-ptrack="${k}" style="padding:6px 12px;min-height:44px;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;background:${(S.previewTrack||"AP")===k?'var(--surface)':'transparent'};color:${(S.previewTrack||"AP")===k?'var(--ink)':'var(--ink-3)'};box-shadow:${(S.previewTrack||"AP")===k?'var(--sh-xs)':'none'}">${l}</button>`).join('')}
+   </div>`:""}</div>
   <span style="font-size:12px;color:var(--ink-2)"><b>${stu.name}</b> · ${trackLabel}</span>
   <span style="font-size:11px;color:var(--ink-4);margin-left:auto">Each grade is a different real student and family, so you can show a school every stage in one sitting</span>
  </div>`;}
@@ -4064,6 +4129,24 @@ const COURSES_BY_GRADE={
  ]
 };
 
+const G12_IB_TIMETABLE={
+ s3:[
+  {code:"Ma1",name:"IB Mathematics: Analysis & Approaches HL",teacher:"Mr. Yilmaz",period:"P2",grade:6,avg:5,scale:"ib",pathway:"IB",required:{lse:true,imperial:true,cambridge:true}},
+  {code:"Ec1",name:"IB Economics HL",teacher:"Ms. Fahri",period:"P4",grade:7,avg:5,scale:"ib",pathway:"IB",required:{lse:true,nyu:true}},
+  {code:"En1",name:"IB English Literature HL",teacher:"Mr. Adeyemi",period:"P6",grade:6,avg:5,scale:"ib",pathway:"IB",required:{lse:true,ucl:false}},
+  {code:"Bu1",name:"IB Business Management SL",teacher:"Mr. Haddad",period:"P1",grade:6,avg:5,scale:"ib",pathway:"IB",required:{lse:false,nyu:true}},
+  {code:"Ar1",name:"Arabic B SL",teacher:"Ms. Nasser",period:"P3",grade:6,avg:5,scale:"ib",pathway:"IB",required:{}},
+  {code:"Ph1",name:"IB Physics SL",teacher:"Dr. Reid",period:"P5",grade:5,avg:5,scale:"ib",pathway:"IB",required:{imperial:true}}],
+ /* Four at Higher Level, which is what her case file has always said she
+    is carrying, and the reason the workload signal reads the way it does. */
+ s14:[
+  {code:"Bi1",name:"IB Biology HL",teacher:"Dr. Reid",period:"P2",grade:7,avg:5,scale:"ib",pathway:"IB",required:{}},
+  {code:"Ch1",name:"IB Chemistry HL",teacher:"Dr. Chen",period:"P4",grade:7,avg:5,scale:"ib",pathway:"IB",required:{}},
+  {code:"Ma4",name:"IB Mathematics: Analysis & Approaches HL",teacher:"Mr. Yilmaz",period:"P1",grade:7,avg:5,scale:"ib",pathway:"IB",required:{}},
+  {code:"En4",name:"IB English Literature HL",teacher:"Mr. Adeyemi",period:"P6",grade:6,avg:5,scale:"ib",pathway:"IB",required:{}},
+  {code:"Sp4",name:"IB Spanish B SL",teacher:"Ms. Garcia",period:"P5",grade:7,avg:5,scale:"ib",pathway:"IB",required:{}},
+  {code:"Py4",name:"IB Psychology SL",teacher:"Ms. Johnson",period:"P3",grade:7,avg:5,scale:"ib",pathway:"IB",required:{}}]};
+
 function getStudentClasses(sid){
  const student=g(sid);
  if(!student) return [];
@@ -4077,15 +4160,14 @@ function getStudentClasses(sid){
     diploma he is not taking. IB subjects are scored 1-7 the way the rest of
     the product scores them; AP courses carry a school percentage, because
     Fahad has not sat an AP exam yet. */
+ /* A per-student table, not one hardcoded timetable returned for anyone
+    who happens to be Grade 12 and IB. That branch handed Sara's six
+    subjects to every such student, which was invisible while she was the
+    only one and became wrong the moment a second joined the cohort. A
+    student with no timetable on file falls through to the honest empty
+    state rather than being shown somebody else's. */
  if(grade===12&&student.track==="IB"){
-  return [
-   {code:"Ma1",name:"IB Mathematics: Analysis & Approaches HL",teacher:"Mr. Yilmaz",period:"P2",grade:6,avg:5,scale:"ib",pathway:"IB",required:{lse:true,imperial:true,cambridge:true}},
-   {code:"Ec1",name:"IB Economics HL",teacher:"Ms. Fahri",period:"P4",grade:7,avg:5,scale:"ib",pathway:"IB",required:{lse:true,nyu:true}},
-   {code:"En1",name:"IB English Literature HL",teacher:"Mr. Adeyemi",period:"P6",grade:6,avg:5,scale:"ib",pathway:"IB",required:{lse:true,ucl:false}},
-   {code:"Bu1",name:"IB Business Management SL",teacher:"Mr. Haddad",period:"P1",grade:6,avg:5,scale:"ib",pathway:"IB",required:{lse:false,nyu:true}},
-   {code:"Ar1",name:"Arabic B SL",teacher:"Ms. Nasser",period:"P3",grade:6,avg:5,scale:"ib",pathway:"IB",required:{}},
-   {code:"Ph1",name:"IB Physics SL",teacher:"Dr. Reid",period:"P5",grade:5,avg:5,scale:"ib",pathway:"IB",required:{imperial:true}}
-  ];
+  return G12_IB_TIMETABLE[student.id]||[];
  } else if(grade>=11&&student.track==="AP"){
   return [
    {code:"Ma2",name:"AP Calculus BC",teacher:"Mr. Yilmaz",period:"P1",grade:88,avg:84,scale:"pct",pathway:"AP",required:{imperial:true}},
@@ -4398,9 +4480,21 @@ const SELREC={};
     rec.mark=Math.round((rec.mathSet==="extended mathematics"?72:62)+rnd()*26);}
    DPC.push(rec);
   }};
+ /* Grade 10 is the whole year group choosing IB subjects. Grades 11 and
+    12 are the students who went on to the full Diploma, which is fewer:
+    the school also offers IB courses without the Diploma, Advanced
+    Placement, and its own high school courses.
+
+    The upper years are sized to the authored content rather than the
+    other way round. Every Extended Essay question in this build is
+    written; none is generated from a template and none repeats, so the
+    cohort stops where the writing does. That is the same trade the
+    caseload already makes with fifteen authored cases and seventy-two
+    quiet rows. */
  addYear(10,81,[{id:"s10",name:"Maya Rahman",av:"MR",goal:"Considering Economics or Engineering",mathSet:"foundation",mark:85}]);
- addYear(11,56,[{id:"s12",name:"Tariq Al Balushi",av:"TB",goal:"Law"},{id:"s17",name:"Ivan Petrov",av:"IP",goal:"Mathematics"}]);
- addYear(12,60,[{id:"s3",name:"Sara Al Mansoori",av:"SA",goal:"Investment Banking"}]);
+ addYear(11,30,[{id:"s12",name:"Tariq Al Balushi",av:"TB",goal:"Law"},{id:"s17",name:"Ivan Petrov",av:"IP",goal:"Mathematics"}]);
+ addYear(12,34,[{id:"s3",name:"Sara Al Mansoori",av:"SA",goal:"Investment Banking"},
+  {id:"s14",name:"Priya Raghunathan",av:"PR",goal:"Biomedical Science"}]);
  /* Grade 10 carries a live selection round; Grades 11 and 12 are in the
     diploma already and carry a CAS record instead. */
  const stateFor=()=>{const r=rnd();
@@ -4692,6 +4786,348 @@ function casMatches(sid){
   .filter(x=>x.hit.length).sort((a,b)=>b.hit.length-a.hit.length);}
 const CASTAG=t=>(CAS_TAGS.find(x=>x[0]===t)||[t,t])[1];
 const STRANDL=k=>(CAS_STRANDS.find(s=>s[0]===k)||["","",""])[1];
+
+
+/* ═══════════ THE EXTENDED ESSAY ═══════════
+   The other half of the same promise: tracking the parts of the diploma
+   that are not a grade, before they turn into a crisis.
+
+   Today a student picks a subject and a question, emails a teacher they
+   hope will supervise, and waits. The teacher gets those emails scattered
+   among everything else, with no view of how many they have already taken
+   on. The coordinator finds out who has no supervisor when somebody
+   mentions it. Every part of that is visible here instead.
+
+   Three of the milestones below are the mandatory reflection sessions
+   recorded on the Reflections on Planning and Progress Form. They are the
+   thing most often reconstructed from memory in the week before
+   submission, so they are logged when they happen and dated by the person
+   who held them. */
+
+/* Days are relative to DAY, so the whole schedule moves with the demo's
+   own today rather than drifting against it. Grade 11 is choosing;
+   Grade 12 is finishing. Grade 12's final submission lands 16 days out,
+   which is the deadline Priya's case file already names. */
+const EE_MILESTONES=[
+ {id:"propose",label:"Subject and research question proposed",who:"Student",d:{11:4,12:-281}},
+ {id:"super",label:"Supervisor confirmed",who:"Coordinator",d:{11:11,12:-253}},
+ {id:"r1",label:"First reflection session",who:"Supervisor",rppf:true,d:{11:52,12:-219}},
+ {id:"draft",label:"First full draft",who:"Student",d:{11:151,12:-14}},
+ {id:"r2",label:"Interim reflection session",who:"Supervisor",rppf:true,d:{11:165,12:-10}},
+ {id:"final",label:"Final version",who:"Student",d:{12:7}},
+ {id:"viva",label:"Viva voce, the final reflection",who:"Supervisor",rppf:true,d:{12:11}},
+ {id:"submit",label:"Uploaded for assessment",who:"Coordinator",d:{12:16}}];
+const EE_ROUND={year:"2027",
+ coordinator:"Mr. A. Diaz",
+ rppf:"Reflections on Planning and Progress Form",
+ words:4000,hours:40,
+ cap:5,
+ capNote:"Five is the school's own guide rather than a rule. Nothing stops a teacher taking a sixth, and the coordinator can see when one has."};
+const eeDue=(mid,yr)=>{const m=EE_MILESTONES.find(x=>x.id===mid);return m&&m.d[yr]!==undefined?m.d[yr]:null;};
+const eePlan=yr=>EE_MILESTONES.filter(m=>m.d[yr]!==undefined);
+/* 24 November is the demo's today, so a milestone at +16 is 10 December.
+   Printed rather than computed from the system clock, which would drift
+   away from the rest of the file within a week. */
+const EE_DATES={"-281":"last February","-253":"last March","-219":"last April","-14":"10 November","-10":"14 November",
+ "4":"28 November","7":"1 December","11":"5 December","16":"10 December","52":"15 January","151":"24 April","165":"8 May"};
+const eeDateLabel=n=>EE_DATES[String(n)]||(n<0?Math.abs(n)+" days ago":"in "+n+" days");
+
+/* Who can supervise, and in what. Load is counted, never stored, for the
+   same reason the subject demand is: a stored figure starts disagreeing
+   with the list underneath it. */
+const EE_SUPERVISORS=(()=>{
+ const by={};
+ IB_SUBJECTS.forEach(s=>{(by[s.t]=by[s.t]||{name:s.t,subjects:[]}).subjects.push(s.id);});
+ return Object.values(by);})();
+const eeSupervisorFor=name=>EE_SUPERVISORS.find(s=>s.name===name)||null;
+function eeLoad(name){return Object.values(EEREC).filter(r=>r.status==="confirmed"&&r.supervisor===name).length;}
+/* Which teachers actually teach the subject a student has chosen. A
+   redirect that offers the whole staff list is the email problem with a
+   dropdown on it. */
+function eeCandidates(subId){const s=IBS(subId);if(!s)return EE_SUPERVISORS;
+ const sameGroup=IB_SUBJECTS.filter(x=>x.g===s.g).map(x=>x.t);
+ return EE_SUPERVISORS.filter(x=>sameGroup.includes(x.name));}
+
+const EEREC={};
+(function(){
+ let seed=20261124;const rnd=()=>{seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;};
+ const pick=a=>a[Math.floor(rnd()*a.length)];
+ /* Enough questions that no supervisor ever opens two identical ones.
+    A shared pool with replacement put the same Markov chain question in
+    front of Mr. Davies twice in one screen, which is the failure P3 fixed
+    on the caseload when four Urgent cards read word for word the same.
+    Drawn without replacement per subject; a subject whose questions run
+    out sends the student to one that has some left. */
+ const RQ={
+  ENL:["To what extent does the unreliable narrator in two modern novels ask the reader to do the moral work?",
+   "How do two writers use a house as an instrument of memory rather than a setting?",
+   "To what extent is silence a form of speech in the work of one contemporary playwright?",
+   "How does one novelist use a child narrator to say things an adult narrator could not?",
+   "To what extent does translation change the moral weight of one recurring image in two versions of the same poem?"],
+  ELL:["How does the language of a central bank's press conference manage expectations it cannot control?",
+   "To what extent does a charity appeal's grammar decide who the reader is asked to be?",
+   "How is authority constructed in the language of two competing public health campaigns?",
+   "To what extent has the language of airline safety cards been designed against being read?"],
+  ARA:["To what extent does one modern Arabic novelist use dialect to mark social distance?",
+   "How does one Arabic poet use the desert as an argument rather than an image?",
+   "To what extent does a classical form constrain a contemporary Arabic writer working inside it?"],
+  ECO:["To what extent did the 2024 tariff on imported steel achieve its stated aim in the domestic market?",
+   "How far does minimum wage policy in one Gulf economy affect employment in the sectors it targets?",
+   "To what extent has congestion pricing in one city changed behaviour rather than shifted it?",
+   "How effective was a sugar levy in one market at changing what was reformulated rather than what was bought?",
+   "To what extent do subsidies for one renewable technology displace investment in another?"],
+  BUS:["To what extent has a subscription model changed the risk profile of one regional retailer?",
+   "How far did one airline's loyalty programme change its revenue mix rather than its passenger numbers?",
+   "To what extent has one grocery chain's shift to private label changed its supplier relationships?",
+   "How effective was one company's four-day week at the outcome it was introduced to change?"],
+  HIS:["To what extent was the 1971 federation of the Emirates driven by external pressure rather than internal consensus?",
+   "How far did the Suez crisis change British policy in the Gulf rather than reveal it?",
+   "To what extent was the pearl trade's collapse a technological event rather than an economic one?",
+   "How far did the 1973 oil embargo change the politics of the states that imposed it?"],
+  PSY:["To what extent does testing effect research hold when the material is studied under time pressure?",
+   "How far does the presence of a phone in the room affect performance on a sustained attention task?",
+   "To what extent is the bystander effect reproduced in online rather than physical settings?",
+   "How does bilingualism affect performance on a task-switching measure in adolescents?"],
+  GPO:["How far has regional water scarcity shaped cooperation rather than conflict in one river basin?",
+   "To what extent has one small state used arbitration to offset the power of a larger neighbour?",
+   "How far do climate migration commitments made at summits survive contact with domestic politics?"],
+  BIO:["What is the effect of varying light wavelength on the rate of photosynthesis in Elodea densa?",
+   "To what extent does soil salinity affect germination rates in three coastal plant species?",
+   "How does temperature affect the activity of catalase extracted from potato tissue?",
+   "What is the effect of caffeine concentration on the heart rate of Daphnia magna?",
+   "To what extent does leaf surface area predict transpiration rate across three desert-adapted species?"],
+  CHE:["How does the concentration of a catalyst affect the rate of decomposition of hydrogen peroxide?",
+   "To what extent does water hardness affect the effectiveness of three common surfactants?",
+   "How does the choice of solvent affect the yield of one esterification reaction?",
+   "What is the effect of storage temperature on the vitamin C content of one fruit juice over ten days?"],
+  PHY:["To what extent does the damping coefficient of a pendulum vary with amplitude?",
+   "How does the angle of incidence affect the efficiency of a photovoltaic cell under fixed illumination?",
+   "What is the relationship between string tension and harmonic content in a plucked wire?",
+   "To what extent does a rotating body's moment of inertia predict its terminal descent speed on an incline?"],
+  CSC:["How far does the choice of hash function affect collision rates on real-world address data?",
+   "To what extent does a caching strategy change the response time of a small web service under bursty load?",
+   "How does training set size affect the accuracy of a handwritten digit classifier at fixed architecture?",
+   "To what extent can a rules engine outperform a learned model on a small, highly structured dataset?"],
+  DES:["How does material choice affect the durability of a low-cost prosthetic hand?",
+   "To what extent does infill density change the load a printed bracket can carry before failure?",
+   "How far can passive shading reduce internal temperature in a scale model of a school classroom?"],
+  MAA:["To what extent can Markov chains model the movement of a queue at a single service point?",
+   "How well does a logistic model describe the spread of a rumour through a bounded social network?",
+   "To what extent does the choice of numerical method change the accuracy of a modelled projectile path?",
+   "How far can graph theory optimise a school bus route across a fixed set of stops?",
+   "To what extent does Benford's law hold across three publicly available financial datasets?"],
+  MAI:["How accurately can a regression model predict daily water demand from temperature alone?",
+   "To what extent does a moving average outperform a naive forecast for one commodity price?",
+   "How far can a chi-squared test distinguish a real dataset from a plausible generated one?",
+   "To what extent does sample size change the confidence interval on a school-wide survey?"],
+  VIS:["How does one contemporary artist use industrial material to argue about labour?",
+   "To what extent does scale change the meaning of one sculptor's repeated form?",
+   "How does one photographer use absence of the human figure to depict a city?"],
+  MUS:["How has one composer adapted a traditional form for a contemporary ensemble?",
+   "To what extent does instrumentation rather than melody carry the identity of one film score?",
+   "How does one producer use silence as a rhythmic device across an album?"],
+  THE:["To what extent does one director's staging change the politics of a canonical text?",
+   "How far can a single set serve two plays with opposing intentions?",
+   "To what extent does audience proximity change the performance of one monologue?"],
+  FIL:["How does one director use colour grading to mark a shift in a character's reliability?",
+   "To what extent does sound design rather than editing create tension in one thriller?",
+   "How does one documentary use its own construction as an argument?"],
+  ARB:["How is code-switching used for humour in one Arabic television comedy?",
+   "To what extent does register change in Arabic social media alter how advice is received?"],
+  FRB:["How does one French film use silence to characterise its protagonist?",
+   "To what extent does one French advertising campaign rely on wordplay that cannot be translated?"],
+  SPB:["To what extent does one Spanish poet use landscape to write about exile?",
+   "How does one Spanish-language series use regional accent to signal class?"],
+  SPI:[]};
+ /* weight by what is left in the pool, so the popular subjects stay
+    popular and nothing runs dry while another subject has five spare */
+ const wpick2=list=>{const tot=list.reduce((a,x)=>a+RQ[x.id].length,0);let r=rnd()*tot;
+  for(const x of list){r-=RQ[x.id].length;if(r<=0)return x;}return list[list.length-1];};
+ /* The four authored records are written below, after this generator
+    runs, so it has no way of knowing their questions are taken. Removing
+    them here is what stops Priya's soil salinity essay turning up a
+    second time in Dr. Reid's own list. */
+ ["To what extent did the 2024 tariff on imported steel achieve its stated aim in the domestic market?",
+  "To what extent does soil salinity affect germination rates in three coastal plant species?",
+  "To what extent can Markov chains model the movement of a queue at a single service point?"]
+  .forEach(q=>{Object.keys(RQ).forEach(k=>{const i=RQ[k].indexOf(q);if(i>-1)RQ[k].splice(i,1);});});
+ const WHY=["It came out of a class I could not stop thinking about afterwards.",
+  "I wanted a question I could actually collect data for rather than one I would only read about.",
+  "The subject is my strongest and I would rather spend forty hours somewhere I am fluent.",
+  "It connects to what I want to study at university without being the same thing.",
+  "My teacher mentioned it in passing and I have been reading around it since."];
+ const NOTES_ACCEPT=["Good question, and it is answerable in four thousand words. I can supervise this.",
+  "The scope is right. Come with a reading list to the first session.",
+  "I have the room and this is close to what I teach. Happy to take it."];
+ /* Grade 11 is mid-round. Grade 12 is well past matching and deep in
+    drafting, so its records carry supervisors and reflection history. */
+ /* Grade 12 first: every student in the second year has an essay under
+    way, whereas a Grade 11 who has not proposed yet is a real state and
+    the one the coordinator's screen exists to surface. */
+ DPC.filter(d=>d.yr>10).sort((a,b)=>b.yr-a.yr).forEach(d=>{
+  /* the essay subject is drawn from the subjects a student of that year
+     would plausibly be taking */
+  /* pools are consumed, so two students never share a question and no
+     supervisor ever reads the same one twice */
+  const pool=IB_SUBJECTS.filter(x=>(RQ[x.id]||[]).length);
+  if(!pool.length){EEREC[d.id]={sid:d.id,yr:d.yr,subject:null,rq:"",why:"",
+   supervisor:null,status:"none",target:null,done:{},reflections:{},draft:null,log:[]};return;}
+  const sub=wpick2(pool);
+  const rq=RQ[sub.id].splice(Math.floor(rnd()*RQ[sub.id].length),1)[0];
+  const rec={sid:d.id,yr:d.yr,subject:sub.id,
+   rq,why:pick(WHY),
+   supervisor:null,status:"none",target:null,done:{},reflections:{},draft:null,log:[]};
+  if(d.yr===11){
+   const r=rnd();
+   if(r<.18){rec.status="none";rec.rq="";rec.why="";}
+   else if(r<.52){
+    /* Proposals arrive across the round rather than all on one day, and
+       the age is what the coordinator's "waiting on a teacher" flag is
+       computed from. A single stamped date for every record made that
+       flag unreachable. */
+    const age=1+Math.floor(rnd()*12);
+    rec.status="proposed";rec.target=sub.t;rec.done.propose=eeDateLabel(-age);
+    rec.log.push({when:eeDateLabel(-age),who:d.name,what:"Proposed "+sub.name+". Sent to "+sub.t+"."});}
+   else if(r<.62){rec.status="refine";rec.target=sub.t;rec.done.propose=eeDateLabel(-(6+Math.floor(rnd()*6)));
+    rec.refineNote="The question is a topic rather than a question. Narrow it to something you could answer wrongly.";
+    rec.log.push({when:"18 Nov",who:sub.t,what:"Asked for a sharper question before accepting."});}
+   else {rec.status="confirmed";rec.supervisor=sub.t;rec.done.propose=eeDateLabel(-9);rec.done.super="19 Nov";
+    rec.log.push({when:"19 Nov",who:sub.t,what:"Accepted supervision. "+pick(NOTES_ACCEPT)});}
+  } else {
+   rec.status="confirmed";rec.supervisor=sub.t;
+   rec.done.propose="last February";rec.done.super="last March";
+   rec.done.r1="last April";rec.reflections.r1={when:"last April",by:sub.t,note:"Discussed scope and sources. Reading list agreed."};
+   const health=rnd();
+   if(health<.68){rec.done.draft="6 November";rec.draft={words:3400+Math.floor(rnd()*700),when:"6 November"};
+    rec.done.r2="13 November";rec.reflections.r2={when:"13 November",by:sub.t,note:"Draft read. Argument holds; the conclusion restates rather than concludes."};}
+   else if(health<.88){rec.done.draft="14 November";rec.draft={words:2600+Math.floor(rnd()*700),when:"14 November"};}
+   else {rec.draft=null;}
+  }
+  EEREC[d.id]=rec;});
+})();
+
+/* ── The four authored records ─────────────────────────────────────
+   Sara is the one that works. Priya is the one the product exists to
+   catch: her case file already reads eleven nights past one in the
+   morning and first-period punctuality fraying, with no cause anybody
+   could name. This is the cause. Ivan is the live decision sitting in
+   the demo teacher's queue, and Tariq is the student nobody has noticed
+   has not started. */
+EEREC.s3={sid:"s3",yr:12,subject:"ECO",
+ rq:"To what extent did the 2024 tariff on imported steel achieve its stated aim in the domestic market?",
+ why:"I started it expecting a straightforward story about protection and spent a term working out why the industry it was meant to help ended up worse off. That is the part I want to write about.",
+ supervisor:"Ms. Fahri",status:"confirmed",target:null,
+ done:{propose:"last February",super:"last March",r1:"last April",draft:"4 November",r2:"12 November"},
+ draft:{words:3860,when:"4 November",
+  text:"A tariff meant to protect one industry can end up making the thing it protects more expensive at home than abroad. This essay examines the 2024 steel tariff against its own stated aim, using price and volume data from the eighteen months either side of its introduction."},
+ reflections:{
+  r1:{when:"last April",by:"Ms. Fahri",note:"Scope agreed. She arrived with three questions and left with one, which is the right direction of travel."},
+  r2:{when:"12 November",by:"Ms. Fahri",note:"Draft is strong on the mechanism and thin on the counterfactual. She knows it. Asked her to name what she would expect to see if the tariff had worked."}},
+ log:[{when:"12 November",who:"Ms. Fahri",what:"Interim reflection recorded."},
+  {when:"4 November",who:"Sara Al Mansoori",what:"First full draft submitted, 3,860 words."},
+  {when:"last March",who:"Ms. Fahri",what:"Accepted supervision."}]};
+EEREC.s14={sid:"s14",yr:12,subject:"BIO",
+ rq:"To what extent does soil salinity affect germination rates in three coastal plant species?",
+ why:"I want to read biomedical science and this is the closest I can get to running something myself rather than reading about someone else running it.",
+ supervisor:"Dr. Reid",status:"confirmed",target:null,
+ done:{propose:"last February",super:"last March",r1:"last April"},
+ draft:null,
+ reflections:{r1:{when:"last April",by:"Dr. Reid",note:"Ambitious design for the time available. Agreed she would cut to three species from five."}},
+ log:[{when:"last April",who:"Dr. Reid",what:"First reflection recorded."},
+  {when:"last March",who:"Dr. Reid",what:"Accepted supervision."}]};
+/* Written and not sent, which is the state the proposal form has to be
+   good at and the one a demo needs: his words are already in the fields,
+   so sending it is one click and the proposal lands in Mr. Davies's queue
+   while somebody is watching. */
+EEREC.s17={sid:"s17",yr:11,subject:"MAA",
+ rq:"To what extent can Markov chains model the movement of a queue at a single service point?",
+ why:"I want a question I can test rather than only argue about, and I can collect the queue data myself at the school canteen.",
+ supervisor:null,status:"none",target:null,
+ done:{},draft:null,reflections:{},log:[]};
+EEREC.s12={sid:"s12",yr:11,subject:"HIS",rq:"",why:"",
+ supervisor:null,status:"none",target:null,done:{},draft:null,reflections:{},log:[]};
+
+/* ── The rules, again as comparisons ───────────────────────────────
+   Nothing here is a judgement. Every line is a date against today or a
+   count against a threshold, so a student, a teacher and the coordinator
+   are all reading the same arithmetic. */
+function eeRec(sid){return EEREC[sid]||null;}
+function eeNext(sid){
+ const r=eeRec(sid);if(!r)return null;
+ const plan=eePlan(r.yr);
+ const next=plan.find(m=>!r.done[m.id]);
+ if(!next)return null;
+ return {m:next,days:next.d[r.yr],label:eeDateLabel(next.d[r.yr]),overdue:next.d[r.yr]<0};}
+/* Drifting means the student or the school has stopped, not that a
+   proposal is legitimately sitting with a teacher who has had it two
+   days. Flagging every unconfirmed Grade 11 put twenty-three of
+   thirty-two on the list, which is a year group rather than a list of
+   people to chase. */
+const EE_WAIT_DAYS=7;
+function eeStalled(sid){
+ const r=eeRec(sid);if(!r)return null;
+ const n=eeNext(sid);
+ if(r.status==="none")return r.yr===11?"Nothing proposed":"No proposal on file";
+ if(r.status==="refine")return "Sent back, not rewritten";
+ if(r.status==="proposed"&&eeWaiting(r)>EE_WAIT_DAYS)return "With "+r.target+" for "+eeWaiting(r)+" days";
+ if(!r.supervisor&&r.yr!==11)return "No supervisor";
+ if(n&&n.overdue)return n.m.label+" is "+Math.abs(n.days)+" days overdue";
+ return null;}
+/* How long a proposal has sat unanswered, read from the date it was sent
+   rather than stored, so it grows on its own. */
+function eeWaiting(r){
+ if(!r.done||!r.done.propose)return 0;
+ const v=String(r.done.propose);
+ /* Two formats reach this: a stamped date from a real submission
+    ("24 Nov") and a relative label from the generator ("6 days ago").
+    Reading only the first meant no generated proposal could ever age
+    past the threshold, so the flag it feeds could not fire at all. */
+ const rel=v.match(/^(\d+)\s+days?\s+ago$/);
+ if(rel)return parseInt(rel[1],10);
+ const abs=v.match(/^(\d+)\s+Nov/);
+ return abs?Math.max(0,24-parseInt(abs[1],10)):0;}
+/* Worth seeing, not worth chasing. */
+function eeNote(sid){
+ const r=eeRec(sid);if(!r)return null;
+ if(r.status==="proposed")return "With "+r.target+", sent "+r.done.propose;
+ const n=eeNext(sid);
+ if(n&&!n.overdue&&n.days<=14)return n.m.label+" "+n.label;
+ return null;}
+/* The nudge. A checkpoint inside a fortnight is worth a line on the
+   student's own screen; one that has passed is worth a different line.
+   Neither is a notification anybody has to configure. */
+function eeNudge(sid){
+ const n=eeNext(sid);if(!n)return null;
+ if(n.overdue)return {tone:"late",t:n.m.label+" was due "+n.label,
+  d:n.m.who==="Student"?"It is still the next thing, and it is the only thing standing between you and the rest of the schedule.":"Your supervisor holds this one. If it has not happened, ask for it."};
+ if(n.days<=14)return {tone:"soon",t:n.m.label+", "+(n.days===0?"today":n.days===1?"tomorrow":"in "+n.days+" days"),
+  d:"Due "+n.label+". "+(n.m.who==="Student"?"This one is yours.":n.m.who+" records it, so book the time rather than waiting for it.")};
+ return null;}
+function eeReflectionsDone(sid){const r=eeRec(sid);if(!r)return 0;
+ return ["r1","r2","viva"].filter(k=>r.reflections&&r.reflections[k]).length;}
+function eeReflectionsDue(sid){const r=eeRec(sid);if(!r)return 0;
+ return eePlan(r.yr).filter(m=>m.rppf).length;}
+/* Aggregate, counted at render time. */
+function eeCounts(yr){
+ const pool=DPC.filter(d=>(yr?d.yr===yr:d.yr>10));
+ const rec=id=>EEREC[id]||{status:"none",reflections:{}};
+ return {total:pool.length,
+  none:pool.filter(d=>rec(d.id).status==="none").length,
+  proposed:pool.filter(d=>["proposed","refine"].includes(rec(d.id).status)).length,
+  confirmed:pool.filter(d=>rec(d.id).status==="confirmed").length,
+  noSupervisor:pool.filter(d=>!rec(d.id).supervisor).length,
+  stalled:pool.filter(d=>eeStalled(d.id)).length,
+  reflections:pool.reduce((a,d)=>a+eeReflectionsDone(d.id),0),
+  reflectionsDue:pool.reduce((a,d)=>a+eeReflectionsDue(d.id),0)};}
+/* One teacher's queue and their supervision list. */
+function eeQueue(name){
+ return DPC.filter(d=>d.yr>10).map(d=>({d,r:EEREC[d.id]}))
+  .filter(x=>x.r&&x.r.target===name&&["proposed","refine"].includes(x.r.status))
+  .sort((a,b)=>a.d.name.localeCompare(b.d.name));}
+function eeSupervising(name){
+ return DPC.filter(d=>d.yr>10).map(d=>({d,r:EEREC[d.id]}))
+  .filter(x=>x.r&&x.r.status==="confirmed"&&x.r.supervisor===name)
+  .sort((a,b)=>{const A=eeStalled(a.d.id)?0:1,B=eeStalled(b.d.id)?0:1;return A-B||a.d.name.localeCompare(b.d.name);});}
 
 /* Retained: the pathway-approval queue the discovery flow writes into. It
    is a different object from a subject selection and the two must not be
@@ -5069,12 +5505,60 @@ function vTSelCard(x,cls){
    caseload, going the other way: on the sheet a run is broken by a signal,
    here it is built a month at a time. No red in it. A quiet month in CAS is
    not a safeguarding signal and must not be printed like one. */
-function vStuCAS(){
+/* ═══════════ THE DIPLOMA CORE ═══════════
+   The Extended Essay, CAS and theory of knowledge are one section rather
+   than three nav items, because they are one obligation with three parts
+   and a student who is behind is usually behind on all of them at once.
+   The tabs exist only where all three are real: an AP student and a
+   Grade 9 keep the single activities page they already had. */
+function vStuCore(){
+ const c=g(S.open||PARENT_ME);
+ if(!c)return empty("No student selected","Pick a grade above to open a student's portal.");
+ const grade=c.grade||12;
+ if(!(c.track==="IB"&&grade>=11))return vStuCAS();
+ const tab=S.coreTab||"ee";
+ const nudge=eeNudge(c.id),sum=casSum(c.id),stall=casStalled(c.id);
+ const t=nudge&&nudge.tone==="late"?"Something in your core has already slipped"
+  :nudge?"What your core needs next"
+  :stall?"Your core, and the strand that is thin"
+  :"Where your core stands";
+ return `<div class="fade">
+  ${head(t,"The three parts of the diploma that are not a subject grade. They are marked separately, they are due at different times, and the Extended Essay and theory of knowledge are worth up to three points between them.")}
+  <div class="filterbar" role="tablist" aria-label="Diploma core">
+   ${[["ee","Extended essay",nudge?"!":""],["cas","CAS",stall?"!":""],["tok","Theory of knowledge",""]]
+    .map(([k,l,mark])=>`<button class="tab${tab===k?" on":""}" role="tab" aria-selected="${tab===k}" data-coretab="${k}">${l}${mark?` <span class="tabmark" aria-label="needs attention">${mark}</span>`:""}</button>`).join("")}
+  </div>
+  ${tab==="ee"?vStuEE(c):tab==="cas"?vStuCAS(true):vStuTOK(c)}
+ </div>`;}
+
+/* Theory of knowledge is taught and assessed, and this portal does not
+   track it. Saying so is the honest version; a panel implying coverage
+   it does not have is how a student misses an exhibition deadline that
+   was never on any screen. */
+function vStuTOK(c){
+ return `<div>
+  ${empty("Theory of knowledge is not tracked here yet",
+   "Your TOK teacher sets the exhibition and the essay, and those deadlines live in the course itself rather than in this portal. Nothing on this page will remind you about them, which is worth knowing rather than assuming otherwise.")}
+  <h2 class="sechead" style="margin-top:26px">What it is worth</h2>
+  <div class="sheetbox">
+   <div class="selrow-static"><span class="lstamp">1</span>
+    <div style="min-width:0"><div class="selrow-t">The exhibition</div>
+     <div class="selrow-n">Three objects and a commentary on how each one connects to a knowledge question. Sat in the first year.</div></div></div>
+   <div class="selrow-static"><span class="lstamp">2</span>
+    <div style="min-width:0"><div class="selrow-t">The essay, 1,600 words</div>
+     <div class="selrow-n">On one of six prescribed titles, released by the IB. Written in the second year.</div></div></div>
+   <div class="selrow-static"><span class="lstamp on">3</span>
+    <div style="min-width:0"><div class="selrow-t">Up to three points, with the Extended Essay</div>
+     <div class="selrow-n">The two are graded A to E and combined on a matrix. Three points is the difference between an offer and a near miss often enough that it is worth knowing where you sit on both.</div></div></div>
+  </div>
+ </div>`;}
+
+function vStuCAS(embedded){
  const c=g(S.open||PARENT_ME);
  if(!c)return empty("No student selected","Pick a grade above to open a student's portal.");
  const ib=c.track==="IB",sum=casSum(c.id),tags=CAS_INTERESTS[c.id]||[],matches=casMatches(c.id);
- return `<div class="fade">
-  ${head(ib&&sum?"Where your CAS stands":ib?"Your CAS record opens in Grade 11":"What is on offer, and what fits you",
+ return `<div${embedded?"":' class="fade"'}>
+  ${embedded?"":head(ib&&sum?"Where your CAS stands":ib?"Your CAS record opens in Grade 11":"What is on offer, and what fits you",
    ib&&sum?`Creativity, activity and service, over the eighteen months of the diploma. ${CAS_HOURS_NOTE}`
    :ib?"CAS runs across Grades 11 and 12. Until then this page is here so you can see what the school actually offers and start something you would have joined anyway."
    :c.track==="AP"?"CAS is a requirement of the IB Diploma, and you are on the AP route, so none of this is assessed for you. The activities are open to every student in the school and universities read them the same way."
@@ -5161,6 +5645,408 @@ function vStuCAS(){
   </div>`).join("")}</div>`}
  </div>`;}
 
+/* ═══════════ THE STUDENT'S EXTENDED ESSAY ═══════════
+   A student's own screen answers three questions in order: what is
+   happening to the thing I sent, what is next, and when. The version of
+   this that exists in most schools answers none of them, which is why
+   students ask a counselor in a corridor. */
+function vStuEE(c){
+ const r=eeRec(c.id);
+ if(!r)return empty("The Extended Essay starts in Grade 11",
+  "Four thousand words on a question you choose, in a subject you take, with a teacher supervising. Nothing to do yet.");
+ const nudge=eeNudge(c.id),next=eeNext(c.id),plan=eePlan(r.yr);
+ const sub=IBS(r.subject);
+ if(r.status==="none")return vStuEEPropose(c,r);
+ return `<div>
+  ${nudge?`<div class="nudge ${nudge.tone}">
+   <span class="checkmark" aria-hidden="true">${nudge.tone==="late"?"&#10005;":"!"}</span>
+   <div style="min-width:0"><div class="selrow-t">${nudge.t}</div>
+   <div class="selrow-n">${nudge.d}</div></div></div>`:""}
+
+  ${tally([["Subject",sub?sub.id:"—",sub?sub.name.split(":")[0]:""],
+   ["Supervisor",r.supervisor?r.supervisor.split(" ").slice(-1)[0]:"—",r.supervisor?"confirmed "+(r.done.super||""):r.status==="refine"?"question sent back":"with "+(r.target||"a teacher")],
+   ["Reflections",eeReflectionsDone(c.id)+" of "+eeReflectionsDue(c.id),"recorded on the "+EE_ROUND.rppf.toLowerCase()],
+   ["Next",next?next.m.label.split(",")[0]:"Nothing",next?next.label:"you are done"]])}
+
+  <h2 class="sechead" style="margin-top:26px">Your question</h2>
+  <div class="sheetbox">
+   <div class="selrow-static">
+    <span class="lstamp on">${sub?sub.id:"EE"}</span>
+    <div style="min-width:0;flex:1">
+     <div class="selrow-t">${sub?sub.name:"Subject not set"}</div>
+     <p class="prose" style="font-size:13.4px;color:var(--ink);line-height:1.6;margin:6px 0 0;max-width:66ch">${r.rq}</p>
+     ${r.why?`<div class="appa" style="color:var(--ink-4);margin-top:10px">Why you chose it</div>
+      <p class="prose" style="font-size:12.3px;color:var(--ink-2);line-height:1.6;margin:3px 0 0;max-width:66ch">${r.why}</p>`:""}
+    </div>
+   </div>
+   ${r.status==="refine"?`<div class="selrow-static" style="background:var(--stock-3)">
+    <span class="checkmark" aria-hidden="true">!</span>
+    <div style="min-width:0;flex:1"><div class="selrow-t">${r.target} asked you to sharpen it before they accept</div>
+     <p class="prose" style="font-size:12.5px;color:var(--ink);line-height:1.6;margin:4px 0 0;max-width:66ch">${r.refineNote}</p>
+     <div style="margin-top:10px"><button class="btn btn-p btn-sm" data-eeedit="1">Rewrite the question</button></div></div>
+   </div>`:r.status==="proposed"?`<div class="selrow-static">
+    <span class="lstamp void">·</span>
+    <div style="min-width:0"><div class="selrow-t">With ${r.target}</div>
+     <div class="selrow-n">Sent ${r.done.propose}. They accept it, ask you to sharpen the question, or pass it to a colleague who fits it better. You see which here, and you do not have to chase it.</div></div>
+   </div>`:""}
+  </div>
+
+  <h2 class="sechead" style="margin-top:26px">What happens, and when</h2>
+  <div class="sheetbox">
+   ${plan.map((m,i)=>{const done=r.done[m.id],isNext=next&&next.m.id===m.id;
+    return `<div class="selrow-static"${isNext?' style="box-shadow:inset 2px 0 0 var(--school-primary)"':''}>
+     <span class="lstamp${done?" on":isNext?"":" void"}">${done?"&#10003;":i+1}</span>
+     <div style="min-width:0;flex:1">
+      <div class="selrow-t">${m.label}${m.rppf?` <span class="lvstamp">RPPF</span>`:""}</div>
+      <div class="selrow-n">${done?"Done "+done+".":m.who==="Student"?"Yours.":m.who+" records this one."}${m.rppf&&r.reflections&&r.reflections[m.id]?" "+r.reflections[m.id].note:""}</div>
+     </div>
+     <div class="selrow-r"><span class="fig selrow-n">${done?"":eeDateLabel(m.d[r.yr])}</span></div>
+    </div>`;}).join("")}
+  </div>
+  <div class="selrow-n" style="margin-top:10px;max-width:70ch">Three of these are the reflection sessions the IB requires. Your supervisor records each one on the ${EE_ROUND.rppf}, which is submitted with the essay. They are conversations, not paperwork you write.</div>
+
+  ${r.draft?`<h2 class="sechead" style="margin-top:26px">Your draft</h2>
+  <div class="sheetbox"><div class="selrow-static">
+   <span class="lstamp">${Math.round(r.draft.words/1000)}k</span>
+   <div style="min-width:0;flex:1"><div class="selrow-t">${r.draft.words.toLocaleString()} words, sent ${r.draft.when}</div>
+    <div class="selrow-n">The limit is ${EE_ROUND.words.toLocaleString()}. Your supervisor reads this version and it is what the reflection sessions are about.</div>
+    ${r.draft.text?`<p class="prose" style="font-size:12.3px;color:var(--ink-2);line-height:1.65;margin:8px 0 0;max-width:66ch;border-left:2px solid var(--rule-2);padding-left:12px">${r.draft.text}</p>`:""}</div>
+  </div></div>`:r.status==="confirmed"?`<div style="margin-top:22px">${empty("No draft on file yet",
+   "Your supervisor reads a full draft once, and the interim reflection is the conversation about it. Sending something unfinished earlier is worth more than sending something polished late.")}</div>`:""}
+ </div>`;}
+
+/* The proposal. Three fields, because the thing that makes this useful is
+   that a teacher opens it already knowing what the student wants and why,
+   and a fourth field is how a form stops being filled in. */
+function vStuEEPropose(c,r){
+ const draft=S.eeDraft||{sub:r.subject||"",rq:r.rq||"",why:r.why||""};
+ const sub=draft.sub?IBS(draft.sub):null;
+ const ready=sub&&draft.rq.trim().length>=25&&draft.why.trim().length>=15;
+ const due=eeDue("propose",r.yr);
+ return `<div>
+  ${due!==null&&due<=14?`<div class="nudge ${due<0?"late":"soon"}">
+   <span class="checkmark" aria-hidden="true">${due<0?"&#10005;":"!"}</span>
+   <div style="min-width:0"><div class="selrow-t">Proposals ${due<0?"closed "+Math.abs(due)+" days ago":due===0?"close today":"close in "+due+" days"}</div>
+    <div class="selrow-n">${eeDateLabel(due)}. Nothing has been sent for you yet, so this is the whole of what is outstanding.</div></div></div>`:""}
+  <div class="selrow-n" style="max-width:70ch;margin-bottom:18px">Four thousand words on a question you choose, in a subject you take, over about ${EE_ROUND.hours} hours. Pick the subject, write the question you want to answer, and say why. It goes to a teacher in that subject, who supervises it or suggests someone who fits it better.</div>
+
+  <h2 class="sechead">The subject</h2>
+  <div class="selchoose" style="padding:0;background:none;border:none;margin-bottom:22px">
+   <div class="eegrid">
+    ${IB_SUBJECTS.filter(x=>x.g!=="g2").map(x=>`<button class="eesub${draft.sub===x.id?" on":""}" data-eesub="${x.id}" aria-pressed="${draft.sub===x.id}">
+     <span class="eesub-c fig">${x.id}</span>
+     <span style="min-width:0;text-align:left"><span class="selrow-t" style="display:block">${x.name}</span>
+      <span class="selrow-n" style="display:block">${x.t}</span></span></button>`).join("")}
+   </div>
+   <div class="selrow-n" style="margin-top:9px">It should normally be a subject you are taking. Language acquisition subjects are left off this list because an essay there has its own separate rules.</div>
+  </div>
+
+  <h2 class="sechead">Your question</h2>
+  <div class="sheetbox" style="padding:16px 18px;margin-bottom:22px">
+   <label class="appa" for="eerq" style="color:var(--ink-3);display:block">A working question, not a topic</label>
+   <div class="selrow-n" style="margin-bottom:7px">It will change, and it is meant to. A question you could answer wrongly is a better start than a subject area you could write about forever.</div>
+   <textarea id="eerq" data-eerq="1" rows="2" placeholder="${sub&&sub.g==="g4"?"What is the effect of … on … ?":"To what extent … ?"}" style="width:100%;box-sizing:border-box;font-size:13px;line-height:1.55;padding:10px;font-family:inherit">${(draft.rq||"").replace(/</g,"&lt;")}</textarea>
+   <label class="appa" for="eewhy" style="color:var(--ink-3);display:block;margin-top:14px">Why this one</label>
+   <div class="selrow-n" style="margin-bottom:7px">Your supervisor reads this before they answer. A sentence is enough.</div>
+   <textarea id="eewhy" data-eewhy="1" rows="2" placeholder="What made you pick it, and what you want to find out." style="width:100%;box-sizing:border-box;font-size:13px;line-height:1.55;padding:10px;font-family:inherit">${(draft.why||"").replace(/</g,"&lt;")}</textarea>
+  </div>
+
+  <div class="selsend">
+   <div style="min-width:0;flex:1">
+    <div class="selrow-t">${ready?"Goes to "+sub.t:"Not ready to send yet"}</div>
+    <div class="selrow-n">${ready?"They teach "+sub.name+". Their answer, and their reason for it, land back on this screen."
+     :!sub?"Pick a subject first.":draft.rq.trim().length<25?"The question needs to be a question."
+     :"Say why you picked it. It is the part a supervisor answers from."}</div>
+   </div>
+   <button class="btn btn-p" data-eesend="${c.id}" ${ready?"":"disabled"}>Send my proposal</button>
+  </div>
+ </div>`;}
+
+/* ═══════════ TEACHER: SUPERVISION ═══════════
+   The queue exists so a proposal is not an email, and the load sits beside
+   it so a teacher answering a fourth request knows it is the fourth. */
+function vTEE(){
+ const q=eeQueue(TEACHER.name),mine=eeSupervising(TEACHER.name);
+ const load=mine.length,cap=EE_ROUND.cap,over=load>=cap;
+ const flagged=mine.filter(x=>eeStalled(x.d.id));
+ return `<div class="fade">
+  ${head(q.length?q.length===1?"One student wants you to supervise their essay":q.length+" students want you to supervise their essay"
+    :flagged.length?"Two of your essays have slipped":"Your Extended Essay supervision",
+   `Proposals reach you here rather than by email, with the question and the student's reason already written. You are carrying ${load} ${load===1?"essay":"essays"} against a guide of ${cap}. ${EE_ROUND.capNote}`)}
+  ${tally([["Waiting on you",String(q.length),q.length?"a proposal each":"nothing outstanding"],
+   ["Supervising",load+" of "+cap,over?"at or over the guide":"room for "+(cap-load)+" more"],
+   ["Reflections recorded",String(mine.reduce((a,x)=>a+eeReflectionsDone(x.d.id),0)),"across your students"],
+   ["Slipped",String(flagged.length),flagged.length?"a checkpoint has passed":"all on schedule"]])}
+
+  ${q.length?`<h2 class="sechead" style="margin-top:26px">Waiting on you</h2>
+  ${q.map(({d,r})=>vTEECard(d,r,load,cap)).join("")}`
+  :`<div style="margin-top:24px">${moment({art:"open",title:"No proposals waiting",
+    body:"A Grade 11 student choosing a subject you teach sends their question here, with their reason for it already written. This page holds only what is still waiting on your answer.",
+    action:`<button class="btn btn-g btn-sm" data-tnav="class">Back to the register</button>`})}</div>`}
+
+  <h2 class="sechead" style="margin-top:30px">Your students</h2>
+  ${mine.length?`<div class="sheetscroll"><table class="sheet wide"><thead><tr>
+   <th class="lg-mgn"><span class="sr">Standing</span></th>
+   <th style="width:190px">Student</th><th style="width:32%">Question</th>
+   <th class="num">Reflections</th><th style="width:170px">Next</th><th style="width:130px">Draft</th><th style="width:130px"><span class="sr">Actions</span></th>
+  </tr></thead><tbody>
+   ${mine.map(({d,r})=>{const st=eeStalled(d.id),n=eeNext(d.id);
+    return `<tr>
+     <td class="lg-mgn"><span class="lstamp${st?"":" on"}" title="${st||"On schedule"}">${st?"!":"&#10003;"}</span></td>
+     <td><span class="lg-name">${d.name}</span><span class="lg-sub">Grade ${d.yr} · ${IBS(r.subject)?IBS(r.subject).id:"—"}</span></td>
+     <td><span style="color:var(--ink-2)">${r.rq.length>78?r.rq.slice(0,78)+"…":r.rq}</span></td>
+     <td class="num">${eeReflectionsDone(d.id)} / ${eeReflectionsDue(d.id)}</td>
+     <td>${n?`${n.m.label.split(",")[0]}<br><span class="fig selrow-n" style="color:${n.overdue?"var(--margin)":"var(--ink-4)"}">${n.label}</span>`:"Complete"}</td>
+     <td>${r.draft?`<span class="fig">${r.draft.words.toLocaleString()}</span> words`:`<span style="color:var(--ink-4)">none yet</span>`}</td>
+     <td><button class="btn btn-g btn-sm" data-eeopen="${d.id}">Open</button></td>
+    </tr>`;}).join("")}
+  </tbody></table></div>`
+  :empty("You are not supervising an essay yet","Accepting a proposal above puts that student here, with their reflection sessions and their next checkpoint.")}
+
+  ${S.eeOpen&&EEREC[S.eeOpen]?vTEEStudent(S.eeOpen):""}
+ </div>`;}
+
+function vTEECard(d,r,load,cap){
+ const sub=IBS(r.subject),over=load>=cap;
+ const confirm=S.eeAct&&S.eeAct.sid===d.id?S.eeAct:null;
+ const alts=eeCandidates(r.subject).filter(x=>x.name!==TEACHER.name);
+ return `<div class="revcard">
+  <div class="revhead">
+   ${av(d.av,"student",38)}
+   <div style="min-width:0;flex:1">
+    <div class="selrow-t" style="font-size:14px">${d.name}</div>
+    <div class="selrow-n">Grade ${d.yr} · ${d.goal} · sent ${r.done.propose}</div>
+   </div>
+   <span class="lvstamp">${sub?sub.id:"EE"}</span>
+  </div>
+  <div class="revbody">
+   <div class="revask">
+    <span class="lstamp on">?</span>
+    <div style="min-width:0">
+     <div class="appa" style="color:var(--ink-4)">Their question</div>
+     <p class="prose" style="font-size:13.4px;color:var(--ink);line-height:1.6;margin:4px 0 0;max-width:66ch">${r.rq}</p>
+    </div>
+   </div>
+   <div class="revwhy"><div class="appa" style="color:var(--ink-4)">Why they picked it</div>
+    <p class="prose">${r.why}</p></div>
+   <div class="revrec">
+    <div class="appa" style="color:var(--ink-4)">What taking this would mean</div>
+    <div class="sheetscroll"><table class="sheet mini"><tbody>
+     <tr><td>Your supervision load</td><td>${load} of ${cap}${over?", at or over the school's guide":""}</td><td class="num">${load}</td></tr>
+     <tr><td>Subject</td><td>${sub?sub.name+", which you teach":"Not set"}</td><td class="num">${sub?sub.per[sub.lv[0]]:"—"}</td></tr>
+     <tr><td>Their deadline</td><td>Supervisor confirmed by ${eeDateLabel(eeDue("super",r.yr))}</td><td class="num">${eeDue("super",r.yr)}d</td></tr>
+    </tbody></table></div>
+    ${over?`<div class="selrow-n" style="margin-top:8px;color:var(--ink)"><b>You are at the guide already.</b> Nothing stops you taking this one, and the coordinator's screen shows when a teacher has. Passing it to a colleague is not a refusal.</div>`:""}
+   </div>
+   ${confirm?vTEEConfirm(d,r,confirm,alts):`<div class="revacts">
+    <button class="btn btn-p" data-eeact="${d.id}:accept">Supervise this essay</button>
+    <button class="btn btn-g" data-eeact="${d.id}:refine">Ask for a sharper question</button>
+    <button class="btn btn-g" data-eeact="${d.id}:pass">Pass to a colleague</button>
+   </div>`}
+  </div>
+ </div>`;}
+
+function vTEEConfirm(d,r,a,alts){
+ const first=d.name.split(" ")[0];
+ const note=(a.note||"").trim();
+ const needNote=a.kind!=="accept";
+ const ok=(!needNote||note.length>=10)&&(a.kind!=="pass"||a.to);
+ return `<div class="revconfirm">
+  <div class="selrow-t">${a.kind==="accept"?"Become "+first+"'s supervisor"
+   :a.kind==="refine"?"Send the question back to "+first:"Pass "+first+"'s proposal to a colleague"}</div>
+  <div class="selrow-n">${a.kind==="accept"?"This confirms you for the whole essay, through three reflection sessions to the viva voce. "+first+" and "+EE_ROUND.coordinator+" both see it immediately."
+   :a.kind==="refine"?"Their form reopens with your note on it. Nothing they wrote is lost, and the proposal stays yours unless you pass it on."
+   :"It leaves your queue and lands in theirs, with your reason attached so they are not starting cold. "+first+" sees who has it and why."}</div>
+  ${a.kind==="pass"?`<div class="appa" style="color:var(--ink-3);margin-top:11px">Who fits it better</div>
+   <div class="tagrow" style="margin-top:6px">${alts.map(x=>{const l=eeLoad(x.name);
+    return `<button class="tagbtn${a.to===x.name?" on":""}" data-eeto="${x.name}" aria-pressed="${a.to===x.name}">${x.name} <span class="fig">${l}/${EE_ROUND.cap}</span></button>`;}).join("")}</div>`:""}
+  <label class="appa" for="eenote" style="color:var(--ink-3);display:block;margin-top:11px">Your note${needNote?", required":", optional"}</label>
+  <textarea id="eenote" data-eenote="1" rows="2" placeholder="${a.kind==="accept"?"Anything they should bring to the first session."
+   :a.kind==="refine"?"What would make this a question rather than a topic."
+   :"Why this colleague, and what you told the student."}" style="width:100%;box-sizing:border-box;margin-top:5px">${(a.note||"").replace(/</g,"&lt;")}</textarea>
+  <div style="display:flex;gap:8px;margin-top:11px">
+   <button class="btn ${a.kind==="accept"?"btn-p":"btn-d"}" data-eego="1" ${ok?"":"disabled"}>${a.kind==="accept"?"Confirm me as supervisor":a.kind==="refine"?"Send it back":a.to?"Pass it to "+a.to.split(" ").slice(-1)[0]:"Pick a colleague"}</button>
+   <button class="btn btn-g" data-eecancel="1">Cancel</button>
+  </div>
+ </div>`;}
+
+/* One supervisee, opened from the teacher's own list: the draft they can
+   read here rather than hunt for, and the reflection session recorded
+   when it happens rather than reconstructed in December. */
+function vTEEStudent(sid){
+ const d=DPC.find(x=>x.id===sid),r=EEREC[sid];if(!d||!r)return "";
+ const plan=eePlan(r.yr),n=eeNext(sid);
+ const openR=S.eeRefl;
+ return `<div class="revcard" style="margin-top:22px">
+  <div class="revhead">
+   ${av(d.av,"student",38)}
+   <div style="min-width:0;flex:1"><div class="selrow-t" style="font-size:14px">${d.name}</div>
+    <div class="selrow-n">${IBS(r.subject)?IBS(r.subject).name:""} · ${eeReflectionsDone(sid)} of ${eeReflectionsDue(sid)} reflections recorded</div></div>
+   <button class="btn btn-g btn-sm" data-eeclose="1">Close</button>
+  </div>
+  <div class="revbody">
+   <div class="revask"><span class="lstamp on">?</span>
+    <div style="min-width:0"><div class="appa" style="color:var(--ink-4)">Their question</div>
+     <p class="prose" style="font-size:13.2px;color:var(--ink);line-height:1.6;margin:4px 0 0;max-width:66ch">${r.rq}</p></div></div>
+   <div class="revrec">
+    <div class="appa" style="color:var(--ink-4)">Their draft</div>
+    ${r.draft?`<div class="sheetbox"><div class="selrow-static">
+     <span class="lstamp">${Math.round(r.draft.words/1000)}k</span>
+     <div style="min-width:0;flex:1"><div class="selrow-t">${r.draft.words.toLocaleString()} words, sent ${r.draft.when}</div>
+      ${r.draft.text?`<p class="prose" style="font-size:12.3px;color:var(--ink-2);line-height:1.65;margin:6px 0 0;max-width:66ch;border-left:2px solid var(--rule-2);padding-left:12px">${r.draft.text}</p>`
+       :`<div class="selrow-n">On file since ${r.draft.when}. The full text is not carried in this rendition.</div>`}</div>
+    </div></div>`:empty("No draft yet","The interim reflection is the conversation about a full draft, so it cannot usefully happen before one exists."+(n&&n.overdue?" This student's draft is already overdue.":""))}
+   </div>
+   <div class="revrec">
+    <div class="appa" style="color:var(--ink-4)">Reflection sessions</div>
+    <div class="sheetbox">${plan.filter(m=>m.rppf).map(m=>{const rf=r.reflections&&r.reflections[m.id];
+     return `<div class="selrow-static">
+      <span class="lstamp${rf?" on":" void"}">${rf?"&#10003;":"·"}</span>
+      <div style="min-width:0;flex:1"><div class="selrow-t">${m.label}</div>
+       <div class="selrow-n">${rf?`${rf.when}, ${rf.by}. ${rf.note}`:"Not recorded. Due "+eeDateLabel(m.d[r.yr])+"."}</div></div>
+      ${rf?"":`<div class="selrow-r"><button class="btn btn-p btn-sm" data-eerefl="${sid}:${m.id}">Record it</button></div>`}
+     </div>`;}).join("")}</div>
+   </div>
+   ${openR&&openR.sid===sid?`<div class="revconfirm">
+    <div class="selrow-t">Record the ${((plan.find(m=>m.id===openR.mid)||{}).label||"reflection session").toLowerCase()}</div>
+    <div class="selrow-n">It goes on the ${EE_ROUND.rppf} with today's date and your name, and it is submitted with the essay. ${d.name.split(" ")[0]} sees that it happened, and so does ${EE_ROUND.coordinator}.</div>
+    <label class="appa" for="reflnote" style="color:var(--ink-3);display:block;margin-top:11px">What you discussed, required</label>
+    <textarea id="reflnote" data-reflnote="1" rows="3" placeholder="What the student brought, what you agreed, and what they are doing next." style="width:100%;box-sizing:border-box;margin-top:5px">${(openR.note||"").replace(/</g,"&lt;")}</textarea>
+    <div style="display:flex;gap:8px;margin-top:11px">
+     <button class="btn btn-p" data-reflgo="1" ${(openR.note||"").trim().length>=10?"":"disabled"}>Record it</button>
+     <button class="btn btn-g" data-reflcancel="1">Cancel</button>
+    </div>
+   </div>`:""}
+  </div>
+ </div>`;}
+
+/* ═══════════ COORDINATOR: THE AGGREGATE ═══════════
+   The view that does not exist anywhere today. Who has a supervisor, who
+   is drifting toward a deadline without one, and which reflection
+   sessions have actually happened. */
+const EE_FILTERS=[["risk","Needs attention"],["g11","Grade 11"],["g12","Grade 12"],["all","Everyone"]];
+function vCoordEE(){
+ const f=S.eeFilter||"risk";
+ const pool=DPC.filter(d=>d.yr>10).map(d=>({d,r:EEREC[d.id],flag:eeStalled(d.id),n:eeNext(d.id)}));
+ const rows=(f==="risk"?pool.filter(x=>x.flag):f==="g11"?pool.filter(x=>x.d.yr===11)
+  :f==="g12"?pool.filter(x=>x.d.yr===12):pool)
+  .sort((a,b)=>(b.flag?1:0)-(a.flag?1:0)||a.d.name.localeCompare(b.d.name));
+ const shown=Math.min(rows.length,S.eeShown||25);
+ const c11=eeCounts(11),c12=eeCounts(12),all=eeCounts();
+ const loads=EE_SUPERVISORS.map(x=>({x,n:eeLoad(x.name)})).sort((a,b)=>b.n-a.n);
+ return `<div class="fade">
+  ${head(all.noSupervisor?all.noSupervisor+" essays have no supervisor":"Every essay has a supervisor",
+   `Grades 11 and 12 of the Diploma cohort, ${all.total} students. Grade 11 is choosing, with supervisors confirmed by ${eeDateLabel(eeDue("super",11))}. Grade 12 is finishing, and uploads on ${eeDateLabel(eeDue("submit",12))}.`)}
+  ${tally([["No supervisor",String(all.noSupervisor),"of "+all.total],
+   ["Needs attention",String(all.stalled),"a checkpoint has passed or is about to"],
+   ["Reflections recorded",all.reflections+" of "+all.reflectionsDue,"on the "+EE_ROUND.rppf.toLowerCase()],
+   ["Not proposed",String(c11.none),"Grade 11, "+eeDateLabel(eeDue("propose",11))]])}
+
+  <div class="filterbar" role="group" aria-label="Filter essays">
+   ${EE_FILTERS.map(([k,l])=>`<button class="tab${f===k?" on":""}" data-eefilter="${k}" aria-pressed="${f===k}">${l}</button>`).join("")}
+  </div>
+  ${rows.length?`<div class="sheetscroll"><table class="sheet wide"><thead><tr>
+   <th class="lg-mgn"><span class="sr">Standing</span></th>
+   <th style="width:190px">Student</th><th>Subject</th><th style="width:150px">Supervisor</th>
+   <th class="num">Reflections</th><th style="width:180px">Next</th><th style="width:190px">What is missing</th>
+  </tr></thead><tbody>
+   ${rows.slice(0,shown).map(({d,r,flag,n})=>`<tr>
+    <td class="lg-mgn"><span class="lstamp${flag?"":" on"}" title="${flag||"On schedule"}">${flag?"!":"&#10003;"}</span></td>
+    <td><button class="lg-open" data-eestu="${d.id}"><span class="lg-name">${d.name}</span>
+     <span class="lg-sub">Grade ${d.yr} · ${d.goal}</span></button></td>
+    <td>${r&&r.subject&&r.status!=="none"?(IBS(r.subject)||{}).name:"<span style='color:var(--ink-4)'>not chosen</span>"}</td>
+    <td>${r&&r.supervisor?r.supervisor:r&&r.target?`<span style="color:var(--ink-4)">with ${r.target}</span>`:`<b style="color:var(--ink)">none</b>`}</td>
+    <td class="num">${eeReflectionsDone(d.id)} / ${eeReflectionsDue(d.id)}</td>
+    <td>${n?`${n.m.label.split(",")[0]}<br><span class="fig selrow-n" style="color:${n.overdue?"var(--margin)":"var(--ink-4)"}">${n.label}</span>`:"Complete"}</td>
+    <td>${flag?`<b style="color:var(--ink)">${flag}</b>`:eeNote(d.id)?`<span style="color:var(--ink-3)">${eeNote(d.id)}</span>`:"<span style='color:var(--ink-4)'>Nothing</span>"}</td>
+   </tr>`).join("")}
+  </tbody></table></div>
+  ${rows.length>shown?`<button class="btn btn-g" style="margin-top:14px" data-eemore="1">Show ${Math.min(25,rows.length-shown)} more of ${rows.length}</button>`:""}`
+  :`<div style="margin-top:22px">${moment({art:"steady",title:"Nothing needs you",
+   body:"Every student in Grades 11 and 12 has a supervisor and has passed the checkpoints behind them. This list holds only the students you would otherwise have to find by asking around.",
+   action:`<button class="btn btn-g btn-sm" data-eefilter="all">Show the whole cohort</button>`})}</div>`}
+
+  <h2 class="sechead" style="margin-top:30px">Where supervision has landed</h2>
+  <div class="selrow-n" style="margin-bottom:12px;max-width:70ch">The guide is ${EE_ROUND.cap} essays each. Nothing enforces it, which is exactly why it needs to be visible: without this column the same four teachers absorb a year group and nobody finds out until one of them says so.</div>
+  <div class="sheetscroll"><table class="sheet"><thead><tr>
+   <th style="width:34%">Teacher</th><th>Subjects</th><th class="num">Supervising</th><th class="num">Guide</th><th style="width:150px">Standing</th>
+  </tr></thead><tbody>
+   ${loads.map(({x,n})=>`<tr>
+    <td><span style="font-weight:600;color:var(--ink)">${x.name}</span></td>
+    <td style="color:var(--ink-3)">${x.subjects.map(id=>(IBS(id)||{}).id).join(" · ")}</td>
+    <td class="num">${n}</td><td class="num" style="color:var(--ink-4)">${EE_ROUND.cap}</td>
+    <td>${n>EE_ROUND.cap?`<b style="color:var(--margin)">Over by ${n-EE_ROUND.cap}</b>`:n===EE_ROUND.cap?"<b style='color:var(--ink)'>At the guide</b>":n===0?"<span style='color:var(--ink-4)'>None</span>":"Room for "+(EE_ROUND.cap-n)}</td>
+   </tr>`).join("")}
+  </tbody></table></div>
+ </div>`;}
+
+/* One student, from the coordinator's list. The only action here is the
+   one the list implies: a student four days from a deadline with nobody
+   supervising them needs a supervisor, and reading about it is not that. */
+function vEEStudent(sid){
+ const d=DPC.find(x=>x.id===sid),r=EEREC[sid];
+ if(!d||!r)return empty("No such student","This student is not in the Diploma cohort.");
+ const stu=g(sid),plan=eePlan(r.yr),n=eeNext(sid),flag=eeStalled(sid);
+ const assigning=S.eeAssign===sid;
+ const cands=r.subject&&r.status!=="none"?eeCandidates(r.subject):EE_SUPERVISORS;
+ return `<div class="fade">
+  <button class="btn btn-g btn-sm" style="margin-bottom:14px" data-eeback="1">${ic("arrow-left",14)} All essays</button>
+  ${head(flag?d.name+", and what has slipped":d.name+" is on schedule",
+   `Grade ${d.yr} · ${d.goal} · ${r.supervisor?"supervised by "+r.supervisor:r.target?"proposal with "+r.target:"no supervisor"}. ${flag?flag+".":"Nothing outstanding."}`)}
+  ${stu?`<div class="sheetbox" style="margin-bottom:20px"><div class="selrow-static">
+   ${av(d.av,"counselor",38)}
+   <div style="min-width:0;flex:1"><div class="selrow-t">${d.name} is on your caseload</div>
+    <div class="selrow-n">${stu.headline||""}</div></div>
+   <div class="selrow-r"><button class="btn btn-g btn-sm" data-file="${sid}">Open the case file</button></div>
+  </div></div>`:""}
+
+  ${r.status==="none"?empty("Nothing proposed",
+   "No subject and no question on file, with "+eeDateLabel(eeDue("propose",r.yr))+" as the proposal deadline. This is the state that is invisible until somebody asks, which is the reason this screen exists.")
+  :`<h2 class="sechead">The question</h2>
+  <div class="sheetbox"><div class="selrow-static">
+   <span class="lstamp on">${(IBS(r.subject)||{}).id||"EE"}</span>
+   <div style="min-width:0;flex:1"><div class="selrow-t">${(IBS(r.subject)||{}).name||""}</div>
+    <p class="prose" style="font-size:13.2px;color:var(--ink);line-height:1.6;margin:5px 0 0;max-width:66ch">${r.rq}</p>
+    ${r.why?`<div class="appa" style="color:var(--ink-4);margin-top:9px">In their words</div>
+     <p class="prose" style="font-size:12.3px;color:var(--ink-2);line-height:1.6;margin:3px 0 0;max-width:66ch">${r.why}</p>`:""}</div>
+  </div></div>`}
+
+  <h2 class="sechead" style="margin-top:26px">The schedule</h2>
+  <div class="sheetbox">
+   ${plan.map((m,i)=>{const done=r.done[m.id],isNext=n&&n.m.id===m.id,rf=r.reflections&&r.reflections[m.id];
+    return `<div class="selrow-static"${isNext?' style="box-shadow:inset 2px 0 0 var(--school-primary)"':''}>
+     <span class="lstamp${done?" on":isNext?"":" void"}">${done?"&#10003;":i+1}</span>
+     <div style="min-width:0;flex:1"><div class="selrow-t">${m.label}${m.rppf?` <span class="lvstamp">RPPF</span>`:""}</div>
+      <div class="selrow-n">${done?"Done "+done+(rf?", "+rf.by+". "+rf.note:"."):m.who+" holds this one."}</div></div>
+     <div class="selrow-r"><span class="fig selrow-n" style="color:${!done&&m.d[r.yr]<0?"var(--margin)":"var(--ink-4)"}">${done?"":eeDateLabel(m.d[r.yr])}</span></div>
+    </div>`;}).join("")}
+  </div>
+
+  ${!r.supervisor?`<h2 class="sechead" style="margin-top:26px">The decision</h2>
+  <div class="sheetbox"><div class="selrow-static">
+   <span class="lstamp void">1</span>
+   <div style="min-width:0;flex:1"><div class="selrow-t">${r.target?"A proposal is already with "+r.target:"Assign a supervisor"}</div>
+    <div class="selrow-n">${r.target?"They have had it since "+r.done.propose+". Assigning somebody else here takes it off them and tells both of them why."
+     :"Nobody has this student. Assigning here confirms the supervisor, writes it to the record, and tells the student and the teacher on the same day."}</div>
+    ${assigning?`<div style="margin-top:12px">
+     <div class="appa" style="color:var(--ink-3);margin-bottom:6px">Who takes it, and what they are carrying</div>
+     <div class="tagrow">${cands.map(x=>{const l=eeLoad(x.name);
+      return `<button class="tagbtn${S.eeAssignTo===x.name?" on":""}" data-eeassignto="${x.name}" aria-pressed="${S.eeAssignTo===x.name}">${x.name} <span class="fig">${l}/${EE_ROUND.cap}</span></button>`;}).join("")}</div>
+     <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn btn-p btn-sm" data-eeassigngo="${sid}" ${S.eeAssignTo?"":"disabled"}>${S.eeAssignTo?"Assign "+S.eeAssignTo:"Pick a supervisor"}</button>
+      <button class="btn btn-g btn-sm" data-eeassigncancel="1">Cancel</button>
+     </div></div>`:`<div style="margin-top:11px"><button class="btn btn-p btn-sm" data-eeassign="${sid}">Assign a supervisor</button></div>`}
+   </div>
+  </div></div>`:""}
+
+  <h2 class="sechead" style="margin-top:26px">Trail</h2>
+  ${r.log&&r.log.length?`<div class="sheetbox">${r.log.map(l=>`<div class="selrow-static">
+   <span class="fig selrow-n" style="width:86px;flex-shrink:0">${l.when}</span>
+   <div style="min-width:0"><div class="selrow-t">${l.what}</div><div class="selrow-n">${l.who}</div></div>
+  </div>`).join("")}</div>`
+  :empty("Nothing recorded yet","Every proposal, answer, reflection session and assignment writes a dated line here with a name on it.")}
+ </div>`;}
+
 /* ═══════════════════════════════════════════════════════════════════
    THE COORDINATOR — SELECTIONS, VIABILITY, CAS
    ═══════════════════════════════════════════════════════════════════
@@ -5206,7 +6092,7 @@ function vSelQueue(){
   <div class="filterbar" role="group" aria-label="Filter selections">
    ${SEL_FILTERS.map(([k,l])=>`<button class="tab${(S.selFilter||"act")===k?" on":""}" data-selfilter="${k}" aria-pressed="${(S.selFilter||"act")===k}">${l}</button>`).join("")}
   </div>
-  ${rows.length?`<div class="sheetscroll"><table class="sheet ibsheet"><thead><tr>
+  ${rows.length?`<div class="sheetscroll"><table class="sheet ibsheet wide"><thead><tr>
    <th class="lg-mgn"><span class="sr">State</span></th>
    <th style="width:220px">Student</th>
    ${IB_GROUPS.map(gr=>`<th class="ibg" title="${gr.label}">${gr.n}</th>`).join("")}
@@ -5388,7 +6274,7 @@ function vSelDemand(){
    ${[["risk","At risk first"],["n","Most chosen"],["name","By name"]].map(([k,l])=>
     `<button class="tab${sort===k?" on":""}" data-demsort="${k}" aria-pressed="${sort===k}">${l}</button>`).join("")}
   </div>
-  <div class="sheetscroll"><table class="sheet"><thead><tr>
+  <div class="sheetscroll"><table class="sheet wide"><thead><tr>
    <th style="width:32%">Subject</th><th>Level</th><th>Period</th>
    <th class="num">This level</th><th class="num">Draft</th><th class="num">Subject</th><th class="num">Min</th><th class="num">Cap</th><th style="width:140px">Standing</th>
   </tr></thead><tbody>
@@ -5452,7 +6338,7 @@ function vCasCohort(){
    ${[["flag","Needs a nudge"],["g11","Grade 11"],["g12","Grade 12"],["all","Everyone"]].map(([k,l])=>
     `<button class="tab${f===k?" on":""}" data-casfilter="${k}" aria-pressed="${f===k}">${l}</button>`).join("")}
   </div>
-  ${rows.length?`<div class="sheetscroll"><table class="sheet"><thead><tr>
+  ${rows.length?`<div class="sheetscroll"><table class="sheet wide"><thead><tr>
    <th class="lg-mgn"><span class="sr">Standing</span></th>
    <th style="width:200px">Student</th><th style="width:190px">The run</th>
    <th class="num">C</th><th class="num">A</th><th class="num">S</th>
@@ -8062,7 +8948,10 @@ function place(){return [S.role,S.cv,S.sv,S.pv,S.tv,S.tClass,S.mv,S.open,S.fileI
  /* Opening one student's selection or CAS record replaces the panel the
     same way a case file does. Expanding a group inside the form does not,
     so `selOpen` and `selDesc` stay out of this list on purpose. */
- S.selStu,S.casStu].join("|");}
+ S.selStu,S.casStu,S.coreTab,S.eeStu,S.eeOpen,
+ /* the Grade 11 fork changes which student the portal is showing, so it
+    arrives the same way the grade switcher does */
+ S.previewTrack].join("|");}
 
 /* ═══════════ RENDER ═══════════ */
 function draw(){
@@ -8071,6 +8960,12 @@ function draw(){
  R.className=arrived?"":"still";
  let body="",sb="";
  PARENT_ME=FAMILY_STUDENT_ID[S.previewGrade||12]||"s3";
+ /* Grade 11 forks, and the fork is the product's own argument: Fahad took
+    Advanced Placement, Ivan took the Diploma, and only one of them has a
+    core to track. The student portal can show either. The parent portal
+    stays with Fahad's family, whose messages, meetings and achievements
+    are authored around the AP route. */
+ if(S.role==="student"&&(S.previewGrade||12)===11&&S.previewTrack==="IB")PARENT_ME="s17";
  PMSGS=PMSGS_BY_GRADE[S.previewGrade||12]||PMSGS_BY_GRADE[12];
  PARENT_MEETINGS=PARENT_MEETINGS_BY_GRADE[S.previewGrade||12]||PARENT_MEETINGS_BY_GRADE[12];
  /* keep each student's in-progress Discover My Path state fully separate —
@@ -8092,6 +8987,12 @@ function draw(){
   S.chatQueue=t.chatQueue||null;S.signalScore=t.signalScore||0;
   S.psStatements=t.psStatements||{};S.psActiveSystem=t.psActiveSystem||null;S.psShowResults=t.psShowResults||false;
   S.showWhy=t.showWhy||false;
+  /* An unsent Extended Essay proposal is one student's words. It is held
+     in transient state so the form survives a redraw, which also meant it
+     survived a change of student: switching grades carried one student's
+     research question into another's form. Cleared with everything else
+     that is per-student here. */
+  S.eeDraft=null;S.eeAct=null;S.eeRefl=null;S.casForm=null;S.refDraft=null;
   S._discoverStudent=PARENT_ME;
  }
  if(S.role==="counselor"){
@@ -8115,6 +9016,7 @@ function draw(){
   else if(S.cv==="files")body2=vFiles();
   else if(S.cv==="ib-selections")body2=vSelQueue();
   else if(S.cv==="ib-demand")body2=vSelDemand();
+  else if(S.cv==="ib-ee")body2=S.eeStu?vEEStudent(S.eeStu):vCoordEE();
   else if(S.cv==="ib-cas")body2=vCasCohort();
   else if(S.cv==="si-why")body2=vIntel();
   else if(S.cv==="app-season")body2=vUni();
@@ -8153,7 +9055,7 @@ function draw(){
     <div class="pagewrap${SHEET_VIEWS.has(S.cv)&&!S.open&&!S.fileId?' pagewrap-full':''}" style="padding:26px 28px 72px">${body2}</div></main></div>`;
  } else if(S.role==="teacher"){
   const nav=roleNav("teacher");
-  const body3=S.tv==="tclasses"?vTMyClasses():S.tv==="tlog"?vTLog():S.tv==="classapprovals"?vTSelReview():vTClass();
+  const body3=S.tv==="tclasses"?vTMyClasses():S.tv==="tlog"?vTLog():S.tv==="classapprovals"?vTSelReview():S.tv==="ee"?vTEE():vTClass();
   sb=shell("teacher",nav,S.tv,"data-tnav","JD",TEACHER.name,TEACHER.subject,"Teacher portal",TEACHER.name+" · "+TEACHER.subject,body3);
  } else if(S.role==="parent"){
   const nav=roleNav("parent");
@@ -8180,7 +9082,7 @@ function draw(){
   if(sv==="discover")body=vDiscoverFlow();
   else if(sv==="guide")body=`<div class="fade">${vHSGuide()}</div>`;
   else if(sv==="stuclass")body=vStuSubjects();
-  else if(sv==="stucas")body=vStuCAS();
+  else if(sv==="stucas")body=vStuCore();
   else if(sv==="explore")body=`<div class="fade">${head("Choosing IB or AP")}${vPathExplorer("data-snav","targets","mentors")}</div>`;
   else if(sv==="progress")body=vStuProgress();
   else if(sv==="targets")body=vStuTargets();
@@ -8453,6 +9355,127 @@ function bind(){
      (o?o.n:"Own activity")+" · "+(f.hrs||2)+"h · "+(note?"reflection written":"no reflection"));
    S.modal=null;S.casForm=null;
    toast(note?"Recorded, with your reflection":"Recorded. The hours count, the reflection is what evidences an outcome.");});
+ /* ── the Extended Essay ────────────────────────────────────────────
+    Same discipline as the selection round: a text field writes straight
+    into state and only redraws when the boolean the send button is gated
+    on flips, and every consequential answer names what it does and to
+    whom before it does it. */
+ const eeDraftOf=r=>(S.eeDraft=S.eeDraft||{sub:r.subject||"",rq:r.rq||"",why:r.why||""});
+ q("[data-eesub]",e=>e.onclick=()=>{const c=g(S.open||PARENT_ME),r=eeRec(c.id);if(!r)return;
+   eeDraftOf(r).sub=e.dataset.eesub;draw();});
+ const eeField=(attr,key,id)=>q("["+attr+"]",e=>{e.oninput=()=>{
+   const c=g(S.open||PARENT_ME),r=eeRec(c.id);if(!r)return;
+   const d=eeDraftOf(r),was=(d[key]||"").trim().length,now=e.value.trim().length;
+   d[key]=e.value;
+   /* the send button flips at 25 characters for the question and 15 for
+      the reason, so those are the only two lengths worth a redraw */
+   const gate=key==="rq"?25:15;
+   if((was>=gate)!==(now>=gate)){const pos=e.selectionStart;draw();
+     const f=document.getElementById(id);if(f){f.focus();f.setSelectionRange(pos,pos);}}};});
+ eeField("data-eerq","rq","eerq");
+ eeField("data-eewhy","why","eewhy");
+ q("[data-eeedit]",e=>e.onclick=()=>{const c=g(S.open||PARENT_ME),r=eeRec(c.id);if(!r)return;
+   r.status="none";S.eeDraft={sub:r.subject,rq:r.rq,why:r.why};draw();});
+ q("[data-eesend]",e=>e.onclick=()=>{
+   /* The form can be opened already filled in, from a proposal written
+      and not sent. Reading only the transient draft meant the send button
+      did nothing at all until a character was typed, which is the exact
+      defect this file has fixed five times: a control that claims an
+      action and produces none. */
+   const sid=e.dataset.eesend,r=eeRec(sid);if(!r)return;
+   const d=S.eeDraft||{sub:r.subject,rq:r.rq,why:r.why};
+   if(!d.sub||!(d.rq||"").trim()||!(d.why||"").trim())return;
+   const sub=IBS(d.sub);if(!sub)return;
+   const stu=g(sid)||DPC.find(x=>x.id===sid)||{name:"Student"};
+   const resent=!!r.refineNote;
+   r.subject=d.sub;r.rq=d.rq.trim();r.why=d.why.trim();
+   r.status="proposed";r.target=sub.t;r.refineNote="";r.done.propose=DAY.short;
+   r.log=r.log||[];
+   r.log.unshift({when:DAY.short,who:stu.name,
+     what:(resent?"Rewrote the question and sent it again to ":"Proposed "+sub.name+". Sent to ")+sub.t+"."});
+   logAudit(stu.name.toUpperCase().replace(/ /g,"."),"EE_PROPOSED",stu.name,sub.name+" · sent to "+sub.t);
+   S.eeDraft=null;
+   toast("Sent to "+sub.t);});
+
+ /* teacher */
+ q("[data-eeact]",e=>e.onclick=()=>{const [sid,kind]=e.dataset.eeact.split(":");
+   S.eeAct={sid,kind,note:"",to:null};draw();});
+ q("[data-eecancel]",e=>e.onclick=()=>{S.eeAct=null;draw();});
+ q("[data-eeto]",e=>e.onclick=()=>{if(S.eeAct)S.eeAct.to=e.dataset.eeto;draw();});
+ q("[data-eenote]",e=>{e.oninput=()=>{if(!S.eeAct)return;
+   const was=(S.eeAct.note||"").trim().length>=10,now=e.value.trim().length>=10;
+   S.eeAct.note=e.value;
+   if(was!==now){const pos=e.selectionStart;draw();const f=document.getElementById("eenote");if(f){f.focus();f.setSelectionRange(pos,pos);}}};});
+ q("[data-eego]",e=>e.onclick=()=>{
+   const a=S.eeAct;if(!a)return;const r=EEREC[a.sid];if(!r)return;
+   const d=DPC.find(x=>x.id===a.sid)||{name:"the student"},first=d.name.split(" ")[0];
+   const note=(a.note||"").trim();
+   if(a.kind!=="accept"&&note.length<10){toast("A note is required on this one");return;}
+   if(a.kind==="pass"&&!a.to){toast("Pick a colleague first");return;}
+   r.log=r.log||[];
+   if(a.kind==="accept"){
+     r.status="confirmed";r.supervisor=TEACHER.name;r.target=null;r.done.super=DAY.short;
+     r.log.unshift({when:DAY.short,who:TEACHER.name,what:"Accepted supervision."+(note?" "+note:"")});
+     logAudit("M.DAVIES","EE_SUPERVISOR",d.name,"Accepted supervision of "+(IBS(r.subject)||{}).name);
+     toast("You are supervising "+first+"'s essay");
+   } else if(a.kind==="refine"){
+     r.status="refine";r.refineNote=note;
+     r.log.unshift({when:DAY.short,who:TEACHER.name,what:"Asked for a sharper question. "+note});
+     logAudit("M.DAVIES","EE_REFINE",d.name,"Question sent back for narrowing");
+     toast("Sent back to "+first);
+   } else {
+     r.status="proposed";r.target=a.to;
+     r.log.unshift({when:DAY.short,who:TEACHER.name,what:"Passed the proposal to "+a.to+". "+note});
+     logAudit("M.DAVIES","EE_PASSED",d.name,"Proposal passed to "+a.to);
+     toast("Passed to "+a.to);
+   }
+   S.eeAct=null;});
+ q("[data-eeopen]",e=>e.onclick=()=>{S.eeOpen=e.dataset.eeopen;S.eeRefl=null;draw();});
+ q("[data-eeclose]",e=>e.onclick=()=>{S.eeOpen=null;S.eeRefl=null;draw();});
+ q("[data-eerefl]",e=>e.onclick=()=>{const [sid,mid]=e.dataset.eerefl.split(":");
+   S.eeRefl={sid,mid,note:""};draw();});
+ q("[data-reflcancel]",e=>e.onclick=()=>{S.eeRefl=null;draw();});
+ q("[data-reflnote]",e=>{e.oninput=()=>{if(!S.eeRefl)return;
+   const was=(S.eeRefl.note||"").trim().length>=10,now=e.value.trim().length>=10;
+   S.eeRefl.note=e.value;
+   if(was!==now){const pos=e.selectionStart;draw();const f=document.getElementById("reflnote");if(f){f.focus();f.setSelectionRange(pos,pos);}}};});
+ q("[data-reflgo]",e=>e.onclick=()=>{
+   const rf=S.eeRefl;if(!rf)return;const r=EEREC[rf.sid];if(!r)return;
+   const note=(rf.note||"").trim();if(note.length<10)return;
+   const d=DPC.find(x=>x.id===rf.sid)||{name:"the student"};
+   const m=EE_MILESTONES.find(x=>x.id===rf.mid)||{label:"Reflection session"};
+   r.reflections=r.reflections||{};
+   r.reflections[rf.mid]={when:DAY.short,by:TEACHER.name,note};
+   r.done[rf.mid]=DAY.short;
+   r.log=r.log||[];
+   r.log.unshift({when:DAY.short,who:TEACHER.name,what:m.label+" recorded. "+note});
+   logAudit("M.DAVIES","EE_REFLECTION",d.name,m.label+" recorded on the RPPF");
+   S.eeRefl=null;
+   toast(m.label+" recorded for "+d.name.split(" ")[0]);});
+
+ /* coordinator */
+ q("[data-eefilter]",e=>e.onclick=()=>{S.eeFilter=e.dataset.eefilter;S.eeShown=25;draw();});
+ q("[data-eemore]",e=>e.onclick=()=>{S.eeShown=(S.eeShown||25)+25;draw();});
+ q("[data-eestu]",e=>e.onclick=()=>{S.eeStu=e.dataset.eestu;S.eeAssign=null;S.eeAssignTo=null;draw();});
+ q("[data-eeback]",e=>e.onclick=()=>{S.eeStu=null;draw();});
+ q("[data-eeassign]",e=>e.onclick=()=>{S.eeAssign=e.dataset.eeassign;S.eeAssignTo=null;draw();});
+ q("[data-eeassigncancel]",e=>e.onclick=()=>{S.eeAssign=null;S.eeAssignTo=null;draw();});
+ q("[data-eeassignto]",e=>e.onclick=()=>{S.eeAssignTo=e.dataset.eeassignto;draw();});
+ q("[data-eeassigngo]",e=>e.onclick=()=>{
+   const sid=e.dataset.eeassigngo,r=EEREC[sid],to=S.eeAssignTo;if(!r||!to)return;
+   const d=DPC.find(x=>x.id===sid)||{name:"the student"};
+   const over=eeLoad(to)>=EE_ROUND.cap;
+   const from=r.target;
+   r.supervisor=to;r.target=null;r.status="confirmed";r.done.super=DAY.short;
+   r.log=r.log||[];
+   r.log.unshift({when:DAY.short,who:SCHOOL.counselor,
+     what:"Assigned "+to+" as supervisor"+(from&&from!==to?", taking it off "+from:"")+"."+(over?" They were already at the school's guide of "+EE_ROUND.cap+".":"")});
+   logAudit("R.HADDAD","EE_ASSIGNED",d.name,to+(over?" (over the guide)":""));
+   S.eeAssign=null;S.eeAssignTo=null;
+   toast(d.name.split(" ")[0]+" is supervised by "+to);});
+
+ q("[data-coretab]",e=>e.onclick=()=>{S.coreTab=e.dataset.coretab;draw();});
+
  q("[data-mergeopen]",e=>e.onclick=()=>{S.modal={type:"merge",id:e.dataset.mergeopen};S.mergePick=null;draw();});
  q("[data-mergepick]",e=>e.onclick=()=>{S.mergePick=e.dataset.mergepick;draw();});
  q("[data-mergego]",e=>e.onclick=()=>{const c=g(e.dataset.mergego);const p=(S.mergePick||"").split(":");
@@ -8511,6 +9534,7 @@ function bind(){
  q("[data-pdeg]",e=>e.onclick=()=>{S.pathDegree=e.dataset.pdeg;draw();});
  q("[data-pgrade]",e=>e.onclick=()=>{S.previewGrade=+e.dataset.pgrade;S.pv="overview";S.sv=null;
   draw();});
+ q("[data-ptrack]",e=>e.onclick=()=>{S.previewTrack=e.dataset.ptrack;S.sv=null;S.coreTab="ee";S.eeDraft=null;draw();});
  q("[data-start-discover]",e=>e.onclick=()=>{S.discoverStage="chat";S.chatQStep=0;S.chatAnswers={};S.chatLog=[];S.narrowAnswered=false;S.chatQueue=null;S.signalScore=0;S.goalFocus=null;draw();});
  q("[data-onb-single]",e=>e.onclick=()=>{const[id,v]=e.dataset.onbSingle.split(":");S.onbAnswers[id]=v;draw();});
  /* A tapped option stores both the label the student saw and the tag the

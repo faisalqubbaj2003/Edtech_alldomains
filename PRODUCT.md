@@ -68,9 +68,23 @@ Driven by a counselor meeting with Mr. Diaz at ACS, and the first part of the pr
 - **The coordinator is a counselor view, not a sixth role**, matching the verified ACS structure.
 - **CAS** covers the three strands, the seven learning outcomes, hours as a school-level expectation (the IB itself no longer specifies 150), reflections, and a coordinator view of who has stopped and in which strand. Interests are captured where they are used rather than in the three-tap sign-in gate, and matched to browsable school activities with the match's reason shown.
 
+### The Extended Essay, added 2026-09-10
+
+The second half of the Diploma-core module, from Davide's brief.
+
+- **Students propose**: a subject, a working research question, and a short rationale, sent to a teacher who teaches that subject. They then see the state of it, the schedule, and a nudge when a checkpoint is near or has passed.
+- **Teachers answer from a queue**, scoped to their own subjects, with the student's rationale and their own supervision load on every card. They accept, ask for a sharper question, or pass it to a colleague. The draft is readable in place.
+- **Capacity warns and never blocks.** Five essays is the school's guide, not a rule; the coordinator can see when a teacher is over it, and an assignment made over it records that it was.
+- **The three mandatory reflection sessions** are recorded when they happen, dated and attributed, rather than reconstructed before submission. They are the IB's Reflections on Planning and Progress Form.
+- **Coordinators get the aggregate that does not exist today**: who has a supervisor, who is drifting toward a deadline without one, which reflections have happened, and where supervision has landed across the staff.
+
+Theory of knowledge is **described and not tracked**, and the interface says so rather than implying coverage it does not have.
+
+Every research question in the build is authored, and none repeats. The Diploma cohort's upper years are sized to that writing rather than the other way round.
+
 **A second population exists, and must stay separate.** The caseload is 87 students across Grades 9–12 belonging to one counselor. The Diploma cohort is the school's IB population across three year groups (Grade 10 choosing, Grades 11 and 12 in the programme). They answer different questions and no screen may total them together.
 
-The IB subject catalogue, its descriptions, the school activities behind CAS and both cohorts are synthetic demonstration content. No ACS course list, programme or co-curricular offering is represented.
+The IB subject catalogue, its descriptions, the school activities behind CAS, every Extended Essay research question and both cohorts are synthetic demonstration content. No ACS course list, programme, co-curricular offering or student essay is represented.
 
 **Technical constraints:** one self-contained `index.html`. Vanilla JS, no framework, no build step, no backend, no package manager, no test suite. All data in memory; refresh resets the demo. Must run offline from a double-clicked file. `draw()` rebuilds the whole tree on every state change — this is the governing performance and motion constraint.
 
