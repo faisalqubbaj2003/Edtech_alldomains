@@ -1,6 +1,6 @@
 # Filled prompt for GPT Astra
 
-Paste everything below the line as one message. Attach `index.html` and the screenshots listed in section 1.
+Paste everything below the line as one message. Everything it needs is in the repo, including the screenshots; section 1 says exactly where. If your Astra session also lets you attach images directly, attach the twenty PNGs as well, because attached images are read more reliably than images fetched from a branch.
 
 ---
 
@@ -16,9 +16,9 @@ You are acting as a senior product designer and front-end engineer. I want a rea
 - All data in memory. A refresh resets the demo.
 - Must run offline from a double-clicked file. That rules out anything needing a server, a bundler, or a runtime fetch. Fonts and assets are either embedded or have a system fallback that actually holds.
 - A single global `draw()` rebuilds the entire DOM tree on every state change. This is the governing performance and motion constraint: no design may depend on persisted DOM, on CSS transitions surviving a re-render, or on animation state that lives outside the state object.
-- Dark mode exists and must keep working.
+- Dark mode exists on the student surface only and must keep working there. See the note below on why that is unfinished rather than deliberate.
 
-**Current state:** the prototype is complete in function across six roles and roughly seventy views. It already has a deliberate visual system, described in section 5 below. What it does not have is a coherent, defensible design across the three surfaces that matter, and the density is uneven: some screens are thin, some are overloaded, and the relationship between them is not stated anywhere.
+**Current state:** the prototype is complete in function across six roles and roughly seventy views. It already has a deliberate visual system, described in section 8 below. What it does not have is a coherent, defensible design across the three surfaces that matter, and the density is uneven: some screens are thin, some are overloaded, and the relationship between them is not stated anywhere.
 
 **You have the repository connected.** The product is the single file `EdTech-folder/index.html` on `main`. Read it, and read these three alongside it, because they are the authorities this brief is condensed from and they carry detail I have had to cut here:
 
@@ -30,13 +30,49 @@ Two things about the repo you need to know. **The documentation in it has a stan
 
 **Do not commit, do not open a pull request, and do not edit `index.html`.** These three versions are explorations that I will choose between. Deliver them as three new standalone files that do not touch the product.
 
-**Screenshots are attached and you should treat them as primary, not supplementary.** The interface only exists at runtime: a single global `draw()` builds the whole DOM from state, so the design is spread across template literals and reading the source will not show it to you. Where the source and the screenshots disagree, the screenshots are what the user actually sees.
+### Where the screenshots are, and why they matter more than the source
 
-Fourteen captures, taken from the current build at 2x, with the debug panel removed. Counselor: the caseload at full 87-student volume, priority cases, a case detail with the evidence chain, the signal derivation view, the AI co-pilot, the 360 student file. Student: pathway and progress, each also at 390px. Parent: overview and messages at 390px, plus the overview at desktop for comparison. And two dark mode captures.
+**Twenty screenshots are in the repo, on a separate branch.** Look here:
 
-I have deliberately sent the crowded and awkward screens rather than the flattering ones. The caseload at 87 rows is the screen the product lives or dies on and the one I would nominate as your hero screen.
+```
+branch:  design/astra-screenshots
+folder:  astra-screenshots/
+```
 
-**One thing the screenshots will tell you that you should not misread: dark mode exists only on the student surface.** It is gated to `html[data-role="student"]` in the CSS. The counselor, parent, teacher and mentor surfaces have no dark palette at all, and the dark tokens that do exist are written and contrast-checked but never widened. That is an unfinished decision, not a design position. Tell me what each of your three versions does about it.
+Read `astra-screenshots/README.md` first. It is the manifest: every file, the surface it shows, the viewport, and two findings you would otherwise misread.
+
+**Treat the screenshots as primary and the source as secondary.** The interface only exists at runtime. A single global `draw()` builds the whole DOM from state, so the design is spread across template literals and reading it is not seeing it. Where the source and the screenshots disagree, the screenshots are what the user actually sees.
+
+| File | What it shows |
+|---|---|
+| `01-counselor-caseload.png` | The caseload, 87 students, the morning view. **The screen the product lives or dies on, and the one I would nominate as your hero screen.** |
+| `02-counselor-priority-cases.png` | Priority cases, the overnight tier movements |
+| `03-counselor-case-detail.png` | Case detail: evidence chain, baseline deviation, intervention loop |
+| `04-counselor-how-detection-works.png` | How a signal was derived and what fed it |
+| `05-counselor-copilot.png` | The AI co-pilot, with its stated automation boundaries |
+| `06-counselor-student-file.png` | The 360 student file |
+| `07-student-pathway.png` | Student pathway, the IB against AP decision |
+| `08-student-progress.png` | Student progress |
+| `09-parent-overview-mobile.png` | Parent overview at 390px, the real device |
+| `10-parent-messages-mobile.png` | Parent messages to the counselor, 390px |
+| `11-parent-overview-desktop.png` | The same parent screen at desktop, for comparison |
+| `12-student-progress-mobile.png` | Student progress at 390px |
+| `13-student-progress-DARK.png` | Dark mode, student surface |
+| `14-student-pathway-DARK.png` | Dark mode, student surface |
+| `15-counselor-escalation-modal.png` | The safeguarding referral to the Child Protection Officer. **The gravest moment in the product, and the test of section 4.** |
+| `16-counselor-command-palette.png` | The command palette, the keyboard path |
+| `17-counselor-caseload-monitor-block.png` | The caseload scrolled into the 77-row Monitor block. **This is the density case, and the one that breaks layouts.** |
+| `18-counselor-bulk-selection.png` | Four students selected, bulk action bar |
+| `19-parent-grade9-empty-by-design.png` | The Grade 9 family portal. **Sparse because sparse is correct, not because it is broken.** |
+| `20-parent-grade9-desktop.png` | The same, at desktop |
+
+These are deliberately the crowded and awkward screens rather than the flattering ones.
+
+**Two things you would otherwise misread, both also recorded in the manifest.**
+
+**First, dark mode exists only on the student surface.** It is gated to `html[data-role="student"]` in the CSS. The counselor, parent, teacher and mentor surfaces have no dark palette at all, and the dark tokens that do exist are written and contrast-checked but never widened. That is an unfinished decision, not a design position. Tell me what each of your three versions does about it.
+
+**Second, screenshot 15 contains a live bug, not a copy decision.** The escalation modal renders the literal text `The ${SAFE} reads this first` because a placeholder at `index.html:8553` sits inside a single-quoted string nested in a template literal and never interpolates. It should read "The Child Protection Officer reads this first." A fix is pending. Do not carry it forward into any version, and do not treat it as evidence about the product's copy standards.
 
 ## 2. The one job
 
@@ -56,7 +92,7 @@ These three are supposed to feel like different instruments. The counselor's con
 
 One nuance on the student surface: gamification is permitted there, and only there. A milestone roadmap with XP and a completion moment already exists. It was a deliberate reversal of an earlier no-gamification position, taken for retention, and I do not want it argued back. I want it designed properly as a first-class part of the student surface instead of sitting on top as a bolt-on. The counselor and parent surfaces stay completely ungamified.
 
-## 3b. Emotional register, which I am treating as a requirement and not as polish
+## 4. Emotional register, which I am treating as a requirement and not as polish
 
 The product carries difficult material. A counselor opens it to find out which of her students is deteriorating. A parent opens it because they are worried. A student opens it at the point they think one choice will determine their life. If the interface has no emotional position, it takes one anyway, and the default position is indifference.
 
@@ -68,7 +104,7 @@ So for each surface, design to a stated feeling, and tell me in writing what you
 
 **Tone under gravity is the hard problem, and I want it solved rather than avoided.** How does a screen tell a counselor that a fifteen-year-old is falling, with the evidence, in a way that is neither clinical to the point of callousness nor emotionally decorated? Colour, weight, spacing and copy all take a position on this whether you choose one or not. A red badge on a child's name is a design decision about a child. Show me you have thought about it. The safeguarding escalation in particular is a real, consequential, logged act, and the moment of committing to it should feel weighty in the interface rather than looking like any other button.
 
-## 3c. Each surface must feel built for the person using it
+## 5. Each surface must feel built for the person using it
 
 A different mood per audience is not enough. The test is recognition: a counselor should look at her console and think *someone who has sat in a counseling office built this*, and a student should look at theirs and think *this was built for me, not handed down to me from the adults' version*. The failure I am naming in advance is one dashboard, relabeled three times, with a different accent colour per role. That is what usually happens and I will recognise it immediately.
 
@@ -88,9 +124,9 @@ Two limits on the divergence:
 
 I will judge this by putting one counselor screen, one student screen and one parent screen side by side. Show me that comparison yourself, in each version, with a sentence on what makes each unmistakably its own audience's and what nonetheless marks all three as the same product.
 
-## 3d. Premium, and where it is allowed to come from
+## 6. Premium, and where it is allowed to come from
 
-I want this to feel expensive. Not decorated, expensive. The cheap signals of premium are banned in section 6, so here is the vocabulary that is open to you, and I will judge the work on how much of it is actually present:
+I want this to feel expensive. Not decorated, expensive. The cheap signals of premium are banned in section 9, so here is the vocabulary that is open to you, and I will judge the work on how much of it is actually present:
 
 - **Restraint in the colour count.** A palette that mostly refuses colour, so that the colour which does appear is unmistakably carrying meaning. Expensive things are quiet.
 - **Spacing derived rather than chosen.** A rhythm that comes out of the line height and the row, so the vertical measure is consistent across every screen without anyone having to enforce it.
@@ -100,9 +136,9 @@ I want this to feel expensive. Not decorated, expensive. The cheap signals of pr
 - **Motion as tone, not as feature.** Short, confident, few. Nothing bounces. Nothing announces itself. Speed reads as expensive and easing reads as considered. The one permitted exception is the student completion moment, which is allowed to be generous.
 - **Copy that sounds like a competent person wrote it.** Specific verbs, no filler, no exclamation, no reassurance the product cannot back. Premium collapses on bad copy faster than on bad type.
 
-Two counterweights to the references in section 7b, because that list is deliberately cold and warmth still has to come from somewhere: think of the care taken in a well-made printed annual report, and the tone of a good doctor who tells you the truth kindly. The warmth in this product comes through craft and language, not through decoration. That distinction is the brief.
+Two counterweights to the references in section 11, because that list is deliberately cold and warmth still has to come from somewhere: think of the care taken in a well-made printed annual report, and the tone of a good doctor who tells you the truth kindly. The warmth in this product comes through craft and language, not through decoration. That distinction is the brief.
 
-## 4. What must not change
+## 7. What must not change
 
 Load-bearing. Treat these as physics, not preference.
 
@@ -115,7 +151,7 @@ Load-bearing. Treat these as physics, not preference.
 7. **Parent and student surfaces must hold at 375px.** They are used on phones in practice, not in theory.
 8. **Vocabulary that must not drift:** *match* already means reach/match/safety in university data and can never be reused for anything else. IB and AP are academic tracks, not visual themes.
 
-## 5. The current visual system, which Version A must respect
+## 8. The current visual system, which Version A must respect
 
 The build today is a deliberate direction I will describe as the Register: the product as the pastoral mark book the school already keeps. Ruled paper rather than dashboard. Its actual tokens:
 
@@ -124,11 +160,11 @@ The build today is a deliberate direction I will describe as the Register: the p
 - **Shape:** radii of 1 to 3px. Effectively square. No soft cards, no floating panels, no shadows doing the work a rule should do.
 - **Density:** a 30px row, a 60px topbar, spacing of 6, 9, 14 and 22px.
 
-**This section binds Version A only.** Versions B and C may discard every token, every typeface and the metaphor itself. Section 4 binds all three, because it is product logic rather than visual preference, and so does the ban below.
+**This section binds Version A only.** Versions B and C may discard every token, every typeface and the metaphor itself. Section 7 binds all three, because it is product logic rather than visual preference, and so does the ban below.
 
 The ban: no serif typefaces, and no cream-and-serif rendition of the ledger idea, in any version. That is the obvious rendition of the metaphor, it reads as a wedding invitation rather than a working document, and it has already been ruled out once.
 
-## 6. The ban list
+## 9. The ban list
 
 Not in any of the three versions:
 
@@ -156,15 +192,15 @@ If your first instinct on a decision is one of these, that is the signal to work
 
 Also banned, without exception: fabricating testimonials, customers, outcomes, benchmarks, pricing, press, or any real person's data. The school publishes its own university acceptance statistics and they are the school's claims, not the product's. Do not restate them as CAROS outcomes anywhere in the interface.
 
-## 7. Critique first, and be specific
+## 10. Critique first, and be specific
 
-Before you design anything, give me a numbered critique of the current interface as attached. For each finding: what is wrong, what it costs the user, and how confident you are. Rank by damage done, not by ease of fixing.
+Before you design anything, give me a numbered critique of the current interface as it stands in the screenshots. For each finding: what is wrong, what it costs the user, and how confident you are. Rank by damage done, not by ease of fixing.
 
 State the three that hurt most bluntly, including anything suggesting the information architecture is wrong rather than the styling. If the counselor's morning question, what changed overnight, is not answerable in the first three seconds of the caseload screen, that is a finding and I want it named as one.
 
 Do not proceed to the designs until the critique is written out.
 
-## 7b. Altitude, and what I mean by good
+## 11. Altitude, and what I mean by good
 
 Reference points, for calibration only. I am not asking you to imitate any of them, and pastiche of them is its own failure:
 
@@ -176,13 +212,13 @@ The failure I am trying to avoid is not ugliness. It is the competent, neutral, 
 
 **One signature move per version.** Each direction must contain a single decision specific enough that I could describe it to someone over the phone and they would understand what the product looks like. A way of drawing the tier that nobody else draws. A structural idea about what a row is. A type decision that carries the whole system. Name it explicitly, under the heading "the signature move", and say what it costs. A version without one is not a direction, it is a theme.
 
-**Permission to be divisive, and where it applies.** Version C should be a position, not a consensus. I would rather see something I reject outright than something I shrug at, so do not pre-moderate it toward what you think I will accept. That permission is aesthetic and structural only. It does not extend to section 4, which is product logic and safety, and a version that is bold by breaking one of those is not bold, it is unusable.
+**Permission to be divisive, and where it applies.** Version C should be a position, not a consensus. I would rather see something I reject outright than something I shrug at, so do not pre-moderate it toward what you think I will accept. That permission is aesthetic and structural only. It does not extend to section 7, which is product logic and safety, and a version that is bold by breaking one of those is not bold, it is unusable.
 
-## 8. Three directions, deliberately far apart
+## 12. Three directions, deliberately far apart
 
 Three complete, internally coherent directions. They must differ on a real axis, not on accent colour.
 
-- **Version A, the Register refined.** Keep the thesis and the tokens in section 5 and make them right. This is the version I could ship as an increment next week. Fix the density inconsistency, make the six type roles actually carry hierarchy, resolve what the six domain colours are doing against the five tier colours, and make the marker in section 4 point 5 look deliberate. Evolution, executed to a higher standard than the current build.
+- **Version A, the Register refined.** Keep the thesis and the tokens in section 8 and make them right. This is the version I could ship as an increment next week. Fix the density inconsistency, make the six type roles actually carry hierarchy, resolve what the six domain colours are doing against the five tier colours, and make the marker in section 4 point 5 look deliberate. Evolution, executed to a higher standard than the current build.
 - **Version B, a changed metaphor.** Drop the ledger. Propose a different governing metaphor for what this product is, argue it in two sentences, and build the whole system from it. The test of a good answer here is that the metaphor tells you what to do on a screen I did not send you. Do not pick the metaphor because it is easy to render.
 - **Version C, the ambitious one.** The version that would get talked about. Treat the counselor's information density as a feature rather than a problem to be hidden behind progressive disclosure: she is an expert user doing triage, and hiding information from her costs her the decision. Commit fully. This should be the version you would defend in a portfolio, not a hedged middle.
 
@@ -191,11 +227,11 @@ Rules for all three:
 - No version may be a tinted copy of another. **If I could get from A to C with a find-and-replace on hex values, you have failed the brief.**
 - Each version must name what it is deliberately bad at. Every direction trades something away.
 
-## 9. What each version must contain
+## 13. What each version must contain
 
 1. **Thesis**, two sentences, plus the trade it makes.
 1b. **The feeling**, one paragraph: what a counselor, a parent and a student each feel in this version, how the version produces that, and specifically how it holds its tone on the worst screen in the product, the one showing a child in difficulty.
-1c. **The role-differentiation policy** required by section 3c: what holds constant across the three surfaces, what changes, which levers and how far, plus the three-screen side-by-side comparison.
+1c. **The role-differentiation policy** required by section 5: what holds constant across the three surfaces, what changes, which levers and how far, plus the three-screen side-by-side comparison.
 2. **A design system as real tokens:** the full colour ramp with the reasoning behind it, the five tier colours and their non-colour second channel, the six domain colours and how they coexist with the tiers, a type scale with named roles rather than h1 to h6, a spacing scale, radii, border and rule treatment, elevation rules, motion durations and easings. Give hex values and CSS custom properties, not adjectives.
 3. **Typography with a point of view.** Name the typefaces and say why. Remember the offline constraint: either embed, or choose faces with a system fallback stack that genuinely holds. System-font-only is an acceptable answer if you argue it.
 4. **The named rules of the system.** The four or five sentences a new person would need to build a screen I did not send you and have it fit. For example: how density is decided, when colour is allowed to mean something, what is never allowed a border, how a figure is set against its label.
@@ -216,11 +252,11 @@ Rules for all three:
 9. **Accessibility:** contrast ratios stated as numbers, focus visible throughout, full keyboard operation, no meaning carried by colour alone.
 10. **Copy.** Rewrite the interface text: labels, empty states, errors, button verbs, the tier names if you can do better. Bad copy reads as bad design. No em dashes anywhere in the copy.
 
-## 10. Real content only
+## 14. Real content only
 
 Use real data shapes, real labels, and real volume. No lorem ipsum, no "Card title", no three-item list standing in for a list that holds eighty. Show the crowded case, because that is the one that breaks. Every student, family and record you write is synthetic demonstration content and must read as plausible without naming any real person.
 
-## 11. How to give it to me
+## 15. How to give it to me
 
 In this order:
 1. The critique.
@@ -232,7 +268,7 @@ Before you send any of it, run one pass over your own output and answer in writi
 
 Then stop. I will pick a direction or ask for a hybrid, and we will iterate from there. Do not start refining before I choose.
 
-## 12. Quality bar
+## 16. Quality bar
 
 I am showing this to a counselor at the American Community School of Abu Dhabi, who is piloting the product. The question she will ask is: **would I actually use this every morning instead of what I have now?** She has four colleagues splitting the high school between them, she works in bursts between meetings, and her current alternative is the incumbent system schools complain about plus her own notebook. Design so the answer is obvious from the screen rather than from an explanation I have to give over it.
 
