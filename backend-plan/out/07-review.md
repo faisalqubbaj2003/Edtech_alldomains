@@ -18,6 +18,8 @@ Written 2026-09-24 by Claude Opus 5.5 in a fresh session. It reviews `backend-pl
 
 **For Davide.** Under every finding, and under every item in A.5 and every judgment call in C, write accept, reject or accept with a change on the `Decision:` line. Pass 8 acts only on those lines.
 
+**Decisions recorded 2026-09-24.** All 107 `Decision:` lines are filled. Settled together: C1 settles F03, C2 and C3 settle F28, C4 settles F14, C10 settles F27, C9 goes with F24. Carried to pass 8 as new work: an ACS question on parental access at 18 (C5), a B0 model bake-off (C7), an ACS question on how 7.1.3.a is handled with other vendors (F04), and the April 2027 G-REAL target with an explicit list of cuts (F39).
+
 ## Index of findings
 
 | # | Severity | Finding |
@@ -123,7 +125,7 @@ These stop a phase from being built as written, or build something unsafe that l
 
 **Fix.** One login role and managed identity per deployable: web (user tiers and `caros_t_ai` only), worker (`caros_t_system` only), migrator (owner via `SET ROLE`), and the support console as a separate app (`caros_t_support` only). Set `NOINHERIT` on all of them. Evaluate the tier in the policy expression, which runs as the caller, and pass it into `auth.allowed()` as an argument. Add a B0.8 test that the web identity cannot `SET ROLE` to system or support.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F02 · Pass 4's permission matrix cannot be stored or enforced by pass 1's model, and B0 seeds it anyway
 
@@ -141,7 +143,7 @@ Decision:
 
 **Fix.** Before B0.7, a matrix-to-schema step that the revision writes out: new scopes with predicates (`esc`, `grant`, `addressee`, conditional lead access), scope in the unique key, per-kind predicates, derived subjects for child tables, and per-role projection views. Policies accept `write OR <the verb the table carries>`, or the matrix adds `w` rows mirroring each verb's scope. A `SECURITY DEFINER notify.enqueue()`. Positive end-to-end tests for every verb through RLS. No qualifier ships without its mechanism and a negative test.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F03 · The safety screen lets a model close a detected disclosure with no person involved
 
@@ -153,7 +155,7 @@ Decision:
 
 **Fix.** Layer 2 may add an alert or raise urgency, never clear or lower one. Every layer-1 hit creates at least a standard alert, with the model's reading shown beside it as a note. Drop the `fiction_or_quote` downgrade. Correct C22. Add a test that no hit or alert closes without a person's disposition. Alert load is a lexicon problem, owned by the CPO (question 129), not a model problem.
 
-Decision:
+Decision (2026-09-24): Accept, settled by C1: remove the model layer and cleared_by_model from v1; the lexicon screen is the only screen.
 
 #### F04 · ADEK requires its explicit consent before a contractor shares personal data, and no pass knows it
 
@@ -165,7 +167,7 @@ Decision:
 
 **Fix.** Add ADEK consent as a named gate before G-AI and before any EU copy, and as a counsel question on whether in-country hosting by Microsoft is "sharing" under 7.1.3.a. Rewrite pass 4 §1.1's hosting paragraph to cite 7.1.3.a. Put the ADEK consent request on the ACS question list with the evidence pack ADEK would need.
 
-Decision:
+Decision (2026-09-24): Accept with a change: ADEK consent becomes a named gate before G-AI and before any EU cold copy, plus a counsel question on whether in-country Microsoft hosting is 'sharing' under 7.1.3.a. First ask ACS how it has handled 7.1.3.a with its other vendors (ManageBac, Veracross), then draft the ADEK request and evidence pack; given the April 2027 target, raise it with ACS this term.
 
 #### F05 · One ordinary sick day becomes a strong signal, and the CUSUM never forgets it
 
@@ -179,7 +181,7 @@ Decision:
 
 **Fix.** Measure attendance in days from the master register. Take the floor from a day-level model or the backtest. Set the minimum meaningful change above one day. Count unexplained absences in days over non-overlapping windows. Cap z inside the CUSUM (for example at 3) and send strong shocks through their own rule. Restart the chart when a case opens, and base exit and recovery on levels and the run-mean since the case opened, not on S. Hold attendance at weak until ACS's reason-code coverage is measured.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F06 · The B2 acceptance test cannot pass, and the calibration it must reproduce is not the specified engine
 
@@ -195,7 +197,7 @@ Decision:
 
 **Fix.** Give the fixture at least twenty in-band weeks before the authored eight, or import prior-year attendance. Generate the expected diff by running the rules, not by hand. Define a punctuality measure the authored series could come from, or re-author them as late counts. Pick one persistence definition (consecutive weeks with S ≥ h is the one that filters). Publish the tier script in the plan, define "new items" as entries or occupancy, state the floor, and regenerate §3.6, §7.3, §11.1 and the appendix from the engine's own level function.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 ### A.2 Serious
 
@@ -214,7 +216,7 @@ These cause real harm or significant rework if built as written. Most are safegu
 
 **Fix.** Pin the tier while an escalation is open: the engine may raise, never lower or auto-close; after the outcome a person sets the tier. Replace `UNIQUE (school_id, case_id)` with a partial unique index on open escalations plus an idempotency key per submission, and allow a new escalation linked to the previous one. Restrict C12 to the same student; link cases across students without moving data. Add scenarios S24 (escalated case, quiet data, 60 days) and S25 (second concern on an escalated case).
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F08 · The engine's rate limit can hold an urgent raise for a day or a week
 
@@ -226,7 +228,7 @@ Decision:
 
 **Fix.** The hold applies to lowerings and to repeated reversals only. A raise into `checkin` or `urgent` is never held. Add the case to S19.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F09 · The safeguarding clocks and routes misread ADEK: the 24-hour duty is each staff member's, and suicidal ideation goes to leadership immediately
 
@@ -241,7 +243,7 @@ Decision:
 
 **Fix.** Show the direct-report route and the counselor's own 24-hour countdown from the moment of escalation, labelled as the reporter's duty. Route by category: suicidal ideation and severe substance use to the counselor and a named leadership contact immediately; maltreatment to the coordinator immediately. `immediate_risk = yes` shows 999 and the Principal's contact and notifies the route at once. Cite the Mental Health Policy in pass 4 §1.1.
 
-Decision:
+Decision (2026-09-24): Accept with a change: routing targets per category (leadership contact, CPO) are school configuration confirmed with ACS's CPO, not hard-coded.
 
 #### F10 · Teachers have no safeguarding route in CAROS, and their worst observation lands at "this week"
 
@@ -253,7 +255,7 @@ Decision:
 
 **Fix.** Put the school's rule in the flag modal: "If a student told you something that suggests harm, report it to [the coordinator] now. This form is not a safeguarding report." Add a safeguarding flag kind that goes straight to the safeguarding route as a referral, with the same content rules as the escalation email. Run layer 1 of the safety screen on teacher flag text. Let any staff role hold `safeguarding_lead`. Give subject teachers and supervisors a concern path for students they teach outside a roster.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F11 · The student safety message says "call any time", and most of the numbers it lists are not 24-hour lines
 
@@ -265,7 +267,7 @@ Decision:
 
 **Fix.** Split the list into "someone to talk to now" (24/7 lines only, currently 800-SAKINA; for Dubai, DFWAC) and "to report that a child is being harmed" (116111, 800444, and 800988 for Dubai), each with hours. Drop "any time" unless every listed line is 24/7. Remove Estijaba until a current source exists. The CPO confirms the list each term (question 129) and the tenant stores a `verified_at` per number.
 
-Decision:
+Decision (2026-09-24): Accept with a change: the checked numbers are a draft; ACS's CPO confirms the list before any student sees it, and each number stores a last-verified date.
 
 #### F12 · Safety alerts are a second route to the Child Protection Officer without invariant 5's guarantees
 
@@ -277,7 +279,7 @@ Decision:
 
 **Fix.** Route through `signal.escalation` as a system-raised referral with a fixed reason code, one per student episode, deduplicated against any counselor escalation; or send the CPO only an "alert unopened" reference. Add both templates to B3.8 with the content test. Add the audit actions. Declare the route at the top of pass 4.
 
-Decision:
+Decision (2026-09-24): Accept, option (b): the CPO receives a reference-only "alert unopened" notice, never an automatic referral; a person decides whether to escalate. Add the missing templates and audit actions.
 
 #### F13 · Students can read the safety alerts raised about their own words
 
@@ -289,7 +291,7 @@ Decision:
 
 **Fix.** A staff-only class for alerts. Deny `safety_flag` and extraction columns to the student and mentor tiers. Add a per-role test with a flagged fixture.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F14 · Subject-access packs release staff-only material by default and can reveal that a referral exists
 
@@ -303,7 +305,7 @@ Separately, the PDPL's Article 13 is a right to information about the processing
 
 **Fix.** Until counsel answers C7 and C8, exclude by default: `signal` rows, AI generations, notes, anything linked to an escalation or safety alert, and reads under the escalation scope or with purpose `escalation`. Route any request about a student with an escalation to the safeguarding lead. Make inclusion of each professional record an explicit act. After 18, only the student may request. Declare the departure at the top of pass 4. Add an escalated-student fixture to B4.3.
 
-Decision:
+Decision (2026-09-24): Accept, settled by C4: default pack excludes professional records; per-item inclusion by the school; B4.3 test rewritten to match.
 
 #### F15 · Families and students would read staff material because data classes are bound per table
 
@@ -319,7 +321,7 @@ Decision:
 
 **Fix.** Move meetings and contact logs to a staff class. Scope messages by sender and recipient. Guardians read only their own link row and never write it. Key document policy on the row's `data_class` and `kind`; raw exports to `school_admin` only, under step-up, never to support. A feature-and-kind predicate on `ai.generation` so students read only their own discovery and Extended Essay feedback. Column-level `UPDATE` grants only.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F16 · The capability design gives welfare access to people who are not counselors
 
@@ -334,7 +336,7 @@ Decision:
 
 **Fix.** Break-glass only for practising counselors, rate-limited, confirmed by the lead within the day, never self-assigned. Timestamps for validity. Four eyes for any capability grant. `school_admin` as its own role with no caseload path. A separate `safeguarding_oversight` capability with no data grants. Split `config` into per-table classes scoped to owner or recipient. Never persist a credential in the outbox: mint the token at send time.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F17 · The conversation gate and other approval gates rest on a non-null id and table-wide update rights
 
@@ -346,7 +348,7 @@ Decision:
 
 **Fix.** An approval trigger that checks student, kind, the `held_at` window and non-empty notes. A `review_meeting_version` that must equal `version` at approval. State changes only through definer transition functions; column-level `UPDATE` grants. Pairings created only by the coordinator. Imports never write picks.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F18 · Google sends no RISC events for Workspace accounts, so "suspend the Google account" revokes nothing
 
@@ -358,7 +360,7 @@ Decision:
 
 **Fix.** Make the Directory API reconciliation mandatory, not optional, and run it hourly for staff. Add a school-side "revoke in CAROS" step to the leaver runbook. Drop RISC from the thin slice and the G-REAL list; keep it only for consumer accounts if mentors ever use Google.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F19 · Step-up relies on `prompt=login`, which Google does not support
 
@@ -370,7 +372,7 @@ Decision:
 
 **Fix.** A B1 spike before B1.14: request `auth_time` through `claims`, reject tokens older than ten minutes, and test with a live session. If Google will not force it, step up with a CAROS-held passkey for staff (WebAuthn is already in the plan for mentors and parents).
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F20 · Free text carries the "excluded" classes to the United States, and the pseudonymiser misses common names
 
@@ -382,7 +384,7 @@ Decision:
 
 **Fix.** State the truth in 04:45, R6 and the notices: the exclusions hold for columns; free text can carry any class. Replace "longer than three characters" with a rule tested on Arabic names and add Arabic-script and nickname handling. Measure pseudonymiser recall on a corpus written by people who did not build it. Strip the school fingerprint from the envelope. Treat personal statements as not pseudonymisable. Move the safety screen's layer 2 in-country first (pass 5 already names it as the first to move).
 
-Decision:
+Decision (2026-09-24): Accept: the notices and DPA state that exclusions hold for columns and free text can carry any class; name rule tested on Arabic names, Arabic script and nicknames; recall measured on a corpus written by people who did not build the pseudonymiser; school fingerprint stripped from the envelope; personal statements treated as not pseudonymisable. The in-country safety-screen item is moot after C1.
 
 #### F21 · The quarantined reader sends every free-text record abroad at save time, including records R6 excludes
 
@@ -394,7 +396,7 @@ Decision:
 
 **Fix.** Give the reader and the screen their own policy rows, allowlisted per record kind. Extract lazily, only for kinds an enabled writer reads. Drop `mentor.message` from D69. Never extract urgent requests. Add a test that fails when an extraction column fills with no consuming feature enabled.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F22 · The EU cold copy is keyed to a UAE-only key, so it cannot be restored in the disaster it exists for
 
@@ -406,7 +408,7 @@ Decision:
 
 **Fix.** Tell ACS and counsel the real choice: EU ciphertext with key material held outside the UAE by named people, a named restore region and trigger, and an EU restore drill on synthetic data; or in-country only with the risk stated. Add ADEK consent (F04) to either.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F23 · Real data has undesigned routes into development tooling
 
@@ -422,7 +424,7 @@ Decision:
 
 **Fix.** Run the backtest, the canary and restore-drill checks as jobs in UAE North, with only aggregates leaving. Collect counselors' questions in the tenant; a named person rewrites them onto synthetic personas in-country. Add Read and Bash hooks that refuse paths outside the repository and commands such as `az` and `psql` against production. Keep no production credential or signed-in production browser profile on any machine that runs an agent. Name the coding assistant in the DPA if counsel says so (C23).
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F24 · Shadow mode runs a different engine, and its exit bars cannot be met by the plan's own numbers
 
@@ -439,7 +441,7 @@ Decision:
 
 **Fix.** Keep a shadow case state and store shadow evidence against the evaluation. Include backfill and event runs. Import at least twenty weeks of history before shadow starts. Replace point thresholds with a pre-registered interval pooled across counselors and a minimum of about 40 cases. Blind the judgement by mixing engine cases with matched unflagged students. Fix F05 first, because the noise figures depend on it.
 
-Decision:
+Decision (2026-09-24): Accept: shadow keeps its own case state and stores evidence against the evaluation; backfill and event runs included; at least twenty weeks of history imported before shadow; pooled pre-registered interval with a minimum of about 40 cases; blinded judgement with matched unflagged students; F05 fixed first.
 
 #### F25 · The academic domain is inert for most of each year, and the termly fallback floods or never fires
 
@@ -454,7 +456,7 @@ Decision:
 
 **Fix.** Carry academic baselines across the year within a subject for two-year courses. Count history in assessments, and use the self-starting band instead of the cap. When a termly file carries per-assignment rows, run the weekly engine over the term as a backfill capped at `review`; for working grades only, require a two-step drop or a drop held across two windows. Use non-overlapping windows for counts. Say on screen which domains are still building a baseline.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F26 · The common-cause guard makes a student's level depend on other students
 
@@ -466,7 +468,7 @@ Decision:
 
 **Fix.** Drop the automatic cap. Keep the ops note and the prompt to declare a `calendar_period`; a declared period then suppresses through the calendar, which is data about the school, not about peers. Keep the property test strict.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F27 · ManageBac's API does expose CAS, and probably the Extended Essay, so pass 2's central integration conclusion is wrong
 
@@ -478,7 +480,7 @@ Decision:
 
 **Fix.** Add a `managebac_readonly` record-system value to D10 for CAS and EE, design the mirror in §7.4 and §7.9, move the ManageBac adapter's CAS mirror earlier than B9 if ACS keeps ManageBac, pin v2p3, and ask ACS whether the EE PBL template is enabled (question 78).
 
-Decision:
+Decision (2026-09-24): Accept, settled by C10: add managebac_readonly to D10, design the mirror in 02 §7.4 and §7.9, pin v2p3, move the CAS mirror earlier than B9, ask ACS question 78 about the EE PBL template.
 
 #### F28 · At least nine kinds of outbound notification exceed the two that were decided, and none is declared
 
@@ -490,7 +492,7 @@ Decision:
 
 **Fix.** List every outbound message in one table in pass 4, with recipient, channel and content allowlist. Davide accepts or rejects each (see judgment calls C2 and C3). Every kept kind gets a template and the content test; the rest become in-app.
 
-Decision:
+Decision (2026-09-24): Accept, settled by C2 and C3: declare the email inventory (parent transactional per C2, staff safety per C3) and update CONTEXT section 3.
 
 #### F29 · A real ACS staff member's name is seeded as a demo persona in the tenant shown to other schools
 
@@ -502,7 +504,7 @@ Decision:
 
 **Fix.** A fictional coordinator name in the seed. Add every name in PRODUCT.md and the prototype that belongs to a real person to the blocklist. Extend G2's consent letter to sales demos to other schools, or record that it does not cover them.
 
-Decision:
+Decision (2026-09-24): Accept: fictional coordinator name in the seed and the prototype; every real person's name in PRODUCT.md and the prototype added to the blocklist; G2's consent letter extended to sales demos to other schools.
 
 #### F30 · Unsourced prototype figures go into global reference tables and render with a label
 
@@ -514,7 +516,7 @@ Decision:
 
 **Fix.** Never render a `seed://` number; show "not on file" instead. Load `seed://` rows in staging only. Add a production check that no `seed://` source exists.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F31 · The second school proves labels, not substance: ADEK is hard-coded for every tenant and the engine is validated on ACS only
 
@@ -530,7 +532,7 @@ Decision:
 
 **Fix.** A versioned `regulator_profile` keyed by `regulator`: contacts, reporting window and its owner, citations, outcome vocabulary, indicators, retention minimums, attendance-reason family, review-pack checklist. A KHDA profile, or an explicit empty one that shows no regulator-specific text. A Wellesmere expected-result list and a fixed fixture. A test that fails if "ADEK" appears on any Wellesmere screen or template. Give one synthetic tenant a different timezone and weekend. Replace D56's generated column. Remove "UCAS-only".
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F32 · UCAS changed both the personal statement and the reference, and the model predates both
 
@@ -544,7 +546,7 @@ Decision:
 
 **Fix.** A `ref.statement_format` per destination system and entry year (sections, per-section minimums, total limit) and completeness defined as every section at or above its minimum within the total. A `format` column on references with sections validated per format, a versioned centre statement, a predicted-grade snapshot taken at submission, and the extenuating-circumstances section flagged `generation_forbidden`. A per-school reference deadline.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F33 · A British school's pastoral structure cannot be represented
 
@@ -556,7 +558,7 @@ Decision:
 
 **Fix.** `year_group` and `tutor_group` scopes, capabilities such as `year_lead`, `tutor` and `ucas_adviser`, and concurrent assignment kinds, with case ownership still single.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F34 · The materialised reporting views sit outside row-level security
 
@@ -568,7 +570,7 @@ Decision:
 
 **Fix.** Per-tenant aggregate tables with RLS and one writer. Or views owned by a no-login role, `SELECT` revoked from every tier, exposed only through definer functions that filter on `auth.current_school()` and check the role. Add materialised views to the convention test.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F35 · CAROS staff can write into real tenants outside the support-grant model, and grants are not bound in the database
 
@@ -583,7 +585,7 @@ Decision:
 
 **Fix.** Every CAROS write is a school-approved, time-boxed write grant naming its tables, executed through audited domain functions. Domain mapping requires DNS proof, `school_admin` approval and an audit row. Caseload loads go through the Studio with a security section. The support policy checks the operator (`actor_label`) and the table list; revoke base tables from the support tier; exclude raw exports and the outbox from grants.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F36 · The worker's cross-tenant work is undesigned, and the tenant status model skips the pilot school
 
@@ -598,7 +600,7 @@ Decision:
 
 **Fix.** One status model across passes (for example `onboarding`, `shadow`, `live`), with scheduling and alerting keyed on "holds real data", not "active". ID-only definer functions for enumeration and pre-tenant lookups. pg-boss under its own login with no tenant privileges; payloads validated as school id plus record ids; pg-boss registered for erasure with short retention. A test that a job for school A carrying school B's ids writes nothing.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F37 · The regulatory analysis has gaps that change the design, starting with the missing impact assessment
 
@@ -618,7 +620,7 @@ Decision:
 
 **Fix.** Add a DPIA to the G-REAL list, drafted by CAROS for ACS. Put items 2 to 7 to counsel as new questions. Name the new regulator in the DPA and breach flow. Correct the article citations in pass 4.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F38 · The Fable reservations and different-model reviews contradict each other and miss tasks whose errors are silent
 
@@ -642,7 +644,7 @@ Decision:
 
 **Fix.** Regenerate §4.1 to §4.3 from the task tables (or the reverse) so there is one source. Add a Fable review to every task listed in point 2, or state why not. Make B2.9 Fable-written, since it produces the numbers the engine is tuned by.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F39 · The calendar assumes parallelism the ownership columns do not provide, and it is not mapped to a school year
 
@@ -658,7 +660,7 @@ Decision:
 
 **Fix.** Rebalance ownership: move B3 screens to A or C, B4 tooling to B, and name a second reviewer for each of D's paths. Replace week counts with D-session counts on the critical path. Map the phases onto ACS's 2026-27 and 2027-28 calendars and choose the target term now, then back-schedule the external gates (pen-test booking, DPA, DPO, insurance, the school's IT review). Plan for subscription usage limits, not dollars.
 
-Decision:
+Decision (2026-09-24): Accept with a change: target G-REAL in the first fortnight of the spring term 2027 (April 2027), Davide building alone. Replace week counts with D-session counts on the critical path; back-schedule every external gate (pen test booking, DPA, DPO, insurance, ADEK consent per F04, ACS IT review) from April 2027 now; plan against subscription usage limits, not dollars; drop the ownership rebalance until a teammate exists (C8). Pass 8 must state plainly what has to be cut or deferred for April to hold.
 
 ### A.3 Moderate
 
@@ -682,7 +684,7 @@ Real defects with bounded impact, or serious ones that tests would catch early.
 
 **Fix.** Make §1.12 the single source: generate each task's migration list from it, add D61 to B0 (tests) and D75 to B7, record the deviations in passes 2 to 5 (§12 item 18 already asks), and dedupe the seed keys. Give the migration job a second, non-transactional step for statements marked `-- no-transaction`, or drop `CONCURRENTLY` at pilot scale and say so.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F41 · Pass 6 does not carry out accepted decision C5 in B4, and retests on staging cannot verify production-layer fixes
 
@@ -694,7 +696,7 @@ Decision:
 
 **Fix.** Rewrite B4 and B4.14 to C5. Retest application-layer findings on staging and production-layer findings on production while it still holds only the canary tenants. For yearly tests: canary tenants only, no real-row exfiltration, redacted evidence, the firm named in the DPA.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F42 · Pass 6 does not fully carry out accepted decision C6
 
@@ -711,7 +713,7 @@ Decision:
 
 **Fix.** An immutable `purpose` column on `core.school` (`customer`, `canary`, `demo`) and every report, indicator, cost board and alert keyed on it, with a test. The canary as a Container Apps job in UAE North that calls domain functions through `withTenant()` as a canary membership, refuses any non-canary tenant, and asserts that every row it reads carries its own school id. Canary tenants have AI off and no deliverable email addresses. Remove branded tenants from production (close O34 as "train on staging").
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F43 · Staging is now the sales demo, and it is also the drill ground, the retest target and the continuous-deploy target
 
@@ -723,7 +725,7 @@ Decision:
 
 **Fix.** A demo slot: a pinned Container Apps revision label, or a separate small environment, with a deploy freeze during booked demos and a demo tenant that no drill touches. Drills in their own subscription. Staging maps only CAROS test domains. G2 names third-party sales demos explicitly.
 
-Decision:
+Decision (2026-09-24): Accept with a change: start cheap. A pinned demo revision on staging with a deploy freeze during booked demos and a demo tenant no drill touches; drills in their own subscription; split out a separate demo environment only if demos become frequent. Extend G2's consent letter to third-party sales demos.
 
 #### F44 · The AI database role is a denylist, and nightly AI runs as the system tier
 
@@ -735,7 +737,7 @@ Decision:
 
 **Fix.** Generate `caros_t_ai` grants from the union of `ai.feature_policy.allowed_fields` (an allowlist), with a CI test that it can select nothing else. Per-school note inclusion through a view, not a grant. Nightly AI runs as the case owner under `caros_t_ai`. Re-identification through a definer function that checks the requester and the school.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F45 · On-call escalation depends on an SMS acknowledgement Azure does not offer
 
@@ -747,7 +749,7 @@ Decision:
 
 **Fix.** A small escalation mechanism (a Logic App or a job that pages the second person if the alert is still firing after 15 minutes), or an on-call service named as a sub-processor with identifiers-only payloads.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F46 · The branch rules as written stop Davide from merging his own work
 
@@ -759,7 +761,7 @@ Decision:
 
 **Fix.** Two code owners on every path, a review service level (for example 24 hours), and a documented solo mode (required checks stay; human review becomes asynchronous within a week) for periods with one active person.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F47 · Pass 6 says it resolved the widening rule one way and tests the other
 
@@ -771,7 +773,7 @@ Decision:
 
 **Fix.** Decide the rule once, write the scope order the trigger uses, and make D36, B0.7 and §5.4 say the same.
 
-Decision:
+Decision (2026-09-24): Accept with a change: default is narrow-only until ACS answers question 65; keep pass 4 §3.3 ready as the option (a school may widen signal and case_note to school scope, never safeguarding); rule, D36 trigger, B0.7 and §5.4 tests all match.
 
 #### F48 · Past alerts are not fully explainable after a configuration change
 
@@ -781,7 +783,7 @@ Decision:
 
 **Fix.** Version the vocabularies, or snapshot the attribute values into `rule_hits` and the evidence with a test. Add lexicon version, model, prompt version and evidence span to `signal.safety_alert`, retained with the alert.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F49 · The backend `CLAUDE.md` paraphrases the invariants and drops clauses
 
@@ -791,7 +793,7 @@ Decision:
 
 **Fix.** Quote CONTEXT §4 verbatim, with the backend's mechanisms beneath each invariant.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F50 · The prototype's ranking within a tier is on its way into the port
 
@@ -803,7 +805,7 @@ Decision:
 
 **Fix.** Add both sorts to §6.3. Replace the DOM grep with a test that changing other students' data never moves a row within its tier.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F51 · "Match" is used outside reach, match and safety
 
@@ -813,7 +815,7 @@ Decision:
 
 **Fix.** Rename the stamp and the key ("closest fit"), add both strings to §6.3, and lint UI copy for the word.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F52 · The headline rephrase is a sixth AI feature, gated three different ways
 
@@ -823,7 +825,7 @@ Decision:
 
 **Fix.** Declare it at the top of pass 5 or drop it. If kept: off by default, the rule wording always shown beside it, and the set-equality validator on tier words as well as numbers.
 
-Decision:
+Decision (2026-09-24): Accept, and drop the headline rephrase from v1; the deterministic rule headline stays; revisit after the pilot.
 
 #### F53 · Three more places where model output decides without a written rule
 
@@ -838,7 +840,7 @@ Decision:
 
 **Fix.** Keyword tags as a floor that the model may add to with quoted spans, never remove; the student sees and corrects the tags and may submit any archetype; `answer_kind` never ends a session. Render the compiled co-pilot filter above every answer and search raw text too. Keep model labels off the supervisor's decision screen.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F54 · Veracross can schedule the weekly pack itself, over password-only SFTP, and exposes sensitive endpoints
 
@@ -848,7 +850,7 @@ Decision:
 
 **Fix.** Add the Data Export Package as delivery option (a) in open decision 1 and question 70. Support password SFTP with IP allowlisting and rotation for that path. Make the Veracross `verify()` refuse the alerts and health scopes. Correct the rate-limit note.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F55 · Pass 4 cites a superseded Student Protection Policy, and the stale clause numbers are in the counselor's banner
 
@@ -858,7 +860,7 @@ Decision:
 
 **Fix.** Re-cite v1.1 throughout, remove clause numbers from UI text (cite the policy by name, with numbers in the school's configuration), and label 80085 correctly. The same fix answers §12 item 13.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F56 · The Child Digital Safety Law restricts more than free text sent to a model
 
@@ -870,7 +872,7 @@ Decision:
 
 **Fix.** A counsel question on scope; a per-student consent flag checked at import for under-13s; the under-13 gate extended from AI features to the record itself until counsel answers.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F57 · Parent access does not enforce activation in the database, cannot express custody restrictions, and hinges on one approver
 
@@ -886,7 +888,7 @@ Decision:
 
 **Fix.** Require activation per contact inside `is_guardian_of`. Keep one person or link per SIS contact rather than merging. Import restriction flags. List guardian-link gains individually in the preview. Uploader and approver must differ for rosters, staff, contacts and caseloads, and access-changing imports never auto-approve. Fixtures only from a signed manifest.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F58 · The teacher sign-off card would port an engine signal, and the subject-teacher scope is too wide
 
@@ -898,7 +900,7 @@ Decision:
 
 **Fix.** A narrow sign-off view (name, prerequisite mark, the student's reason), no band. Sign-off only on HL picks in the open round, signed as the current person. A flag view that shows only the routed vocabulary, with a wording that does not reveal a case.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F59 · Pass 4's mentor reader rules cannot be built on pass 1's tables
 
@@ -910,7 +912,7 @@ Decision:
 
 **Fix.** Derive the subject through the pairing. Grant per table: parents see only that a pairing exists and the mentor's headline; mentors see only their own pairing's rows. Pairings and `share_scope` change only through coordinator and student functions.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F60 · "Identifiers only" is not true of several emails and alerts, and their processing is global
 
@@ -920,7 +922,7 @@ Decision:
 
 **Fix.** Make confirmation and nudge templates content-free ("you have a new message in CAROS"). Poll send status instead of using Event Grid, or list Event Grid as a sub-processor. Send counts, not ids, to the ops channel and name its provider. Correct T11 and 04:707.
 
-Decision:
+Decision (2026-09-24): Accept with a change: emails may name the sender's role from a fixed allowlist (counselor, teacher, mentor, the school); safeguarding roles (CPO, safeguarding lead) always appear as "the school"; never names, the student or the topic. In-app notices after sign-in may show full names and roles. Ops channel gets counts not ids; name the providers.
 
 #### F61 · Access from abroad by CAROS people, Microsoft support and yearly pen tests are unaddressed
 
@@ -930,7 +932,7 @@ Decision:
 
 **Fix.** Support access only from managed devices through a UAE egress (Bastion or a virtual desktop in UAE North), with the operator's location recorded on each grant. Real data shown only in person or on the school's own conferencing tenant. Keep student data out of tickets. Buy the support plan and enable Customer Lockbox. Rules of engagement for yearly tests (F41).
 
-Decision:
+Decision (2026-09-24): Accept with a change: proportionate for the pilot. Real data viewed only on managed devices, shown only in person or on the school's own video platform, never in tickets; each support grant records the operator's location; buy the Microsoft support plan and enable Customer Lockbox. Defer the UAE Bastion or virtual desktop until support access is frequent; add a counsel question on whether viewing from abroad is a transfer.
 
 #### F62 · The Extended Essay guide dates are a year off for ACS's current cohorts
 
@@ -940,7 +942,7 @@ Decision:
 
 **Fix.** Default ACS's rounds to the 2027 guide, keep `ee_2018` for resits only, and re-ask question 133 about the May 2027 and May 2028 cohorts.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F63 · The family notice understates what the AI provider may keep
 
@@ -950,7 +952,7 @@ Decision:
 
 **Fix.** State both retention periods and what "flagged" means, in the notice and in C18.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F64 · No results-day, Confirmation or Clearing logic, and university clocks count school days over the summer
 
@@ -960,7 +962,7 @@ Decision:
 
 **Fix.** An `offer_condition_check` rule on the import of final results, and calendar-day SLAs (or a results-period calendar kind) for university rules.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F65 · Several structures are ACS-shaped where the plan promises data
 
@@ -975,7 +977,7 @@ Decision:
 
 **Fix.** Portal rules and guide content per school; `privacy.retention_override` keyed by `school_id`; the catalogue as per-school subjects; archetype steps conditioned on programme family; either generalise the selection module or state the limitation; vocabularies instead of CHECKs; an IGCSE scale; a KHDA reason family or a question.
 
-Decision:
+Decision (2026-09-24): Accept with a change: do the data fixes now (per-school portal rules and retention, vocabularies instead of CHECKs, catalogue per school, archetype steps by programme); document the IB-only subject-choice engine as a known limitation and generalise it to A levels when a British school signs.
 
 #### F66 · The Personal Statement Lab's "AI read" score survives the port
 
@@ -985,7 +987,7 @@ Decision:
 
 **Fix.** Add it to §6.3's not-ported list, or replace it with a labelled checklist with no score.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F67 · A school role can switch the demonstration marker off
 
@@ -997,7 +999,7 @@ Decision:
 
 **Fix.** Make `branding_mode` immutable or CAROS-only, and derive the letterhead from it so the name and the marker cannot be separated.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F68 · Smaller engine defects that change the numbers by multiples
 
@@ -1011,7 +1013,7 @@ Decision:
 
 **Fix.** Keep one-step ordinal moves inside the band unless held across two assessments. For row 8, require the other domain at moderate or a weak held two weeks. State register, unit and window per measure in the thresholds schema. For fairness, pre-register a few comparisons, pool across quarters, report intervals, and add a multiple-comparisons rule to the G-LIVE criterion.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F69 · Four cited facts do not match their sources
 
@@ -1029,7 +1031,7 @@ The arguments these support survive the corrections. The numbers do not.
 
 **Fix.** Replace each with what the source says, or remove the number. In pass 8, re-check every quoted sentence and every attributed number in passes 3 and 5 against its cited page, and mark any claim that cannot be re-found as an assumption.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 ### A.4 Minor
 
@@ -1041,7 +1043,7 @@ Decision:
 
 **Fix.** Add a thinking allowance per feature to the script, measured in B7.5's smoke test, and relabel the price table.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F71 · Pass 1's cost table undercounts HA storage and omits several lines
 
@@ -1051,7 +1053,7 @@ Decision:
 
 **Fix.** Add the lines; the pilot total rises by roughly $300 a month.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F72 · Bookkeeping errors inside pass 6
 
@@ -1061,7 +1063,7 @@ Decision:
 
 **Fix.** Move O11, O33 and O35 to the closed list; correct the count; map or drop the two seed keys; place "Ask to join" in B6 or record that it is not ported.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F73 · Pass 1's account of the AWS region loss needs small corrections
 
@@ -1071,7 +1073,7 @@ Decision:
 
 **Fix.** Correct the date, the scope of the loss, the qualifier and the link; cite Bahrain as the country-level precedent.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F74 · Small corrections to pass 2's vendor facts
 
@@ -1081,7 +1083,7 @@ Decision:
 
 **Fix.** Correct §7.3 to §7.8 and the references.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F75 · Smaller authorization and identity defects
 
@@ -1095,7 +1097,7 @@ Decision:
 
 **Fix.** Per-tier action allowlists inside the definer writers; revoke `PUBLIC` execute on all definers; a separate teacher tier with invoker projection views; bind by email only when no Google subject is stored; no framework caching on authenticated routes.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F76 · Smaller residency paths
 
@@ -1105,7 +1107,7 @@ Decision:
 
 **Fix.** Mention mentors abroad in the consent text and share first names by default; `spellcheck="false"` on sensitive fields and a Chrome policy line in the IT checklist; self-host fonts with `font-src 'self'`; word the notice as "inference in the United States"; send no user id or a random one per generation; deliver the exit pack in the portal; a DPA annex of school-side responsibilities.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F77 · Smaller invariant and consistency items
 
@@ -1123,7 +1125,7 @@ Decision:
 
 **Fix.** A separate XP class; drop per-target admit rates from student and parent screens or label them as institution-wide; define the ADEK indicators; align §0.1 with §2.2; nightly route validation; an idempotency key per send; the coordinator confirms EE numbers.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 #### F78 · Smaller engine and documentation errors
 
@@ -1133,7 +1135,7 @@ Decision:
 
 **Fix.** Correct the numbers, define the row conditions, and tag each ACS question with the gate it blocks.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 ### A.5 The eighteen inconsistencies in pass 6 §12, checked
 
@@ -1141,75 +1143,75 @@ Each item was checked against the files. None is wrong. Two are slightly misstat
 
 **§12.1 · Sweep job names and the watchdog hour.** Confirmed. Pass 1 DR-2 has `sweep.tick` every fifteen minutes and `sweep.watchdog` at 06:00 (01:111); pass 3 has `sweep.schedule` (03:879) and the watchdog at 05:45 (03:886).
 
-Decision:
+Decision (2026-09-24): Accept.
 
 **§12.2 · `caros_owner` cannot log in.** Confirmed: "Migrations run as `caros_owner`" (01:175) against `CREATE ROLE caros_owner NOLOGIN` (01:486). The `caros_migrator` fix is sound, but it sits inside the larger role problem in F01.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 **§12.3 · Loose ends in pass 1's DDL.** Confirmed: `core.touch_updated_at()` is defined (01:608) and attached to nothing; `audit.entry` and `events.event` carry `school_id` with no foreign key (01:3441, 01:3562); the comment says "four settings" (01:882) where DR-4 sets six, plus `app.actor_label`, plus `SET LOCAL ROLE`.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 **§12.4 · Pass 2's onboarding contradicts pass 4.** Confirmed: step 18 uses `sso_jit` (02:1070), which D38 removes; step 4 has "the school's super admin registers the CAROS OAuth client" (02:1056). Addition: step 4 also omits Google's rule that users designated under 18 are blocked from unconfigured third-party apps, which pass 4 §2.1 covers.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 **§12.5 · Pass 2's internal counts.** Confirmed for the items checked: "six Axiom saved queries" (02:735, 02:1107) against a seven-file table (02:738 to 02:746); DR-14 names two retrospective domains (02:66) against three at 02:718; §7.8 cited where §7.9 is meant (02:70, 02:249, 02:328); `const` listed as a transform (02:50) and as a binding (02:376). The option lettering and `field_key` examples were not checked. Addition: 02:113 cites §7.7 for OneRoster, which is §7.8.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 **§12.6 · Pass 4's widening rule stated three ways.** Confirmed (04:272, 04:294, 04:369, and D36 at 04:771). Correction: pass 6 says it planned on §3.3's reading, but its own B0.7 acceptance implements §3.1's. See F47.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 **§12.7 · Column names differ between body and D-table in pass 4.** Confirmed: `training_opt_out_confirmed` (04:529) against `training_opt_out_confirmed_at` (04:788); `notice_version` (04:567) against `notice_version_id` (04:795).
 
-Decision:
+Decision (2026-09-24): Accept.
 
 **§12.8 · Feature keys differ between passes 1, 4 and 5.** Confirmed in substance: pass 1's CHECK (01:3271) lacks `quarantined_reader`; pass 5 D74 adds it. Correction: pass 4 does not use a feature key `discovery`; `discovery` is a data class in pass 4, and §6.4 has one combined row, "Discovery chat and pathway analysis". Pass 1's CHECK also carries `letter_draft`, which no later pass keeps.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 **§12.9 · `covered_model` and `zdr_eligible` moved.** Confirmed: pass 4 puts them on `ai.model_config` (04:522, 04:788); pass 5 D62 puts them on `ai.model`.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 **§12.10 · Canary tenants in production against DR-9.** Confirmed (01:401). Addition: DR-9 admits synthetic tenants in production only as branded demo tenants with the marker on, the opposite of accepted decision C6, and pass 4 T1 (04:660) and pass 6's B4 acceptance (06:230) still carry DR-9's wording. See F42.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 **§12.11 · The narrative seed layer and `strength`.** Confirmed: DR-8 stores the prototype's signal as `evaluation.strength` with `strength_definition = 'prototype:unspecified'` (01:362); pass 3 D17 drops both columns.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 **§12.12 · The Extended Essay's 2027 guide.** Confirmed: pass 1 models three `rppf` milestones (01:322, 01:2424); pass 5 D70 adds `reflection_model`. Addition: pass 5's cohort dates are a year off, which changes the default (F62).
 
-Decision:
+Decision (2026-09-24): Accept.
 
 **§12.13 · ADEK Student Protection Policy section numbers.** Confirmed, and now resolved: pass 4 read v1.0 (January 2024); ADEK's official v1.1 (September 2024) is current and renumbers the clauses. Pass 4's clause numbers, including the one in the counselor banner, are stale. See F55.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 **§12.14 · Google verification is unstated in pass 4.** Confirmed. Addition: pass 4's Google design also relies on RISC events that Google does not send for Workspace accounts (F18) and on `prompt=login`, which Google does not document (F19).
 
-Decision:
+Decision (2026-09-24): Accept.
 
 **§12.15 · Blob SFTP in UAE North.** Confirmed as pass 2 open decision 17. Additions: Blob SFTP costs $0.30 an hour per SFTP-enabled account (F71), and Veracross's scheduled export offers password SFTP only (F54).
 
-Decision:
+Decision (2026-09-24): Accept.
 
 **§12.16 · Audit action keys are one list.** Confirmed: pass 1 seeds 84 audit keys and 52 event names; D9, D48 and D71 add more; all are seeded in B0. Addition: `PREVIEW_ACCESS` appears in both D9 and D48, and `sweep.completed` in both pass 1's events and D28, so a combined seed fails on the primary key.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 **§12.17 · Reveal weeks.** Confirmed as a counting convention, not a contradiction: pass 3 counts weeks 4 and 8 of shadow (03:958), and pass 6's overlay already maps them to overlay weeks 6 and 10. The pilot agreement should state which count it uses.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 **§12.18 · D15 subsumed; D11, D56, D58 and D60 land with their tables.** Confirmed but incomplete: the task tables contradict the map in B1.1, B2.10 and B7.1, and D61 is missing. See F40.
 
-Decision:
+Decision (2026-09-24): Accept.
 
 ### A.6 Citation register
 
@@ -1420,44 +1422,44 @@ Disagreements where both positions are defensible. Each needs Davide's choice.
 
 **C1 · How much model to put in the student safety screen.** *Position A:* ship the model layer as an add-only second reader (F03's fix): every lexicon hit reaches a person, and the model can only raise urgency or catch what the lexicon missed. This keeps humans in the loop and accepts more alerts for counselors to clear. *Position B:* ship v1 pattern-only, with no model layer at all, until the lexicon has run a term and the CPO has seen the false-positive rate; add the model later. This keeps student text in the country (the safety screen is the feature pass 5 names to move first) and removes the one AI feature that touches the most sensitive text, at the cost of missing disclosures the lexicon cannot phrase-match. Both reject the current design, where the model clears hits.
 
-Decision:
+Decision (2026-09-24): Position B: pattern-only safety screen in v1; every lexicon hit reaches a person; no model reads student text. Revisit an add-only model layer after one term, once the CPO has seen the false-positive rate.
 
 **C2 · Email to parents.** CONTEXT §3 says parents receive no email in v1 and also that parents sign in by magic link, which is an email. *Position A:* allow authentication email only (magic links and activation), with no child content; everything else, including meeting confirmations, is in-app. Closest to the decision; parents who do not open the portal miss confirmations. *Position B:* adopt pass 1's reading, transactional email including meeting confirmations with no welfare content. Better for families, and it moves the product toward the parent channel CONTEXT deferred.
 
-Decision:
+Decision (2026-09-24): Position B: content-free transactional email to parents (magic links, activation, and role-only notices under the F60 rule: no names, child content or topics).
 
 **C3 · Staff notification emails beyond the two decided** (F28). *Position A:* keep and declare the ones that serve safety (the counselor's safety-alert email, escalation reminders and deputy routing, grooming routes) and make everything else in-app. Safety needs reach when a counselor is not signed in. *Position B:* hold to two emails; every other notice is in-app, and the school's own processes cover reach. Simpler to audit and to explain to a school's IT review; slower when someone is away from CAROS.
 
-Decision:
+Decision (2026-09-24): Position A: keep and declare the safety emails (counselor safety alert, escalation reminders and deputy routing to the CPO, grooming alerts to the mentor coordinator), all reference-only; everything else in-app.
 
 **C4 · What a subject-access pack contains by default** (F14). *Position A:* include counselor notes and evaluations by default, redacted per item. Transparency, a PDPL-style access right, and notes written knowing they may be read. *Position B:* exclude professional records and anything linked to an escalation or safety alert by default until counsel answers C7 and C8. Keeps the staff-only decision and protects a referral from a parent who may be its subject.
 
-Decision:
+Decision (2026-09-24): Position B: exclude professional records (notes, engine evaluations, AI outputs, anything linked to an escalation or safety alert) from the default subject-access pack until counsel answers C7 and C8; the school may include items one by one.
 
 **C5 · Parental access when a student turns 18** (pass 4 §3.5, O21). *Position A:* continue by default and let the student object. Matches family expectations at an American school in the UAE where parents pay and are involved in applications. *Position B:* suspend at 18 until the student opts in. The UAE age of majority is 18 from 1 June 2026, US practice moves rights to the student at 18, and Grade 12 students turn 18 during the application season.
 
-Decision:
+Decision (2026-09-24): Position A for now: parent access continues at 18 by default and the student can object; add a new ACS question asking the school's view before the pilot, and revisit if ACS or counsel prefers suspend-until-opt-in.
 
 **C6 · Whether mentor video sessions on the school's platform count as "in-platform"** (04 §2.3; invariant 11). *Position A:* yes: the school's own tenant is supervised and recorded under school policy, and it is how schools run volunteer programmes. *Position B:* no: invariant 11 means inside CAROS, where message holds and screening apply; v1 offers CAROS messaging and in-person sessions on school premises only. ADEK Digital Policy 6.4 (F04) requires parental consent and ADEK approval for live virtual interactions with invited visitors either way.
 
-Decision:
+Decision (2026-09-24): Position B: v1 mentor contact is CAROS messaging (holds and screening) and in-person sessions on school premises only; video on the school's platform deferred until ACS has ADEK 6.4 consent and approval in place.
 
 **C7 · Which model writes the code that keeps student data safe** (06 C3). *Position A:* keep the reservation rule: Fable 5.1 for the subtle, silent-failure work, because no student data should ever be in a session. *Position B:* run build sessions under a commercial API organisation with ZDR and Opus 5.5 only, so that if real data ever does reach a session (F23), no Covered Model retains it. Costs the strongest model on the hardest work; buys a development path with no 30-day retention anywhere.
 
-Decision:
+Decision (2026-09-24): Accept with a change: Opus 5.5 under the ZDR API organisation writes every task, including those pass 6 reserved for Fable; Fable 5.1 reviews diffs only (code and synthetic data, never tenant data), keeping the different-model review rule. B0 runs a bake-off on one reserved task (the F01 auth.allowed() rewrite): both models on the same brief, judged by acceptance tests and cross-review; any category where Fable is clearly better moves back to Fable.
 
 **C8 · How heavy the process should be for one full-time builder and part-time teammates.** *Position A:* keep the four streams, two-person reviews, CODEOWNERS, different-model reviews and rule ledgers. The repository's history (lost phases, drifting documents) justifies every one. *Position B:* a lighter process until a second full-time engineer exists: required checks and tests stay, human review becomes asynchronous with a service level, different-model review only on the reserved list. Faster, and less likely to stall on a part-timer's week (F39, F46).
 
-Decision:
+Decision (2026-09-24): Position B: Davide is the only builder for now. All automated checks stay (CI, tests, immutable migrations, anti-overwrite hooks); human review is asynchronous with a service level and never blocks a merge; different-model review on the reserved list; rule ledgers kept for ports. The full process (streams, two-person review, CODEOWNERS) switches on when a second regular builder joins.
 
 **C9 · Engine defaults for the pilot** (F05, F24, F25). *Position A:* keep sensitive defaults and tune in shadow, as pass 3 plans; the reveal sessions exist to find the right settings with the counselors. *Position B:* detune before the pilot (day-level attendance, floors at the full typical noise, persistence of three weeks) and accept later detection, so that the first weeks of shadow are not dominated by noise the plan already predicts. Either way, the G-LIVE bars should become pooled intervals (F24).
 
-Decision:
+Decision (2026-09-24): Position B: detune before the pilot (day-level attendance, floors at the full typical noise, three weeks of persistence); tune further in shadow; G-LIVE bars become pooled pre-registered intervals.
 
 **C10 · ManageBac as the record for CAS and the Extended Essay** (F27). *Position A:* read-only mirror: ACS keeps ManageBac, CAROS reads CAS (and EE through the PBL template) and adds the counselor views ManageBac lacks. Nobody maintains data twice. *Position B:* CAROS becomes the record with a one-time import, as the prototype assumed. One system, richer workflow (the conversation gate, capacity stamps), and a migration the IB coordinator must want.
 
-Decision:
+Decision (2026-09-24): Position A: ManageBac stays the record for CAS and EE; CAROS is a read-only mirror via the v2p3 API plus the counselor views ManageBac lacks; subject selection and its conversation gate remain CAROS-owned.
 
 **C11 · The fairness audit at pilot scale** (F68). *Position A:* build the machinery now and run it with intervals, stating plainly that at 350 students it can detect only large effects. *Position B:* collect no special-category labels during the pilot and run the audit only when pooled data across schools gives it power. Less data held about minors, and no screen that triggers by chance every quarter.
 
-Decision:
+Decision (2026-09-24): Position B: collect no special-category labels during the pilot; run the fairness audit only once pooled cross-school data gives it power; state this in the pilot documents.
