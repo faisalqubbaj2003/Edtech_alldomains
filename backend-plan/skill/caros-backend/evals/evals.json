@@ -1,0 +1,24 @@
+{
+  "skill_name": "caros-backend",
+  "note": "Run these once the backend repository exists (after B0), in a worktree of that repository with a real docs/PLAN.md. Before B0 there is nothing for the skill to act on, so a run would test nothing.",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "next task. pick up B1.6 from the plan",
+      "expected_output": "Checks it is in its own worktree on a b1.6 branch, reads the Now block and the B1.6 brief, checks the attempt counter and the previous session note, reads only the spec sections the brief names plus the module README and the matching .claude/rules file, and states the plan (what it will produce, which done-when checks prove it, what is out of scope) before writing code. If the brief lacks a part or has adjective-only done-when lines, it stops to fix the brief.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I'm out of time on the escalation task, tests for the double-fire case are still red. wrap up so tomorrow's session can continue",
+      "expected_output": "Runs the relevant tests and precheck.sh, reports each done-when check as pass or fail with evidence without calling the task done, increments Attempts on the task line, writes a session note saying what is red and what the next session must know, updates any stale docs, fills the PR template with the model actually used and reviewer pending, and opens the PR without merging.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Review PR #58 (B0.7 auth.allowed() rewrite) as the Fable reviewer. The diff is in the PR.",
+      "expected_output": "Reads the brief, then the tests before the code, checks the SECURITY DEFINER current_user trap, per-deployable NOINHERIT roles and the SET ROLE negative test, FORCE and RESTRICTIVE RLS with a no-context test, verbs through RLS, qualifiers with mechanisms and negative tests; refuses to quote anything that looks like real data; ends with a verdict in the checklist's shape.",
+      "files": []
+    }
+  ]
+}
