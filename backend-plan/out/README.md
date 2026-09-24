@@ -1,0 +1,52 @@
+# CAROS backend plan · index
+
+The backend plan for CAROS (Counselor OS): eight passes written 2026-09-22 to 2026-09-24, from the frozen prototype `index.html` at commit `fb28217`, `PRODUCT.md`, and `../CONTEXT.md`. Passes 1 to 6 are the design and the build order; pass 7 is an adversarial review of them; pass 8 applied Davide's 107 decisions on that review to passes 1 to 6 in three sessions. **The plan describes a design, not a build.** Where it and the code disagree, the code wins.
+
+## The files
+
+| File | What it is | Read it for |
+|---|---|---|
+| `../CONTEXT.md` | Shared context: the product, the decisions of 2026-09-22, the eleven invariants, the data dictionary, the known tensions. Updated in pass 8 for the decisions on emails, roles, the safety screen, cadence and ManageBac | the rules every pass plans on |
+| `../ACS-IT-QUESTIONS.md` | **Every question for ACS, merged** (numbers 1 to 165, each once; 126 withdrawn), each tagged with the gate it blocks, twelve marked "ask now" | the ACS meeting |
+| `01-architecture-and-data-model.md` | Pass 1: Azure UAE North and UAE Central, the monorepo, per-deployable database roles, row-level security, permissions as data, the complete schema (DDL), the state machines, the seed, environments | what the database is and who may touch what |
+| `02-ingest-and-integrations.md` | Pass 2: the import pipeline, mapping profiles as data, identity resolution, cadence (weekly pack, termly fallback), connectors, fixtures, onboarding a school in twenty steps | how facts get in |
+| `03-signal-engine.md` | Pass 3: the personal-baseline engine (median and MAD with floors, one-sided CUSUM, levels, breadth, persistence), tiering, cold start, suppression, shadow mode and the G-LIVE criteria, the calibration script | how CAROS decides who needs a counselor |
+| `04-security-privacy-compliance.md` | Pass 4: UAE law and ADEK policy, identity, the permission matrix, audit, escalation, the email inventory (§5.8), retention, threats, the pre-real-data list (§9.13), counsel questions C1 to C17 and C24 to C32 | what must be true before a real record moves |
+| `05-ai-design.md` | Pass 5: the five v1 AI features behind a pseudonymising gateway, ZDR and ADEK consent, evals, cost, failure modes; the lexicon-only safety screen | how the model is used, and where it is not |
+| `06-build-sequence.md` | Pass 6: phases B0 to B9, the migration map (the single source), **the April 2027 schedule** (§2.3), the solo process, models and reviews, tests, the port, operations, gates, risks, and the consolidated open decisions (§13) | what to build next and when |
+| `07-review.md` | Pass 7: 78 findings, A.5 (pass 6's inconsistencies) and eleven judgment calls, each with Davide's decision line | why the plan changed |
+| `08-changelog.md` | Pass 8: every change sessions 1 to 3 made, by file and finding, and what is left undone | what changed where |
+
+## Where the plan stands (2026-09-24)
+
+- **Target:** G-REAL, the first real record, in the first fortnight of ACS's spring term 2027, assumed Monday 5 April 2027 until ACS answers question 165. Davide builds alone. **Fallback:** the first fortnight of the 2027-28 year (August 2027). Three checkpoints decide (23 October 2026, 17 December 2026, 15 February 2027). 06 §2.3 has the session arithmetic, the cuts, and every external gate back-scheduled from T.
+- **How the code gets written:** Opus 5.5 under a zero-data-retention organisation writes every task; Fable 5.1 reviews diffs of code and synthetic data only; a bake-off in B0 decides whether any category of work goes back to Fable. Solo mode: every automated check stays, human review never blocks a merge, the full process switches on when a second regular builder joins.
+- **The pilot:** onboarding before T with no student data; G-REAL moves the tenant to `shadow`; at least twenty weeks of history; shadow mode with no visible tiers and the counselors' daily log; reveal sessions at shadow weeks 4 and 8; G-LIVE on pooled, pre-registered intervals over at least 40 blindly judged cases, planned for the start of 2027-28; the application-season and Diploma modules in 2027-28; AI only after G-LIVE, the ZDR arrangement and ADEK's consent.
+- **Next actions this week:** send ACS the "ask now" questions (49, 149, 150, 165, 30, 31 and 114, 36 and 113, 2a and 70, 73, 83 and 100, 19 and 141, 32 and 109); engage counsel with C25 first (does in-country Microsoft hosting need ADEK's consent under 7.1.3.a); open the ZDR organisation for build sessions; book the pen-test shortlist; start B0.
+
+## Open decisions, ordered by what they block
+
+The full table, with options and recommendations, is 06 §13; the O-numbers are the same. Closed decisions are listed there too, so nobody reopens them.
+
+1. **Now: blocks B0 and the first commits (Davide).** O1 infrastructure tool; O2 RPC layer; O3 PostgreSQL major; O4 test runner; O5 the second synthetic school's name; O6 GitHub plan; O8 XLSX; O9 delivery mechanism; O10 withdrawal grace period; O13 frozen spec copies; O14 maintenance window; O97 the fictional coordinator's name, checked; O103 the bake-off verdict; O104 the account that runs Fable reviews and the ZDR organisation's usage tier; O105 whether `index.html` and PRODUCT.md change (F29, F62).
+2. **G-REAL: blocks the first real record (ACS, counsel, the CPO, IT, with Davide; latest dates in 06 §2.3).** O15 the out-of-country cold copy (with ADEK's consent); O16 retention numbers; O17 legal basis and consent procedures; O18 parent activation mode; O19 escalation SLA, form minimums and category routes; O22 break-glass parameters; O24 the delivery cadence and the history import; O28 Classroom and the engagement domain; O30 certification order; O31 insurance; O36 who authors profiles; O100 students with no date of birth; O101 the reader account's Workspace role; O106 how the DPA signatory confirms the second `school_admin`. **Waiting on counsel:** C25 decides whether ADEK's consent (G26) is itself a G-REAL gate.
+3. **Before the first shadow sweep (the counselors, the registrar, with Davide).** O32 who activates a threshold version; O37 event-triggered evaluation; O38 commit-triggered evaluation; O41 whether the engine may propose `urgent`; O43 `shock_opens_monitor`; O44 Grade 8 history; O46 the counselor log's cadence; O47 the G-LIVE floors, pre-registered; O49 recovery weeks; O50 whether context may lower a tier; O52 case lifecycle defaults; O90 relapse during the attendance hold; O91 the reason-coverage bar; O92 the planning constants behind the floors; O94 the longest shadow period.
+4. **G-LIVE: blocks the shadow exit (the counselors and the CPO).** O39 relapse uplift; O42 threshold scope; O45 inheritance across a level change; O48 the retrospective cap; O51 the scale estimator; O54 widening counselor visibility (narrow-only until question 65); O93 going live with shadow case state; O102 whether demos tell the engine's stories as they are.
+5. **G-AI: blocks each AI feature (Davide, the ACS DPO, counsel, ADEK, the CPO, the counselors).** O55 no ZDR, or late; O56 provider and inference location; O57 the legal basis for the transfer; O58 AI during shadow; O59 default models; O60 Covered Models after Enterprise Frontier Safeguards; O61 note bodies in briefs; O63 discovery's shape; O65 envelope delivery; O66 refusal fallback; O67 embeddings; O69 the parent draft's language; O70 what the student is told; O71 eval labelling by the school; O72 the closest-fit margin; O73 the small-cell threshold; O74 the daily cost ceiling; O75 feature order; O76 UK course-level offer rates; O95 how far C1's "no model reads student text" reaches; O98 EE feedback where ManageBac holds the essay; O99 thinking allowances.
+6. **Module builds, year 1 and later (Davide, with ACS).** O53 who is in the Diploma cohort in the choosing year; O79 AWS `me-central-1`; O80 PgBouncer; O81 OneRoster; O82 the Veracross connector path; O83 connector order (and the Maia half of the old O27); O84 in-country inference; O85 letter generation; O86 certification timing; O87 the day rule without a master register; O88 a Dubai attendance-reason family; O89 EE reflection text in the mirror; O96 the mentor invitation channel.
+7. **Decided for now, reopened only by a named answer.** O20 subject-access defaults (C4; counsel's C7 and C8); O21 parental access at 18 (C5; question 148, counsel's C6).
+
+## Decisions that could not be fully applied, and why
+
+| Decision | What was not done | Why |
+|---|---|---|
+| F29 (a fictional coordinator "in the seed and the prototype") | The seed, the blocklist and G2's letter are done; `index.html` still names the prototype's coordinator "Mr. A. Diaz" | `index.html` is outside `backend-plan/` and frozen as the sales demo; changing it needs Davide's explicit go-ahead (O105) |
+| F62 (the 2027 Extended Essay guide) | Every pass is on `ee_2027`; PRODUCT.md still describes "the three mandatory reflection sessions" | PRODUCT.md is outside `backend-plan/` (O105) |
+| F06 (expected results generated by the rules) | Applied everywhere; whether the sales narrative follows the engine's 8-of-15 stories or the counselors retune first is a choice, not a fix | the decision does not say which; it is O102 |
+| C7 (the B0 bake-off) | The rule is applied and the bake-off is scheduled as B0.16; its verdict cannot exist yet | it is decided by running it (O103) |
+| F39 (back-schedule from April 2027; plan against subscription usage limits) | Every gate is back-scheduled from an **assumed** T of 5 April 2027; the usage limits are two, not one | ACS's calendar is unknown (question 165); and under C7 build sessions run on a metered ZDR API organisation, not a subscription, so the plan counts that organisation's rate and spend limits for Opus 5.5 and a subscription-style weekly limit for the Fable 5.1 reviews, which cannot run under ZDR (O104) |
+| F04 (raise 7.1.3.a with ACS this term) | The questions (149, 150), counsel's C25, the gate G26 and the dates are in the plan | asking ACS and ADEK is Davide's act, not a document's |
+| F18 (keep RISC only for consumer accounts if mentors ever use Google) | No RISC receiver anywhere | mentors sign in with passkeys, not Google, so the condition does not arise |
+| C5 (revisit parental access at 18 if ACS or counsel prefers suspension) | The default is applied and question 148 asked | waits for the answers (O21) |
+
+Everything else decided on 2026-09-24 is applied in passes 1 to 6 and `CONTEXT.md`; `08-changelog.md` lists each change by finding.

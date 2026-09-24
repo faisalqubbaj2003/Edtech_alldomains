@@ -6,6 +6,8 @@ It was written on 2026-09-22 from the prototype at commit `fb28217` (`index.html
 
 **Corrections from pass 1.** Section 0.2 of `out/01-architecture-and-data-model.md` checked this file against the code and corrected several statements (IB selection statuses, case stages, three dimension statuses that are hard-wired rather than computed, and others). Where that table and this file differ, pass 1 is right.
 
+**Updated 2026-09-24 in pass 8 session 3** to reflect Davide's decisions on the pass 7 review; the changes are listed in `out/08-changelog.md`.
+
 **This file is a map, not the territory.** This repository has a documented habit of describing a build that no longer exists. Where this file and `index.html` disagree, the code wins, and you should say so in your output.
 
 ---
@@ -54,15 +56,15 @@ These came out of the interview. **Plan on them.** You are expected to challenge
 | Cloud provider | Not decided. Must have a UAE region. Choose and justify. Note that Supabase has no UAE region, so an earlier plan to use it no longer holds. |
 | Signal engine timing | **Overnight batch**, matching the morning ritual. The prototype's architecture page claims evaluation is immediate; that copy is wrong and will change. |
 | Signal engine method | Specify the statistics in full, grounded in real research on what actually predicts students needing support. Counselors must be able to configure what they consider urgent, or tell us beforehand, and the engine is built around those parameters. |
-| Data cadence | **Decided 2026-09-23 after pass 2:** design the signal engine for a **weekly** export pack (per-assessment grades, per-session attendance), and specify exactly what still works if a school can only supply **termly** data: which domains drop out or slow down, and how the interface says so honestly. Weekly is requested from ACS; termly is the degraded mode, never a silent one. |
+| Data cadence | **Decided 2026-09-23 after pass 2:** design the signal engine for a **weekly** export pack (per-assessment grades, and attendance per day from the master register, with the lesson register where kept; updated 2026-09-24 for F05, because the engine counts every attendance measure in days, pass 3 §4.2), and specify exactly what still works if a school can only supply **termly** data: which domains drop out or slow down, and how the interface says so honestly. Weekly is requested from ACS; termly is the degraded mode, never a silent one. |
 | Data ingest | Termly CSV export from the SIS first, with a **per-school column mapping stored as data, never as code**. Designed as a connector interface so live integrations (Veracross, ManageBac, Maia Learning, Google Classroom) are later adapters, not rewrites. Which connectors, and when, is decided later. |
-| Incumbent systems | ACS already runs Veracross (SIS), ManageBac (IB), Maia Learning (university applications) and Google Classroom. CAROS builds its overlapping surfaces anyway, **but designs to read from those systems** so nobody maintains the same data twice. |
-| AI features in v1 | Counselor co-pilot over the caseload; student discovery chat and pathway analysis; meeting briefs; parent email drafts; Extended Essay research question feedback. |
+| Incumbent systems | ACS already runs Veracross (SIS), ManageBac (IB), Maia Learning (university applications) and Google Classroom. CAROS builds its overlapping surfaces anyway, **but designs to read from those systems** so nobody maintains the same data twice. **Updated 2026-09-24 (C10):** ManageBac stays the record for CAS and the Extended Essay, and CAROS mirrors them read-only through the ManageBac v2p3 API (pass 2 §7.4); IB subject selection and its conversation gate stay CAROS-owned. |
+| AI features in v1 | Counselor co-pilot over the caseload; student discovery chat and pathway analysis; meeting briefs; parent email drafts; Extended Essay research question feedback. **Updated 2026-09-24 (C1, F52):** the student safety screen is a lexicon with no model, and no model rephrases the rule-generated case headline. |
 | Recommendation letter engine | **Schema and surfaces now, model generation deferred** to a later phase. |
-| Outbound notifications | Two only: **deadline and checkpoint nudges to students**, and **an email to the Child Protection Officer when a counselor escalates a safeguarding concern**. Parents receive no email in v1. |
+| Outbound notifications | **Updated 2026-09-24 (F28, C2, C3).** Students receive **deadline and checkpoint nudges**. Parents receive **content-free transactional email** only: magic links, and role-only notices that something is waiting after sign-in. Staff receive a declared set of **reference-only safety emails**: the escalation email to the Child Protection Officer, escalation reminders and deputy routing along the CPO's route, the counselor's safety alert, the CPO's "alert unopened" notice, and grooming alerts to the mentor coordinator. **Everything else is in-app.** Pass 4 §5.8 is the complete list. (First decided as two only: nudges to students and the escalation email to the CPO, with no parent email.) |
 | Retention and erasure | You propose a retention schedule per record class with the trade-offs. The numbers are set later by legal counsel. |
 | File storage | Yes: raw SIS exports and import history; student documents (transcripts, Extended Essay drafts, portfolios); counselors' past recommendation letters, used later for voice matching. |
-| Roles | The existing five: counselor, teacher, student, parent, mentor. The IB coordinator is a counselor view, not a sixth role. More roles later if needed. |
+| Roles | The existing five: counselor, teacher, student, parent, mentor. The IB coordinator is a counselor view, not a sixth role. More roles later if needed. **Updated 2026-09-24 (F16, F10):** beside the five, `school_admin` is a role, not a capability on a counselor's membership, and a `staff` role with no data access of its own carries capabilities (for example `safeguarding_lead`) for leadership staff who are neither counselor nor teacher. |
 | Signal visibility | Tiers, signal scores, evidence chains and counselor notes are **staff-only**. Students and parents never see them. |
 | Tenancy | Multi-tenant from the first migration. Build so that a single school can also be given its own isolated deployment if it demands one. |
 | Models | The AI features call Claude. Model choice must be configuration, never code: a model was released in the middle of this planning process. |
@@ -84,6 +86,8 @@ These are the product. They are not configuration and they are not open to chall
 9. **No fabrication.** No invented testimonials, customers, outcomes, benchmarks, pricing or press. While a real school's name is applied to synthetic data, a visible demonstration-data marker is a shipping requirement.
 10. **Gamification exists on the student side only.** Counselor, parent, teacher and mentor surfaces are ungamified.
 11. **Mentor contact is in-platform only**, for safeguarding. The word *match* is reserved for reach/match/safety and is never used for mentor pairing.
+
+*Note to invariant 11 (decision C6, 2026-09-24):* in v1, mentor contact is CAROS messaging and in-person sessions on school premises; video on the school's own platform waits for parental consent and ADEK approval (pass 4 §2.3).
 
 ---
 
@@ -270,7 +274,7 @@ Two gaps to note. The audit log today records changes but almost never records *
 | System at ACS | What it holds | What CAROS overlaps |
 |---|---|---|
 | Veracross | SIS: enrolment, grades, attendance, likely behaviour, timetable, parent contacts | Nothing; it is the primary data source |
-| ManageBac | IB Diploma: CAS, Extended Essay, likely subject records | The whole IB module (selection, CAS, Extended Essay) |
+| ManageBac | IB Diploma: CAS, Extended Essay, likely subject records | The whole IB module (selection, CAS, Extended Essay). **Since 2026-09-24 (C10):** ManageBac stays the record for CAS and the Extended Essay, and CAROS mirrors them read-only through the v2p3 API (pass 2 §7.4); subject selection and its conversation gate stay CAROS-owned |
 | Maia Learning | University and career readiness: lists, applications, documents, likely recommendation letters | University journey, deadline radar, application pack, letter engine, offers |
 | Google Classroom | Assignments and coursework activity | A potential source for the engagement domain |
 
