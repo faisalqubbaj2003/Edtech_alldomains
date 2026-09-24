@@ -2,11 +2,18 @@
 
 Written 2026-09-22 against `index.html` at commit `fb28217` (10,048 lines), `backend-plan/CONTEXT.md`, `PRODUCT.md`, and the prototype's own code wherever the two disagreed. Every cloud, pricing and tooling claim below was checked against a vendor page on 2026-09-22; the page is cited where the claim is made and listed again under Sources. Claims that could not be checked are labelled as assumptions.
 
+**Revised 2026-09-24 (pass 8, session 1)** to apply Davide's decisions on the pass 7 review (`out/07-review.md`). §0.3 lists what changed; `out/08-changelog.md` records every change against the finding that caused it. Where the text below and the pass 7 review disagree, this revision is the one to build from.
+
 ## 0. Read this first
 
 ### 0.1 Departures from section 3 of CONTEXT.md
 
-**None.** Every decision in section 3 is planned on. Three of them are challenged in §5 (Challenges), and one of them, UAE data residency, now carries a risk that did not exist when the decision was taken: the AWS UAE region was physically damaged in March 2026 and one of its availability zones has been declared unrecoverable, with customer data hosted only there lost for good (§1, DR-1). The plan still keeps student data at rest inside the UAE. It does so on Azure UAE North (Dubai) with in-country redundancy in Azure UAE Central (Abu Dhabi), and it asks Davide, ACS and counsel to take an explicit position on whether an encrypted out-of-country cold copy is permitted, because "residency" and "durability" now pull against each other in a way the section 3 table did not anticipate. That is a question, not a departure.
+**None.** Every decision in section 3 is planned on. Three of them are challenged in §5 (Challenges), and one of them, UAE data residency, now carries a risk that did not exist when the decision was taken: the AWS UAE region was physically damaged in March 2026 and one of its availability zones has been declared unrecoverable, with customer data hosted only there lost for good (§1, DR-1). The plan still keeps student data at rest inside the UAE. It does so on Azure UAE North (Dubai) with in-country redundancy in Azure UAE Central (Abu Dhabi), and it asks Davide, ACS and counsel to take an explicit position on whether an encrypted out-of-country cold copy is permitted, because "residency" and "durability" now pull against each other in a way the section 3 table did not anticipate. That is a question, not a departure. The pass 8 revision adds that any such copy needs key material held outside the UAE to be restorable at all, and ADEK's explicit consent under its Digital Policy 7.1.3.a before it exists (DR-9, §5.1).
+
+Two additions the pass 8 revision makes are declared here so that no later pass mistakes them for silent changes:
+
+1. **Two staff roles join the five** (F16, F10). `school_admin` becomes its own role with no caseload path, and a `staff` role with no data access of its own exists only to carry capabilities (`safeguarding_lead`, `safeguarding_oversight`) for a Principal or CPO who is neither a counselor nor a teacher. Section 3 says "more roles later if needed"; these are rows in `auth.role`, not a departure. The five product roles and their surfaces are unchanged.
+2. **Outbound email follows Davide's 2026-09-24 decisions C2 and C3**: content-free transactional email to parents, and a declared set of reference-only safety emails to staff, with everything else in-app. The full inventory lives in pass 4 §5.8; §5.3 below is rewritten to match. CONTEXT §3's "Outbound notifications" row has not yet been updated to say so (handoff in `08-changelog.md`).
 
 ### 0.2 Where the code and CONTEXT.md disagree
 
@@ -19,12 +26,26 @@ The code wins in each case; the schema and state machines follow it.
 | Pathway approval (§7, PRODUCT.md) | counselor "approves, amends, or sends back with reasons" | `data-approve-path` and `data-decline-path` only; no amendment, no reason captured (`:9647–9655`) | The schema requires reasons on send-back and amendment, because pass 5 regenerates candidates under them |
 | Dimension statuses (§7) | "ten derived per-student dimension statuses… computed at render time" | punctuality and engagement are hard-wired to student ids (`dimPunctuality`: `c.id==="s1"?3:c.id==="s6"?1:0`; `dimEngagement`: `c.id==="s2"`) and behaviour is a constant | Those three are not specifications of a rule; pass 3 defines them from the attendance and engagement series |
 | Audit on access (§9) | "`FILE_ACCESS` (seeded only)" | confirmed: no handler writes it | The audit table records access; the domain layer's file-open function writes `FILE_ACCESS` in the same transaction as the read |
-| Teacher flag routing (§7) | `routed` "what happened to it" | written only for the two seeded flags; a new flag gets `routed:""` and `status:"new"` and nothing ever updates it | `routed_note`, `routed_at`, `routed_by_person_id` are set by the counselor's attach or dismiss (C13) |
+| Teacher flag routing (§7) | `routed` "what happened to it" | written only for the two seeded flags; a new flag gets `routed:""` and `status:"new"` and nothing ever updates it | `routed_key`, `routed_at`, `routed_by_person_id` are set by the counselor's attach or dismiss (C13); the teacher sees only the routed label, which never reveals a case (F58) |
 | CAS `outcomes` (§7) | "seven learning outcomes" | `CASREC.outcomes` is a count, not which outcomes | `ib.cas_entry.outcomes smallint[]` records which of the seven each entry evidences |
 | Parent weekend (PRODUCT.md, "UAE school week (Sun–Thu)") | not mentioned | `buildNovemberCalendar` marks Friday and Saturday as the weekend (`:3762`) | The school's weekend is a tenant field (`core.school.weekend_days`), and it is a question for ACS: UAE public and most private schools moved to a Monday-to-Friday week in 2022 (assumption from general knowledge, not verified here) |
 | Mentor `path` string (§7) | | `PARENT_MENTOR.path:"${SCHOOL.short} → LSE…"` is a plain string, not a template literal, so the school name never interpolates (`:3780`) | Cosmetic; noted so nobody ports the bug |
 | EE `EE_WAIT_DAYS` (§7) | 7 | 7 (`:5066`) | Agrees; stored per round as `ib.ee_round.wait_days` |
-| Escalation reason (§4 invariant 5) | "requires a reason" | minimum 12 characters (`reason.length<12` at `:9505`) | `CHECK (char_length(reason) >= 12)`; whether 12 is right is an open decision |
+| Escalation reason (§4 invariant 5) | "requires a reason" | minimum 12 characters (`reason.length<12` at `:9505`) | `CHECK (char_length(reason) >= 12)`; whether 12 is right is an open decision (pass 4 replaced it with a structured form, D46) |
+
+### 0.3 What the pass 8 revision changed (2026-09-24)
+
+Finding numbers are pass 7's (`07-review.md`); the changelog in `08-changelog.md` gives every edit. The larger changes, by where they land:
+
+- **Database roles and the policy function** (F01, §12.2, F36, F44, F75). One login role per deployable (`caros_web`, `caros_worker`, `caros_support`, `caros_migrator`, `caros_jobs`), all `NOINHERIT`; the tier is evaluated in the policy expression and passed to `auth.allowed()`; a separate teacher tier; the AI tier `caros_t_ai` listed with the others. DR-4, §2.2, §2.4, §2.22.
+- **Pass 4's matrix, made storable** (F02, F15, F16, F33, F58, F59). New scopes (`esc`, `addressee`, `lead_cover`, `own_pairing`, `year_group`, `tutor_group`), scope and row kind in the unique key, a per-row data class, derived subjects for child tables, projection views for the qualifiers the matrix prints, policies that accept a table's verb, and `notify.enqueue()`. §2.4 and the new §2.4a, which maps every qualifier in pass 4 §3.6 to its mechanism.
+- **Escalation** (F07, F10). The engine may raise but never lower or auto-close a case with an open escalation; one open escalation per case plus an idempotency key per submission; information added to an open referral; a teacher's safeguarding referral; merge restricted to one student. DR-7.1, §2.9.
+- **Gates that were only a non-null id** (F17, F58). The selection approval trigger, `review_meeting_version`, definer transition functions and column-level update grants. DR-7.3, §2.10, §2.22.
+- **Tenant status, purpose and marker** (F36, F42, F67). One status model (`onboarding`, `shadow`, `live`, `suspended`, `offboarding`, `offboarded`), an immutable `purpose`, and a letterhead that cannot be separated from the marker. §2.3, DR-9.
+- **Second school and school-shaped data** (F31, F33, F65). `ref.regulator_profile`, pastoral assignments and tutor groups, programme families and destination systems as vocabularies, per-school portal rules and retention overrides. DR-8, §2.5, §2.7, §2.21.
+- **University artefacts** (F32). Sectioned statements, UCAS-format references, a centre statement, a predicted-grade snapshot and per-school internal deadlines. §2.11.
+- **Shadow runs the live engine** (F24). Shadow cases are `signal.case` rows with `shadow = true`, readable only as `signal_shadow`. §2.9.
+- **Smaller corrections**: the AWS facts (F73), the cost table (F71), the migrator and `CONCURRENTLY` (F40), the sweep job names (§12.1), DDL loose ends (§12.3), reporting aggregates under RLS (F34), vocabulary history (F48), the headline rephrase removed (F52), the seed's real-person name and unsourced figures (F29, F30), the Extended Essay guide (F62), XP as its own class (F77), and the lighter process for one builder (C8).
 
 ## 1. Decision records
 
@@ -32,7 +53,7 @@ The code wins in each case; the schema and state machines follow it.
 
 **Context.** Section 3 requires student data at rest in a UAE data centre from day one. Four providers operate in the UAE. The facts, checked 2026-09-22:
 
-- **AWS Middle East (UAE), `me-central-1`**, opened 29 August 2022 with three availability zones ([AWS launch post](https://aws.amazon.com/blogs/aws/now-open-aws-region-in-the-united-arab-emirates-uae/)). AWS's own Health Dashboard feed states that the region "has suffered damage as a result of the conflict in the Middle East and is currently unable to reliably support customer applications", that AWS "strongly recommend[s] customers migrate all accessible resources to other Regions", that billing operations are suspended, and, in a 15 September 2026 update, that AWS is "unable to restore access to the resources and data hosted exclusively in the mec1-az2 Availability Zone" ([AWS status feed](https://status.aws.amazon.com/rss/all.rss), items dated 30 Apr 2026 and 15 Sep 2026; the disruption began 2 March 2026). The Bahrain region `me-south-1` is in the same state. Every service the plan would have used is in the AWS catalogue for the region (RDS PostgreSQL 17 and 18, Aurora, S3, EventBridge Scheduler, SES API, Secrets Manager, KMS, CloudWatch, ECS on Fargate, Lambda, SQS, Step Functions, ECR, WAF; App Runner is not), and the on-demand prices were retrieved (RDS `db.m7g.large` Multi-AZ $0.410/h, Fargate $0.0526 per vCPU-hour, S3 $0.025/GB-month, SES $0.10 per 1,000) from the [AWS Price List API](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonRDS/current/me-central-1/index.json). None of it can be relied on for provisioning today, and no restoration date is published.
+- **AWS Middle East (UAE), `me-central-1`**, opened 29 August 2022 with three availability zones ([AWS launch post](https://aws.amazon.com/blogs/aws/now-open-aws-region-in-the-united-arab-emirates-uae/)). AWS's own Health Dashboard feed states that the region "has suffered damage as a result of the conflict in the Middle East and is currently unable to reliably support customer applications", that AWS "strongly recommend[s] customers migrate all accessible resources to other Regions", that "relevant" billing operations are suspended, and, in a 15 September 2026 update, that AWS is "unable to restore access to the resources and data hosted exclusively in the mec1-az2 Availability Zone" ([AWS status feed](https://status.aws.amazon.com/rss/all.rss), items dated 30 Apr 2026 and 15 Sep 2026; the disruption began 1 March 2026, the date of the feed's first item and of TechPolicy.Press's account). For the UAE region the declared loss is limited to data held only in that one zone. The Bahrain region `me-south-1` is worse: AWS declared data held anywhere in that region unrecoverable, which makes Bahrain, not the UAE, the country-level precedent for the cold-copy question in §5.1. Every service the plan would have used is in the AWS catalogue for the region (RDS PostgreSQL 17 and 18, Aurora, S3, EventBridge Scheduler, SES API, Secrets Manager, KMS, CloudWatch, ECS on Fargate, Lambda, SQS, Step Functions, ECR, WAF; App Runner is not), and the on-demand prices were retrieved (RDS `db.m7g.large` Multi-AZ $0.410/h, Fargate $0.0526 per vCPU-hour, S3 $0.025/GB-month, SES $0.10 per 1,000) from the [AWS Price List API](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonRDS/current/me-central-1/index.json). None of it can be relied on for provisioning today, and no restoration date is published.
 - **Microsoft Azure UAE North (Dubai, availability zones) and UAE Central (Abu Dhabi, no zones, access-restricted)** form a region pair ([Azure paired regions](https://learn.microsoft.com/en-us/azure/reliability/regions-paired); [regions list](https://learn.microsoft.com/en-us/azure/reliability/regions-list)). Microsoft's Learn regions list and its datacenter map give the cities; the map's UAE North entry says "Stored at rest in the United Arab Emirates" ([regions.json](https://datacenters.microsoft.com/globe/data/geo/regions.json)). No Microsoft incident record for either region was found for 2026; a Microsoft Q&A thread on 2 April 2026 asking exactly this question was answered "there are no current outages or service impacts in UAE North or UAE Central" ([Microsoft Q&A](https://learn.microsoft.com/en-us/answers/questions/5848347/inquiry-the-status-of-azure-cloud-services-in-the), answerer not identifiable as Microsoft staff), and secondary reporting says Microsoft denied any hits on its facilities ([TechPolicy.Press, 12 Mar 2026](https://www.techpolicy.press/the-legal-and-policy-fallout-from-data-center-strikes-in-the-middle-east-war/)). No primary Microsoft statement about the strikes was found; that is an assumption to keep checking.
 - **Oracle Cloud** has two UAE regions, Abu Dhabi `me-abudhabi-1` and Dubai `me-dubai-1`, one availability domain each ([OCI regions](https://docs.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm)); OCI Database with PostgreSQL is shown deployed in both in Oracle's own DR tutorial ([Oracle tutorial](https://docs.oracle.com/en/learn/full-stack-dr-pgsql-cold-dr/index.html)), but the official service-availability matrix returned HTTP 403, so that is partly unverified.
 - **Alibaba Cloud** has Dubai `me-east-1` with two zones ([Alibaba regions](https://www.alibabacloud.com/help/en/doc-detail/40654.htm)) and lists UAE (Dubai) for ApsaraDB RDS for PostgreSQL in a storage-type notice ([Alibaba notice](https://www.alibabacloud.com/help/en/rds/apsaradb-rds-for-postgresql/new-function-specification-rds-postgresql-new-storage-type-from-june-20-2024-universal-cloud-disk)).
@@ -67,15 +88,15 @@ The frozen demo (`index.html`, synthetic data) stays on Vercel. Nothing else run
 - The subscription must request UAE Central access in week one ([region access request process](https://learn.microsoft.com/en-us/troubleshoot/azure/general/region-access-request-process)); until it is granted, geo-redundant backups cannot be restored and the restore drill in DR-9 cannot be run end to end.
 - Geo-redundant backup must be switched on when the production server is created, or it is unavailable for that server's life.
 - The domain layer, migrations and infrastructure module are provider-neutral (PostgreSQL, S3-style blob access behind one interface, containers, an email adapter). Moving to AWS if it is restored, or to OCI if Azure fails, is an infrastructure change and a data migration, not an application change. That neutrality is worth its small cost given what happened in March.
-- Residency is still not durability. A single-country event can destroy both Dubai and Abu Dhabi copies. §5 (Challenges) argues for putting the out-of-country cold-copy question to ACS and counsel now.
+- Residency is still not durability. A single-country event can destroy both Dubai and Abu Dhabi copies. §5 (Challenges) argues for putting the out-of-country cold-copy question to ACS and counsel now, as a real choice: a copy abroad is restorable only if key material is also held abroad, and it needs ADEK's consent first (§5.1, DR-9).
 
-**Monthly cost.** USD list prices, pay-as-you-go, UAE North, retrieved 2026-09-22 from the Azure Retail Prices API (`prices.azure.com/api/retail/prices`, filters given in Sources); 730 hours a month; no reservations, no support plan, no Defender for Cloud, no DDoS Network Protection. The Azure Backup vaulted long-term-retention fee for PostgreSQL was not retrieved and is an assumption. The scales are the ones in CONTEXT.md §5.
+**Monthly cost.** USD list prices, pay-as-you-go, UAE North, retrieved 2026-09-22 from the Azure Retail Prices API (`prices.azure.com/api/retail/prices`, filters given in Sources); 730 hours a month; no reservations, no Defender for Cloud plan beyond Defender for Storage, no DDoS Network Protection. The Azure Backup vaulted long-term-retention fee for PostgreSQL was not retrieved and is an assumption. The scales are the ones in CONTEXT.md §5. Revised 2026-09-24 (F71): zone-redundant HA bills storage twice, and seven lines the first version left out are added below the original total; the Defender for Storage and Key Vault HSM prices were re-read from the Retail Prices API on 2026-09-24, and the lines marked "assumption" were not.
 
 | Line | Pilot: 1 school, ~1,300 students | Year 1: 3 schools, <5,000 students | Year 3: 30 schools, 30,000 to 50,000 students |
 |---|---|---|---|
 | PostgreSQL compute, zone-redundant HA (standby billed at the primary's rate) | `D2ds_v5` $0.217/h × 730 × 2 = **$316.82** | `D4ds_v5` $0.434/h × 730 × 2 = **$633.64** | `E4ds_v5` $0.60/h × 730 × 2 = **$876.00** |
 | PostgreSQL read replica (reporting) | none | none | `E4ds_v5` $0.60/h × 730 = **$438.00** |
-| PostgreSQL storage, $0.138/GB-month | 128 GB = **$17.66** | 256 GB = **$35.33** | 1,024 GB × 2 servers = **$282.62** |
+| PostgreSQL storage, $0.138/GB-month; zone-redundant HA bills the standby's storage too (F71) | 128 GB × 2 = **$35.33** | 256 GB × 2 = **$70.66** | 1,024 GB × 2 (HA pair) + 1,024 GB (replica) = **$423.94** |
 | PostgreSQL backup storage, geo-redundant, $0.105/GB-month on ((2 × backup) − provisioned) | (256 − 128) × 0.105 = **$13.44** | (512 − 256) × 0.105 ≈ **$30** with WAL | (2,048 − 1,024) × 0.105 ≈ **$120** with WAL |
 | Container Apps, consumption, active rates $0.000024 per vCPU-second and $0.000003 per GiB-second | web 2 × (0.5 vCPU, 1 GiB) = $78.84; worker 1 × (0.5, 1) = $39.42 → **$118.26** | web 2 × (1, 2) = $157.68; worker 1 × (1, 2) = $78.84 → **$236.52** | web 4 × (1, 2) = $315.36; worker 2 × (2, 4) = $315.36 → **$630.72** |
 | Application Gateway WAF v2, $0.475/h fixed + $0.019 per capacity-unit-hour | 346.75 + 10 CU = **$485.45** | 346.75 + 15 CU = **$554.80** | 346.75 + 30 CU = **$762.85** |
@@ -86,9 +107,18 @@ The frozen demo (`index.html`, synthetic data) stays on Vercel. Nothing else run
 | Communication Services Email ($0.00025 per email + $0.00012/MB) | 3,000 emails = **$1.11** | 20,000 = **$7.40** | 300,000 = **$111.00** |
 | Internet egress (first 100 GB free, then $0.181/GB) | under 100 GB = **$0** | 250 GB = **$27.15** | 2,048 GB = **$352.59** |
 | Azure Backup vaulted long-term retention (assumption, not retrieved) | **~$20** | **~$40** | **~$150** |
-| **Production total** | **≈ $989** (≈ $504 without the WAF) | **≈ $1,628** | **≈ $4,152** |
+| **Production total, first version** (storage counted once) | **≈ $989** (≈ $504 without the WAF) | **≈ $1,628** | **≈ $4,152** |
+| *Lines added 2026-09-24 (F71, F61)* | | | |
+| HA storage correction (the row above) | **+$17.66** | **+$35.33** | **+$141.32** |
+| Blob SFTP, $0.30 per hour per SFTP-enabled account, only if the weekly pack arrives by SFTP (pass 2 open decision 17; price as verified by pass 7) | 1 account = **$219.00** | **$219.00** | **$219.00** |
+| Defender for Storage malware scanning (required by pass 4 T6), $0.0134 per account-hour plus $0.15 per GB scanned | 2 accounts + 10 GB = **$21.06** | 2 accounts + 40 GB = **$25.56** | 2 accounts + 300 GB = **$64.56** |
+| Key Vault Premium HSM keys, $1.32 per RSA 2048 key-month, including the second vault in UAE Central (pass 4 §9.2) | 8 keys = **$10.56** | 10 keys = **$13.20** | 70 keys = **$92.40** |
+| Entra ID P2 licences for Privileged Identity Management (pass 4 §3.7); assumption, price not retrieved | 2 operators ≈ **$20** | ≈ **$20** | 4 operators ≈ **$40** |
+| NAT gateway for the connectors' static egress IP, from B9 (pass 4 §9.10); assumption, meter not found in the API | ≈ **$35** once connectors run | ≈ **$40** | ≈ **$60** |
+| Microsoft support plan, the minimum tier that enables Customer Lockbox (pass 4 §3.7, F61); assumption, price not retrieved | ≈ **$29** | ≈ **$29** | ≈ **$100** |
+| **Production total, revised** | **≈ $1,341** (≈ $1,122 without SFTP) | **≈ $2,010** | **≈ $4,869** |
 | Staging (no HA, `B2ms` $0.158/h, one replica each, no WAF) | **≈ $206** | **≈ $206** | **≈ $300** |
-| **Total per month** | **≈ $1,195** | **≈ $1,834** | **≈ $4,450** (≈ $148 per school at 30) |
+| **Total per month** | **≈ $1,547** | **≈ $2,216** | **≈ $5,169** (≈ $172 per school at 30) |
 
 Three things about the numbers. The WAF is the largest single line at every scale and is a school-IT-review requirement rather than a load requirement; pass 4 decides when it must be on, and the pilot can run its synthetic-data months without it. Container Apps idle rates ($0.000003 per vCPU-second) would roughly halve the web tier's compute at pilot traffic; the table uses active rates as an upper bound. Reserved capacity for the database (one year) is not priced here and would cut the largest recurring line; it is worth buying only after the pilot proves the shape.
 ### DR-2 · The backend's shape
@@ -107,8 +137,9 @@ Three things about the numbers. The WAF is the largest single line at every scal
 - **Domain layer:** `packages/domain` holds every rule and every mutation as a function with a typed input, running inside `withTenant()` (DR-4). It imports the database package and the engine package; it does not import Next.js or tRPC. Both deployables call it.
 - **API contract:** tRPC v11 routers in `packages/api`, one router per module, procedures that validate input with Zod 4 schemas from `packages/contracts` and call one domain function each. Mounted in a single route handler at `/api/trpc`. Server Components call procedures through the server-side caller, so reads do not pay an HTTP hop. **Server Actions are not used for data mutations**; a lint rule forbids `'use server'` outside a small allow-list of UI-only helpers. Reason: one enforcement path, testable without a browser, and callable by the worker and by tests. The inferred router type is the frontend's contract; there is no hand-written client type. An OpenAPI surface for connectors and webhooks (pass 2) is added later as `apps/api` with Hono and `@hono/zod-openapi` over the same domain package, when a non-TypeScript caller exists.
 - **Query layer:** Drizzle ORM 0.45 pinned (upgrade to 1.0 after it has been GA for two minor releases), driver `postgres` (postgres.js). Schema in `packages/db/src/schema/*.ts`, one file per Postgres schema. `jsonb` columns are typed with Zod schemas from `packages/contracts` via `.$type<>()`, and validated on write in the domain layer.
-- **Migrations:** `drizzle-kit generate` produces SQL files under `packages/db/migrations/`; policies, functions and triggers are hand-written SQL in the same sequence (`drizzle-kit generate --custom`). Migrations are applied by `drizzle-orm/migrator` running as a Container Apps Job in the deploy pipeline before the new revision receives traffic. `drizzle-kit push` is forbidden everywhere except a developer's own database. Every migration is reviewed as SQL in the pull request. A nightly job diffs the production schema against the migration snapshot and alerts on drift. Atlas was considered and not chosen: row-level-security objects and `schema plan` are in its paid tier ([Atlas community edition](https://atlasgo.io/community-edition)).
-- **Nightly sweep and all background work:** pg-boss 12 in `apps/worker`, backed by a `pgboss` schema in the same database (so job state has the same residency and the same backups). A `sweep.tick` cron runs every fifteen minutes and, for each active school, enqueues `sweep.run` with singleton key `sweep:<school>:<local date>` once the school's local time has passed its configured sweep hour (default 02:00) and no run exists for that date. The job calls `engine.evaluateSchool()` and writes `signal.sweep_run` and its children. Retries with backoff; a failed run is `failed` and the next tick retries until 05:30 local. A `sweep.watchdog` job at 06:00 local emits a `sweep_completed` metric per school and raises an alert through Azure Monitor if any school has no succeeded run for the date; the alert reaches Davide before 07:00. A Container Apps Job on a cron is the second, independent watchdog so the failure of the worker itself is also noticed. Imports, outbox delivery, AI generations and partition maintenance are further pg-boss queues in the same worker.
+- **Migrations:** `drizzle-kit generate` produces SQL files under `packages/db/migrations/`; policies, functions and triggers are hand-written SQL in the same sequence (`drizzle-kit generate --custom`). Migrations are applied by `drizzle-orm/migrator` running as a Container Apps Job in the deploy pipeline before the new revision receives traffic, connected as `caros_migrator` (DR-4). That migrator runs every pending migration inside one transaction (pass 7 read the package source, F40), and PostgreSQL refuses `CREATE INDEX CONCURRENTLY` inside a transaction block. So the job has two steps: the Drizzle migrator for ordinary files, then a small non-transactional runner for files whose first line is `-- no-transaction`, each holding exactly one statement, recorded in its own journal table. At pilot and year-1 scale no table is large enough to need `CONCURRENTLY`; indexes are created plainly inside the transaction, and the second step exists for year 3. `drizzle-kit push` is forbidden everywhere except a developer's own database. Every migration is reviewed as SQL in the pull request. A nightly job diffs the production schema against the migration snapshot and alerts on drift. Atlas was considered and not chosen: row-level-security objects and `schema plan` are in its paid tier ([Atlas community edition](https://atlasgo.io/community-edition)).
+- **Nightly sweep and all background work:** pg-boss 12 in `apps/worker`, backed by a `pgboss` schema in the same database (so job state has the same residency and the same backups). Job names and hours follow pass 3 §13.2 (§12.1 of the pass 7 review): a `sweep.schedule` cron runs every fifteen minutes and, for each school that holds data (`core.school.status IN ('shadow','live')`, §2.3; never "active", which excluded the pilot school while it was in shadow, F36), enqueues `sweep.run` with singleton key `sweep:<school>:<local date>` once the school's local time has passed its `sweep_hour` (default 02:00) and no nightly run exists for that date. The list of schools comes from `core.schools_due_for_sweep()`, a definer function that returns school ids and nothing else (§2.4); the worker then opens one `withTenant()` per school. The job calls `engine.evaluateSchool()` and writes `signal.sweep_run` and its children. Retries with backoff; a failed run is `failed` and the next tick retries until 05:30 local. A `sweep.watchdog` job at 05:45 local checks that today's nightly run exists and succeeded or was partial, emits `sweep.missed` if not, and raises an alert through Azure Monitor; the alert reaches Davide before 07:00. A Container Apps Job on a cron is the second, independent watchdog so the failure of the worker itself is also noticed. Imports, outbox delivery, AI generations and partition maintenance are further pg-boss queues in the same worker.
+- **pg-boss has its own login and no tenant privileges** (F36). The `pgboss` schema is owned by `caros_jobs`, a login role with no tier role and no privilege on any tenant table. The web app never touches the queue tables: it enqueues through `jobs.enqueue(queue, school_id, record_ids)`, a definer function owned by `caros_jobs` that validates the payload against the queue's schema (a school id plus record ids, never names or text) and refuses anything else. The worker's pg-boss client connects as `caros_jobs` to fetch and complete jobs, then does the job's work in a tenant transaction as `caros_worker` with the job's school id. A job for school A that carries school B's record ids writes nothing, because every read in that transaction is bound to A (test in `packages/db/test/jobs`). Completed jobs are deleted after seven days and archiving is off; the queue is registered in the privacy registry's list of non-tenant stores (§2.21) so erasure and retention reach it.
 - **Tests:** Vitest 5 for unit and contract tests, Playwright for browser tests, an ephemeral PostgreSQL in CI for every database test (RLS tests run against both seed tenants, DR-8). Biome for lint and format; `dependency-cruiser` enforces module boundaries (which package may import which).
 
 **Consequences.** The web tier is stateless and scales to zero in staging. Every mutation has exactly one code path: tRPC procedure → domain function → `withTenant()` transaction → audit and event rows in the same transaction. Adding a mobile client or a connector API later costs a router or an OpenAPI layer, not a new domain. Drizzle's own RLS helpers are not used to define policies, because the policy set is generated by `auth.protect()` in SQL; Drizzle's snapshot therefore does not know about them, and `generate` (which diffs snapshots, not the live database) will not try to drop them. That is one reason `push` is forbidden.
@@ -154,7 +185,7 @@ caros/
 
 | Package or path | Owner | Others may | Contract |
 |---|---|---|---|
-| `packages/contracts` | shared; two approvals required on every change | propose | Zod schemas are the API between all modules; a breaking change bumps the schema version |
+| `packages/contracts` | shared; a second person's review once a second regular builder exists (C8) | propose | Zod schemas are the API between all modules; a breaking change bumps the schema version |
 | `packages/db` | backend lead | add a migration in their module's schema, reviewed by the owner | Every table registered in `privacy.table_registry`; every tenant table protected (test) |
 | `packages/engine` | engine builder | read; submit fixtures | `evaluateStudent(input): Evaluation` pure; property tests over the adversarial set (pass 3) |
 | `packages/domain/<module>` | module owner (module map, §4) | call through the module's `index.ts` only | `dependency-cruiser` forbids importing another module's internals |
@@ -163,7 +194,7 @@ caros/
 | `packages/ingest`, `packages/ai` | passes 2 and 5 name them | | Adapter interfaces defined in `contracts` |
 | `infra/` | Davide | propose | Terraform plan posted on every PR; apply only from `main` |
 
-Branch and review discipline (pass 6 details it): short-lived branches, squash merges, a required CI run that includes the RLS suite and the boundary check, `CODEOWNERS` review on each package, and branch protection on `main` that rejects force pushes. The overwrite that destroyed Phases 1 to 4 was a merge that replaced a file wholesale; in a repository of many small files with required review and a test suite, the same mistake fails CI instead of landing.
+Branch and review discipline (pass 6 details it): short-lived branches, squash merges, a required CI run that includes the RLS suite and the boundary check, and branch protection on `main` that rejects force pushes. **While Davide is the only builder** (decision C8, 2026-09-24), every automated check stays required (CI, tests, immutable migrations, the anti-overwrite hooks), human review is asynchronous with a service level and never blocks a merge, and a different-model review is required only on the reserved list pass 6 keeps; the ownership column above and `CODEOWNERS` review switch on when a second regular builder joins (F46: with one code owner per path, GitHub would otherwise let nothing merge). The overwrite that destroyed Phases 1 to 4 was a merge that replaced a file wholesale; in a repository of many small files with required checks and a test suite, the same mistake fails CI instead of landing.
 
 ### DR-4 · Tenancy
 
@@ -172,21 +203,31 @@ Branch and review discipline (pass 6 details it): short-lived branches, squash m
 **Decision.** Four layers, each of which would hold alone.
 
 1. **Structure.** Every tenant table carries `school_id`, and every foreign key between tenant tables is composite on `(school_id, id)` (§2.1). A row cannot point at another school's row even if the application passes the wrong identifier.
-2. **Roles.** Migrations run as `caros_owner`, which owns every object. The application connects as `caros_app`, a login role with `NOBYPASSRLS` and no ownership. Six `NOLOGIN` tier roles (`caros_t_staff`, `_student`, `_guardian`, `_mentor`, `_system`, `_support`) carry column privileges and are granted to `caros_app`. One further role, `caros_policy`, has `BYPASSRLS` and no login; it owns only the `SECURITY DEFINER` helpers the policies call and the trigger functions that write history, audit and event rows, each of which restricts itself to the current school explicitly. Every table with `school_id` has `ENABLE` and `FORCE ROW LEVEL SECURITY`, so even the owner is bound.
+2. **Roles** (revised by pass 8 for F01 and §12.2 of the pass 7 review). `caros_owner` owns every object and cannot log in. Each deployable has **its own login role and its own managed identity**, and is granted only the tier roles it may assume:
+
+   | Login role | Deployable | May `SET ROLE` to | Never holds |
+   |---|---|---|---|
+   | `caros_web` | `apps/web` | `caros_t_staff`, `caros_t_teacher`, `caros_t_student`, `caros_t_guardian`, `caros_t_mentor`, `caros_t_ai` | system, support, owner |
+   | `caros_worker` | `apps/worker` | `caros_t_system`; `caros_t_ai` for AI jobs run as the case owner (F44) | any user tier, support, owner |
+   | `caros_support` | the support console, a separate small app (pass 4 §3.7) | `caros_t_support` | everything else |
+   | `caros_migrator` | the migrations job | `caros_owner` (`SET ROLE`) | every tier role |
+   | `caros_jobs` | pg-boss in web and worker (DR-2) | nothing; privileges on the `pgboss` and `jobs` schemas only | every tier role |
+
+   Every login role is created `NOINHERIT`, so a connection that sets the tenant context but skips `SET LOCAL ROLE` holds no table privilege at all, rather than the union of its tiers' privileges. Eight `NOLOGIN` tier roles carry column privileges: `caros_t_staff` (counselors, school administrators, and staff who hold only capabilities), `caros_t_teacher` (a separate tier because a teacher's column rules differ from a counselor's, F75), `caros_t_student`, `caros_t_guardian`, `caros_t_mentor`, `caros_t_ai` (pass 4 D55; its grants are generated from an allowlist, F44), `caros_t_system` and `caros_t_support`. One further role, `caros_policy`, has `BYPASSRLS` and no login; it owns only the `SECURITY DEFINER` helpers the policies call and the trigger and transition functions that write history, audit and event rows, each of which restricts itself to the current school explicitly and none of which is executable by `PUBLIC`. Every table with `school_id` has `ENABLE` and `FORCE ROW LEVEL SECURITY`, so even the owner is bound.
 3. **Transaction context.** All database access goes through one function in `packages/db`:
 
    ```ts
    withTenant(ctx: { schoolId; personId?; role?; actorKind; requestId }, fn: (tx) => Promise<T>): Promise<T>
    ```
 
-   It opens a transaction and, before anything else, runs one statement: `SELECT set_config('app.school_id', $1, true), set_config('app.person_id', $2, true), set_config('app.role', $3, true), set_config('app.actor_kind', $4, true), set_config('app.request_id', $5, true), set_config('app.session_id', $6, true)` (plus `app.actor_label` for support and ingest actors, who are not `core.person` rows), followed by `SET LOCAL ROLE caros_t_<tier>`. `actor_kind` is one of `user`, `system`, `support`, `ingest`; the migration runner alone sets `migration`, and the policies honour `system`, `support` and `migration` only when the transaction's `current_user` is the matching role, so a request handler cannot claim to be the worker. Both are transaction-scoped: when the transaction ends, the connection returns to the pool with no context, and the next transaction must set its own. The pool object is not exported; there is no way to run a query outside `withTenant()`. A query issued with no context sees no rows, because `auth.current_school()` returns `NULL` and `school_id = NULL` is never true: the system fails closed.
-4. **Policies.** `auth.protect()` (§2.4) installs on every tenant table a `RESTRICTIVE` tenant policy (`school_id = auth.current_school()`, both `USING` and `WITH CHECK`) and `PERMISSIVE` role policies that call `auth.allowed(data_class, action, subject columns…)`. The tenant policy is restrictive, so no permissive policy can widen it. `auth.allowed()` reads `auth.role_permission`, which is data: a new role is rows in `auth.role` and `auth.role_permission` and a `tier` assignment, not a migration.
+   It opens a transaction and, before anything else, runs one statement: `SELECT set_config('app.school_id', $1, true), set_config('app.person_id', $2, true), set_config('app.role', $3, true), set_config('app.actor_kind', $4, true), set_config('app.request_id', $5, true), set_config('app.session_id', $6, true)` (plus `app.actor_label` for support and ingest actors, who are not `core.person` rows), followed by `SET LOCAL ROLE caros_t_<tier>`. `actor_kind` is one of `user`, `system`, `support`, `ingest`; the migration runner alone sets `migration`. **The tier is evaluated in the policy expression, which runs as the caller, and passed into `auth.allowed()` as its first argument** (F01). Inside a `SECURITY DEFINER` function `current_user` is the function's owner, which is why the first version's check could never succeed; a policy expression is evaluated as the querying role, so `current_user` there is the tier the transaction assumed. `auth.allowed()` honours `system` only when that argument is `caros_t_system`, `support` only when it is `caros_t_support`, and a user claim only when the tier matches the tier of the acting role's membership. Because `caros_web` is not granted `caros_t_system` or `caros_t_support`, a request handler cannot assume either, whatever context it sets: "a request handler cannot claim to be the worker" is now true at the database. Both settings and role are transaction-scoped: when the transaction ends, the connection returns to the pool with no context, and the next transaction must set its own. The pool object is not exported; there is no way to run a query outside `withTenant()`. A query issued with no context sees no rows, because `auth.current_school()` returns `NULL` and `school_id = NULL` is never true: the system fails closed.
+4. **Policies.** `auth.protect()` (§2.4) installs on every tenant table a `RESTRICTIVE` tenant policy (`school_id = auth.current_school()`, both `USING` and `WITH CHECK`) and `PERMISSIVE` role policies that call `auth.allowed(current_user, table, data_class, action, subject columns…, row kind)`. The tenant policy is restrictive, so no permissive policy can widen it. `auth.allowed()` reads `auth.role_permission`, which is data: a new role is rows in `auth.role` and `auth.role_permission` and a `tier` assignment, not a migration. Since pass 8 (F02, F15) the class may be a per-row expression (a document carries its own class; a shadow case is `signal_shadow`), the insert and update policies accept either `write` or the verb the table carries (`escalate`, `approve`, `configure`), and every qualifier in pass 4's matrix has a named mechanism in §2.4a.
 
 **Connection handling.** Each Container Apps replica keeps its own small pool (ten connections) directly to the Flexible Server; at pilot and year-1 scale that is under a hundred connections and needs no external pooler. Azure's built-in PgBouncer defaults to transaction pooling and its documentation defers to PgBouncer's own feature map, which lists session `SET`/`RESET` as unsupported in that mode and says nothing about `SET LOCAL` ([Azure PgBouncer](https://learn.microsoft.com/en-us/azure/postgresql/connectivity/concepts-pgbouncer), [PgBouncer features](https://www.pgbouncer.org/features.html)). Transaction-scoped `set_config` and `SET LOCAL ROLE` inside an explicit transaction are, by PostgreSQL's semantics, contained in the transaction that the pooler hands to one server connection, so they should be safe under transaction pooling; that is an inference, not a documented guarantee, and it is tested explicitly in the RLS suite before the pooler is ever enabled (year 3, open decision).
 
-**Tests that must exist before any real data.** In `packages/db/test/rls/`: for each tier role and each tenant table, run as tenant A with tenant B's data present and assert zero rows visible and zero rows writable; run with no context and assert zero rows; run as `caros_owner` with `FORCE` and assert the same; run every `auth.perm_scope` against both synthetic schools with a student who is in the caseload, in the roster, self, a linked child, a paired mentee, and none of those. The suite runs on every pull request.
+**Tests that must exist before any real data.** In `packages/db/test/rls/`: for each tier role and each tenant table, run as tenant A with tenant B's data present and assert zero rows visible and zero rows writable; run with no context and assert zero rows; run as `caros_owner` with `FORCE` and assert the same; run every `auth.perm_scope` against both synthetic schools with a student who is in the caseload, in the roster, self, a linked child, a paired mentee, in a led year group and tutor group, reachable through an open escalation, and none of those. Added by pass 8: connected as `caros_web`, `SET ROLE caros_t_system`, `SET ROLE caros_t_support` and `SET ROLE caros_owner` each fail (F01); a `caros_web` connection that sets `app.actor_kind = 'system'` under a user tier sees exactly what that user sees; a connection that sets context but skips `SET ROLE` reads nothing (the `NOINHERIT` test); every verb (`escalate`, `approve`, `configure`) succeeds end to end through RLS for a role that holds it and fails for one that does not (F02); and every qualifier in §2.4a has a negative fixture. The suite runs on every pull request.
 
-**Single-school isolated deployment.** The same container images and the same migrations, deployed by the same Terraform module into a separate Azure subscription and resource group with `deployment_mode = "single"`. In that mode: the tenant table holds one active school and the application refuses to start if it finds more; `packages/seed` installs no second tenant; backups, Key Vault, storage and the WAF are per deployment; RLS stays on unchanged, because the code path is identical and a "single-tenant" branch would be exactly the drift this plan is trying to avoid. The cost of an isolated deployment is the pilot production column of DR-1, per school, which is the number to quote when a school asks for it.
+**Single-school isolated deployment.** The same container images and the same migrations, deployed by the same Terraform module into a separate Azure subscription and resource group with `deployment_mode = "single"`. In that mode: the tenant table holds one school that is not `offboarded` and the application refuses to start if it finds more; `packages/seed` installs no second tenant; backups, Key Vault, storage and the WAF are per deployment; RLS stays on unchanged, because the code path is identical and a "single-tenant" branch would be exactly the drift this plan is trying to avoid. The cost of an isolated deployment is the pilot production column of DR-1, per school, which is the number to quote when a school asks for it.
 
 ### DR-5 · Schema conventions
 
@@ -236,9 +277,9 @@ The full DDL is §2. The conventions are listed at §2.1 so that they sit next t
 | Yesterday's tier | `signal.case.tier_yesterday`, `.moved_why` | the sweep only (actor_kind `system`) | A nightly assertion recomputes it from `case_tier_history` and alerts on any mismatch |
 | Target classification | `uni.student_target.classification` | the sweep, and an event-triggered recompute when predicted grades or requirements change | Rule version stored; the assertion recomputes a sample nightly |
 | Normalised grade percentage | `sis.grade.normalised_pct` | the import, from `ref.grade_scale` | Raw value kept; a scale change triggers a recompute job |
-| Reporting aggregates | `reporting.mv_*` (pass 6) | refresh job after the sweep | Refreshed, never edited; the events stream is the truth |
+| Reporting aggregates | `reporting.agg_*` tables, one row per school, period and measure (pass 6 names them) | the worker's refresh job after the sweep, one `withTenant()` per school | Recomputed, never edited; the events stream is the truth. **Not materialised views** (F34): a materialised view has no row-level security and no `security_invoker` option, and `REFRESH` runs as its owner, so it would hold every tenant or, refreshed inside one school's context, only that school. Aggregate tables carry `school_id`, are protected like every tenant table, and have exactly one writer |
 
-**Consequences.** The domain package exposes derived values through named functions, and the frontend never recomputes a rule from raw rows. The `packages/db` test suite carries a "no second copies" test: a list of forbidden column names (`run`, `weeks`, `demand`, `load`, `total_hours`, `days_left`, `probability`, `signal_strength_cached`) that fails the build if any appears on a tenant table.
+**Consequences.** The domain package exposes derived values through named functions, and the frontend never recomputes a rule from raw rows. The `packages/db` test suite carries a "no second copies" test: a list of forbidden column names (`run`, `weeks`, `demand`, `load`, `total_hours`, `days_left`, `probability`, `signal_strength_cached`) that fails the build if any appears on a tenant table. The convention test also fails the build if any materialised view exists in a schema the tiers can read (F34).
 
 ### DR-7 · State machines
 
@@ -253,27 +294,30 @@ The case has three dimensions. **Status** is open or closed. **Stage** is the se
 | C1 | Open from rules | no open case | status open, stage `explain` then `triage`, tier as evaluated | engine (sweep or event evaluation) | no open case for the student (unique index); tier ≠ null | case, evidence items, signals attached, tier/stage history, `case.opened`, `PRIORITY_SET` |
 | C2 | Open manually | no open case | open, `triage`, tier chosen | counselor | reason required | as C1, `opened_by = person` |
 | C3 | Attach new signals | open | open (tier may move) | engine | case open | `case_signal`, evidence, `case.tier_changed` if moved |
-| C4 | Re-tier by rules | open | open, new tier | engine | hysteresis rules (pass 3); never lowers a tier a person raised within N days (`case.lifecycle`) | tier history with `evaluation_id`, `tier_yesterday` at the sweep |
+| C4 | Re-tier by rules | open | open, new tier | engine | hysteresis rules (pass 3); never lowers a tier a person raised within N days (`case.lifecycle`); **never lowers or closes a case that carries an unreleased escalation** (F07): while an escalation on the case is open, and after its outcome until a person sets the tier (C10), the engine may raise the tier and never lower it; the trigger `signal.case_escalation_pin` enforces it | tier history with `evaluation_id`, `tier_yesterday` at the sweep |
 | C5 | Mark as seen (single or bulk) | open | unchanged | counselor | | `seen_at`, `CASE_ACKNOWLEDGED`, `case.seen` |
 | C6 | View case file | any | unchanged | staff with `signal read` on the student | | `CASE_ACCESS`, `case.viewed` (first one feeds time-to-aware) |
 | C7 | Accept | open, `triage` | open, `act` | counselor | | intervention opened from `suggested_action`, `CASE_ACCEPTED`, `intervention.opened` |
 | C8 | Schedule a meeting | open, `triage`/`act` | open, `act` | counselor | | meeting slot or calendar ref, `MEETING_SCHEDULED` |
 | C9 | Add context | open | open; re-evaluation queued | counselor | context kind from vocabulary | `case_context`, `CONTEXT_ADDED`; the engine's re-evaluation may lower the tier (C4), which is how the prototype's "recalculated to 38%" becomes explainable |
-| C10 | Change tier manually | open | open, tier ±1 or to urgent | counselor | reason required; a downgrade sets `feeds_tuning` | tier history `changed_by = person`, `PRIORITY_CHANGE`, `case.downgraded` |
-| C11 | Dismiss | open, tier ≠ good | closed, stage `learn`, tier `monitor`, outcome `not_a_concern` | counselor | reason required | `CASE_DISMISSED`, `case.dismissed` (feeds tuning) |
-| C12 | Merge | open | closed, `merged_into_case_id` set; signals and evidence re-attached to the target | counselor | both cases same student or explicit justification | `CASE_MERGED` |
-| C13 | Attach a teacher flag | open | open | counselor | flag status `new` | flag `linked`, `routed_note`, evidence item, `FLAG_ATTACHED`, `flag.routed` |
+| C10 | Change tier manually | open | open, tier ±1 or to urgent | counselor | reason required; a downgrade sets `feeds_tuning`; on a case whose escalation has an outcome, this act releases the pin (`escalation.tier_released_at`) and is the only way the tier comes down | tier history `changed_by = person`, `PRIORITY_CHANGE`, `case.downgraded` |
+| C11 | Dismiss | open, tier ≠ good, no unreleased escalation | closed, stage `learn`, tier `monitor`, outcome `not_a_concern` | counselor | reason required | `CASE_DISMISSED`, `case.dismissed` (feeds tuning) |
+| C12 | Merge | open | closed, `merged_into_case_id` set; signals and evidence re-attached to the target | counselor | **both cases belong to the same student** (F07); a trigger refuses a merge across students, whose cases are linked instead (C25) | `CASE_MERGED` |
+| C13 | Attach a teacher flag | open | open | counselor | flag status `new` | flag `linked`, `routed_key` set to a teacher-facing label that never says a case exists (F58), evidence item, `FLAG_ATTACHED`, `flag.routed` |
 | C14 | Reassign owner | open | open | counselor with `caseload_lead`, or owner | target holds counselor role | `CASE_REASSIGNED`; caseload assignment may change separately |
-| C15 | Escalate | open, no escalation | open, `act`, tier `urgent` | counselor | reason ≥ 12 chars; no existing escalation (unique) | `escalation`, outbox row to the safeguarding lead, `ESCALATED_SAFEGUARDING`, `case.escalated` |
-| C16 | Acknowledge escalation | escalation unacknowledged | acknowledged | staff with `safeguarding_lead` capability | | `ESCALATION_ACKNOWLEDGED`, `escalation.acknowledged` |
+| C15 | Escalate | open, no open escalation on the case | open, `act`, tier `urgent` | counselor | the structured referral of pass 4 §5.3 (D46); **at most one open escalation per case** (partial unique index) and **one idempotency key per submission**, so one act is never recorded twice (F07); when an earlier escalation on the case is closed, the new one is allowed and carries `previous_escalation_id` | `escalation`, outbox rows through `notify.enqueue()` to the route, `ESCALATED_SAFEGUARDING`, `case.escalated` |
+| C16 | Acknowledge escalation | escalation unacknowledged | acknowledged | staff holding the `safeguarding_lead` capability on any staff membership (F10) | | `ESCALATION_ACKNOWLEDGED`, `escalation.acknowledged` |
 | C17 | Intervention resolved | open, `act`/`follow` | open, `measure` | counselor | outcome required (I3) | `intervention.resolved`; monitoring continues |
 | C18 | Close with outcome | open | closed, `learn`, `monitoring_until = closed_at + window` | counselor | outcome and note required; open interventions must be resolved or abandoned first | `CASE_CLOSED`, `case.closed` |
 | C19 | Relapse inside the window | closed, within `monitoring_until` | a new open case with `relapse_of_case_id` | engine | relapse rule (pass 3) | as C1, `relapse.detected` |
 | C20 | Recovery detected | open, `measure` | open, tier `good` | engine | recovery rule (pass 3) | `recovery.detected`, tier history |
-| C21 | Auto-review | open, tier `monitor`, `auto_review_on` reached | open (re-evaluated) | engine | | evaluation; may close as `not_a_concern` if nothing has crossed a threshold for the review period (pass 3 decides) |
+| C21 | Auto-review | open, tier `monitor`, `auto_review_on` reached | open (re-evaluated) | engine | never closes a case with an unreleased escalation or inside an escalation's 90-day `esc` window (F07) | evaluation; may close as `not_a_concern` if nothing has crossed a threshold for the review period (pass 3 decides) |
 | C22 | Student leaves the school | open | closed, outcome `left_school` | engine, on enrolment change | | `case.closed` |
+| C23 | A teacher's safeguarding referral (F10) | any | open (a case is opened if none is, `opened_by = 'person'`, the teacher as opener, the student's primary counselor as owner), `act`, tier `urgent`; an escalation with `raised_via = 'teacher_flag'` | teacher, for a student on their roster, in their IB subject or whose Extended Essay they supervise | a `signal.teacher_flag` of kind `safeguarding` with the referral fields of pass 4 §5.3; one idempotency key per submission; executed by the definer function `signal.raise_teacher_referral()`, so the teacher gains no `signal` access and never sees the case | flag, case (if new), escalation, outbox rows through `notify.enqueue()` to the route, an in-app notice to the owning counselor, `TEACHER_REFERRAL`, `ESCALATED_SAFEGUARDING`, `case.escalated` |
+| C24 | Add information to an open escalation (F07) | escalation open | unchanged | the raising counselor, the owning counselor, or a teacher who raised it | text ≥ 20 chars | `signal.escalation_update` (append-only, `safeguarding` class), the escalation reminder email to the current route (pass 4 §5.8), `ESCALATION_UPDATED` |
+| C25 | Link cases across students (F07) | open or closed | unchanged | counselor | both cases readable by the actor; a reason | `signal.case_link` row; nothing is moved between the students' files; `CASE_LINKED` |
 
-Stage moves: C1 sets `explain` and immediately `triage` (the two are one transaction; both history rows are written so the pipeline is honest). C7, C8 and C15 move to `act`. The first intervention step completed moves to `follow`. C17 moves to `measure`. C11 and C18 move to `learn`. Nothing moves backwards except a reopen, which is a new case.
+Stage moves: C1 sets `explain` and immediately `triage` (the two are one transaction; both history rows are written so the pipeline is honest). C7, C8, C15 and C23 move to `act`. The first intervention step completed moves to `follow`. C17 moves to `measure`. C11 and C18 move to `learn`. Nothing moves backwards except a reopen, which is a new case.
 
 #### 7.2 The intervention
 
@@ -298,18 +342,27 @@ Statuses: `draft → submitted → signed → approved`, with `changes_requested
 | S2 | Edit picks and reasons | `draft`, `changes_requested` | same | student | round open |
 | S3 | Submit | `draft`, `changes_requested` | `submitted`, `version + 1` | student | `selCheck` blockers empty: six groups filled, 3 or 4 HL, no period clash, a reason on every pick; `ask` findings do not block. Sign-offs whose pick changed are deleted. |
 | S4 | Request a review slot | `submitted`+ | same, `review_slot_requested_at` | student | |
-| S5 | Sign off a level question | `submitted` | `submitted`, or `signed` when every HL pick has a sign-off | teacher of that subject (`subject_teacher` scope), HL picks only | verdict `hl` needs no note; `sl` and `concern` need a note ≥ 8 chars |
-| S6 | Record the review conversation | `submitted`, `signed` | same, `review_meeting_id` set | coordinator | a `core.meeting` of kind `selection_review` with notes ≥ 10 chars, dated and attributed |
-| S7 | Approve | `signed` | `approved` | coordinator | `review_meeting_id IS NOT NULL` (CHECK constraint); round not archived |
+| S5 | Sign off a level question | `submitted` | `submitted`, or `signed` when every HL pick has a sign-off | teacher of that subject (`subject_teacher` scope), HL picks only, round `open` | through `ib.sign_off(pick_id, verdict, note)` only (F58): the function writes `teacher_person_id = auth.current_person()`, refuses a pick that is not HL or not in an open round, and cannot change the pick; the teacher sees the pick through `ib.v_signoff_card` (student name, the prerequisite mark, the student's reason), never the student's grades or any engine band; verdict `hl` needs no note; `sl` and `concern` need a note ≥ 8 chars |
+| S6 | Record the review conversation | `submitted`, `signed` | same, `review_meeting_id` and `review_meeting_version` set | coordinator | a `core.meeting` of kind `selection_review` with notes ≥ 10 chars, dated and attributed, held after the current version was submitted; `review_meeting_version = version` |
+| S7 | Approve | `signed` | `approved` | coordinator | the trigger `ib.check_approval` (F17): the meeting belongs to this student, is of kind `selection_review`, was held after `submitted_at`, has notes ≥ 10 chars, and `review_meeting_version = version`, so version 2 cannot be approved on version 1's conversation; round not archived |
 | S8 | Return with a note | `submitted`, `signed` | `changes_requested` | coordinator | note ≥ 10 chars |
 | S9 | Withdraw | any non-approved | `withdrawn` | student or coordinator | reason |
 | S10 | Round closes | `draft` | `draft` (frozen); coordinator sees them as "not submitted" | engine | |
 
 Whether a coordinator may approve from `submitted` when no pick is at HL (so nothing needs a sign-off) is a rule detail: the domain function treats "no HL sign-offs outstanding" as `signed`, matching the code.
 
+Every status change above runs through a `SECURITY DEFINER` transition function (`ib.submit_selection`, `ib.sign_off`, `ib.record_review`, `ib.approve_selection`, `ib.return_selection`, `ib.withdraw_selection`) that checks the actor and the from-state; the student tier holds column-level `UPDATE` only on `goal_note`, `selection_pick.subject_id`, `level` and `reason` while the selection is `draft` or `changes_requested`, and no tier can write `status`, `review_meeting_id`, `review_meeting_version`, `approved_at` or `approved_by_person_id` directly (F17). An import never writes a pick: a ManageBac or SIS level that differs from an approved pick becomes a conflict row for the coordinator (pass 2, handoff).
+
+**A known limitation, stated rather than hidden** (F65): the subject-choice engine is IB-shaped (six groups, three or four HL). A British school choosing A levels has the same shape of problem and cannot use it as built. It is generalised when a British school signs; until then the module is disabled for any school whose programme families do not include the IB Diploma, and the interface says why.
+
 #### 7.4 The Extended Essay
 
 Statuses: `draft → proposed → confirmed`, with `refine_requested` as the teacher's return path, "pass to a colleague" as a `proposed → proposed` transition that changes `target_person_id`, and `withdrawn`.
+
+Two conditions from the pass 8 revision govern this table:
+
+- **Which guide a round follows** (F62, §12.12). Each `ib.ee_round` names its guide (`ee_guide_key`, pass 5 D70), and the guide's `reflection_model` decides the reflection milestones: `rpf_single_statement` (the guide for first assessment 2027: one reflective statement of at most 500 words on the RPF) or `rppf_three_sessions` (the 2018 guide). Both ACS cohorts now in the programme sit their exams under the 2027 guide (this year's Grade 12 in May 2027, this year's Grade 11 in May 2028), so ACS's rounds default to `ee_2027`, and `ee_2018` is kept for resits only. The milestone rows are data per round, generated from the guide; E7 and E9 read their guard from it.
+- **Who holds the record** (C10, 2026-09-24). ManageBac stays the record for CAS and the Extended Essay at a school that keeps it; CAROS reads it through the v2p3 API as a read-only mirror and adds the counselor views ManageBac lacks (pass 2 §7.4 and §7.9 design the mirror, handoff). When `core.school_module.config.extended_essay.record_system = 'managebac_readonly'` (pass 2 D10, gaining that value), E1 to E10 are disabled in CAROS and mirror rows arrive with `source = 'managebac_mirror'`; E11 (overdue, a derived nudge) still runs. Subject selection and its conversation gate stay CAROS-owned at every school.
 
 | # | Transition | From | To | Who | Guard |
 |---|---|---|---|---|---|
@@ -319,9 +372,9 @@ Statuses: `draft → proposed → confirmed`, with `refine_requested` as the tea
 | E4 | Ask for a sharper question | `proposed` | `refine_requested`, `refine_note` | the target teacher | note ≥ 10 chars |
 | E5 | Pass to a colleague | `proposed` | `proposed`, new target | the target teacher | colleague in `eeCandidates`; note ≥ 10 chars |
 | E6 | Assign a supervisor | `proposed`, `refine_requested`, `confirmed` | `confirmed`, `confirmed_by = coordinator` | coordinator | over the guide is allowed and recorded (invariant 8) |
-| E7 | Record a reflection session | `confirmed` | same; milestone completed | the supervisor | note ≥ 10 chars; milestone `rppf = true`; one per milestone |
+| E7 | Record a reflection | `confirmed` | same; milestone completed | the supervisor (a session under `rppf_three_sessions`), or the student's statement recorded with the supervisor (under `rpf_single_statement`) | note ≥ 10 chars; milestone `rppf = true`; one per milestone; under the 2027 guide the statement is at most the guide's `reflection_word_limit` |
 | E8 | Submit a draft or the final version | `confirmed` | same; milestone completed | student | file or word count present |
-| E9 | Upload for assessment | `confirmed`, final submitted, three reflections recorded | same; `submit` milestone completed | coordinator | the three RPPF rows exist |
+| E9 | Upload for assessment | `confirmed`, final submitted, the guide's reflections recorded | same; `submit` milestone completed | coordinator | every reflection milestone the round's guide requires has its row (three sessions under the 2018 guide, one statement under the 2027 guide) |
 | E10 | Withdraw | any | `withdrawn` | student or coordinator | reason |
 | E11 | Milestone overdue | any, due date passed, not completed | unchanged; event and nudge only | engine | `ee.milestone_overdue`; nudge to the owner of the milestone |
 
@@ -347,45 +400,48 @@ Statuses: `draft → proposed → confirmed`, with `refine_requested` as the tea
 **The two layers.**
 
 1. **Facts.** SIS-shaped rows delivered through `packages/ingest` as a *fixture* source (`ingest.source_system.kind = 'fixture'`, which the classification trigger in §2.16 allows only into synthetic tenants). ACS's facts arrive as a Veracross-shaped export and Wellesmere's as an iSAMS-shaped export, so the two mapping profiles, the identity resolver and the normaliser (pass 2) are exercised from day one. The facts are generated by a deterministic pseudo-random generator seeded per tenant, so a re-seed produces the same rows, and they are *constructed to produce the prototype's authored series*: Ahmed's Mathematics assessments are generated so that the eight weekly working-grade points come out as 91, 93, 89, 92, 90, 88, 74, 41 with a personal band of 82 to 95.
-2. **Narrative.** The engine's tables written directly for the authored cases: a `signal.sweep_run` with `engine_version = 'seed'`, `feature_snapshot` rows built from each authored `baselines{}` object, `evaluation` and `signal` rows for each `evidence[]` item, the case with its tier, stage, `headline`, `plain_explanation`, `suggested_action`, window, `tier_yesterday` and `moved_why`, evidence items, interventions, the two seeded audit entries that are not writes (`FILE_ACCESS`), and the seeded teacher flags with their `routed_note`. This layer exists so the frontend can be built and demonstrated before the engine exists. A test, `engine-reproduces-seed`, runs the real engine over the facts layer and diffs its tiers and rule hits against the narrative layer; the diff is pass 3's acceptance list and is expected to be non-empty until the engine is finished, at which point the narrative layer for signals is retired and only the facts remain.
+2. **Narrative.** The engine's tables written directly for the authored cases: a `signal.sweep_run` with `engine_version = 'seed'`, `feature_snapshot` rows built from each authored `baselines{}` object, `evaluation` and `signal` rows for each `evidence[]` item, the case with its tier, stage, `headline`, `plain_explanation`, `suggested_action`, window, `tier_yesterday` and `moved_why`, evidence items, interventions, the two seeded audit entries that are not writes (`FILE_ACCESS`), and the seeded teacher flags with their `routed_note`. This layer exists so the frontend can be built and demonstrated before the engine exists, and it is written against the engine's schema as pass 3 D17 leaves it, so `strength` never exists in any seed (§12.11 of the pass 7 review). A test, `engine-reproduces-seed`, runs the real engine over **both tenants'** facts layers and diffs its tiers and rule hits against an expected-result list per tenant, generated by running the rules rather than written by hand (F06, F31); the list for Wellesmere's eight authored cases exists from the start, so they do not vanish when the narrative layer is retired. The narrative layer for signals is retired per tenant only when that tenant's list passes.
 
 **Anchoring time.** The prototype's today is Monday 24 November with a 07:04 sweep, and its Extended Essay dates are offsets from that day. The seed takes an anchor date (default: the most recent Monday on or before the run date) and expresses every seeded instant as an offset from it, in the tenant's timezone, so a demo tenant re-seeded in March is fresh in March. Academic years, terms, exam periods and Extended Essay milestone dates are generated around the anchor.
 
-**Tenant 1: ACS, ported from the prototype.** `core.school`: `slug 'acs'`, `data_classification 'synthetic'`, `branding_mode 'real_institution'` (so `demonstration_marker` is `true`), regulator `adek`, timezone `Asia/Dubai`, `sis_name 'Veracross'`, `safeguarding_role_label 'Child Protection Officer'`, `counselor_title 'HS Counselor'`, brand from `SCHOOLS.acs.brand`. Every module enabled. The port, structure by structure:
+**Tenant 1: ACS, ported from the prototype.** `core.school`: `slug 'acs'`, `data_classification 'synthetic'`, `branding_mode 'real_institution'` (so `demonstration_marker` is `true`), `purpose 'demo'` (§2.3; never deployed to production, DR-9), regulator `adek` (so the ADEK regulator profile applies, §2.7), timezone `Asia/Dubai`, `sis_name 'Veracross'`, `safeguarding_role_label 'Child Protection Officer'`, `counselor_title 'HS Counselor'`, brand from `SCHOOLS.acs.brand`. Every module enabled. Applying ACS's name to synthetic data, and showing that tenant to other schools in sales demos, both rest on ACS's written consent (pass 6 G2, extended to third-party sales demos by F29 and F43). The port, structure by structure:
 
 | Prototype | Seed target |
 |---|---|
 | `SCHOOLS.acs` | `core.school`, `core.school_module` |
-| `STAFF`, `TEACHER`, `SEL_ROUND.coordinator`, `EE_SUPERVISORS`, the teachers named in `IB_SUBJECTS.t` and `COURSES_BY_GRADE` | `core.person` (kind staff), `core.staff_profile`, `auth.membership` (counselor or teacher; Mr. Diaz as counselor with `ib_coordinator`; Mr. Okonkwo with `safeguarding_lead`; Ms. Haddad with `caseload_lead`) |
+| `STAFF`, `TEACHER`, `SEL_ROUND.coordinator`, `EE_SUPERVISORS`, the teachers named in `IB_SUBJECTS.t` and `COURSES_BY_GRADE` | `core.person` (kind staff), `core.staff_profile`, `auth.membership` (counselor or teacher; a **fictional** IB coordinator, seeded as "Mr. K. Brennan", as counselor with `ib_coordinator`; Mr. Okonkwo with `safeguarding_lead` on a `staff` membership; Ms. Haddad with `caseload_lead`). The prototype's coordinator, "Mr. A. Diaz", carries the surname of the real ACS staff member PRODUCT.md names, so it is not ported (F29): no real person's name may appear as a demo persona approving fabricated records, and every real person's name in PRODUCT.md and the prototype is on the seed blocklist (pass 4 §9.11). The replacement name is checked against ACS's published staff directory before use |
 | `STUDENTS` (15 authored + 72 generated) | `core.person` (student), `sis.student`, `sis.enrolment` (year group from `yr`, programme from `track`, `undecided` where absent), `auth.caseload_assignment` (all 87 to Ms. Haddad, as the prototype has it; see Q-ACS on the real split) |
 | `DPC` (201) | as above, programme `ib_dp_candidate` for Grade 10, `ib_dp` for 11 and 12; `mathSet`/`mark` become a Grade 10 mathematics section with `feeder_set_key` and a term grade |
-| `baselines{}`, `evidence[]`, `prio`, `prev`, `movedWhy`, `headline`, `plain`, `signal`, `window`, `context[]`, `stage`, `openedBy`, `opened`, `action{}` | narrative layer: `signal.feature_snapshot`, `signal.signal`, `signal.case` (+ histories via trigger), `signal.evidence_item`, `signal.evaluation.suppressions` from `context[]`; `signal` (0 to 100) is stored as `evaluation.strength` with `strength_definition = 'prototype:unspecified'` so it is visibly undefined until pass 3 |
+| `baselines{}`, `evidence[]`, `prio`, `prev`, `movedWhy`, `headline`, `plain`, `signal`, `window`, `context[]`, `stage`, `openedBy`, `opened`, `action{}` | narrative layer: `signal.feature_snapshot`, `signal.signal`, `signal.case` (+ histories via trigger), `signal.evidence_item`, `signal.evaluation.suppressions` from `context[]`; the prototype's `signal` (0 to 100) is **not ported**: the authored case's word maps to pass 3's `level` (D17), and no strength column exists in any seed (§12.11) |
 | `weeks[]` on roster students | not stored; the facts layer generates eight in-band weeks (one soft week for the eleven `watch` students) so `signal.week_run()` reproduces them |
 | `INTERVENTIONS` | `signal.intervention`, `intervention_step` from `plan[]` |
-| `AUDIT` | `audit.entry` (the six seeded entries, with `detail` reduced to identifiers) |
-| `TFLAGS`, `FLAG_KINDS` | `signal.teacher_flag`; `config.vocabulary 'flag_tag'` global defaults |
+| `AUDIT` | `audit.entry` (the six seeded entries, with `detail` reduced to identifiers). Two prototype keys are mapped or dropped (F72): the seeded `CONCERN_SUBMIT` becomes `TEACHER_FLAG`, and the seeded `AI_DRAFT` "Letter draft generated" entry is dropped, because letter generation is deferred and the entry would record something the product does not do |
+| `TFLAGS`, `FLAG_KINDS` | `signal.teacher_flag`; `config.vocabulary 'flag_tag'` global defaults; `routed_note` values mapped to the teacher-facing vocabulary of §2.9 (`received`, `reviewed`), which never says that a case exists (F58) |
 | `S.thresh` | `config.rule_set_version 'engine.thresholds'` version 1 for ACS (`acad 2, att 3, eng 14, persist 3`) and the platform defaults |
-| `APP`/`EXTRA_APP`, `STMAP`, `OFFERS`, `uni.targets[]`, `uni.flags[]` | `uni.student_target` (no probability), `uni.application`, `uni.offer`, `uni.document_request` (transcript, counselor reference, each `trefs[]` teacher reference, forms), `uni.statement` + versions (`stmt` % becomes a version with that completeness as `char_count / limit`) ; flags are not seeded, they are derived |
-| `UNI_COSTS`, `UNI_REQS`, `REQ_CHANGES`, `COURSE_CATALOG`, `UNI_COURSE_REQUIREMENTS`, the `unis` list in the roster generator | `ref.institution`, `ref.course`, `ref.entry_requirement`, `ref.cost`, `ref.requirement_change`, each with a `ref.source` row whose `url` is `seed://prototype` and whose `title` says *demonstration content, unsourced*; the UI shows the source label, so the demo is honest about it until pass 5's sourced set replaces them |
+| `APP`/`EXTRA_APP`, `STMAP`, `OFFERS`, `uni.targets[]`, `uni.flags[]` | `uni.student_target` (no probability), `uni.application`, `uni.offer`, `uni.document_request` (transcript, counselor reference, each `trefs[]` teacher reference, forms), `uni.statement` + versions (`stmt` % becomes a sectioned version under the destination's `ref.statement_format` for the seeded entry year, with sections filled so that the derived completeness matches the prototype's percentage, F32); flags are not seeded, they are derived |
+| `UNI_COSTS`, `UNI_REQS`, `REQ_CHANGES`, `UNI_COURSE_REQUIREMENTS`, the `unis` list in the roster generator | `ref.institution`, `ref.course`, `ref.entry_requirement`, `ref.cost`, `ref.requirement_change`, each with a `ref.source` row whose `url` is `seed://prototype` and whose `title` says *demonstration content, unsourced*. **A `seed://` number never renders** (F30): the UI shows "not on file" wherever the only source is `seed://`, `seed://` sources are loaded in local, CI and staging only, and a production deploy check fails if any `ref.source` row there has a `seed://` URL. `ref.*` is global, so a seeded tuition figure would otherwise reach real parents |
+| `COURSE_CATALOG` (ACS's own subject list for the Grade 9 guide) | per-school rows: `sis.subject` for the synthetic ACS tenant plus the guide text in `config.vocabulary 'guide_course'` (F65); never global `ref.*`, where it would appear in every school's university data |
 | `PARENTS`, `PMSGS_BY_GRADE`, `PARENT_MEETINGS_BY_GRADE`, `MEETING_TOPICS`, `MEETING_SLOTS` | `core.person` (guardian), `family.guardian_link` (verified, `sis_import`), `family.message`, `core.meeting` (kind `parent_meeting`), `family.meeting_slot`, `config.vocabulary 'meeting_topic'` |
 | `MEETINGS`, `AGENDA`, `TASKS` | `core.meeting`; the agenda and task list are derived views in the domain layer and are not seeded |
 | `TRANSCRIPTS`, `SUBJECTS`, `IB_CORE`, `G12_IB_TIMETABLE`, `COURSES_BY_GRADE`, `getStudentClasses` | `sis.transcript`, `sis.subject`, `sis.section`, `sis.section_teacher`, `sis.section_membership`, `sis.assessment` + `sis.grade` (working and predicted, IB scale 1 to 7), `sis.timetable_period` P1 to P6 |
 | `IB_GROUPS`, `IB_SUBJECTS`, `GOAL_NEEDS` | `ib.subject`, `ib.subject_level_period`, `ib.subject_teacher`, `ib.prerequisite` (MAA HL from the extended set at 85%), `config.rule_set_version 'ib.goal_alignment'` |
 | `SEL_ROUND`, `SELREC` | `ib.selection_round` (opens 10 Nov, closes 5 Dec relative to the anchor), `ib.selection`, `selection_pick`, `selection_signoff`, `selection_event`; approved records get a `core.meeting` of kind `selection_review` from `talk` |
 | `CAS_STRANDS`, `CAS_OUTCOMES`, `CAS_OPPS`, `CAS_TAGS`, `CAS_INTERESTS`, `CASREC` | `ib.cas_activity`, `config.vocabulary 'cas_tag'`, `ib.cas_interest`, `ib.cas_entry`: the `entries[]` become entries and reflections; `hrs` minus the entries' hours becomes one `imported_balance` row per strand covering the programme start to the earliest entry, so the ledger totals equal the prototype's `hrs` and the recent log equals its `entries` |
-| `EE_MILESTONES`, `EE_ROUND`, `EEREC`, `EE_WAIT_DAYS` | `ib.ee_round`, `ib.ee_milestone`, `ib.ee_milestone_due` (dates from the day offsets), `ib.ee_essay`, `ee_milestone_completion`, `ee_reflection`, `ee_draft`, `ee_event` |
-| `ONBOARD_Q`, `ARCHETYPES`, `SUBPATH_DETAIL`, `DISCOVERY_FOLLOWUPS`, `DISCOVERY_NARROW`, `TAG_KEYWORDS` | `ref.onboarding_question`, `ref.archetype` (version 1, with `steps`, `subpaths`, `narrowing`); the factual claims in steps go into `ref.archetype_claim` with a `seed://prototype` source and are therefore hidden by the rule that unsourced claims do not render (pass 5) |
+| `EE_MILESTONES`, `EE_ROUND`, `EEREC`, `EE_WAIT_DAYS` | `ib.ee_round` (guide `ee_2027` for both current cohorts, F62), `ib.ee_milestone` (generated from the guide: one reflective statement, where the prototype's three RPPF sessions follow the 2018 guide and are seeded only on a resit round), `ib.ee_milestone_due` (dates from the day offsets), `ib.ee_essay`, `ee_milestone_completion`, `ee_reflection`, `ee_draft`, `ee_event`. Word limit, hours and marks come from the guide row, which the coordinator confirms (F77), not from the prototype's figures |
+| `ONBOARD_Q`, `ARCHETYPES`, `SUBPATH_DETAIL`, `DISCOVERY_FOLLOWUPS`, `DISCOVERY_NARROW`, `TAG_KEYWORDS` | `ref.onboarding_question`, `ref.archetype` (version 1, with `steps`, `subpaths`, `narrowing`); each step carries the programme families it applies to, so IB and AP advice reaches only students in those programmes and an approved roadmap snapshots only the steps for the student's programme (F65); the factual claims in steps go into `ref.archetype_claim` with a `seed://prototype` source and are therefore hidden by the rule that unsourced claims do not render (pass 5) |
 | `SURVEY_COMPLETE`, `PENDING_APPROVALS`, `APPROVED_PATHS`, `S.roadmapProgress` | `discovery.session` (completed for s3, s9, s10, s11, s12, s17), one pending proposal, one approved pathway with a few steps done and the matching `xp_ledger` rows |
-| `PS_SYSTEMS`, `PS_SUBMISSIONS`, `S.psStatements` | `uni.statement` per destination system, versions, one submitted review |
+| `PS_SYSTEMS`, `PS_SUBMISSIONS`, `S.psStatements` | `uni.statement` per destination system, sectioned versions under `ref.statement_format`, one submitted review. The prototype's guidance in `PS_SYSTEMS` describes UCAS's single-essay format, which UCAS replaced with three questions from 2026 entry, so it is not ported as guidance (F32); the prototype's "AI read" score is not ported (F66, pass 6 §6.3) |
 | `MENTOR_REQS`, `PARENT_MENTOR`, `NETWORK`, `PATH_ALUMNI`, `ALUMNI_OUTCOMES` | `mentor.profile` (Hassan Al Rashid, Lina Khoury; verified), `mentor.pairing`, `mentor.session_request`, `discovery.network_contact`; `PATH_ALUMNI` and `ALUMNI_OUTCOMES` are demonstration content and are seeded as a reporting fixture only, labelled synthetic |
 | `AP_EXAMS` | `ref.exam_session` (board `ap`, session 2026) and `uni.ap_exam_registration` for Fahad |
 | `SREFLECT` | `signal.student_reflection` |
 | `METRICS` | not seeded: every figure is a target, and the reporting views compute from `events.event` |
 | Demo apparatus: role switcher, grade preview, `FAMILY_STUDENT_ID`, `PARENT_ME` | not seeded; real users have memberships |
 
-**Tenant 2: Wellesmere British School, Dubai.** A fictional British-curriculum school regulated by the KHDA. The name returned no matches for an existing school in a web search on 2026-09-22; it must be checked against the KHDA school directory and re-chosen if it collides. `core.school`: `slug 'wellesmere'`, `data_classification 'synthetic'`, `branding_mode 'unbranded'` (marker off, which is the other branch the marker rule must be seen to take), regulator `khda`, timezone `Asia/Dubai`, weekend Saturday and Sunday, `sis_name 'iSAMS'`, `safeguarding_role_label 'Designated Safeguarding Lead'`, `counselor_title 'Sixth Form Pastoral Lead'`. Modules `ib_selection`, `cas`, `extended_essay` and `ap_exams` **disabled**. Year groups Year 10 to Year 13 (ordinals 10 to 13, stages `entry`, `pathway_choice`, `programme_1`, `programme_2`), programmes GCSE (Years 10 and 11, scale `gcse_9_1`) and A Level (Years 12 and 13, scale `a_level`, predicted grades like `A*AA`), three terms with half terms, six timetable periods, a school-year that begins in September, destination systems UCAS with two US Common App targets. Two counselors, twelve teachers, ~120 students on the counseling surface split ~60/60, 220 guardians (several with two children, one with children in Year 10 and Year 13, one guardian pair sharing an email address so the linkage rule is tested), one DSL who also teaches. Eight authored cases, each teaching something ACS's cannot: a Year 11 GCSE mock dip inside a declared exam period (suppression), a mid-year transfer with no history (cold start), a Year 13 with an authorised medical absence of three weeks, a student whose only signal is a teacher concern, an EAL student with rising grades and falling attendance, a relapse inside a closed case's window, a conditional offer at risk, and a student with nothing wrong whose file must stay quiet. The facts layer is an iSAMS-shaped export.
+**Tenant 2: Wellesmere British School, Dubai.** A fictional British-curriculum school regulated by the KHDA. The name returned no matches for an existing school in a web search on 2026-09-22; it must be checked against the KHDA school directory and re-chosen if it collides. `core.school`: `slug 'wellesmere'`, `data_classification 'synthetic'`, `branding_mode 'unbranded'` (marker off, which is the other branch the marker rule must be seen to take), `purpose 'demo'`, regulator `khda` (with the explicit empty KHDA profile until a KHDA analysis exists, so no Abu Dhabi authority, contact, clock or citation can render, F31), timezone `Asia/Dubai`, weekend Saturday and Sunday, `sis_name 'iSAMS'`, `safeguarding_role_label 'Designated Safeguarding Lead'`, `counselor_title 'Sixth Form Pastoral Lead'`. Modules `ib_selection`, `cas`, `extended_essay` and `ap_exams` **disabled**. Year groups Year 10 to Year 13 (ordinals 10 to 13, stages `entry`, `pathway_choice`, `programme_1`, `programme_2`), programmes GCSE (Years 10 and 11, scale `gcse_9_1`) and A Level (Years 12 and 13, scale `a_level`, predicted grades like `A*AA`), three terms with half terms, six timetable periods, a school-year that begins in September, destination systems UCAS with two US Common App targets. Two counselors, twelve teachers, ~120 students on the counseling surface split ~60/60, 220 guardians (several with two children, one with children in Year 10 and Year 13, one guardian pair sharing an email address so the linkage rule is tested, and one contact carrying an imported restriction flag, F57), one DSL who also teaches (a `teacher` membership with `safeguarding_lead`). The iSAMS fixture's `TutorStaffId` and `HeadOfYear StaffId` columns are imported, not ignored (F33): they become tutor groups and pastoral assignments (`auth.pastoral_assignment` of kinds `tutor` and `year_lead`, §2.4), a Head of Sixth Form holds `ucas_adviser` for Years 12 and 13, and case ownership stays single. Eight authored cases, each teaching something ACS's cannot: a Year 11 GCSE mock dip inside a declared exam period (suppression), a mid-year transfer with no history (cold start), a Year 13 with an authorised medical absence of three weeks, a student whose only signal is a teacher concern, an EAL student with rising grades and falling attendance, a relapse inside a closed case's window, a conditional offer at risk, and a student with nothing wrong whose file must stay quiet. The facts layer is an iSAMS-shaped export.
 
-**What the second school catches.** A checklist the UI and domain tests assert against Wellesmere: no "Grade" literal (year-group labels come from `sis.year_group`); no assumption that ordinals run 9 to 12 or that `programme_2` is ordinal 12; no IB navigation, coordinator queue or CAS page when the modules are off; the safeguarding label and counselor title read from the tenant; grade scales convert through `ref.grade_scale` (a `9` on GCSE is not 9%); percentages are not assumed; the weekend and school-day calendar come from the tenant; UCAS-only deadline handling; no Arabic-name or ACS-staff strings anywhere in code; the demonstration marker is off.
+**What the second school catches.** A checklist the UI and domain tests assert against Wellesmere: no "Grade" literal (year-group labels come from `sis.year_group`); no assumption that ordinals run 9 to 12 or that `programme_2` is ordinal 12; portal sections come from the school's `portal` rule set, so a Year 10 family does not get the near-empty Grade 9 portal and Years 10 and 11 see GCSE grades (F65); no IB navigation, coordinator queue or CAS page when the modules are off; the safeguarding label and counselor title read from the tenant; grade scales convert through `ref.grade_scale` (a `9` on GCSE is not 9%); percentages are not assumed; the weekend and school-day calendar come from the tenant; deadlines are handled per destination system, UCAS and Common App both (the seed gives Wellesmere two Common App targets, so the first version's "UCAS-only" assertion was wrong, F31); **the string "ADEK" appears on no Wellesmere screen, template or email** (F31); regulator-specific text comes only from the tenant's regulator profile; no Arabic-name or ACS-staff strings anywhere in code; the demonstration marker is off.
+
+**A third, CI-only tenant catches the clock.** Both synthetic schools sit in `Asia/Dubai` with the same weekend, so neither can catch a hard-coded timezone or weekend (F31). CI therefore also seeds `wellesmere-shifted`: the Wellesmere fixture under `timezone = 'Europe/London'` (daylight saving, which no Gulf timezone has, and a different UTC offset, so a date computed in the wrong zone disagrees between the two tenants' expected results) and `weekend_days = '{5,6}'` (Friday and Saturday), with its own expected-result list. It is labelled a test variant, exists only in CI, and asserts that every date, school day and SLA clock comes from the tenant.
 
 **Consequences.** The seed is the first consumer of `packages/ingest`, `packages/db` and the domain layer, which forces those interfaces to exist before any screen. Re-seeding is idempotent per tenant (`pnpm seed --tenant acs --anchor 2026-11-23`). The seed never runs against a `real` tenant: the classification trigger refuses fixture imports, and the seed command refuses a tenant whose classification is `real`.
 
@@ -397,13 +453,16 @@ Statuses: `draft → proposed → confirmed`, with `refine_requested` as the tea
 |---|---|---|---|---|
 | Local | Docker Compose: PostgreSQL 17, Azurite (blob), Mailpit (email) | both synthetic tenants | web + worker as processes | `pnpm dev` |
 | CI | GitHub Actions with a PostgreSQL 17 service container | migrations from zero, then both tenants | migrations, seed, unit, RLS suite, contract tests, Playwright | every pull request |
-| Staging | Azure subscription `caros-staging`, UAE North | synthetic only, both tenants; never real data | Flexible Server `B2ms` without HA, one Container Apps replica per app, no WAF, same Key Vault and Monitor wiring as production | on merge to `main`, migrations job then revision swap |
-| Production | Azure subscription `caros-prod`, UAE North (+ UAE Central access granted) | real tenants only; no synthetic tenant unless it is a signed demo tenant with `branding_mode 'real_institution'` and the marker on | DR-1 topology | on a release tag; migrations job must succeed before the new revision receives traffic; previous revision kept for instant rollback |
+| Staging | Azure subscription `caros-staging`, UAE North | synthetic only, both tenants; never real data; maps only CAROS test domains, never a school's Google domain (F43) | Flexible Server `B2ms` without HA, one Container Apps replica per app, no WAF, same Key Vault and Monitor wiring as production. It is also the sales demo (pass 6 decision C4): a **pinned demo revision** (a Container Apps revision label) serves a demo tenant that no drill, load test or retest touches, with a deploy freeze during booked demos; a separate demo environment is split out only if demos become frequent (F43) | on merge to `main`, migrations job then revision swap on the unpinned revision |
+| Drills | its own subscription, `caros-drills`, UAE North | synthetic only | scratch servers for the restore and offboarding drills, created and destroyed per drill (F43) | per drill |
+| Production | Azure subscription `caros-prod`, UAE North (+ UAE Central access granted) | real tenants (`purpose = 'customer'`) and **only one kind of synthetic tenant: the unbranded canary pair** (`purpose = 'canary'`, `branding_mode 'unbranded'`, AI off, no deliverable email address), which exists to test isolation (pass 6 decision C6, F42). No branded synthetic tenant and no demo or training tenant under a school's name runs in production; counselors train on staging | DR-1 topology | on a release tag; migrations job must succeed before the new revision receives traffic; previous revision kept for instant rollback |
 | Isolated single-school | its own subscription, from the same Terraform module with `deployment_mode = "single"` | one real tenant | DR-1 topology | as production |
 
-Infrastructure is Terraform (or OpenTofu) with the `azurerm` provider, state in a UAE North storage account with versioning; `terraform plan` output is posted on every infrastructure pull request and `apply` runs only from `main`. Developers have no standing access to the production database; a support grant (§2.4) is the only path, and every read under it is audited.
+Infrastructure is Terraform (or OpenTofu) with the `azurerm` provider, state in a UAE North storage account with versioning; `terraform plan` output is posted on every infrastructure pull request and `apply` runs only from `main`. Developers have no standing access to the production database; a support grant (§2.4) is the only path, and every read under it is audited. No machine that runs a coding agent holds a production credential or a signed-in production browser profile (F23).
 
-**Migrations in production.** Expand-and-contract: a release may add tables, columns, indexes (created `CONCURRENTLY` outside the transaction) and policies; a release never drops or renames anything the previous revision still reads, and the drop lands two releases later. `lock_timeout` is set to five seconds in the migration job so a blocked DDL fails fast instead of queueing behind traffic. Rollback is redeploying the previous revision; the schema is forward-compatible by construction.
+**The canary** (F42) is a Container Apps job in UAE North, not a CI step on GitHub-hosted runners. It calls domain functions through `withTenant()` as a canary membership, refuses to run against any tenant whose `purpose` is not `canary`, and asserts that every row it reads carries its own school id. Because it runs in production with production identity, its output is aggregates and pass or fail only.
+
+**Migrations in production.** Expand-and-contract: a release may add tables, columns, indexes (created `CONCURRENTLY` through the migration job's non-transactional step, DR-2, and only where a table is large enough to need it) and policies; a release never drops or renames anything the previous revision still reads, and the drop lands two releases later. `lock_timeout` is set to five seconds in the migration job so a blocked DDL fails fast instead of queueing behind traffic. Rollback is redeploying the previous revision; the schema is forward-compatible by construction.
 
 **Backups.** All inside the UAE.
 
@@ -416,9 +475,9 @@ Infrastructure is Terraform (or OpenTofu) with the `azurerm` provider, state in 
 | Raw SIS exports | immutable container with a time-based retention policy equal to the `raw_import` retention class | proposed 90 days; then deleted by policy | [immutable storage](https://learn.microsoft.com/en-us/azure/storage/blobs/immutable-storage-overview) |
 | Audit integrity | weekly job recomputes the hash chain per school and alerts on a break | | §2.19 |
 
-What this does not cover: the loss of both Dubai and Abu Dhabi. An encrypted, customer-key cold copy in an EU region would cover it and would move student data out of the country. That is the first item in §5 and is not decided here.
+What this does not cover: the loss of both Dubai and Abu Dhabi. An encrypted cold copy in an EU region would cover it and would move student data out of the country. It is the first item in §5 and is not decided here, and pass 8 corrects how it was framed (F22): a copy encrypted under a key that exists only in the UAE cannot be decrypted in the disaster it exists for, because the key is lost with the country, and Key Vault backups restore only inside the same Azure geography. The real choice for ACS and counsel is therefore (a) EU ciphertext with key material held outside the UAE (a Managed HSM replica in an EU region, or security-domain shares held abroad by named people), a named restore region and trigger, and a restore drill in that region on synthetic data; or (b) in-country only, with the country-level risk stated in the DPA. Either way ADEK's explicit consent under its Digital Policy 7.1.3.a comes first (F04; pass 4 §9.7).
 
-**Restore drills.** Quarterly, scripted in `docs/runbooks/restore-drill.md` and `tooling/restore-drill/`, the first one before any real data arrives, each one recorded with the date, the operator, the recovery time and point achieved, and every surprise:
+**Restore drills.** Quarterly, scripted in `docs/runbooks/restore-drill.md` and `tooling/restore-drill/`, the first one before any real data arrives, each one recorded with the date, the operator, the recovery time and point achieved, and every surprise. Drills on synthetic data run in the `caros-drills` subscription, never on staging, which is also the sales demo (F43); drills of production backups restore into isolated scratch servers inside the production subscription. Every check that reads restored data runs as a job in UAE North, so only aggregates and pass or fail leave the region (F23):
 
 1. **Point-in-time** to one hour ago, into a new UAE North server. Checks: row counts per tenant table against the registry; the latest `signal.sweep_run` present; `audit.entry` chain verifies; the RLS suite passes against the restored server; the worker starts against it in a read-only mode and completes a dry sweep.
 2. **Geo-restore** into UAE Central from the geo-redundant backup, same checks. Requires the region access grant; until it is granted this drill cannot run, which is why the request goes in during week one.
@@ -443,6 +502,11 @@ The DDL below is written for PostgreSQL 17 and is the source the first migration
 8. **Derived values are not columns.** Anything listed in DR-6 as "never stored" is a `VIEW` or a function. Materialised values carry the version of the rule that produced them and `computed_at`.
 9. **Soft deletion** is `deleted_at timestamptz NULL` on user-authored, correctable records only (drafts, targets, catalogue rows). Facts imported from the SIS are superseded, never deleted (`superseded_by_import_id`). Personal data is erased through `privacy.erasure_request`, which tombstones `core.person` and scrubs the columns listed in `privacy.table_registry`.
 10. **Every table is registered** in `privacy.table_registry` with its data class, its subject column, its PII columns and its retention class. A test fails the build if a tenant table is missing from the registry or lacks RLS.
+11. **Writes are column-level** (pass 8, F15, F17). No user tier holds table-wide `UPDATE`. Each tier's writable columns per table are listed in `privacy.table_registry.writable_columns`, and the grants in §2.22 are generated from that list. Columns that carry a state or an authority (`status`, `approved_*`, `review_meeting_*`, `verified_at`, `activation_status`, `storage_key`, `share_scope`, any `*_by_person_id`) are written only by `SECURITY DEFINER` transition functions that check the actor and the from-state.
+12. **Every `SECURITY DEFINER` function** is owned by `caros_policy` (or `caros_jobs` for the queue), pins `search_path`, restricts itself to `auth.current_school()`, and has `EXECUTE` revoked from `PUBLIC` and granted to named tiers only (F75). A convention test lists every definer function and fails on one executable by `PUBLIC`.
+13. **No materialised view** in a schema a tier can read (F34, DR-6); every view is `security_invoker` unless it is a named projection view (§2.4a), which is a definer view with its own role check.
+14. **`updated_at` is maintained by trigger** (§12.3 of the pass 7 review): §2.22 attaches `core.touch_updated_at()` to every table that has the column, and the convention test fails on one without it.
+15. **Vocabularies, not CHECK lists, for anything a school may differ on** (F65): source systems, engagement sources, programme families and destination systems are reference or vocabulary tables. CHECK lists remain only for vocabularies that are product logic.
 
 ```sql
 -- ============================================================================
@@ -477,22 +541,37 @@ CREATE SCHEMA notify;     -- transactional outbox
 CREATE SCHEMA audit;      -- append-only audit log (changes and access)
 CREATE SCHEMA events;     -- append-only product event stream (reporting)
 CREATE SCHEMA privacy;    -- table registry, retention classes, erasure
+CREATE SCHEMA reporting;  -- per-tenant aggregate tables under RLS, one writer (DR-6, F34)
+CREATE SCHEMA jobs;       -- jobs.enqueue(): the only way a tier puts work on the queue (DR-2, F36)
+-- pg-boss creates and owns its own `pgboss` schema, as caros_jobs.
 
--- Ownership and privilege tiers. caros_owner runs migrations and owns every
--- object. caros_app is the only LOGIN role the application uses; it cannot
--- bypass RLS. The six tier roles carry column privileges and are assumed per
--- transaction with SET LOCAL ROLE (DR-4). A new product role is a row in
+-- Ownership and privilege tiers (revised by pass 8: F01, §12.2, F36, F44, F75).
+-- caros_owner owns every object and cannot log in; the migrations job logs in
+-- as caros_migrator and runs SET ROLE caros_owner. Each deployable has its own
+-- LOGIN role and managed identity, granted only the tiers it may assume
+-- (DR-4 table). Every login role is NOINHERIT, so a connection that skips
+-- SET LOCAL ROLE holds no table privilege. A new product role is a row in
 -- auth.role mapped onto one of these tiers, not a new database role.
-CREATE ROLE caros_owner NOLOGIN;
-CREATE ROLE caros_app LOGIN NOBYPASSRLS NOSUPERUSER NOCREATEDB NOCREATEROLE;
-CREATE ROLE caros_t_staff    NOLOGIN NOBYPASSRLS;
+CREATE ROLE caros_owner    NOLOGIN;
+CREATE ROLE caros_migrator LOGIN NOINHERIT NOBYPASSRLS NOSUPERUSER NOCREATEDB NOCREATEROLE;
+CREATE ROLE caros_web      LOGIN NOINHERIT NOBYPASSRLS NOSUPERUSER NOCREATEDB NOCREATEROLE;
+CREATE ROLE caros_worker   LOGIN NOINHERIT NOBYPASSRLS NOSUPERUSER NOCREATEDB NOCREATEROLE;
+CREATE ROLE caros_support  LOGIN NOINHERIT NOBYPASSRLS NOSUPERUSER NOCREATEDB NOCREATEROLE;
+CREATE ROLE caros_jobs     LOGIN NOINHERIT NOBYPASSRLS NOSUPERUSER NOCREATEDB NOCREATEROLE;
+CREATE ROLE caros_t_staff    NOLOGIN NOBYPASSRLS;  -- counselors, school administrators, capability-only staff
+CREATE ROLE caros_t_teacher  NOLOGIN NOBYPASSRLS;  -- teachers: own column rules (F75)
 CREATE ROLE caros_t_student  NOLOGIN NOBYPASSRLS;
 CREATE ROLE caros_t_guardian NOLOGIN NOBYPASSRLS;
 CREATE ROLE caros_t_mentor   NOLOGIN NOBYPASSRLS;
+CREATE ROLE caros_t_ai       NOLOGIN NOBYPASSRLS;  -- AI retrieval; grants generated from an allowlist (pass 4 D55, F44)
 CREATE ROLE caros_t_system   NOLOGIN NOBYPASSRLS;  -- the worker (sweep, imports, notifications)
-CREATE ROLE caros_t_support  NOLOGIN NOBYPASSRLS;  -- CAROS staff break-glass, read-only, always audited
-GRANT caros_t_staff, caros_t_student, caros_t_guardian, caros_t_mentor,
-      caros_t_system, caros_t_support TO caros_app;
+CREATE ROLE caros_t_support  NOLOGIN NOBYPASSRLS;  -- CAROS staff under a school-approved grant, always audited
+GRANT caros_owner TO caros_migrator;
+GRANT caros_t_staff, caros_t_teacher, caros_t_student, caros_t_guardian, caros_t_mentor, caros_t_ai
+  TO caros_web;
+GRANT caros_t_system, caros_t_ai TO caros_worker;   -- ai only for AI jobs run as the case owner (F44)
+GRANT caros_t_support TO caros_support;
+-- caros_jobs is granted no tier. It owns the pgboss and jobs schemas and nothing else.
 -- The one role that bypasses RLS. It owns the SECURITY DEFINER helpers that the
 -- policies call (they must read membership tables without being filtered by
 -- the very policies they implement, or Postgres reports infinite recursion)
@@ -519,10 +598,10 @@ CREATE TABLE core.school (
   initials               text NOT NULL,           -- "ACS"
   country_iso            char(2) NOT NULL,        -- 'AE'
   region_label           text,                    -- "Abu Dhabi"
-  regulator              core.regulator NOT NULL,
+  regulator              core.regulator NOT NULL, -- read through ref.regulator_profile (§2.7, F31); nothing hard-codes a regulator
   timezone               text NOT NULL,           -- 'Asia/Dubai'
   locale                 text NOT NULL DEFAULT 'en-GB',
-  weekend_days           smallint[] NOT NULL DEFAULT '{6,7}', -- ISO weekday numbers; UAE schools: Sat=6, Sun=7 (assumption, see Q-ACS)
+  weekend_days           smallint[] NOT NULL DEFAULT '{6,7}', -- ISO weekday numbers; UAE schools: Sat=6, Sun=7 (assumption, see Q-ACS); never read from anywhere but here (F31's CI variant tests it)
   curriculum_note        text,
   sis_name               text NOT NULL,           -- "Veracross", "iSAMS": the word the UI prints
   safeguarding_role_label text NOT NULL,          -- "Child Protection Officer" | "Designated Safeguarding Lead"
@@ -535,22 +614,63 @@ CREATE TABLE core.school (
   -- it is on whenever a real institution's name sits over synthetic data.
   demonstration_marker   boolean GENERATED ALWAYS AS
                          (data_classification = 'synthetic' AND branding_mode = 'real_institution') STORED,
-  status                 text NOT NULL DEFAULT 'active' CHECK (status IN ('onboarding','active','suspended','offboarded')),
+  -- What the tenant is for (F42). Reports, indicators, cost boards and alerts
+  -- key on this, never on a name or a flag that could hide a real school.
+  purpose                text NOT NULL CHECK (purpose IN ('customer','canary','demo')),
+  -- One status model for every pass (F36). Scheduling and alerting key on
+  -- "holds data": status IN ('shadow','live'). onboarding: no real data yet;
+  -- shadow: real data, engine in shadow mode (from G-REAL); live: from G-LIVE;
+  -- offboarding: the 30-day read-only exit window; offboarded is terminal, and
+  -- the row is never deleted, because audit and events keep its id.
+  status                 text NOT NULL DEFAULT 'onboarding'
+                         CHECK (status IN ('onboarding','shadow','live','suspended','offboarding','offboarded')),
   created_at             timestamptz NOT NULL DEFAULT now(),
-  updated_at             timestamptz NOT NULL DEFAULT now()
+  updated_at             timestamptz NOT NULL DEFAULT now(),
+  CHECK (purpose <> 'customer' OR data_classification = 'real'),
+  CHECK (purpose = 'customer' OR data_classification = 'synthetic'),
+  CHECK (purpose <> 'canary' OR branding_mode = 'unbranded')
 );
 
--- A tenant's classification never changes. A demo that becomes a customer is a
--- new tenant with a fresh id, an import, and no synthetic rows to forget.
+-- A tenant's classification, purpose and branding never change (F42, F67). A
+-- demo that becomes a customer is a new tenant with a fresh id, an import, and
+-- no synthetic rows to forget. For a synthetic tenant the letterhead (names,
+-- initials, brand, mark) is also CAROS-only, written by a migration and never
+-- by the school's own configuration, so a real institution's name and crest
+-- cannot be put over synthetic data with the marker off, and the marker cannot
+-- be switched off by relabelling the tenant.
 CREATE FUNCTION core.forbid_reclassification() RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN
-  IF NEW.data_classification <> OLD.data_classification THEN
-    RAISE EXCEPTION 'core.school.data_classification is immutable (school %)', OLD.id;
+  IF NEW.data_classification <> OLD.data_classification
+     OR NEW.purpose <> OLD.purpose
+     OR NEW.branding_mode <> OLD.branding_mode THEN
+    RAISE EXCEPTION 'core.school classification, purpose and branding_mode are immutable (school %)', OLD.id;
+  END IF;
+  IF OLD.data_classification = 'synthetic' AND auth.actor_kind() <> 'migration'
+     AND (NEW.legal_name, NEW.display_name, NEW.short_name, NEW.initials, NEW.brand, NEW.mark_file_id)
+         IS DISTINCT FROM (OLD.legal_name, OLD.display_name, OLD.short_name, OLD.initials, OLD.brand, OLD.mark_file_id) THEN
+    RAISE EXCEPTION 'a synthetic tenant''s letterhead is changed only by a CAROS migration (school %)', OLD.id;
   END IF;
   RETURN NEW;
 END $$;
 CREATE TRIGGER school_classification_immutable BEFORE UPDATE ON core.school
   FOR EACH ROW EXECUTE FUNCTION core.forbid_reclassification();
+
+-- Status moves forward only along the model above; entering shadow on a real
+-- tenant needs the legal-basis attestation (pass 4 D45 adds the column and the
+-- check); entering live needs the recorded G-LIVE sign-off (pass 6).
+CREATE FUNCTION core.check_status_move() RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+  IF NEW.status IS DISTINCT FROM OLD.status AND NOT (
+       (OLD.status, NEW.status) IN (('onboarding','shadow'), ('shadow','live'), ('live','suspended'),
+                                    ('shadow','suspended'), ('suspended','live'), ('suspended','shadow'),
+                                    ('onboarding','offboarding'), ('shadow','offboarding'), ('live','offboarding'),
+                                    ('suspended','offboarding'), ('offboarding','offboarded'))) THEN
+    RAISE EXCEPTION 'core.school.status cannot move from % to %', OLD.status, NEW.status;
+  END IF;
+  RETURN NEW;
+END $$;
+CREATE TRIGGER school_status_move BEFORE UPDATE OF status ON core.school
+  FOR EACH ROW EXECUTE FUNCTION core.check_status_move();
 
 CREATE TABLE core.school_module (
   school_id   uuid NOT NULL REFERENCES core.school (id),
@@ -581,9 +701,12 @@ CREATE TABLE core.person (
   updated_at       timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id),
   UNIQUE (school_id, id),
-  UNIQUE (school_id, email),
   UNIQUE (school_id, google_subject)
 );
+-- An email identifies one person, except for guardians: two SIS contacts who
+-- share an address stay two persons (F57), so a restriction on one parent can
+-- be applied without cutting off the other (pass 4 §2.2).
+CREATE UNIQUE INDEX person_email_unique ON core.person (school_id, email) WHERE kind <> 'guardian';
 CREATE INDEX person_school_kind ON core.person (school_id, kind);
 
 CREATE TABLE core.staff_profile (
@@ -605,6 +728,7 @@ CREATE FUNCTION core.school_today(p_school uuid) RETURNS date LANGUAGE sql STABL
   SELECT (now() AT TIME ZONE s.timezone)::date FROM core.school s WHERE s.id = p_school
 $$;
 
+-- Attached in §2.22 to every table with an updated_at column (§12.3 of the pass 7 review).
 CREATE FUNCTION core.touch_updated_at() RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN NEW.updated_at := now(); RETURN NEW; END $$;
 
@@ -614,8 +738,8 @@ BEGIN RAISE EXCEPTION '% is append-only', TG_TABLE_NAME; END $$;
 -- ============================================================================
 -- 2.4 auth: roles, permissions, memberships, scopes. Permissions are data.
 -- ============================================================================
-CREATE TYPE auth.privilege_tier AS ENUM ('staff','student','guardian','mentor','system','support');
-CREATE TYPE auth.perm_action    AS ENUM ('read','write','approve','escalate','configure');
+CREATE TYPE auth.privilege_tier AS ENUM ('staff','teacher','student','guardian','mentor','ai','system','support');
+CREATE TYPE auth.perm_action    AS ENUM ('read','write','approve','escalate','configure');  -- pass 4 D34 adds 'export'
 CREATE TYPE auth.perm_scope     AS ENUM (
   'school',            -- every row in the school
   'caseload',          -- students assigned to the acting counselor (primary or cover)
@@ -624,16 +748,41 @@ CREATE TYPE auth.perm_scope     AS ENUM (
   'subject_teacher',   -- rows for an IB subject the acting teacher is a listed teacher of
   'ee_party',          -- Extended Essays where the acting teacher is target or supervisor
   'self',              -- the acting student's own rows
-  'linked_children',   -- students the acting guardian is verifiedly linked to
+  'linked_children',   -- students the acting guardian is verifiedly and actively linked to
   'paired',            -- students the acting mentor has an accepted pairing with
   'author',            -- rows the acting person authored
-  'ib_cohort'          -- the Diploma cohort; requires the ib_coordinator capability
+  'ib_cohort',         -- the Diploma cohort; requires the ib_coordinator capability
+  -- Added by pass 8 (F02, F33, F59). Pass 4's matrix names these and the first
+  -- version had no way to store them.
+  'esc',               -- students with an escalation the acting person is a route recipient of, while it is open and for its esc window
+  'addressee',         -- rows addressed to the acting person (a recipient column)
+  'lead_cover',        -- the caseload lead, only while a cover or a recent reassignment for that student is active
+  'own_pairing',       -- rows of a pairing in which the acting person is the mentor
+  'year_group',        -- students enrolled in a year group the acting person holds a year_lead or ucas_adviser assignment for
+  'tutor_group'        -- students in a tutor group the acting person tutors
 );
+
+-- The order the narrowing trigger (pass 4 D36) uses to decide what "wider"
+-- means (F47). Scopes are not totally ordered, so they are ranked: a school
+-- row may keep a default's scope or replace it with one of lower rank, never
+-- one of the same rank that is different, and never one of higher rank.
+CREATE FUNCTION auth.scope_rank(p auth.perm_scope) RETURNS smallint LANGUAGE sql IMMUTABLE AS $$
+  SELECT CASE p
+    WHEN 'self' THEN 1 WHEN 'author' THEN 1 WHEN 'addressee' THEN 1 WHEN 'own_pairing' THEN 1
+    WHEN 'paired' THEN 1 WHEN 'linked_children' THEN 1
+    WHEN 'roster' THEN 2 WHEN 'own_section' THEN 2 WHEN 'subject_teacher' THEN 2 WHEN 'ee_party' THEN 2
+    WHEN 'esc' THEN 2 WHEN 'tutor_group' THEN 2 WHEN 'lead_cover' THEN 2
+    WHEN 'caseload' THEN 3 WHEN 'ib_cohort' THEN 3 WHEN 'year_group' THEN 3
+    WHEN 'school' THEN 4 END $$;
 
 CREATE TABLE auth.data_class (
   key         text PRIMARY KEY,
   description text NOT NULL
 );
+-- pass 4 D33 adds `sensitivity`; pass 3 D30 and pass 4 D33 add signal_shadow,
+-- counselor_log and fairness_label. The pass 8 revision splits `config` and
+-- `family` and adds three classes, because a class bound to a whole table let
+-- families and students read staff material (F15, F16, F13, F77).
 INSERT INTO auth.data_class VALUES
  ('reference','Vocabularies, templates, module flags: readable by every role'),
  ('directory','Names, year group, section membership, contact details'),
@@ -641,25 +790,34 @@ INSERT INTO auth.data_class VALUES
  ('attendance','Attendance and punctuality events with reasons'),
  ('behaviour','Behaviour incidents and conduct points'),
  ('engagement','Platform and LMS activity'),
- ('signal','Signals, tiers, evidence, feature snapshots, case state'),
+ ('signal','Signals, tiers, evidence, feature snapshots, live case state'),
  ('case_note','Counselor notes on a case'),
- ('safeguarding','Escalations to the safeguarding lead'),
- ('teacher_flag','Concerns, positive notes and context logged by teachers'),
+ ('contact_record','Recorded meetings and the counselor''s contact log: staff-only notes about conversations (F15)'),
+ ('safeguarding','Escalations to the safeguarding lead, their updates and outcomes'),
+ ('safety_alert','Alerts raised by the safety screen on a student''s words: staff-only (F13)'),
+ ('teacher_flag','Concerns, positive notes, context and safeguarding referrals logged by teachers'),
  ('student_voice','Free text a student writes to staff (reflections, chat)'),
- ('family','Guardian links, messages, meeting requests, contact log'),
+ ('family','Messages between guardians and staff, meeting requests'),
+ ('guardian_link','Who is linked to which student, and the activation of that link (F15)'),
  ('ib','Subject selections, sign-offs, CAS, Extended Essay'),
  ('university','Targets, applications, offers, documents, statements, letters'),
- ('discovery','Survey, chat, pathway proposals, roadmap progress, XP'),
- ('mentor','Mentor profiles, requests, sessions, notes'),
- ('documents','File metadata'),
- ('config','School configuration and rule tables'),
+ ('discovery','Survey, chat, pathway proposals, roadmap progress'),
+ ('xp','Points and milestones the student earns: student-only gamification (F77, invariant 10)'),
+ ('mentor','Mentor profiles, requests, sessions, messages, notes'),
+ ('documents','File metadata; each row also carries its own subject class (F15)'),
+ ('config','School configuration, rule sets and vocabularies'),
+ ('membership','Memberships, capabilities, caseload, cover and pastoral assignments (F16)'),
+ ('session','Sessions, magic links, activation codes (F16)'),
+ ('notification','Outbox rows, in-app notices and preferences: the addressee''s only (F16)'),
+ ('support_grant','CAROS support grants (F35)'),
+ ('privacy_request','Erasure, subject-access and restriction requests'),
  ('ingest','Imports, mapping profiles, rejections'),
  ('ai','AI generations and model configuration'),
  ('audit','Audit entries'),
  ('reporting','Aggregate reporting');
 
 CREATE TABLE auth.role (
-  key            text PRIMARY KEY,                -- 'counselor','teacher','student','parent','mentor', later 'school_admin'
+  key            text PRIMARY KEY,                -- the five product roles, plus school_admin and staff (§0.1)
   label          text NOT NULL,
   tier           auth.privilege_tier NOT NULL,
   is_staff       boolean NOT NULL,
@@ -667,28 +825,40 @@ CREATE TABLE auth.role (
 );
 INSERT INTO auth.role (key, label, tier, is_staff) VALUES
  ('counselor','Counselor','staff',true),
- ('teacher','Teacher','staff',true),
+ ('teacher','Teacher','teacher',true),
  ('student','Student','student',false),
  ('parent','Parent or guardian','guardian',false),
- ('mentor','Alumni mentor','mentor',false);
+ ('mentor','Alumni mentor','mentor',false),
+ -- pass 8 (F16): the school's IT or registrar administrator, with no caseload path
+ ('school_admin','School administrator','staff',true),
+ -- pass 8 (F10, F16): staff who are neither counselors nor teachers (a Principal,
+ -- a CPO in the leadership team); no data access of its own, it only carries capabilities
+ ('staff','Staff member','staff',true);
 
--- Capabilities are refinements of a role held by a specific membership, not
--- roles of their own: the IB coordinator is a counselor with `ib_coordinator`;
--- the Child Protection Officer is a staff member with `safeguarding_lead`.
+-- Capabilities are refinements held by a specific membership, not roles of
+-- their own: the IB coordinator is a counselor with `ib_coordinator`; the Child
+-- Protection Officer is any staff member with `safeguarding_lead` (F10).
 CREATE TABLE auth.capability (
-  key         text PRIMARY KEY,
-  role_key    text NOT NULL REFERENCES auth.role (key),
-  description text NOT NULL
+  key                text PRIMARY KEY,
+  allowed_role_keys  text[] NOT NULL,             -- the roles whose memberships may carry it
+  description        text NOT NULL
 );
 INSERT INTO auth.capability VALUES
- ('ib_coordinator','counselor','Sees and decides the whole Diploma cohort''s selections, CAS and Extended Essays'),
- ('caseload_lead','counselor','May reassign cases across counselors and edit school configuration'),
- ('safeguarding_lead','counselor','Receives and acknowledges safeguarding escalations'),
- ('school_admin','counselor','Uploads imports, manages mapping profiles, manages memberships');
+ ('ib_coordinator','{counselor}','Sees and decides the whole Diploma cohort''s selections, CAS and Extended Essays'),
+ ('caseload_lead','{counselor}','Reassigns cases, grants planned cover, edits engine thresholds and the case lifecycle'),
+ ('safeguarding_lead','{counselor,teacher,school_admin,staff}','Receives and acknowledges safeguarding escalations: the CPO and the deputies in the route'),
+ ('safeguarding_oversight','{counselor,teacher,school_admin,staff}','Told when a referral is unacknowledged; no data grant of any kind (F16)'),
+ ('year_lead','{counselor,teacher,staff}','Pastoral responsibility for a year group (Head of Year); F33'),
+ ('tutor','{teacher}','Responsibility for a tutor group (form tutor); F33'),
+ ('ucas_adviser','{counselor,teacher,staff}','University applications for the year groups assigned (Head of Sixth Form, UCAS adviser); F33');
+-- pass 4 D35 adds mentor_coordinator ('{counselor}').
 
--- The permission matrix. school_id NULL is the global default; a school row with
--- the same (role_key, data_class, action) overrides it. Pass 4 owns the content;
--- the rows below are the defaults implied by the prototype and section 3.
+-- The permission matrix. school_id NULL is the global default; a school row
+-- with the same (role_key, data_class, action, capability, row_kind) replaces
+-- the default rows for that key, and may only narrow them (pass 4 D36, F47).
+-- Pass 4 §3.6 owns the content, compiled into rows through §2.4a and seeded by
+-- B0.7. The first version's inline default rows are withdrawn: pass 4 D36
+-- deleted them anyway, and several contradicted decisions taken since (F15, F16).
 CREATE TABLE auth.role_permission (
   id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   school_id   uuid REFERENCES core.school (id),   -- NULL = default for every school
@@ -697,108 +867,22 @@ CREATE TABLE auth.role_permission (
   action      auth.perm_action NOT NULL,
   scope       auth.perm_scope NOT NULL,
   capability  text REFERENCES auth.capability (key), -- NULL = any membership with the role
-  UNIQUE NULLS NOT DISTINCT (school_id, role_key, data_class, action, capability)
+  row_kind    text,                               -- NULL = every row; otherwise only rows whose kind expression equals it (F02)
+  -- scope and row kind are part of the key (F02): pass 4's matrix gives one
+  -- role two scopes for the same class and action, which the first key refused
+  UNIQUE NULLS NOT DISTINCT (school_id, role_key, data_class, action, scope, capability, row_kind)
 );
-INSERT INTO auth.role_permission (role_key, data_class, action, scope, capability) VALUES
- -- counselor: the caseload, plus the Diploma cohort with the coordinator capability
- ('counselor','directory','read','school',NULL),
- ('counselor','academic','read','caseload',NULL),
- ('counselor','attendance','read','caseload',NULL),
- ('counselor','behaviour','read','caseload',NULL),
- ('counselor','engagement','read','caseload',NULL),
- ('counselor','signal','read','caseload',NULL),
- ('counselor','signal','write','caseload',NULL),
- ('counselor','case_note','read','caseload',NULL),
- ('counselor','case_note','write','caseload',NULL),
- ('counselor','safeguarding','escalate','caseload',NULL),
- ('counselor','safeguarding','read','caseload',NULL),
- ('counselor','teacher_flag','read','caseload',NULL),
- ('counselor','teacher_flag','write','caseload',NULL),
- ('counselor','student_voice','read','caseload',NULL),
- ('counselor','family','read','caseload',NULL),
- ('counselor','family','write','caseload',NULL),
- ('counselor','university','read','caseload',NULL),
- ('counselor','university','write','caseload',NULL),
- ('counselor','university','approve','caseload',NULL),
- ('counselor','discovery','read','caseload',NULL),
- ('counselor','discovery','approve','caseload',NULL),
- ('counselor','mentor','read','caseload',NULL),
- ('counselor','ib','read','caseload',NULL),
- ('counselor','ib','read','ib_cohort','ib_coordinator'),
- ('counselor','ib','write','ib_cohort','ib_coordinator'),
- ('counselor','ib','approve','ib_cohort','ib_coordinator'),
- ('counselor','documents','read','caseload',NULL),
- ('counselor','documents','write','caseload',NULL),
- ('counselor','documents','read','school','school_admin'),
- ('counselor','documents','write','school','school_admin'),
- ('counselor','reference','read','school',NULL),
- ('counselor','directory','read','author',NULL),
- ('counselor','ai','read','caseload',NULL),
- ('counselor','ai','write','caseload',NULL),
- ('counselor','config','read','school',NULL),
- ('counselor','config','configure','school','caseload_lead'),
- ('counselor','ingest','read','school','school_admin'),
- ('counselor','ingest','write','school','school_admin'),
- ('counselor','audit','read','caseload',NULL),
- ('counselor','reporting','read','school',NULL),
- ('counselor','safeguarding','write','school','safeguarding_lead'),   -- acknowledge escalations
- -- teacher: their own sections, their own flags, the level question and EE supervision
- ('teacher','directory','read','roster',NULL),
- ('teacher','academic','read','own_section',NULL),
- ('teacher','teacher_flag','write','roster',NULL),
- ('teacher','teacher_flag','read','author',NULL),
- ('teacher','ib','read','subject_teacher',NULL),
- ('teacher','ib','write','subject_teacher',NULL),
- ('teacher','ib','read','ee_party',NULL),
- ('teacher','ib','write','ee_party',NULL),
- ('teacher','documents','read','ee_party',NULL),
- ('teacher','reference','read','school',NULL),
- ('teacher','directory','read','author',NULL),
- -- student: their own record; never signal, case_note, safeguarding, teacher_flag, family messages of others
- ('student','directory','read','self',NULL),
- ('student','academic','read','self',NULL),
- ('student','attendance','read','self',NULL),
- ('student','university','read','self',NULL),
- ('student','university','write','self',NULL),
- ('student','discovery','read','self',NULL),
- ('student','discovery','write','self',NULL),
- ('student','ib','read','self',NULL),
- ('student','ib','write','self',NULL),
- ('student','mentor','read','self',NULL),
- ('student','mentor','write','self',NULL),
- ('student','documents','read','self',NULL),
- ('student','documents','write','self',NULL),
- ('student','student_voice','write','self',NULL),
- ('student','student_voice','read','self',NULL),
- ('student','reference','read','school',NULL),
- ('student','directory','read','author',NULL),
- -- parent: their verified children's record, filtered further by grade in the UI
- ('parent','directory','read','linked_children',NULL),
- ('parent','academic','read','linked_children',NULL),
- ('parent','attendance','read','linked_children',NULL),
- ('parent','university','read','linked_children',NULL),
- ('parent','family','read','linked_children',NULL),
- ('parent','family','write','linked_children',NULL),
- ('parent','mentor','read','linked_children',NULL),
- ('parent','reference','read','school',NULL),
- ('parent','directory','read','author',NULL),
- -- mentor: only paired students, and only what they chose to share (column tier limits the rest)
- ('mentor','directory','read','paired',NULL),
- ('mentor','mentor','read','paired',NULL),
- ('mentor','mentor','write','paired',NULL),
- ('mentor','reference','read','school',NULL),
- ('mentor','directory','read','author',NULL);
 
 CREATE TABLE auth.membership (
   school_id     uuid NOT NULL REFERENCES core.school (id),
   id            uuid NOT NULL DEFAULT gen_random_uuid(),
   person_id     uuid NOT NULL,
   role_key      text NOT NULL REFERENCES auth.role (key),
-  capabilities  text[] NOT NULL DEFAULT '{}',
+  capabilities  text[] NOT NULL DEFAULT '{}',     -- written only by auth.confirm_capability() (below)
   status        text NOT NULL DEFAULT 'active' CHECK (status IN ('invited','active','suspended','ended')),
   started_at    timestamptz NOT NULL DEFAULT now(),
   ended_at      timestamptz,
-  source        text NOT NULL DEFAULT 'manual' CHECK (source IN ('manual','import','sso_jit')),
+  source        text NOT NULL DEFAULT 'manual' CHECK (source IN ('manual','import','sso_jit')),  -- pass 4 D38 removes sso_jit
   created_at    timestamptz NOT NULL DEFAULT now(),
   updated_at    timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id),
@@ -808,18 +892,40 @@ CREATE TABLE auth.membership (
 );
 CREATE INDEX membership_lookup ON auth.membership (school_id, person_id, role_key) WHERE status = 'active';
 
--- Who counsels whom. Cover is an assignment of kind 'cover' with an end date and
--- a reason; it is what makes handover visible rather than informal (pass 4 owns
--- the approval path).
+-- Four eyes for every capability grant (F16). A school_admin requests; a
+-- different school_admin confirms; nobody confirms a grant to themselves. Only
+-- auth.confirm_capability() (definer) writes membership.capabilities, and a
+-- trigger checks the capability's allowed_role_keys.
+CREATE TABLE auth.capability_grant (
+  school_id               uuid NOT NULL REFERENCES core.school (id),
+  id                      uuid NOT NULL DEFAULT gen_random_uuid(),
+  membership_id           uuid NOT NULL,
+  capability              text NOT NULL REFERENCES auth.capability (key),
+  requested_by_person_id  uuid NOT NULL,
+  requested_at            timestamptz NOT NULL DEFAULT now(),
+  confirmed_by_person_id  uuid,
+  confirmed_at            timestamptz,
+  ended_by_person_id      uuid,
+  ended_at                timestamptz,
+  reason                  text NOT NULL CHECK (char_length(reason) >= 10),
+  PRIMARY KEY (id), UNIQUE (school_id, id),
+  FOREIGN KEY (school_id, membership_id) REFERENCES auth.membership (school_id, id),
+  CHECK (confirmed_by_person_id IS NULL OR confirmed_by_person_id <> requested_by_person_id)
+);
+
+-- Who counsels whom. Cover is an assignment of kind 'cover' with an end and a
+-- reason; it is what makes handover visible rather than informal (pass 4 §3.3
+-- owns the approval path). Validity is in timestamps, not dates, so "24 hours"
+-- means 24 hours (F16).
 CREATE TABLE auth.caseload_assignment (
   school_id            uuid NOT NULL REFERENCES core.school (id),
   id                   uuid NOT NULL DEFAULT gen_random_uuid(),
   counselor_person_id  uuid NOT NULL,
   student_id           uuid NOT NULL,
   kind                 text NOT NULL DEFAULT 'primary' CHECK (kind IN ('primary','cover')),
-  valid_from           date NOT NULL,
-  valid_to             date,                      -- NULL = open-ended
-  reason               text,                      -- required for cover (checked in domain layer)
+  valid_from           timestamptz NOT NULL,
+  valid_to             timestamptz,               -- NULL = open-ended (primary only; pass 4 D43)
+  reason               text,                      -- required for cover
   assigned_by          uuid,
   created_at           timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id),
@@ -829,17 +935,45 @@ CREATE TABLE auth.caseload_assignment (
   CHECK (valid_to IS NULL OR valid_to >= valid_from),
   CHECK (kind = 'primary' OR reason IS NOT NULL)
 );
--- one primary counselor per student at a time
+-- one primary counselor per student at a time: case ownership stays single even
+-- where tutors, year leads and advisers share pastoral responsibility (F33)
 CREATE UNIQUE INDEX caseload_one_primary ON auth.caseload_assignment (school_id, student_id)
   WHERE kind = 'primary' AND valid_to IS NULL;
 CREATE INDEX caseload_by_counselor ON auth.caseload_assignment (school_id, counselor_person_id, student_id);
 
--- Break-glass for CAROS staff. Never a product role; always time-boxed, reasoned,
--- and audited on every read (pass 4 designs the approval).
+-- Concurrent pastoral responsibility, for schools whose structure is not one
+-- counselor per student (F33): form tutors, Heads of Year, a Head of Sixth Form
+-- or UCAS adviser. Imported where the SIS carries it (iSAMS TutorStaffId,
+-- HeadOfYear StaffId), or granted by a school_admin. It gives read scopes
+-- (`year_group`, `tutor_group`), never case ownership.
+CREATE TABLE auth.pastoral_assignment (
+  school_id             uuid NOT NULL REFERENCES core.school (id),
+  id                    uuid NOT NULL DEFAULT gen_random_uuid(),
+  person_id             uuid NOT NULL,
+  kind                  text NOT NULL CHECK (kind IN ('year_lead','tutor','ucas_adviser')),
+  year_group_id         uuid,
+  tutor_group_id        uuid,
+  valid_from            timestamptz NOT NULL,
+  valid_to              timestamptz,
+  source                text NOT NULL CHECK (source IN ('import','manual')),
+  import_id             uuid,
+  assigned_by_person_id uuid,
+  PRIMARY KEY (id), UNIQUE (school_id, id),
+  FOREIGN KEY (school_id, person_id) REFERENCES core.person (school_id, id),
+  -- FKs to sis.year_group and sis.tutor_group added in 2.5
+  CHECK ((kind = 'tutor') = (tutor_group_id IS NOT NULL)),
+  CHECK (kind = 'tutor' OR year_group_id IS NOT NULL)
+);
+
+-- CAROS support grants. Never a product role; always time-boxed, reasoned,
+-- approved by the school, and audited on every read (pass 4 §3.7). Pass 4 D44
+-- adds the approval, masking, table list and safeguarding flag, and pass 8
+-- adds the operator's location and write grants to D44 (F35, F61); D44 must
+-- land in the same migration as auth.allowed(), which reads those columns.
 CREATE TABLE auth.support_grant (
   school_id    uuid NOT NULL REFERENCES core.school (id),
   id           uuid NOT NULL DEFAULT gen_random_uuid(),
-  operator     text NOT NULL,                     -- CAROS staff identity (not a core.person)
+  operator     text NOT NULL,                     -- CAROS staff identity (not a core.person); checked against app.actor_label
   reason       text NOT NULL CHECK (char_length(reason) >= 20),
   ticket_ref   text,
   granted_by   text NOT NULL,
@@ -859,8 +993,8 @@ CREATE TABLE auth.session (
   expires_at     timestamptz NOT NULL,
   last_seen_at   timestamptz,
   revoked_at     timestamptz,
-  auth_method    text NOT NULL CHECK (auth_method IN ('google','magic_link','mentor_password','support')),
-  step_up_at     timestamptz,                     -- re-authentication for sensitive actions (pass 4)
+  auth_method    text NOT NULL CHECK (auth_method IN ('google','magic_link','mentor_password','support')),  -- pass 4 D39 replaces the list
+  step_up_at     timestamptz,                     -- re-authentication for sensitive actions (pass 4 §2.4)
   user_agent_hash text,
   FOREIGN KEY (school_id, person_id) REFERENCES core.person (school_id, id)
 );
@@ -879,9 +1013,12 @@ CREATE TABLE auth.magic_link (
 );
 
 -- ---- transaction context --------------------------------------------------
--- The application sets these four settings at the start of every transaction
--- (DR-4). Reading an unset setting returns NULL, and NULL never equals a
--- school id, so a query with no context sees no rows: fail closed.
+-- withTenant() sets six settings at the start of every transaction
+-- (app.school_id, app.person_id, app.role, app.actor_kind, app.request_id,
+-- app.session_id), plus app.actor_label for support and ingest actors, and then
+-- SET LOCAL ROLE to the tier (DR-4; §12.3 of the pass 7 review corrected the
+-- count). Reading an unset setting returns NULL, and NULL never equals a school
+-- id, so a query with no context sees no rows: fail closed.
 CREATE FUNCTION auth.current_school() RETURNS uuid LANGUAGE sql STABLE AS $$
   SELECT NULLIF(current_setting('app.school_id', true), '')::uuid $$;
 CREATE FUNCTION auth.current_person() RETURNS uuid LANGUAGE sql STABLE AS $$
@@ -890,18 +1027,48 @@ CREATE FUNCTION auth.current_role_key() RETURNS text LANGUAGE sql STABLE AS $$
   SELECT NULLIF(current_setting('app.role', true), '') $$;
 CREATE FUNCTION auth.actor_kind() RETURNS text LANGUAGE sql STABLE AS $$
   SELECT COALESCE(NULLIF(current_setting('app.actor_kind', true), ''), 'user') $$;
+CREATE FUNCTION auth.actor_label() RETURNS text LANGUAGE sql STABLE AS $$
+  SELECT NULLIF(current_setting('app.actor_label', true), '') $$;
+
+-- ---- pre-tenant lookups (F36) ----------------------------------------------
+-- The few reads that must happen before a tenant is known: which school a
+-- Google domain belongs to, which school a magic link belongs to, and which
+-- schools the worker should visit. Each is a definer function that returns
+-- identifiers only, each is executable only by the login that needs it, and
+-- none gives a cross-tenant query path to anything else.
+CREATE FUNCTION auth.school_for_domain(p_domain citext) RETURNS uuid
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = auth, pg_temp AS $$
+  SELECT d.school_id FROM auth.school_domain d          -- pass 4 D37; verified domains only (F35)
+  WHERE d.domain = p_domain AND d.verified_at IS NOT NULL $$;
+CREATE FUNCTION auth.school_for_magic_link(p_token_hash bytea) RETURNS uuid
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = auth, pg_temp AS $$
+  SELECT l.school_id FROM auth.magic_link l
+  WHERE l.token_hash = p_token_hash AND l.consumed_at IS NULL AND l.expires_at > now() $$;
+CREATE FUNCTION core.schools_due_for_sweep(p_now timestamptz) RETURNS SETOF uuid
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = core, pg_temp AS $$
+  SELECT s.id FROM core.school s
+  WHERE s.status IN ('shadow','live')                   -- "holds data", never "active" (F36)
+    AND extract(hour FROM p_now AT TIME ZONE s.timezone) >= s.sweep_hour $$;   -- sweep_hour: pass 3 D29
+CREATE FUNCTION core.schools_holding_data() RETURNS SETOF uuid
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = core, pg_temp AS $$
+  SELECT s.id FROM core.school s WHERE s.status IN ('shadow','live','suspended','offboarding') $$;
+CREATE FUNCTION notify.schools_with_due_outbox() RETURNS SETOF uuid
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = notify, pg_temp AS $$
+  SELECT DISTINCT o.school_id FROM notify.outbox o
+  WHERE o.status = 'queued' AND (o.not_before IS NULL OR o.not_before <= now()) $$;
 
 -- ---- scope predicates -------------------------------------------------------
 -- Each is SECURITY DEFINER so it can read the membership tables regardless of
 -- the caller's own row access, and each pins search_path. They are STABLE and
--- cheap: every one is an indexed existence check.
+-- cheap: every one is an indexed existence check. None is executable by PUBLIC
+-- or by any tier: only auth.allowed() and the projection views call them (F75),
+-- so they cannot be used as yes-or-no lookups.
 CREATE FUNCTION auth.in_caseload(p_person uuid, p_student uuid) RETURNS boolean
 LANGUAGE sql STABLE SECURITY DEFINER SET search_path = auth, pg_temp AS $$
   SELECT EXISTS (SELECT 1 FROM auth.caseload_assignment a
                  WHERE a.school_id = auth.current_school() AND a.counselor_person_id = p_person
                    AND a.student_id = p_student
-                   AND a.valid_from <= core.school_today(a.school_id)
-                   AND (a.valid_to IS NULL OR a.valid_to >= core.school_today(a.school_id))) $$;
+                   AND a.valid_from <= now() AND (a.valid_to IS NULL OR a.valid_to > now())) $$;
 
 CREATE FUNCTION auth.in_roster(p_person uuid, p_student uuid) RETURNS boolean
 LANGUAGE sql STABLE SECURITY DEFINER SET search_path = sis, pg_temp AS $$
@@ -916,17 +1083,29 @@ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = sis, pg_temp AS $$
                  WHERE t.school_id = auth.current_school() AND t.teacher_person_id = p_person
                    AND t.section_id = p_section AND t.ended_on IS NULL) $$;
 
+-- A link counts only while it is active, verified, activated for that contact,
+-- and carries no restriction (F57). activation_status and restriction are added
+-- by pass 4 D42, which lands with this function.
 CREATE FUNCTION auth.is_guardian_of(p_person uuid, p_student uuid) RETURNS boolean
 LANGUAGE sql STABLE SECURITY DEFINER SET search_path = family, pg_temp AS $$
   SELECT EXISTS (SELECT 1 FROM family.guardian_link g
                  WHERE g.school_id = auth.current_school() AND g.guardian_person_id = p_person
-                   AND g.student_id = p_student AND g.status = 'active' AND g.verified_at IS NOT NULL) $$;
+                   AND g.student_id = p_student AND g.status = 'active' AND g.verified_at IS NOT NULL
+                   AND g.activation_status = 'active' AND g.restriction IS NULL) $$;
 
 CREATE FUNCTION auth.is_paired_mentor(p_person uuid, p_student uuid) RETURNS boolean
 LANGUAGE sql STABLE SECURITY DEFINER SET search_path = mentor, pg_temp AS $$
   SELECT EXISTS (SELECT 1 FROM mentor.pairing p JOIN mentor.profile mp ON mp.id = p.mentor_profile_id
                  WHERE p.school_id = auth.current_school() AND mp.person_id = p_person
                    AND p.student_id = p_student AND p.status = 'active') $$;
+
+-- One pairing, not one student: a mentor never reads another mentor's thread
+-- with the same student (F59).
+CREATE FUNCTION auth.is_pairing_mentor(p_person uuid, p_pairing uuid) RETURNS boolean
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = mentor, pg_temp AS $$
+  SELECT EXISTS (SELECT 1 FROM mentor.pairing p JOIN mentor.profile mp ON mp.id = p.mentor_profile_id
+                 WHERE p.school_id = auth.current_school() AND p.id = p_pairing
+                   AND mp.person_id = p_person AND p.status = 'active') $$;
 
 CREATE FUNCTION auth.is_self(p_person uuid, p_student uuid) RETURNS boolean
 LANGUAGE sql STABLE SECURITY DEFINER SET search_path = sis, pg_temp AS $$
@@ -935,9 +1114,11 @@ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = sis, pg_temp AS $$
 
 CREATE FUNCTION auth.in_diploma_cohort(p_student uuid) RETURNS boolean
 LANGUAGE sql STABLE SECURITY DEFINER SET search_path = sis, pg_temp AS $$
-  SELECT EXISTS (SELECT 1 FROM sis.enrolment e JOIN sis.programme p ON p.id = e.programme_id
+  SELECT EXISTS (SELECT 1 FROM sis.enrolment e
+                 JOIN sis.programme p ON p.id = e.programme_id
+                 JOIN ref.programme_family f ON f.key = p.family
                  WHERE e.school_id = auth.current_school() AND e.student_id = p_student
-                   AND e.status = 'active' AND p.family IN ('ib_dp','ib_dp_candidate')) $$;
+                   AND e.status = 'active' AND f.diploma_cohort) $$;
 
 CREATE FUNCTION auth.is_ib_subject_teacher(p_person uuid, p_subject uuid) RETURNS boolean
 LANGUAGE sql STABLE SECURITY DEFINER SET search_path = ib, pg_temp AS $$
@@ -949,76 +1130,161 @@ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = ib, pg_temp AS $$
   SELECT EXISTS (SELECT 1 FROM ib.ee_essay e WHERE e.school_id = auth.current_school() AND e.id = p_essay
                  AND (e.target_person_id = p_person OR e.supervisor_person_id = p_person)) $$;
 
+-- Through an escalation (F02): the person is a recipient of an escalation about
+-- this student, while it is open and until its esc window ends. status,
+-- esc_scope_until and routed_to_person_ids are added by pass 4 D46.
+CREATE FUNCTION auth.esc_covers(p_person uuid, p_student uuid) RETURNS boolean
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = signal, pg_temp AS $$
+  SELECT EXISTS (SELECT 1 FROM signal.escalation e
+                 WHERE e.school_id = auth.current_school() AND e.student_id = p_student
+                   AND (e.status <> 'closed' OR e.esc_scope_until > now())
+                   AND (e.to_person_id = p_person OR p_person = ANY (e.routed_to_person_ids))) $$;
+
+-- The caseload lead's conditional access (F02): only while a cover row for the
+-- student is active, whoever holds it, or within 14 days of a reassignment.
+CREATE FUNCTION auth.lead_cover_active(p_student uuid) RETURNS boolean
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = auth, pg_temp AS $$
+  SELECT EXISTS (SELECT 1 FROM auth.caseload_assignment a
+                 WHERE a.school_id = auth.current_school() AND a.student_id = p_student
+                   AND ((a.kind = 'cover' AND a.valid_from <= now() AND (a.valid_to IS NULL OR a.valid_to > now()))
+                     OR (a.kind = 'primary' AND a.valid_from > now() - interval '14 days'
+                         AND EXISTS (SELECT 1 FROM auth.caseload_assignment b
+                                     WHERE b.school_id = a.school_id AND b.student_id = a.student_id
+                                       AND b.kind = 'primary' AND b.id <> a.id)))) $$;
+
+CREATE FUNCTION auth.in_led_year_group(p_person uuid, p_student uuid) RETURNS boolean
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = auth, pg_temp AS $$
+  SELECT EXISTS (SELECT 1 FROM auth.pastoral_assignment pa
+                 JOIN sis.enrolment e ON e.school_id = pa.school_id AND e.year_group_id = pa.year_group_id
+                 WHERE pa.school_id = auth.current_school() AND pa.person_id = p_person
+                   AND pa.kind IN ('year_lead','ucas_adviser')
+                   AND pa.valid_from <= now() AND (pa.valid_to IS NULL OR pa.valid_to > now())
+                   AND e.student_id = p_student AND e.status = 'active') $$;
+
+CREATE FUNCTION auth.in_tutor_group(p_person uuid, p_student uuid) RETURNS boolean
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = auth, pg_temp AS $$
+  SELECT EXISTS (SELECT 1 FROM auth.pastoral_assignment pa
+                 JOIN sis.tutor_group_member m ON m.school_id = pa.school_id AND m.tutor_group_id = pa.tutor_group_id
+                 WHERE pa.school_id = auth.current_school() AND pa.person_id = p_person AND pa.kind = 'tutor'
+                   AND pa.valid_from <= now() AND (pa.valid_to IS NULL OR pa.valid_to > now())
+                   AND m.student_id = p_student AND m.ended_on IS NULL) $$;
+
+-- A support read is honoured only for the operator the grant names, for a table
+-- the grant lists, never for the raw exports or the outbox, and for
+-- safeguarding only with the school's separate flag (F35). The columns are
+-- pass 4 D44's.
+CREATE FUNCTION auth.support_grant_covers(p_table text, p_class text) RETURNS boolean
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = auth, pg_temp AS $$
+  -- raw export files are also excluded: support.v_doc_file never projects the
+  -- kinds sis_export, sample_export or connector_snapshot
+  SELECT p_table NOT IN ('ingest.staged_row','ingest.import_rejection','notify.outbox','notify.in_app')
+     AND EXISTS (SELECT 1 FROM auth.support_grant g
+                 WHERE g.school_id = auth.current_school() AND g.operator = auth.actor_label()
+                   AND g.approved_at IS NOT NULL AND g.revoked_at IS NULL AND g.expires_at > now()
+                   AND g.mode = 'read' AND p_table = ANY (g.tables)
+                   AND (p_class <> 'safeguarding' OR g.safeguarding_flag)) $$;
+
 -- ---- the decision ----------------------------------------------------------
--- allowed(class, action, student, section, subject, essay, author): does the
--- acting person, in the acting role, at the current school, hold a permission
--- for this class and action whose scope covers this row? Rows with no student
--- subject (school configuration) require a 'school'-scoped permission.
+-- allowed(tier, table, class, action, subjects..., kind): does the acting
+-- person, in the acting role, at the current school, hold a permission for
+-- this class, action and row kind whose scope covers this row? p_tier is the
+-- role the transaction assumed, evaluated in the policy expression as the
+-- caller (current_user), because inside this definer function current_user is
+-- its owner (F01). Rows with no student subject (school configuration) require
+-- a 'school'-scoped permission.
 CREATE FUNCTION auth.allowed(
-  p_class text, p_action auth.perm_action,
+  p_tier name, p_table text, p_class text, p_action auth.perm_action,
   p_student uuid DEFAULT NULL, p_section uuid DEFAULT NULL, p_subject uuid DEFAULT NULL,
-  p_essay uuid DEFAULT NULL, p_author uuid DEFAULT NULL
+  p_essay uuid DEFAULT NULL, p_author uuid DEFAULT NULL, p_addressee uuid DEFAULT NULL,
+  p_pairing uuid DEFAULT NULL, p_kind text DEFAULT NULL
 ) RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path = auth, pg_temp AS $$
-  SELECT
-    CASE auth.actor_kind()
-      -- the worker, inside its tenant transaction; the claim is only honoured
-      -- when the transaction really assumed the system tier role
-      WHEN 'system'  THEN current_user = 'caros_t_system'
-      WHEN 'support' THEN current_user = 'caros_t_support' AND p_action = 'read' AND EXISTS (
-                         SELECT 1 FROM auth.support_grant g WHERE g.school_id = auth.current_school()
-                           AND g.revoked_at IS NULL AND g.expires_at > now())
-      ELSE EXISTS (
-        SELECT 1
-        FROM auth.membership m
-        JOIN auth.role_permission rp
-          ON rp.role_key = m.role_key AND rp.data_class = p_class AND rp.action = p_action
-         AND (rp.school_id IS NULL OR rp.school_id = m.school_id)
-         AND (rp.capability IS NULL OR rp.capability = ANY (m.capabilities))
-        WHERE m.school_id = auth.current_school()
-          AND m.person_id = auth.current_person()
-          AND m.role_key  = auth.current_role_key()
-          AND m.status = 'active'
-          -- a school-specific override row wins over the global default
-          AND NOT EXISTS (SELECT 1 FROM auth.role_permission o
-                          WHERE o.school_id = m.school_id AND rp.school_id IS NULL
-                            AND o.role_key = rp.role_key AND o.data_class = rp.data_class
-                            AND o.action = rp.action AND o.capability IS NOT DISTINCT FROM rp.capability)
-          AND (
-               rp.scope = 'school'
-            OR (p_student IS NOT NULL AND rp.scope = 'caseload'        AND auth.in_caseload(m.person_id, p_student))
-            OR (p_student IS NOT NULL AND rp.scope = 'roster'          AND auth.in_roster(m.person_id, p_student))
-            OR (p_section IS NOT NULL AND rp.scope = 'own_section'     AND auth.teaches_section(m.person_id, p_section))
-            OR (p_subject IS NOT NULL AND rp.scope = 'subject_teacher' AND auth.is_ib_subject_teacher(m.person_id, p_subject))
-            OR (p_essay   IS NOT NULL AND rp.scope = 'ee_party'        AND auth.is_ee_party(m.person_id, p_essay))
-            OR (p_student IS NOT NULL AND rp.scope = 'self'            AND auth.is_self(m.person_id, p_student))
-            OR (p_student IS NOT NULL AND rp.scope = 'linked_children' AND auth.is_guardian_of(m.person_id, p_student))
-            OR (p_student IS NOT NULL AND rp.scope = 'paired'          AND auth.is_paired_mentor(m.person_id, p_student))
-            OR (p_author  IS NOT NULL AND rp.scope = 'author'          AND p_author = m.person_id)
-            OR (p_student IS NOT NULL AND rp.scope = 'ib_cohort'       AND auth.in_diploma_cohort(p_student))
-          )
-      )
-    END $$;
+  SELECT CASE
+    -- the worker, inside its tenant transaction, only when it really assumed the system tier
+    WHEN p_tier = 'caros_t_system'  THEN auth.actor_kind() = 'system'
+    -- CAROS support, read-only, only under a grant that names this operator and this table
+    WHEN p_tier = 'caros_t_support' THEN auth.actor_kind() = 'support' AND p_action = 'read'
+                                         AND auth.support_grant_covers(p_table, p_class)
+    -- a user tier with a non-user claim is refused, whatever else is set
+    WHEN auth.actor_kind() <> 'user' THEN false
+    ELSE EXISTS (
+      SELECT 1
+      FROM auth.membership m
+      JOIN auth.role r ON r.key = m.role_key
+      JOIN auth.role_permission rp
+        ON rp.role_key = m.role_key AND rp.data_class = p_class AND rp.action = p_action
+       AND (rp.school_id IS NULL OR rp.school_id = m.school_id)
+       AND (rp.capability IS NULL OR rp.capability = ANY (m.capabilities))
+       AND (rp.row_kind IS NULL OR rp.row_kind = p_kind)
+      WHERE m.school_id = auth.current_school()
+        AND m.person_id = auth.current_person()
+        AND m.role_key  = auth.current_role_key()
+        AND m.status = 'active'
+        -- the tier the transaction assumed must be the acting role's own tier;
+        -- the AI tier acts for the requesting person and may only read (F44)
+        AND (p_tier = ('caros_t_' || r.tier::text)::name OR (p_tier = 'caros_t_ai' AND p_action = 'read'))
+        -- a school row replaces the default rows for the same key, whatever their scope
+        AND NOT EXISTS (SELECT 1 FROM auth.role_permission o
+                        WHERE o.school_id = m.school_id AND rp.school_id IS NULL
+                          AND o.role_key = rp.role_key AND o.data_class = rp.data_class
+                          AND o.action = rp.action AND o.capability IS NOT DISTINCT FROM rp.capability
+                          AND o.row_kind IS NOT DISTINCT FROM rp.row_kind)
+        AND (
+             rp.scope = 'school'
+          OR (p_student  IS NOT NULL AND rp.scope = 'caseload'        AND auth.in_caseload(m.person_id, p_student))
+          OR (p_student  IS NOT NULL AND rp.scope = 'roster'          AND auth.in_roster(m.person_id, p_student))
+          OR (p_section  IS NOT NULL AND rp.scope = 'own_section'     AND auth.teaches_section(m.person_id, p_section))
+          OR (p_subject  IS NOT NULL AND rp.scope = 'subject_teacher' AND auth.is_ib_subject_teacher(m.person_id, p_subject))
+          OR (p_essay    IS NOT NULL AND rp.scope = 'ee_party'        AND auth.is_ee_party(m.person_id, p_essay))
+          OR (p_student  IS NOT NULL AND rp.scope = 'self'            AND auth.is_self(m.person_id, p_student))
+          OR (p_student  IS NOT NULL AND rp.scope = 'linked_children' AND auth.is_guardian_of(m.person_id, p_student))
+          OR (p_student  IS NOT NULL AND rp.scope = 'paired'          AND auth.is_paired_mentor(m.person_id, p_student))
+          OR (p_author   IS NOT NULL AND rp.scope = 'author'          AND p_author = m.person_id)
+          OR (p_student  IS NOT NULL AND rp.scope = 'ib_cohort'       AND auth.in_diploma_cohort(p_student))
+          OR (p_student  IS NOT NULL AND rp.scope = 'esc'             AND auth.esc_covers(m.person_id, p_student))
+          OR (p_addressee IS NOT NULL AND rp.scope = 'addressee'      AND p_addressee = m.person_id)
+          OR (p_student  IS NOT NULL AND rp.scope = 'lead_cover'      AND auth.lead_cover_active(p_student))
+          OR (p_pairing  IS NOT NULL AND rp.scope = 'own_pairing'     AND auth.is_pairing_mentor(m.person_id, p_pairing))
+          OR (p_student  IS NOT NULL AND rp.scope = 'year_group'      AND auth.in_led_year_group(m.person_id, p_student))
+          OR (p_student  IS NOT NULL AND rp.scope = 'tutor_group'     AND auth.in_tutor_group(m.person_id, p_student))
+        )
+    )
+  END $$;
 
 -- ---- applying policies -------------------------------------------------------
--- protect(table, data_class, subject expressions...) installs, on one table:
+-- protect(table, class, subject expressions...) installs, on one table:
 --   * a RESTRICTIVE tenant policy (school_id must equal the transaction's school),
---   * a PERMISSIVE role policy that calls auth.allowed with the row's subjects,
+--   * PERMISSIVE role policies that call auth.allowed with the caller's tier,
+--     the row's subjects and the row's kind,
 --   * ENABLE + FORCE ROW LEVEL SECURITY, so even the owner is bound.
+-- Pass 8 (F02, F15) adds: a per-row class expression, a row-kind expression,
+-- an addressee and a pairing subject, and the verbs the table carries, which
+-- the insert and update policies accept in place of `write`.
 -- `shared_defaults` lets vocabulary tables expose their school_id IS NULL rows.
 CREATE FUNCTION auth.protect(
   p_table regclass, p_class text,
   p_student text DEFAULT NULL, p_section text DEFAULT NULL, p_subject text DEFAULT NULL,
-  p_essay text DEFAULT NULL, p_author text DEFAULT NULL, p_shared_defaults boolean DEFAULT false
+  p_essay text DEFAULT NULL, p_author text DEFAULT NULL, p_shared_defaults boolean DEFAULT false,
+  p_addressee text DEFAULT NULL, p_pairing text DEFAULT NULL, p_kind text DEFAULT NULL,
+  p_class_expr text DEFAULT NULL,                 -- overrides p_class with a per-row expression
+  p_verbs auth.perm_action[] DEFAULT '{}'         -- e.g. '{escalate}' on signal.escalation
 ) RETURNS void LANGUAGE plpgsql AS $$
 DECLARE
   tenant_pred text := CASE WHEN p_shared_defaults
                         THEN '(school_id IS NULL OR school_id = auth.current_school())'
                         ELSE 'school_id = auth.current_school()' END;
-  args text := format('%L, %s, %s, %s, %s, %s, %s',
-                 p_class, '%s',
+  cls  text := COALESCE(p_class_expr, quote_literal(p_class));
+  -- %s is replaced by the action literal
+  args text := format('current_user, %L, %s, %%s, %s, %s, %s, %s, %s, %s, %s, %s',
+                 p_table::text, cls,
                  COALESCE(p_student, 'NULL'), COALESCE(p_section, 'NULL'), COALESCE(p_subject, 'NULL'),
-                 COALESCE(p_essay, 'NULL'), COALESCE(p_author, 'NULL'));
+                 COALESCE(p_essay, 'NULL'), COALESCE(p_author, 'NULL'), COALESCE(p_addressee, 'NULL'),
+                 COALESCE(p_pairing, 'NULL'), COALESCE(p_kind, 'NULL'));
+  write_pred text := format('auth.allowed(%s)', format(args, '''write''::auth.perm_action'));
+  v auth.perm_action;
 BEGIN
+  FOREACH v IN ARRAY p_verbs LOOP
+    write_pred := write_pred || format(' OR auth.allowed(%s)', format(args, quote_literal(v) || '::auth.perm_action'));
+  END LOOP;
   EXECUTE format('ALTER TABLE %s ENABLE ROW LEVEL SECURITY', p_table);
   EXECUTE format('ALTER TABLE %s FORCE ROW LEVEL SECURITY', p_table);
   EXECUTE format('DROP POLICY IF EXISTS tenant_isolation ON %s', p_table);
@@ -1032,35 +1298,114 @@ BEGIN
   EXECUTE format('CREATE POLICY role_read ON %s AS PERMISSIVE FOR SELECT USING (auth.allowed(%s))',
                  p_table, format(args, '''read''::auth.perm_action'));
   EXECUTE format('DROP POLICY IF EXISTS role_write ON %s', p_table);
-  EXECUTE format('CREATE POLICY role_write ON %s AS PERMISSIVE FOR INSERT WITH CHECK (auth.allowed(%s))',
-                 p_table, format(args, '''write''::auth.perm_action'));
+  EXECUTE format('CREATE POLICY role_write ON %s AS PERMISSIVE FOR INSERT WITH CHECK (%s)', p_table, write_pred);
   EXECUTE format('DROP POLICY IF EXISTS role_update ON %s', p_table);
-  EXECUTE format('CREATE POLICY role_update ON %s AS PERMISSIVE FOR UPDATE USING (auth.allowed(%s)) WITH CHECK (auth.allowed(%s))',
-                 p_table, format(args, '''write''::auth.perm_action'), format(args, '''write''::auth.perm_action'));
+  EXECUTE format('CREATE POLICY role_update ON %s AS PERMISSIVE FOR UPDATE USING (%s) WITH CHECK (%s)',
+                 p_table, write_pred, write_pred);
   EXECUTE format('DROP POLICY IF EXISTS role_delete ON %s', p_table);
   EXECUTE format('CREATE POLICY role_delete ON %s AS PERMISSIVE FOR DELETE USING (auth.allowed(%s))',
                  p_table, format(args, '''write''::auth.perm_action'));
 END $$;
+
+-- The one way a tier writes to the outbox (F02, F16). Validates the template,
+-- the recipient and the variables against the template's allowlist, never
+-- stores a credential (an invitation or magic-link token is minted by the
+-- worker at send time, never persisted in a payload), and writes the row as
+-- the bypass role, because the outbox belongs to its addressee, not its sender.
+CREATE FUNCTION notify.enqueue(
+  p_template_key text, p_recipient_person_id uuid, p_payload jsonb, p_dedupe_key text,
+  p_related_table text DEFAULT NULL, p_related_id uuid DEFAULT NULL, p_not_before timestamptz DEFAULT NULL
+) RETURNS uuid LANGUAGE plpgsql SECURITY DEFINER SET search_path = notify, auth, pg_temp AS $$
+DECLARE v_tpl notify.template; v_addr citext; v_id uuid;
+BEGIN
+  IF auth.current_school() IS NULL THEN RAISE EXCEPTION 'notify.enqueue called with no tenant context'; END IF;
+  SELECT * INTO v_tpl FROM notify.template WHERE key = p_template_key AND active ORDER BY version DESC LIMIT 1;
+  IF NOT FOUND THEN RAISE EXCEPTION 'unknown or inactive template %', p_template_key; END IF;
+  -- the acting role must be one the template allows to send it (pass 4 §5.8)
+  IF auth.actor_kind() = 'user' AND NOT (auth.current_role_key() = ANY (v_tpl.sender_roles)) THEN
+    RAISE EXCEPTION 'role % may not send template %', auth.current_role_key(), p_template_key;
+  END IF;
+  -- every payload key must be declared by the template, and none may carry a credential
+  IF EXISTS (SELECT 1 FROM jsonb_object_keys(p_payload) k
+             WHERE NOT (v_tpl.variables ? k) OR k ~* '(token|secret|password|code)$') THEN
+    RAISE EXCEPTION 'payload key outside the template allowlist, or naming a credential';
+  END IF;
+  SELECT email INTO v_addr FROM core.person WHERE school_id = auth.current_school() AND id = p_recipient_person_id;
+  IF NOT FOUND THEN RAISE EXCEPTION 'recipient is not in this school'; END IF;
+  INSERT INTO notify.outbox (school_id, channel, recipient_person_id, recipient_address, template_key, template_version,
+                             payload, dedupe_key, not_before, related_table, related_id)
+  VALUES (auth.current_school(), v_tpl.channel, p_recipient_person_id,
+          CASE WHEN v_tpl.channel = 'email' THEN v_addr END,
+          v_tpl.key, v_tpl.version, p_payload, p_dedupe_key, p_not_before, p_related_table, p_related_id)
+  ON CONFLICT (school_id, dedupe_key) DO NOTHING
+  RETURNING id INTO v_id;
+  RETURN v_id;
+END $$;
 ```
 
 ```sql
--- The helpers run as the bypass role; each restricts itself to the current school.
-ALTER FUNCTION auth.in_caseload(uuid, uuid) OWNER TO caros_policy;
-ALTER FUNCTION auth.in_roster(uuid, uuid) OWNER TO caros_policy;
-ALTER FUNCTION auth.teaches_section(uuid, uuid) OWNER TO caros_policy;
-ALTER FUNCTION auth.is_guardian_of(uuid, uuid) OWNER TO caros_policy;
-ALTER FUNCTION auth.is_paired_mentor(uuid, uuid) OWNER TO caros_policy;
-ALTER FUNCTION auth.is_self(uuid, uuid) OWNER TO caros_policy;
-ALTER FUNCTION auth.in_diploma_cohort(uuid) OWNER TO caros_policy;
-ALTER FUNCTION auth.is_ib_subject_teacher(uuid, uuid) OWNER TO caros_policy;
-ALTER FUNCTION auth.is_ee_party(uuid, uuid) OWNER TO caros_policy;
-ALTER FUNCTION auth.allowed(text, auth.perm_action, uuid, uuid, uuid, uuid, uuid) OWNER TO caros_policy;
-REVOKE ALL ON FUNCTION auth.allowed(text, auth.perm_action, uuid, uuid, uuid, uuid, uuid) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION auth.allowed(text, auth.perm_action, uuid, uuid, uuid, uuid, uuid)
-  TO caros_t_staff, caros_t_student, caros_t_guardian, caros_t_mentor, caros_t_system, caros_t_support, caros_owner;
+-- The helpers run as the bypass role; each restricts itself to the current
+-- school. None is executable by PUBLIC (F75). Only auth.allowed() is granted
+-- to the tiers, because every policy expression calls it as the caller.
+ALTER FUNCTION auth.scope_rank(auth.perm_scope) OWNER TO caros_policy;
+DO $$
+DECLARE f regprocedure;
+BEGIN
+  FOR f IN SELECT p.oid::regprocedure FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+           WHERE n.nspname IN ('auth','core','notify') AND p.prosecdef LOOP
+    EXECUTE format('ALTER FUNCTION %s OWNER TO caros_policy', f);
+    EXECUTE format('REVOKE ALL ON FUNCTION %s FROM PUBLIC', f);
+  END LOOP;
+END $$;
+GRANT EXECUTE ON FUNCTION auth.allowed(name, text, text, auth.perm_action, uuid, uuid, uuid, uuid, uuid, uuid, uuid, text)
+  TO caros_t_staff, caros_t_teacher, caros_t_student, caros_t_guardian, caros_t_mentor, caros_t_ai,
+     caros_t_system, caros_t_support, caros_owner;
+GRANT EXECUTE ON FUNCTION auth.school_for_domain(citext), auth.school_for_magic_link(bytea) TO caros_web;
+GRANT EXECUTE ON FUNCTION core.schools_due_for_sweep(timestamptz), core.schools_holding_data(), notify.schools_with_due_outbox()
+  TO caros_worker;
+GRANT EXECUTE ON FUNCTION notify.enqueue(text, uuid, jsonb, text, text, uuid, timestamptz)
+  TO caros_t_staff, caros_t_teacher, caros_t_student, caros_t_guardian, caros_t_mentor, caros_t_system;
 ```
 
-Approvals, escalations and configuration changes are gated in the domain layer by `auth.allowed(<class>, 'approve' | 'escalate' | 'configure', …)` before the write; the DB policies above enforce read and write scope on every row and the tenant on every statement. A test in `packages/db` asserts that every table with a `school_id` column has both `tenant_isolation` and `role_read` policies and `relforcerowsecurity = true`.
+Approvals, escalations and configuration are enforced twice: in the domain layer by `assertAllowed(<class>, 'approve' | 'escalate' | 'configure', …)` before the write, and now also by the database, because `auth.protect()` gives the insert and update policies of a table that carries a verb `write OR <verb>` (F02). In the first version a counselor who held `escalate` but not `write` on `safeguarding` could not insert the escalation at all, and the quick repair under pressure would have been a broad `write` grant. A test in `packages/db` asserts that every table with a `school_id` column has both `tenant_isolation` and `role_read` policies and `relforcerowsecurity = true`, and a second test runs every verb end to end through RLS, positively and negatively.
+
+### 2.4a From pass 4's matrix to rows (pass 8, F02)
+
+Pass 4 §3.6 is the content of the permission matrix. This table is the step between it and the seed B0.7 loads: every qualifier the matrix prints, the mechanism that enforces it, and the negative test that proves it. **No qualifier ships without its mechanism and its negative test.** Where the mechanism is a projection view, the role in question holds no row permission on the base table; the view is owned by `caros_policy`, filters on `auth.current_school()`, checks the role and scope itself, and projects only the columns named.
+
+| Qualifier in pass 4 §3.6 | Mechanism | Negative test |
+|---|---|---|
+| **C** caseload; **R** roster; **OS**; **ST**; **EP**; **SELF**; **LC**; **P**; **A**; **IB** | the scopes of the first version, with `is_guardian_of` now requiring an activated, unrestricted link (F57) | a student out of each scope sees nothing |
+| **ESC** through an escalation | scope `esc`, `auth.esc_covers()`: the person is a recipient of an escalation about the student, open or inside `esc_scope_until` | a recipient of a closed escalation after its window; a safeguarding lead with no escalation for that student |
+| **AD** addressee | scope `addressee`; `protect()`'s `p_addressee` names the recipient column (`notify.outbox.recipient_person_id`, `notify.in_app.person_id`, `family.message.recipient_person_id`, `uni.document_request.requested_from_person_id`; for `signal.safety_alert`, pass 5 D68, an expression over `routed_to_person_ids` that yields the current person when they are among them) | a parent reads the other guardian's message thread; a teacher reads a reference request addressed to a colleague |
+| **LCV** the lead "only while a cover or reassignment is active" | scope `lead_cover`, `auth.lead_cover_active()`, on rows carrying `capability = 'caseload_lead'` | the lead reads a note on a student with no cover and no reassignment in 14 days |
+| **OP** own pairing | scope `own_pairing`, `auth.is_pairing_mentor()`; `protect()`'s `p_pairing` on `mentor.message`, `mentee_note`, `session_request`, `session` (F59) | mentor A reads mentor B's thread with the same student |
+| **YG**, **TG** year and tutor group | scopes `year_group` and `tutor_group` over `auth.pastoral_assignment` (F33) | a tutor reads a student outside the tutor group; a year lead after the assignment ends |
+| **G** support grant | not a scope: the support branch of `auth.allowed()` and `auth.support_grant_covers()`, which check the operator named on the grant, the table list, the mode and the safeguarding flag; the support tier holds no base-table grant and reads through masked views in the `support` schema (F35) | a second operator reading under the first operator's grant; a table not on the grant; `doc.file` rows of kind `sis_export`; the outbox |
+| "names, year, section; contact columns r:C" (counselor, directory) | staff and teacher tiers have `SELECT` on `core.person` without `email` and `phone`; contact details only through `core.v_person_contact`, which checks caseload | a counselor selects `email` of a student outside the caseload |
+| "(name, year, goal only)" (mentor, directory) | `mentor.v_mentee`, honouring `pairing.share_scope` | a mentor selects `date_of_birth` or `student_number` |
+| "existence and status only" (lead on safeguarding; the raising counselor or teacher on their own referral) | `signal.v_escalation_status`: reference, student, status, raised, acknowledged, outcome kind; no reason, no fields, no outcome text | the lead selects `observed`, `who_else_knows` or `outcome_note` |
+| "aggregates only" (reporting; the lead on the counselor log) | `reporting.agg_*` tables (DR-6); `signal.counselor_log_aggregate()` definer function | the lead selects a single counselor-log row |
+| "per-teacher rate report" | a `reporting.agg_teacher_flag_rate` table whose permission row carries `capability = 'caseload_lead'` | a counselor without the capability reads it |
+| "`transcript` only" (parent, documents); "`sis_export` only" (school admin); "EE drafts" (coordinator) | `row_kind` on the permission row; `protect('doc.file', …, p_kind => 'kind', p_class_expr => 'data_class')`, so a document is read under its own class and kind (F15) | a parent reads a `reference_letter` file; a student reads a file whose `data_class` is `case_note`; support reads a `sis_export` |
+| "own discovery and EE feedback" (student, ai) | `row_kind` on `ai.generation.feature` (`discovery_chat`, `pathway_analysis`, `ee_feedback`) | a student reads a meeting brief or a co-pilot answer about themselves |
+| "approved pathways only" (parent, discovery) | `protect()` passes a constant kind per table (`'approved_pathway'`, `'proposal'`, `'session'`, `'message'`); the parent's row has `row_kind = 'approved_pathway'` | a parent reads a chat message |
+| "no statement drafts" (parent, university) | parent rows per kind: `target`, `application`, `offer`, `document_request`; none for `statement` or `statement_version` | a parent reads a statement version |
+| "status and totals" (parent, ib) | `ib.v_family_ib_status` | a parent reads a sign-off note or a CAS reflection |
+| "codes only" (teacher, attendance) | `caros_t_teacher` has no `SELECT` on `reason_code`, `reason_label`, `minutes_late`; `sis.attendance_event` is protected with `section_id` as its section subject, so `own_section` can match (F75) | a teacher selects `reason_label` |
+| "sign-off card" (teacher, ST) | `ib.v_signoff_card` (student name, the prerequisite mark, the student's reason) and `ib.sign_off()`; teachers hold no `academic` row permission through ST and no write on `ib.selection*` (F58) | a teacher reads the student's other grades; signs as a colleague; changes a level |
+| "the routed note only" (teacher, own flags) | `caros_t_teacher` has no `SELECT` on `signal.teacher_flag.case_id` or `status`; `signal.v_teacher_flag_mine` shows `routed_label` from a vocabulary that never says a case exists (F58) | a teacher selects `case_id` |
+| "own guardian links only" (student, parent) | class `guardian_link`: student `SELF`, parent `author` on `guardian_person_id`; no tier writes it except through `family.*` definer functions run by a school admin or the import (F15) | a parent ends or unverifies the other parent's link |
+| "own messages and requests" (parent, family) | parent rows with scopes `author` (sender) and `addressee` (recipient) on `family.message`, and `author` on `family.meeting_request.guardian_person_id` | as above |
+| "pairing exists, mentor headline" (parent, mentor) | `mentor.v_family_pairing`; no parent row on any `mentor.*` table (F59) | a parent reads a mentee note or a session request message |
+| "metadata only" (lead and support, ai) | `ai.v_generation_meta` (feature, requester role, date, status) | the lead reads `output_text` |
+| "at reveal sessions only" (signal_shadow) | shadow rows carry the class `signal_shadow` by `p_class_expr` (§2.9); the counselor's permission row is honoured only while pass 3's `shadow_reveal_open` holds for the school, checked by `signal.v_shadow_reveal` | a counselor reads a shadow case outside a reveal |
+| "no welfare access" (school admin role; `staff` role; `safeguarding_oversight`) | the absence of rows; oversight members receive only in-app notices addressed to them (class `notification`, scope `addressee`) | a school admin or an oversight member reads a signal, a note or an escalation |
+| verbs `es`, `ap`, `cf` | `protect(…, p_verbs => '{escalate}')` on `signal.escalation` and `signal.teacher_flag`; `'{approve}'` on `ib.selection`, `discovery.pathway_proposal`, `uni.statement_review`; `'{configure}'` on `config.*`, `auth.membership`, `auth.caseload_assignment`, `auth.pastoral_assignment`, `ai.feature_policy` | every verb positively and negatively, end to end through RLS |
+| "never self-assigned" (cover, capabilities) | pass 4 D43's CHECK on planned cover (`granted_by_person_id <> counselor_person_id` unless break-glass, whose lead confirmation must come from someone else) and `auth.capability_grant`'s four-eyes CHECK (F16) | a lead grants cover to themselves; a school admin confirms their own capability |
+
+The matrix itself is regenerated into rows by a script in `packages/db/seed/matrix.ts` that reads pass 4 §3.6's cells as data (`packages/contracts/authz/matrix.json`); the generated suite in pass 4 §3.8 reads the same file, so the matrix, the rows and the tests cannot drift apart.
+
 ```sql
 -- ============================================================================
 -- 2.5 sis: the academic record, as the school holds it
@@ -1068,15 +1413,33 @@ Approvals, escalations and configuration changes are gated in the domain layer b
 -- Everything here is imported (pass 2) and carries import_id for provenance and
 -- rollback. Nothing here is edited by hand in CAROS; a correction is a new
 -- import that supersedes rows.
-CREATE TYPE sis.programme_family AS ENUM (
-  'ib_dp',            -- full Diploma
-  'ib_dp_candidate',  -- Grade 10 choosing the Diploma (in the cohort, not yet in the programme)
-  'ib_courses',       -- IB courses without the Diploma
-  'ap',
-  'a_level',
-  'gcse',
-  'school_own',       -- e.g. "ACS High School courses"
-  'undecided');
+-- Programme families are a reference table, not an ENUM (pass 8, F65): the
+-- first list lacked IGCSE, BTEC and the IB Career-related Programme, and a new
+-- family should be a row, not a migration. It is global (no school_id) and
+-- lives in `ref`; it is created here because sis.programme refers to it.
+CREATE TABLE ref.programme_family (
+  key             text PRIMARY KEY,
+  label           text NOT NULL,
+  diploma_cohort  boolean NOT NULL DEFAULT false,   -- counts toward the Diploma cohort (invariant 7)
+  default_scale   text                             -- ref.grade_scale key
+);
+INSERT INTO ref.programme_family (key, label, diploma_cohort, default_scale) VALUES
+ ('ib_dp','IB Diploma Programme',true,'ib_1_7'),
+ ('ib_dp_candidate','Choosing the IB Diploma (in the cohort, not yet in the programme)',true,NULL),
+ ('ib_cp','IB Career-related Programme',false,'ib_1_7'),
+ ('ib_courses','IB courses without the Diploma',false,'ib_1_7'),
+ ('ap','Advanced Placement',false,'ap_1_5'),
+ ('a_level','A Level',false,'a_level'),
+ ('gcse','GCSE',false,'gcse_9_1'),
+ ('igcse','IGCSE',false,'igcse_9_1'),
+ ('btec','BTEC',false,NULL),
+ ('school_own','The school''s own courses (e.g. "ACS High School courses")',false,NULL),
+ ('undecided','Undecided',false,NULL);
+-- A coarse label for the year's place in the senior school. It no longer
+-- decides what a family's or student's portal shows: that is each school's
+-- versioned `portal` rule set (config.rule_set_version, §2.8), because four
+-- fixed stages put a British Year 10 family on the near-empty Grade 9 portal
+-- and hid GCSE grades that go into UCAS applications (F65).
 CREATE TYPE sis.stage_key AS ENUM (
   'entry',            -- first year of the senior school (Grade 9 / Year 10)
   'pathway_choice',   -- the year the programme is chosen (Grade 10 / Year 11)
@@ -1160,7 +1523,7 @@ CREATE TABLE sis.year_group (
 CREATE TABLE sis.programme (
   school_id         uuid NOT NULL REFERENCES core.school (id),
   id                uuid NOT NULL DEFAULT gen_random_uuid(),
-  family            sis.programme_family NOT NULL,
+  family            text NOT NULL REFERENCES ref.programme_family (key),
   name              text NOT NULL,                    -- "IB Diploma Programme", "Advanced Placement", "A Level"
   grade_scale_key   text NOT NULL,                    -- references ref.grade_scale(key)
   PRIMARY KEY (id), UNIQUE (school_id, id), UNIQUE (school_id, name)
@@ -1205,6 +1568,18 @@ CREATE TABLE sis.enrolment (
                       daterange(valid_from, COALESCE(valid_to, 'infinity'::date), '[]') WITH &&)
 );
 CREATE INDEX enrolment_student ON sis.enrolment (school_id, student_id) WHERE status = 'active';
+-- `programme_id` above is the student's primary programme. A student may also
+-- follow others at once (IB courses alongside the school's own, an AP course
+-- beside A Levels), so they are rows here, not a second column (F65).
+CREATE TABLE sis.enrolment_programme (
+  school_id     uuid NOT NULL REFERENCES core.school (id),
+  enrolment_id  uuid NOT NULL,
+  programme_id  uuid NOT NULL,
+  import_id     uuid,
+  PRIMARY KEY (enrolment_id, programme_id),
+  FOREIGN KEY (school_id, enrolment_id) REFERENCES sis.enrolment (school_id, id),
+  FOREIGN KEY (school_id, programme_id) REFERENCES sis.programme (school_id, id)
+);
 
 -- Stable keys across systems and terms: the SIS id, the ManageBac id, the Maia
 -- id, the Google subject. Identity resolution (pass 2) writes here.
@@ -1290,6 +1665,38 @@ CREATE TABLE sis.section_membership (
 );
 CREATE INDEX section_membership_by_student ON sis.section_membership (school_id, student_id) WHERE ended_on IS NULL;
 CREATE INDEX section_membership_by_section ON sis.section_membership (school_id, section_id) WHERE ended_on IS NULL;
+
+-- Tutor (registration) groups, where the school has them (pass 8, F33). A
+-- British school's form tutor and Head of Year share responsibility for a
+-- student; the SIS exports it (iSAMS TutorStaffId, HeadOfYear StaffId), and
+-- auth.pastoral_assignment turns it into read scopes. ACS may never fill these.
+CREATE TABLE sis.tutor_group (
+  school_id         uuid NOT NULL REFERENCES core.school (id),
+  id                uuid NOT NULL DEFAULT gen_random_uuid(),
+  academic_year_id  uuid NOT NULL,
+  year_group_id     uuid,
+  code              text NOT NULL,                    -- "11W"
+  label             text NOT NULL,
+  import_id         uuid,
+  PRIMARY KEY (id), UNIQUE (school_id, id), UNIQUE (school_id, academic_year_id, code),
+  FOREIGN KEY (school_id, academic_year_id) REFERENCES sis.academic_year (school_id, id),
+  FOREIGN KEY (school_id, year_group_id) REFERENCES sis.year_group (school_id, id)
+);
+CREATE TABLE sis.tutor_group_member (
+  school_id       uuid NOT NULL REFERENCES core.school (id),
+  id              uuid NOT NULL DEFAULT gen_random_uuid(),
+  tutor_group_id  uuid NOT NULL,
+  student_id      uuid NOT NULL,
+  started_on      date NOT NULL,
+  ended_on        date,
+  import_id       uuid,
+  PRIMARY KEY (id), UNIQUE (school_id, id), UNIQUE (school_id, tutor_group_id, student_id, started_on),
+  FOREIGN KEY (school_id, tutor_group_id) REFERENCES sis.tutor_group (school_id, id),
+  FOREIGN KEY (school_id, student_id) REFERENCES sis.student (school_id, id)
+);
+ALTER TABLE auth.pastoral_assignment
+  ADD FOREIGN KEY (school_id, year_group_id) REFERENCES sis.year_group (school_id, id),
+  ADD FOREIGN KEY (school_id, tutor_group_id) REFERENCES sis.tutor_group (school_id, id);
 
 CREATE TABLE sis.assessment (
   school_id     uuid NOT NULL REFERENCES core.school (id),
@@ -1405,7 +1812,7 @@ CREATE TABLE engagement.activity_event (
   id            uuid NOT NULL DEFAULT gen_random_uuid(),
   student_id    uuid NOT NULL,
   occurred_at   timestamptz NOT NULL,
-  source        text NOT NULL CHECK (source IN ('caros','google_classroom','managebac','maia')),
+  source        text NOT NULL,                        -- config.vocabulary 'engagement_source' (validated in the domain layer); was a CHECK naming ACS's incumbents (F65)
   kind          text NOT NULL,                        -- 'session','task_completed','task_abandoned','submission','login'
   ref           text,                                 -- opaque id in the source system
   import_id     uuid,
@@ -1419,9 +1826,21 @@ CREATE INDEX activity_student_time ON engagement.activity_event (school_id, stud
 -- 2.7 ref: global reference data. No school_id. Every row cites its source.
 -- ============================================================================
 -- Readable by every tenant; writable only through the curated import run by
--- the CAROS team (tier system/support). Nothing here may be typed in without a
--- source URL and a retrieval date: that is the trust spine as a constraint.
-CREATE TYPE ref.destination_system AS ENUM ('ucas','common_app','direct','ouac','uae_direct','other');
+-- the CAROS team as a reviewed job (tier system). Nothing here may be typed in
+-- without a source URL and a retrieval date: that is the trust spine as a
+-- constraint. A row whose only source is `seed://` never renders a number and
+-- never exists in production (F30, DR-8).
+-- Destination systems are a reference table, not an ENUM (F65): the first list
+-- had no University of California application, and a new system is a row.
+-- Columns below written as `destination_system text` reference it.
+CREATE TABLE ref.destination_system (
+  key     text PRIMARY KEY,                           -- 'ucas','common_app','uc','direct','ouac','uae_direct','other'
+  label   text NOT NULL
+);
+INSERT INTO ref.destination_system VALUES
+ ('ucas','UCAS (United Kingdom)'), ('common_app','Common App (United States)'),
+ ('uc','University of California application'), ('direct','Direct application'),
+ ('ouac','OUAC (Ontario)'), ('uae_direct','Direct application (UAE)'), ('other','Other');
 CREATE TYPE ref.fee_status         AS ENUM ('home','international','eu','domestic','province','scholarship');
 CREATE TYPE ref.rms                AS ENUM ('reach','match','safety');
 
@@ -1437,7 +1856,7 @@ CREATE TABLE ref.source (
 );
 
 CREATE TABLE ref.grade_scale (
-  key           text PRIMARY KEY,                     -- 'ib_1_7','ap_1_5','a_level','gcse_9_1','pct','gpa_4','ib_points_45'
+  key           text PRIMARY KEY,                     -- 'ib_1_7','ap_1_5','a_level','gcse_9_1','igcse_9_1','igcse_a_g','pct','gpa_4','ib_points_45'
   label         text NOT NULL,
   kind          text NOT NULL CHECK (kind IN ('numeric','ordinal')),
   -- ordered steps for ordinal scales, with the normalised percentage the engine uses
@@ -1453,7 +1872,7 @@ CREATE TABLE ref.institution (
   city          text,
   aliases       text[] NOT NULL DEFAULT '{}',        -- "Warwick", "University of Warwick"
   website       text,
-  destination_system ref.destination_system NOT NULL,
+  destination_system text NOT NULL REFERENCES ref.destination_system (key),
   source_id     uuid NOT NULL REFERENCES ref.source (id),
   valid_from    date NOT NULL,
   valid_to      date,
@@ -1479,7 +1898,7 @@ CREATE TABLE ref.course (
 CREATE TABLE ref.entry_requirement (
   id                uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   course_id         uuid NOT NULL REFERENCES ref.course (id),
-  programme_family  sis.programme_family NOT NULL,
+  programme_family  text NOT NULL REFERENCES ref.programme_family (key),
   entry_year        smallint NOT NULL,
   summary           text NOT NULL,                    -- "38 points overall, 7 6 6 at HL"
   structured        jsonb NOT NULL,                   -- {"points":38,"hl":[7,6,6],"subjects":[{"key":"mathematics_aa","level":"HL","min":7}]}
@@ -1531,7 +1950,7 @@ CREATE TABLE ref.fee_status_rule (
 
 CREATE TABLE ref.deadline (
   id                  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  destination_system  ref.destination_system NOT NULL,
+  destination_system  text NOT NULL REFERENCES ref.destination_system (key),
   institution_id      uuid REFERENCES ref.institution (id),  -- NULL = system-wide
   cycle_year          smallint NOT NULL,                     -- entry year
   kind                text NOT NULL,                         -- 'ucas_early','ucas_main','early_decision','regular','test_registration'
@@ -1539,6 +1958,62 @@ CREATE TABLE ref.deadline (
   due_at              timestamptz NOT NULL,
   source_id           uuid NOT NULL REFERENCES ref.source (id),
   UNIQUE (destination_system, institution_id, cycle_year, kind)
+);
+
+-- What a personal statement is, per destination system and entry year (F32).
+-- From 2026 entry UCAS asks three questions, each with a minimum length, all
+-- three sharing 4,000 characters; a single-essay system is one section. A
+-- version is complete when every section is at or above its minimum and the
+-- total is within the limit, never "characters over the ceiling".
+CREATE TABLE ref.statement_format (
+  destination_system text NOT NULL REFERENCES ref.destination_system (key),
+  entry_year         smallint NOT NULL,
+  sections           jsonb NOT NULL,                  -- [{"key":"q1","prompt":"…","min_chars":350}, …]
+  total_max_chars    integer,
+  total_max_words    integer,
+  source_id          uuid NOT NULL REFERENCES ref.source (id),
+  PRIMARY KEY (destination_system, entry_year)
+);
+-- What a reference is, per format (F32). A UCAS reference (since 2024 entry)
+-- is one per applicant in three sections: a centre statement advisers reuse,
+-- extenuating circumstances, and supporting information, with predicted grades
+-- entered alongside. A section that draws on welfare facts is flagged
+-- generation_forbidden and is never model-drafted, whatever the letter engine does.
+CREATE TABLE ref.reference_format (
+  key                text PRIMARY KEY,                -- 'ucas_reference_2024','us_counselor_letter','us_teacher_letter'
+  destination_system text NOT NULL REFERENCES ref.destination_system (key),
+  sections           jsonb NOT NULL,                  -- [{"key":"extenuating","label":"…","max_chars":…,"generation_forbidden":true}, …]
+  one_per_applicant  boolean NOT NULL,
+  captures_predicted_grades boolean NOT NULL DEFAULT false,
+  source_id          uuid NOT NULL REFERENCES ref.source (id)
+);
+
+-- What a regulator means for a tenant (F31). The first version stored
+-- core.school.regulator and never read it, so every tenant got ADEK's banner,
+-- clock, contacts, outcome codes and review pack. Everything regulator-shaped is
+-- read from here, by the tenant's regulator. A regulator with no analysis yet
+-- (KHDA today) has an explicit empty profile: no regulator-specific text at
+-- all, which is what a Dubai tenant must see rather than Abu Dhabi's authorities.
+-- Clause numbers live here and in the school's configuration, never in UI copy (F55).
+CREATE TABLE ref.regulator_profile (
+  regulator               core.regulator NOT NULL,
+  version                 smallint NOT NULL,
+  label                   text NOT NULL,              -- "ADEK (Abu Dhabi)"; '' for an empty profile
+  is_empty                boolean NOT NULL DEFAULT false,
+  reporting_contacts      jsonb NOT NULL DEFAULT '[]', -- [{label, number, kind: 'talk_now'|'report_harm'|'emergency', hours, verified_at, source_id}]
+  reporting_window        jsonb,                      -- {hours: 24, owner: 'each_staff_member', from: 'suspicion'} (F09)
+  category_routes_default jsonb,                      -- {suicidal_ideation: ['counselor','leadership'], maltreatment: ['cpo'], …}; the school confirms its own (F09)
+  citations               jsonb NOT NULL DEFAULT '[]', -- [{policy, version, clause, source_id}]
+  outcome_vocabulary      text[] NOT NULL DEFAULT '{}',
+  indicators              jsonb NOT NULL DEFAULT '[]', -- the reporting indicators the regulator asks for, each over one named population (F77)
+  retention_minimums      jsonb NOT NULL DEFAULT '{}', -- per retention class
+  attendance_reason_family text,                      -- which absence-reason vocabulary applies
+  review_pack_checklist   jsonb NOT NULL DEFAULT '[]', -- the vendor assessment the school must run (ADEK Digital Policy 5.5.1 for ADEK)
+  source_ids              uuid[] NOT NULL DEFAULT '{}',
+  valid_from              date NOT NULL,
+  valid_to                date,
+  PRIMARY KEY (regulator, version),
+  CHECK (is_empty = (label = ''))
 );
 
 CREATE TABLE ref.exam_session (
@@ -1565,7 +2040,7 @@ CREATE TABLE ref.archetype (
   courses       text[] NOT NULL DEFAULT '{}',
   clubs         text[] NOT NULL DEFAULT '{}',
   employers     text[] NOT NULL DEFAULT '{}',
-  steps         jsonb NOT NULL,                       -- [{"key":"...","title":"...","detail":"...","timeframe":"..."}]
+  steps         jsonb NOT NULL,                       -- [{"key":"...","title":"...","detail":"...","timeframe":"...","programme_families":["ib_dp","ap"] or null for all}] (F65)
   subpaths      jsonb NOT NULL DEFAULT '{}'::jsonb,   -- SUBPATH_DETAIL, keyed by subpath key
   narrowing     jsonb,                                -- DISCOVERY_NARROW for this archetype
   active        boolean NOT NULL DEFAULT true,
@@ -1613,7 +2088,8 @@ CREATE TABLE config.rule_set_version (
                     'ib.cas',                 -- hours expectation per strand, thin floor by year, gap months
                     'ib.ee',                  -- capacity guide, wait days, milestone offsets
                     'case.lifecycle',         -- monitoring window days, auto-review days, escalation reason length
-                    'dimensions')),           -- thresholds behind the ten dimension statuses
+                    'dimensions',             -- thresholds behind the ten dimension statuses
+                    'portal')),               -- per year group and programme: which portal sections a family and a student see, and why a section is empty (F65)
   version         integer NOT NULL,
   schema_version  text NOT NULL,                      -- the engine/domain package version whose schema validated params
   params          jsonb NOT NULL,
@@ -1649,17 +2125,59 @@ CREATE TABLE config.vocabulary (
                   'behaviour_category',  -- the SIS's categories, mapped
                   'absence_reason',      -- the SIS's reason codes, mapped to authorised/suppressing
                   'cas_tag',             -- interests
-                  'document_kind')),
-  group_key     text,                                 -- e.g. flag kind 'concern' | 'positive' | 'note'
+                  'document_kind',
+                  'guide_course',        -- a school's own course list for its Grade 9 (or Year 10) guide (F65)
+                  'engagement_source',   -- CAROS, Google Classroom, ManageBac, ...: was a CHECK (F65)
+                  'source_system_kind',  -- csv, veracross, isams, powerschool, managebac, maia, google_classroom, fixture, ...: was a CHECK (F65)
+                  'teacher_flag_routed')),-- what a teacher is told about their flag: 'received', 'reviewed'; never that a case exists (F58)
+  group_key     text,                                 -- e.g. flag kind 'concern' | 'positive' | 'note' | 'safeguarding'
   key           text NOT NULL,
   label         text NOT NULL,
   description   text,
   attributes    jsonb NOT NULL DEFAULT '{}'::jsonb,   -- e.g. {"suppresses":["attendance"],"authorised":true}
   seq           smallint NOT NULL DEFAULT 0,
   active        boolean NOT NULL DEFAULT true,
+  version       integer NOT NULL DEFAULT 1,           -- incremented on every change of label, attributes or active (F48)
   PRIMARY KEY (id),
   UNIQUE NULLS NOT DISTINCT (school_id, vocabulary, group_key, key)
 );
+-- A past alert must stay explainable after a vocabulary changes (invariant 4,
+-- F48). The attributes that drive tiering and suppression
+-- (flag_tag.safeguarding_relevant and severity, behaviour_category.urgent,
+-- absence_reason.suppresses) used to be edited in place. Every change now
+-- writes the previous row to this append-only history, and the engine also
+-- snapshots the attribute values it used into evaluation.rule_hits and
+-- evidence_item.snapshot, with a test that a rule hit carries them (pass 3).
+CREATE TABLE config.vocabulary_history (
+  vocabulary_id uuid NOT NULL,
+  version       integer NOT NULL,
+  school_id     uuid,
+  vocabulary    text NOT NULL,
+  key           text NOT NULL,
+  label         text NOT NULL,
+  attributes    jsonb NOT NULL,
+  active        boolean NOT NULL,
+  valid_from    timestamptz NOT NULL,
+  valid_to      timestamptz NOT NULL DEFAULT now(),
+  changed_by    uuid,
+  PRIMARY KEY (vocabulary_id, version)
+);
+CREATE FUNCTION config.vocabulary_keep_history() RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+  IF (NEW.label, NEW.attributes, NEW.active) IS DISTINCT FROM (OLD.label, OLD.attributes, OLD.active) THEN
+    INSERT INTO config.vocabulary_history (vocabulary_id, version, school_id, vocabulary, key, label, attributes,
+                                           active, valid_from, changed_by)
+    VALUES (OLD.id, OLD.version, OLD.school_id, OLD.vocabulary, OLD.key, OLD.label, OLD.attributes, OLD.active,
+            COALESCE((SELECT max(valid_to) FROM config.vocabulary_history h WHERE h.vocabulary_id = OLD.id), '-infinity'),
+            auth.current_person());
+    NEW.version := OLD.version + 1;
+  END IF;
+  RETURN NEW;
+END $$;
+CREATE TRIGGER vocabulary_keep_history BEFORE UPDATE ON config.vocabulary
+  FOR EACH ROW EXECUTE FUNCTION config.vocabulary_keep_history();
+CREATE TRIGGER vocabulary_history_append_only BEFORE UPDATE OR DELETE ON config.vocabulary_history
+  FOR EACH ROW EXECUTE FUNCTION core.forbid_change();
 ```
 ```sql
 -- ============================================================================
@@ -1675,7 +2193,7 @@ CREATE TYPE signal.case_status AS ENUM ('open','closed');
 CREATE TYPE signal.close_outcome AS ENUM ('resolved','reduced','unchanged','escalated','not_a_concern','left_school');
 CREATE TYPE signal.sweep_trigger AS ENUM ('nightly','manual','event','backfill');
 CREATE TYPE signal.sweep_status  AS ENUM ('running','succeeded','partial','failed');
-CREATE TYPE signal.flag_kind     AS ENUM ('concern','positive','note');
+CREATE TYPE signal.flag_kind     AS ENUM ('concern','positive','note','safeguarding');  -- safeguarding: a teacher's referral to the route (F10, C23)
 CREATE TYPE signal.flag_status   AS ENUM ('new','linked','reviewed','dismissed');
 CREATE TYPE signal.evidence_kind AS ENUM ('signal','teacher_flag','context','case_history','document','positive','manual');
 CREATE TYPE signal.actor_kind    AS ENUM ('engine','person');
@@ -1750,8 +2268,8 @@ CREATE TABLE signal.evaluation (
   proposed_tier   signal.tier,                        -- NULL = nothing to say (a quiet row on the sheet)
   rule_hits       jsonb NOT NULL DEFAULT '[]'::jsonb, -- [{"rule":"relapse","fired":true,"inputs":{...}}]
   suppressions    jsonb NOT NULL DEFAULT '[]'::jsonb, -- checks run and their outcome ("no exam period", ...)
-  strength        numeric(5,2),                       -- pass 3 defines or removes; NULL until defined
-  strength_definition text,                           -- the definition version the number means something under
+  strength        numeric(5,2),                       -- dropped by pass 3 D17, which lands with this table in B2; never populated (§12.11)
+  strength_definition text,                           -- dropped by pass 3 D17 with strength
   cold_start      boolean NOT NULL DEFAULT false,
   error           text,
   PRIMARY KEY (id), UNIQUE (school_id, id), UNIQUE (school_id, sweep_run_id, student_id),
@@ -1812,9 +2330,8 @@ CREATE TABLE signal.case (
   opened_by_person_id uuid,
   opened_from_evaluation_id uuid,
   owner_person_id     uuid NOT NULL,                  -- the counselor
-  headline            text,                           -- rule-generated; may be rephrased by the model (ai.generation)
+  headline            text,                           -- rule-generated, never model output: the headline rephrase is dropped from v1 (F52)
   plain_explanation   text,
-  headline_generation_id uuid,                        -- ai.generation, if a model rephrased it
   window_start        date,
   window_end          date,
   no_cause_inferred   boolean NOT NULL DEFAULT true,
@@ -1830,6 +2347,11 @@ CREATE TABLE signal.case (
   relapse_of_case_id  uuid,                           -- opened by the relapse rule inside a closed case's window
   merged_into_case_id uuid,
   auto_review_on      date,                           -- monitor tier: "auto-review in 14 days"
+  -- A shadow case (F24): the same engine, the same lifecycle (hysteresis,
+  -- relapse, recovery, holds, auto-review) run while the school is in shadow,
+  -- so what shadow measures is what goes live. Read only as class
+  -- signal_shadow, at reveal sessions; never notifies, never on the sheet.
+  shadow              boolean NOT NULL DEFAULT false,
   created_at          timestamptz NOT NULL DEFAULT now(),
   updated_at          timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (id), UNIQUE (school_id, id),
@@ -1843,8 +2365,8 @@ CREATE TABLE signal.case (
   CHECK (opened_by = 'engine' OR opened_by_person_id IS NOT NULL),
   CHECK (opened_by = 'person' OR opened_by_rule_key IS NOT NULL)
 );
--- one open case per student
-CREATE UNIQUE INDEX case_one_open_per_student ON signal.case (school_id, student_id) WHERE status = 'open';
+-- one open live case and one open shadow case per student
+CREATE UNIQUE INDEX case_one_open_per_student ON signal.case (school_id, student_id, shadow) WHERE status = 'open';
 CREATE INDEX case_owner_open ON signal.case (school_id, owner_person_id, tier) WHERE status = 'open';
 
 CREATE TABLE signal.case_tier_history (
@@ -1919,6 +2441,52 @@ ALTER FUNCTION signal.case_track_changes() OWNER TO caros_policy;
 CREATE TRIGGER case_track_changes BEFORE INSERT OR UPDATE ON signal.case
   FOR EACH ROW EXECUTE FUNCTION signal.case_track_changes();
 
+-- An escalated case cannot slide down the queue or be auto-closed (F07). While
+-- any escalation on the case is unreleased (open, or closed but with no tier
+-- set by a person since its outcome: escalation.tier_released_at IS NULL,
+-- pass 4 D46), the engine may raise the tier and nothing else: it may not
+-- lower it, and neither the engine nor auto-review may close the case. A
+-- person's tier change after the outcome (C10) releases the pin.
+CREATE FUNCTION signal.case_escalation_pin() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER AS $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM signal.escalation e
+             WHERE e.school_id = NEW.school_id AND e.case_id = NEW.id AND e.tier_released_at IS NULL) THEN
+    IF auth.actor_kind() = 'system' AND NEW.tier > OLD.tier THEN          -- enum order: a greater tier is a lower one
+      RAISE EXCEPTION 'case % carries an unreleased escalation: the engine may not lower it', NEW.id;
+    END IF;
+    IF auth.actor_kind() = 'system' AND NEW.status = 'closed' AND OLD.status = 'open' THEN
+      RAISE EXCEPTION 'case % carries an unreleased escalation: it may not be closed automatically', NEW.id;
+    END IF;
+  END IF;
+  -- merge only within one student; across students, cases are linked (C12, C25)
+  IF NEW.merged_into_case_id IS NOT NULL AND NEW.merged_into_case_id IS DISTINCT FROM OLD.merged_into_case_id
+     AND NOT EXISTS (SELECT 1 FROM signal.case t WHERE t.school_id = NEW.school_id
+                     AND t.id = NEW.merged_into_case_id AND t.student_id = NEW.student_id AND t.shadow = NEW.shadow) THEN
+    RAISE EXCEPTION 'cases of different students are linked, never merged (case %)', NEW.id;
+  END IF;
+  RETURN NEW;
+END $$;
+ALTER FUNCTION signal.case_escalation_pin() OWNER TO caros_policy;
+CREATE TRIGGER case_escalation_pin BEFORE UPDATE ON signal.case
+  FOR EACH ROW EXECUTE FUNCTION signal.case_escalation_pin();
+
+-- A relationship between two students' cases (siblings, one incident), without
+-- moving either student's signals or evidence into the other's file (F07).
+CREATE TABLE signal.case_link (
+  school_id           uuid NOT NULL REFERENCES core.school (id),
+  id                  uuid NOT NULL DEFAULT gen_random_uuid(),
+  case_id             uuid NOT NULL,
+  linked_case_id      uuid NOT NULL,
+  reason              text NOT NULL CHECK (char_length(reason) >= 10),
+  linked_by_person_id uuid NOT NULL,
+  linked_at           timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (id), UNIQUE (school_id, id), UNIQUE (school_id, case_id, linked_case_id),
+  FOREIGN KEY (school_id, case_id) REFERENCES signal.case (school_id, id),
+  FOREIGN KEY (school_id, linked_case_id) REFERENCES signal.case (school_id, id),
+  FOREIGN KEY (school_id, linked_by_person_id) REFERENCES core.person (school_id, id),
+  CHECK (case_id <> linked_case_id)
+);
+
 CREATE TABLE signal.case_signal (
   school_id     uuid NOT NULL REFERENCES core.school (id),
   case_id       uuid NOT NULL,
@@ -1936,7 +2504,8 @@ CREATE TABLE signal.case_signal (
 CREATE TABLE signal.evidence_item (
   school_id     uuid NOT NULL REFERENCES core.school (id),
   id            uuid NOT NULL DEFAULT gen_random_uuid(),
-  case_id       uuid NOT NULL,
+  case_id       uuid NOT NULL,                        -- a live case, or a shadow case (F24)
+  evaluation_id uuid,                                 -- the evaluation that produced the item, for engine items (F24); FK below
   kind          signal.evidence_kind NOT NULL,
   domain        signal.domain NOT NULL,
   source_label  text NOT NULL,                        -- "Gradebook · Veracross", "Teacher concern · Mr. Davies"
@@ -1951,7 +2520,8 @@ CREATE TABLE signal.evidence_item (
   added_by      signal.actor_kind NOT NULL,
   person_id     uuid,
   PRIMARY KEY (id), UNIQUE (school_id, id),
-  FOREIGN KEY (school_id, case_id) REFERENCES signal.case (school_id, id)
+  FOREIGN KEY (school_id, case_id) REFERENCES signal.case (school_id, id),
+  FOREIGN KEY (school_id, evaluation_id) REFERENCES signal.evaluation (school_id, id)
 );
 CREATE INDEX evidence_by_case ON signal.evidence_item (school_id, case_id, occurred_at);
 CREATE TRIGGER evidence_append_only BEFORE UPDATE OR DELETE ON signal.evidence_item
@@ -2029,9 +2599,15 @@ CREATE TABLE signal.intervention_step (
   FOREIGN KEY (school_id, intervention_id) REFERENCES signal.intervention (school_id, id)
 );
 
--- Escalation to the safeguarding lead: once per case, with a reason, routed to
--- a named person, and the email it produced. The UNIQUE on case_id is the
--- "cannot double-fire" rule (invariant 5).
+-- Escalation to the safeguarding lead: with a reason, routed to a named person,
+-- and the email it produced. "Cannot double-fire" (invariant 5) means one act
+-- is never recorded twice, not that a child can be referred once per case
+-- (F07). The first version's UNIQUE (school_id, case_id) is replaced by pass 4
+-- D46's partial unique index on open escalations per case and a unique
+-- idempotency key per submission; a later escalation on the same case, after
+-- the earlier one is closed, carries previous_escalation_id. Information added
+-- while one is open goes to signal.escalation_update (C24). A teacher's
+-- referral (C23) is an escalation with raised_via = 'teacher_flag'.
 CREATE TABLE signal.escalation (
   school_id             uuid NOT NULL REFERENCES core.school (id),
   id                    uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -2048,15 +2624,43 @@ CREATE TABLE signal.escalation (
   outcome               text,
   outcome_at            timestamptz,
   PRIMARY KEY (id), UNIQUE (school_id, id),
-  UNIQUE (school_id, case_id),
   FOREIGN KEY (school_id, case_id) REFERENCES signal.case (school_id, id),
   FOREIGN KEY (school_id, student_id) REFERENCES sis.student (school_id, id),
   FOREIGN KEY (school_id, raised_by_person_id) REFERENCES core.person (school_id, id),
   FOREIGN KEY (school_id, to_person_id) REFERENCES core.person (school_id, id)
 );
+-- New information on an open referral, from the raising or owning counselor or
+-- the teacher who raised it (F07, C24). Append-only; the route is reminded by
+-- the escalation reminder email, which carries a reference only.
+CREATE TABLE signal.escalation_update (
+  school_id            uuid NOT NULL REFERENCES core.school (id),
+  id                   uuid NOT NULL DEFAULT gen_random_uuid(),
+  escalation_id        uuid NOT NULL,
+  student_id           uuid NOT NULL,
+  added_by_person_id   uuid NOT NULL,
+  added_at             timestamptz NOT NULL DEFAULT now(),
+  body                 text NOT NULL CHECK (char_length(body) >= 20),
+  idempotency_key      text NOT NULL,
+  PRIMARY KEY (id), UNIQUE (school_id, id), UNIQUE (school_id, idempotency_key),
+  FOREIGN KEY (school_id, escalation_id) REFERENCES signal.escalation (school_id, id),
+  FOREIGN KEY (school_id, student_id) REFERENCES sis.student (school_id, id),
+  FOREIGN KEY (school_id, added_by_person_id) REFERENCES core.person (school_id, id)
+);
+CREATE TRIGGER escalation_update_append_only BEFORE UPDATE OR DELETE ON signal.escalation_update
+  FOR EACH ROW EXECUTE FUNCTION core.forbid_change();
 
--- Teacher flags: the concern loop. `routed_note` is what the teacher is told
--- happened next; it closes the loop the prototype's "What I've logged" shows.
+-- Teacher flags: the concern loop. `routed_key` is what the teacher is told
+-- happened next, from the 'teacher_flag_routed' vocabulary ("received by the
+-- counselor", "reviewed by the counselor"); it closes the loop the prototype's
+-- "What I've logged" shows without ever saying a case exists (F58). The teacher
+-- tier cannot select case_id or status; it reads its own flags through
+-- signal.v_teacher_flag_mine. A flag of kind 'safeguarding' is a referral to
+-- the route (C23, F10), raised through signal.raise_teacher_referral(); the
+-- flag form tells every teacher, above the fields, that a disclosure is
+-- reported to the school's Child Protection Officer now and that an ordinary
+-- concern is not a safeguarding report. A teacher may flag a student they teach
+-- on a roster, in their IB subject or through an Extended Essay they supervise.
+-- Flag text is read by the safety screen's lexicon (pass 5, C1).
 CREATE TABLE signal.teacher_flag (
   school_id         uuid NOT NULL REFERENCES core.school (id),
   id                uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -2070,21 +2674,28 @@ CREATE TABLE signal.teacher_flag (
   submitted_at      timestamptz NOT NULL DEFAULT now(),
   status            signal.flag_status NOT NULL DEFAULT 'new',
   case_id           uuid,
-  routed_note       text,
+  routed_key        text,                             -- config.vocabulary 'teacher_flag_routed' (F58)
+  routed_note       text,                             -- staff-only; never shown to the teacher
   routed_at         timestamptz,
   routed_by_person_id uuid,
+  escalation_id     uuid,                             -- kind 'safeguarding': the referral it raised (C23)
+  idempotency_key   text,                             -- one submission recorded once (F07)
   PRIMARY KEY (id), UNIQUE (school_id, id),
   FOREIGN KEY (school_id, student_id) REFERENCES sis.student (school_id, id),
   FOREIGN KEY (school_id, author_person_id) REFERENCES core.person (school_id, id),
   FOREIGN KEY (school_id, section_id) REFERENCES sis.section (school_id, id),
-  FOREIGN KEY (school_id, case_id) REFERENCES signal.case (school_id, id)
+  FOREIGN KEY (school_id, case_id) REFERENCES signal.case (school_id, id),
+  FOREIGN KEY (school_id, escalation_id) REFERENCES signal.escalation (school_id, id),
+  UNIQUE (school_id, idempotency_key)
 );
 CREATE INDEX teacher_flag_inbox ON signal.teacher_flag (school_id, status, submitted_at DESC);
 CREATE INDEX teacher_flag_author ON signal.teacher_flag (school_id, author_person_id, submitted_at DESC);
 
 -- A short note a student sends to their counselor ("Struggling to balance the
 -- statement with mocks"). Student voice, staff-readable, never engine input
--- unless pass 3 and pass 4 both say so.
+-- unless pass 3 and pass 4 both say so. The student reads their own words but
+-- never `safety_flag` or any extraction column: whether an alert was raised
+-- about a student's words is staff-only (F13, column grants in §2.22).
 CREATE TABLE signal.student_reflection (
   school_id     uuid NOT NULL REFERENCES core.school (id),
   id            uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -2101,6 +2712,12 @@ CREATE TABLE signal.student_reflection (
 -- A recorded conversation: check-ins, follow-ups, parent meetings, escalation
 -- meetings, and the IB selection review (which ib.selection references, so the
 -- "conversation is a gate" rule points at a real, dated, attributed record).
+-- Class `contact_record`, staff-only (F15): a meeting's notes and an outcome of
+-- `escalate` are notes, and parents and students never read them. A parent
+-- sees their meeting request's status and slot (family.meeting_request), not
+-- this row. The coordinator records the review conversation for any student in
+-- the Diploma cohort through `ib.record_review()` (F02), not only for their
+-- own caseload.
 CREATE TABLE core.meeting (
   school_id         uuid NOT NULL REFERENCES core.school (id),
   id                uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -2127,22 +2744,28 @@ CREATE INDEX meeting_student_time ON core.meeting (school_id, student_id, held_a
 
 -- The run (kept / soft / break / none), derived from the latest snapshots.
 -- One function, used by the sheet and the case file, so they cannot disagree.
+-- A point is outside only when the engine said so: pass 3 §3.3 counts a point
+-- as outside when it lies beyond the band AND its distance from the median is
+-- at least the measure's floor, so recomputing from band_lo and band_hi alone
+-- (the first version) disagreed with the engine (F40). The engine writes
+-- `outside` on every series point; this function reads it.
 CREATE FUNCTION signal.week_run(p_school uuid, p_student uuid, p_as_of date, p_weeks int DEFAULT 8)
 RETURNS signal.run_cell[] LANGUAGE sql STABLE AS $$
   WITH latest AS (
-    SELECT DISTINCT ON (domain, measure_key) series, band_lo, band_hi
+    SELECT DISTINCT ON (domain, measure_key) series
     FROM signal.feature_snapshot
     WHERE school_id = p_school AND student_id = p_student AND as_of <= p_as_of
     ORDER BY domain, measure_key, as_of DESC
   ),
   pts AS (
-    SELECT (e.ordinality)::int AS wk, (e.value->>'value')::numeric AS v, l.band_lo, l.band_hi
+    SELECT (e.ordinality)::int AS wk, (e.value->>'value')::numeric AS v,
+           COALESCE((e.value->>'outside')::boolean, false) AS outside
     FROM latest l, jsonb_array_elements(l.series) WITH ORDINALITY e
   ),
   per_week AS (
     SELECT wk,
            count(v) AS seen,
-           count(v) FILTER (WHERE v < band_lo OR v > band_hi) AS outside
+           count(v) FILTER (WHERE outside) AS outside
     FROM pts GROUP BY wk
   )
   SELECT COALESCE(array_agg(
@@ -2158,6 +2781,10 @@ RETURNS signal.run_cell[] LANGUAGE sql STABLE AS $$
 -- ============================================================================
 -- Every gate in this module is a comparison against these tables (the trust
 -- spine). Demand, viability, supervision load and CAS totals are views.
+-- Subject selection is IB-shaped (six groups, three or four HL), a known
+-- limitation stated in DR-7.3 (F65). At a school that keeps ManageBac as the
+-- record for CAS and the Extended Essay (C10), those tables hold read-only
+-- mirror rows (`source = 'managebac_mirror'`, pass 2 §7.4 and §7.9).
 CREATE TYPE ib.group_key        AS ENUM ('g1','g2','g3','g4','g5','g6');
 CREATE TYPE ib.level            AS ENUM ('HL','SL');
 CREATE TYPE ib.selection_status AS ENUM ('draft','submitted','signed','changes_requested','approved','withdrawn');
@@ -2249,6 +2876,7 @@ CREATE TABLE ib.selection (
   return_note         text,
   returned_at         timestamptz,
   review_meeting_id   uuid,                           -- core.meeting of kind selection_review; the gate
+  review_meeting_version integer,                     -- the version the conversation was about; must equal version at approval (F17)
   review_slot_requested_at timestamptz,
   approved_at         timestamptz,
   approved_by_person_id uuid,
@@ -2259,10 +2887,37 @@ CREATE TABLE ib.selection (
   FOREIGN KEY (school_id, student_id) REFERENCES sis.student (school_id, id),
   FOREIGN KEY (school_id, review_meeting_id) REFERENCES core.meeting (school_id, id),
   FOREIGN KEY (school_id, approved_by_person_id) REFERENCES core.person (school_id, id),
-  -- invariant 6: no approval without a recorded conversation
+  -- invariant 6: no approval without a recorded conversation. The CHECK is the
+  -- floor; ib.check_approval (below) is the guard, because a non-null id proves
+  -- nothing about whose meeting it was or when (F17).
   CHECK (status <> 'approved' OR (review_meeting_id IS NOT NULL AND approved_at IS NOT NULL AND approved_by_person_id IS NOT NULL)),
   CHECK (status <> 'changes_requested' OR return_note IS NOT NULL)
 );
+
+-- The conversation gate as a database guard (F17). On the move to 'approved'
+-- the review meeting must belong to this student, be of kind
+-- selection_review, have been held after the current version was submitted,
+-- carry notes of at least ten characters, and have been recorded against this
+-- version. A resubmission (version + 1) therefore needs a new conversation.
+CREATE FUNCTION ib.check_approval() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER AS $$
+DECLARE m core.meeting;
+BEGIN
+  IF NEW.status = 'approved' AND OLD.status IS DISTINCT FROM 'approved' THEN
+    SELECT * INTO m FROM core.meeting WHERE school_id = NEW.school_id AND id = NEW.review_meeting_id;
+    IF NOT FOUND OR m.student_id <> NEW.student_id OR m.kind_key <> 'selection_review'
+       OR m.held_at < NEW.submitted_at OR char_length(coalesce(m.notes, '')) < 10
+       OR NEW.review_meeting_version IS DISTINCT FROM NEW.version THEN
+      RAISE EXCEPTION 'selection % cannot be approved: no recorded review conversation for version %', NEW.id, NEW.version;
+    END IF;
+    IF NEW.approved_by_person_id IS DISTINCT FROM auth.current_person() THEN
+      RAISE EXCEPTION 'approval must be recorded as the approving person';
+    END IF;
+  END IF;
+  RETURN NEW;
+END $$;
+ALTER FUNCTION ib.check_approval() OWNER TO caros_policy;
+CREATE TRIGGER selection_check_approval BEFORE UPDATE ON ib.selection
+  FOR EACH ROW EXECUTE FUNCTION ib.check_approval();
 
 CREATE TABLE ib.selection_pick (
   school_id     uuid NOT NULL REFERENCES core.school (id),
@@ -2281,7 +2936,11 @@ CREATE TABLE ib.selection_pick (
 
 -- The level question, answered by a teacher of that subject, per HL pick. A
 -- sign-off is deleted when the pick it answered changes (domain layer), which
--- is what the prototype does on resubmission.
+-- is what the prototype does on resubmission. Written only by ib.sign_off()
+-- (F58): HL picks in an open round, `teacher_person_id` set to the acting
+-- person, the pick itself untouched. The teacher reads the card through
+-- ib.v_signoff_card (student name, prerequisite mark, the student's reason),
+-- never the prototype's "Personal band", which is an engine output.
 CREATE TABLE ib.selection_signoff (
   school_id         uuid NOT NULL REFERENCES core.school (id),
   id                uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -2374,7 +3033,7 @@ CREATE TABLE ib.cas_entry (
   outcomes      smallint[] NOT NULL DEFAULT '{}',    -- which of the seven learning outcomes (1..7) this evidences
   reviewed_at   timestamptz,                          -- coordinator has read the reflection (`ref` in the prototype)
   reviewed_by_person_id uuid,
-  source        text NOT NULL DEFAULT 'student' CHECK (source IN ('student','import','coordinator')),
+  source        text NOT NULL DEFAULT 'student' CHECK (source IN ('student','import','coordinator','managebac_mirror')),  -- mirror rows are read-only in CAROS (C10)
   import_id     uuid,
   created_at    timestamptz NOT NULL DEFAULT now(),
   deleted_at    timestamptz,
@@ -2404,7 +3063,7 @@ CREATE TABLE ib.ee_round (
   id                    uuid NOT NULL DEFAULT gen_random_uuid(),
   submission_year       smallint NOT NULL,            -- "2027"
   coordinator_person_id uuid NOT NULL,
-  word_limit            smallint NOT NULL DEFAULT 4000,
+  word_limit            smallint NOT NULL DEFAULT 4000,  -- copied from the round's guide (pass 5 D70) and confirmed by the coordinator (F77)
   hours_guide           smallint NOT NULL DEFAULT 40,
   capacity_guide        smallint NOT NULL DEFAULT 5,  -- warns, never blocks (invariant 8)
   wait_days             smallint NOT NULL DEFAULT 7,  -- EE_WAIT_DAYS
@@ -2421,7 +3080,7 @@ CREATE TABLE ib.ee_milestone (
   seq         smallint NOT NULL,
   label       text NOT NULL,
   owner       ib.ee_owner NOT NULL,
-  rppf        boolean NOT NULL DEFAULT false,         -- a mandatory reflection session
+  rppf        boolean NOT NULL DEFAULT false,         -- a mandatory reflection: three sessions under the 2018 guide, one statement under the 2027 guide (F62)
   PRIMARY KEY (id), UNIQUE (school_id, id), UNIQUE (school_id, round_id, key),
   FOREIGN KEY (school_id, round_id) REFERENCES ib.ee_round (school_id, id)
 );
@@ -2506,8 +3165,11 @@ CREATE TABLE ib.ee_milestone_completion (
   FOREIGN KEY (school_id, essay_id) REFERENCES ib.ee_essay (school_id, id),
   FOREIGN KEY (school_id, milestone_id) REFERENCES ib.ee_milestone (school_id, id)
 );
--- The three mandatory reflection sessions, recorded when they happen, dated and
--- attributed. This is the RPPF as a table.
+-- The mandatory reflections, recorded when they happen, dated and attributed:
+-- the RPPF's three sessions under the 2018 guide, or the RPF's single
+-- reflective statement (at most the guide's reflection_word_limit, 500 words)
+-- under the guide for first assessment 2027, which both current ACS cohorts
+-- follow (F62, pass 5 D70).
 CREATE TABLE ib.ee_reflection (
   school_id             uuid NOT NULL REFERENCES core.school (id),
   id                    uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -2556,8 +3218,9 @@ CREATE VIEW ib.v_diploma_cohort AS
   SELECT e.school_id, e.student_id, yg.ordinal AS year_ordinal, yg.label AS year_label, p.family
   FROM sis.enrolment e
   JOIN sis.programme p ON p.id = e.programme_id
+  JOIN ref.programme_family f ON f.key = p.family
   JOIN sis.year_group yg ON yg.id = e.year_group_id
-  WHERE e.status = 'active' AND p.family IN ('ib_dp','ib_dp_candidate');
+  WHERE e.status = 'active' AND f.diploma_cohort;
 ```
 ```sql
 -- ============================================================================
@@ -2584,7 +3247,7 @@ CREATE TABLE uni.student_target (
   institution_id    uuid NOT NULL REFERENCES ref.institution (id),
   course_id         uuid REFERENCES ref.course (id),
   entry_year        smallint NOT NULL,
-  destination_system ref.destination_system NOT NULL,
+  destination_system text NOT NULL REFERENCES ref.destination_system (key),
   classification    ref.rms,                          -- NULL until the rule has run or when no requirement is on file
   classification_rule_version_id uuid REFERENCES config.rule_set_version (id),
   classification_inputs jsonb,                        -- {"requirement_id":..,"predicted":..,"gap":..}
@@ -2663,28 +3326,33 @@ CREATE TABLE uni.document_request (
 CREATE INDEX docreq_student ON uni.document_request (school_id, student_id, kind);
 CREATE INDEX docreq_owner ON uni.document_request (school_id, requested_from_person_id) WHERE status IN ('pending','chased');
 
--- One statement per destination system, versioned. The model's read of a
--- version is an ai.generation; it advises, it never decides (pass 5).
+-- One statement per destination system and entry year, versioned, in the
+-- sections that system asks for (F32): from 2026 entry a UCAS statement is
+-- three answers sharing 4,000 characters, each with a minimum, not one essay.
+-- The model's read of a version is an ai.generation; it advises, it never
+-- decides (pass 5).
 CREATE TABLE uni.statement (
   school_id           uuid NOT NULL REFERENCES core.school (id),
   id                  uuid NOT NULL DEFAULT gen_random_uuid(),
   student_id          uuid NOT NULL,
-  destination_system  ref.destination_system NOT NULL,
+  destination_system  text NOT NULL REFERENCES ref.destination_system (key),
+  entry_year          smallint NOT NULL,              -- selects the ref.statement_format
   status              uni.statement_status NOT NULL DEFAULT 'not_started',
   current_version_id  uuid,
   submitted_for_review_at timestamptz,
   created_at          timestamptz NOT NULL DEFAULT now(),
   updated_at          timestamptz NOT NULL DEFAULT now(),
-  PRIMARY KEY (id), UNIQUE (school_id, id), UNIQUE (school_id, student_id, destination_system),
-  FOREIGN KEY (school_id, student_id) REFERENCES sis.student (school_id, id)
+  PRIMARY KEY (id), UNIQUE (school_id, id), UNIQUE (school_id, student_id, destination_system, entry_year),
+  FOREIGN KEY (school_id, student_id) REFERENCES sis.student (school_id, id),
+  FOREIGN KEY (destination_system, entry_year) REFERENCES ref.statement_format (destination_system, entry_year)
 );
 CREATE TABLE uni.statement_version (
   school_id       uuid NOT NULL REFERENCES core.school (id),
   id              uuid NOT NULL DEFAULT gen_random_uuid(),
   statement_id    uuid NOT NULL,
   version_no      integer NOT NULL,
-  body            text NOT NULL,
-  word_count      integer NOT NULL,
+  sections        jsonb NOT NULL,                     -- {"q1":"…","q2":"…","q3":"…"}; one key for a single-essay format
+  word_count      integer NOT NULL,                   -- totals over the sections
   char_count      integer NOT NULL,
   created_at      timestamptz NOT NULL DEFAULT now(),
   analysis_generation_id uuid,                        -- ai.generation
@@ -2692,6 +3360,17 @@ CREATE TABLE uni.statement_version (
   FOREIGN KEY (school_id, statement_id) REFERENCES uni.statement (school_id, id)
 );
 ALTER TABLE uni.statement ADD FOREIGN KEY (school_id, current_version_id) REFERENCES uni.statement_version (school_id, id);
+-- Complete means every section at or above its minimum and the total within
+-- the limit (F32). Derived, never stored.
+CREATE FUNCTION uni.statement_complete(p_version uuid) RETURNS boolean LANGUAGE sql STABLE AS $$
+  SELECT bool_and(char_length(coalesce(v.sections ->> (sec ->> 'key'), '')) >= coalesce((sec ->> 'min_chars')::int, 1))
+         AND (f.total_max_chars IS NULL OR max(v.char_count) <= f.total_max_chars)
+  FROM uni.statement_version v
+  JOIN uni.statement st ON st.school_id = v.school_id AND st.id = v.statement_id
+  JOIN ref.statement_format f ON f.destination_system = st.destination_system AND f.entry_year = st.entry_year
+  CROSS JOIN LATERAL jsonb_array_elements(f.sections) sec
+  WHERE v.id = p_version
+  GROUP BY f.total_max_chars $$;
 CREATE TABLE uni.statement_review (
   school_id           uuid NOT NULL REFERENCES core.school (id),
   id                  uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -2710,14 +3389,24 @@ CREATE TABLE uni.statement_review (
 
 -- The letter engine's data. Generation is deferred (section 3), so in v1 the
 -- versions are human-written or empty; the columns the generator will need
--- (evidence citations, voice sample, generation id) exist now.
+-- (evidence citations, voice sample, generation id) exist now. A reference has
+-- a format (F32): a UCAS reference is one per applicant, in three sections,
+-- with the school's centre statement and a snapshot of the predicted grades
+-- submitted with it; a US letter is one per writer. A section the format flags
+-- generation_forbidden (UCAS's extenuating circumstances, which draw on welfare
+-- facts) is never model-drafted, and the letter engine's generation path
+-- refuses it by construction.
 CREATE TABLE uni.reference_letter (
   school_id           uuid NOT NULL REFERENCES core.school (id),
   id                  uuid NOT NULL DEFAULT gen_random_uuid(),
   student_id          uuid NOT NULL,
   author_person_id    uuid NOT NULL,
-  kind                text NOT NULL CHECK (kind IN ('counselor','teacher')),
-  destination_system  ref.destination_system,
+  kind                text NOT NULL CHECK (kind IN ('counselor','teacher','ucas_reference')),
+  format_key          text NOT NULL REFERENCES ref.reference_format (key),
+  centre_statement_id uuid,                           -- uni.centre_statement version used (UCAS)
+  predicted_grades_snapshot jsonb,                    -- the predicted grades as submitted, frozen at submission (UCAS)
+  submitted_at        timestamptz,
+  destination_system  text REFERENCES ref.destination_system (key),
   target_id           uuid,                           -- a specific application, or NULL for a system-wide letter
   document_request_id uuid,                           -- the request it fulfils
   status              uni.letter_status NOT NULL DEFAULT 'requested',
@@ -2738,7 +3427,7 @@ CREATE TABLE uni.reference_letter_version (
   id                  uuid NOT NULL DEFAULT gen_random_uuid(),
   letter_id           uuid NOT NULL,
   version_no          integer NOT NULL,
-  body                text NOT NULL,
+  sections            jsonb NOT NULL,                 -- keyed by the format's sections; validated against ref.reference_format (F32)
   produced_by         text NOT NULL CHECK (produced_by IN ('human','model')),
   generation_id       uuid,                           -- ai.generation when produced_by = 'model'
   evidence_citations  jsonb NOT NULL DEFAULT '[]'::jsonb, -- [{"claim":"...","source_table":"core.meeting","source_id":"...","dated":"2025-10-12"}]
@@ -2750,6 +3439,32 @@ CREATE TABLE uni.reference_letter_version (
   CHECK (produced_by = 'human' OR generation_id IS NOT NULL)
 );
 ALTER TABLE uni.reference_letter ADD FOREIGN KEY (school_id, current_version_id) REFERENCES uni.reference_letter_version (school_id, id);
+-- The school's centre statement, which a UCAS adviser writes once per cycle and
+-- reuses in every reference (F32). Versioned; a reference records the version it used.
+CREATE TABLE uni.centre_statement (
+  school_id           uuid NOT NULL REFERENCES core.school (id),
+  id                  uuid NOT NULL DEFAULT gen_random_uuid(),
+  cycle_year          smallint NOT NULL,
+  version_no          integer NOT NULL,
+  body                text NOT NULL,
+  written_by_person_id uuid NOT NULL,
+  written_at          timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (id), UNIQUE (school_id, id), UNIQUE (school_id, cycle_year, version_no),
+  FOREIGN KEY (school_id, written_by_person_id) REFERENCES core.person (school_id, id)
+);
+ALTER TABLE uni.reference_letter ADD FOREIGN KEY (school_id, centre_statement_id) REFERENCES uni.centre_statement (school_id, id);
+-- The school's own internal deadlines (a reference or statement due to the
+-- counselor before the external one), per cycle and destination system (F32).
+CREATE TABLE uni.school_deadline (
+  school_id           uuid NOT NULL REFERENCES core.school (id),
+  id                  uuid NOT NULL DEFAULT gen_random_uuid(),
+  cycle_year          smallint NOT NULL,
+  destination_system  text NOT NULL REFERENCES ref.destination_system (key),
+  kind                text NOT NULL CHECK (kind IN ('internal_reference','internal_statement','internal_application')),
+  due_on              date NOT NULL,
+  note                text,
+  PRIMARY KEY (id), UNIQUE (school_id, id), UNIQUE (school_id, cycle_year, destination_system, kind)
+);
 -- Past letters a counselor uploads for voice matching, with explicit consent
 -- and a retention class of their own (they may name other students).
 CREATE TABLE uni.author_voice_sample (
@@ -2789,8 +3504,8 @@ CREATE VIEW uni.v_application_pack AS
          (SELECT count(*) FROM uni.offer o WHERE o.school_id = s.school_id AND o.student_id = s.id AND o.status IN ('conditional','unconditional')) AS offers,
          (SELECT min(d.due_at) FROM uni.application a JOIN ref.deadline d ON d.id = a.deadline_id
             WHERE a.school_id = s.school_id AND a.student_id = s.id AND a.status IN ('planned','in_progress')) AS next_deadline_at,
-         (SELECT max(sv.char_count) FROM uni.statement st JOIN uni.statement_version sv ON sv.id = st.current_version_id
-            WHERE st.school_id = s.school_id AND st.student_id = s.id) AS statement_chars,
+         (SELECT bool_and(uni.statement_complete(st.current_version_id)) FROM uni.statement st
+            WHERE st.school_id = s.school_id AND st.student_id = s.id AND st.current_version_id IS NOT NULL) AS statements_complete,  -- F32: sections against their minimums, not characters against a ceiling
          (SELECT min(st.status) FROM uni.statement st WHERE st.school_id = s.school_id AND st.student_id = s.id) AS statement_status,
          (SELECT status FROM uni.document_request d WHERE d.school_id = s.school_id AND d.student_id = s.id AND d.kind = 'transcript' ORDER BY updated_at DESC LIMIT 1) AS transcript_status,
          (SELECT status FROM uni.document_request d WHERE d.school_id = s.school_id AND d.student_id = s.id AND d.kind = 'counselor_reference' ORDER BY updated_at DESC LIMIT 1) AS counselor_reference_status,
@@ -2903,7 +3618,9 @@ CREATE TABLE discovery.roadmap_progress (
 CREATE UNIQUE INDEX roadmap_step_done_once ON discovery.roadmap_progress (approved_pathway_id, step_key) WHERE undone_at IS NULL;
 
 -- Gamification lives here and only here (invariant 10): the only tables that
--- can award points reference a student.
+-- can award points reference a student. The ledger is its own data class, `xp`,
+-- which only the student reads (F77): as part of `discovery` it was readable by
+-- parents, so invariant 10 held only on the writer.
 CREATE TABLE discovery.xp_ledger (
   school_id     uuid NOT NULL REFERENCES core.school (id),
   id            uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -2942,7 +3659,13 @@ CREATE TABLE discovery.network_contact (
 -- Guardians are core.person rows of kind 'guardian'. The link is the security
 -- object: a magic link signs a person in, but what they may see is decided by
 -- verified links, and a link is verified from the SIS contacts import, not
--- from whoever holds the email address (§11.12).
+-- from whoever holds the email address (§11.12). Revised by pass 8 (F57): one
+-- person per SIS contact, never merged, even when two contacts share an email
+-- address; activation is per contact and is required inside
+-- auth.is_guardian_of(); a restriction imported from the SIS (a court order, a
+-- "no contact" flag) suspends that contact's links and nobody else's. Pass 4
+-- D42 adds activation_status and restriction. Guardians read their own link
+-- rows and never write any (class guardian_link, F15).
 CREATE TABLE family.guardian_link (
   school_id           uuid NOT NULL REFERENCES core.school (id),
   id                  uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -2974,7 +3697,7 @@ CREATE TABLE family.message (
   body                  text NOT NULL,
   sent_at               timestamptz NOT NULL DEFAULT now(),
   read_at               timestamptz,
-  channel               text NOT NULL DEFAULT 'in_app' CHECK (channel IN ('in_app')),  -- email delivery is a v2 decision (Challenges)
+  channel               text NOT NULL DEFAULT 'in_app' CHECK (channel IN ('in_app')),  -- message bodies never go by email; a content-free email may say a message is waiting (§5.3, pass 4 §5.8)
   draft_generation_id   uuid,                         -- the AI draft it was edited from, if any
   in_reply_to_id        uuid,
   PRIMARY KEY (id), UNIQUE (school_id, id),
@@ -3042,6 +3765,16 @@ CREATE VIEW signal.v_last_contact AS
 -- ============================================================================
 -- No email or phone columns anywhere in this schema: contact is in-platform
 -- only (invariant 11). The word "match" does not appear; it is "pairing".
+-- Revised by pass 8 (F59, C6). Every table's student subject is derived through
+-- its pairing, and mentors read only their own pairing's rows (scope
+-- own_pairing), never another mentor's thread with the same student. Parents
+-- see only that a pairing exists and the mentor's headline
+-- (mentor.v_family_pairing). A pairing is created only by the mentor
+-- coordinator, and pairings and share_scope change only through the
+-- coordinator's and the student's definer functions. v1 mentor contact is CAROS
+-- messaging (holds and screening) and in-person sessions on school premises;
+-- video on the school's platform is deferred until ADEK Digital Policy 6.4
+-- consent and approval are in place (decision C6).
 CREATE TABLE mentor.profile (
   school_id               uuid NOT NULL REFERENCES core.school (id),
   id                      uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -3108,6 +3841,7 @@ CREATE TABLE mentor.session (
   held_at         timestamptz,
   duration_min    smallint,
   status          text NOT NULL DEFAULT 'scheduled' CHECK (status IN ('scheduled','held','missed','cancelled')),
+  mode            text NOT NULL DEFAULT 'in_person_on_premises' CHECK (mode IN ('in_person_on_premises')),  -- v1 only (C6); video joins when ADEK 6.4 consent exists
   school_visible  boolean NOT NULL DEFAULT true,      -- the school is in the loop, by design
   recording_file_id uuid,
   PRIMARY KEY (id), UNIQUE (school_id, id),
@@ -3148,6 +3882,12 @@ CREATE TABLE mentor.mentee_note (
 -- 2.15 doc: files. Bytes live in object storage under a key that carries the
 -- tenant; this table is the index, the classification and the retention.
 -- ============================================================================
+-- The policy reads each row's own data_class and kind (F15): a student or
+-- parent never reads a reference letter, or a file classed case_note,
+-- safeguarding or signal, because the table's class is no longer the file's.
+-- Raw SIS exports (kind sis_export, sample_export, connector_snapshot) are
+-- readable by the school_admin role only, under step-up, and never by support.
+-- No user tier can update storage_key or any column but a draft's filename.
 CREATE TABLE doc.file (
   school_id             uuid NOT NULL REFERENCES core.school (id),
   id                    uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -3177,7 +3917,7 @@ ALTER TABLE core.school ADD FOREIGN KEY (mark_file_id) REFERENCES doc.file (id);
 CREATE TABLE ingest.source_system (
   school_id   uuid NOT NULL REFERENCES core.school (id),
   id          uuid NOT NULL DEFAULT gen_random_uuid(),
-  kind        text NOT NULL CHECK (kind IN ('csv','veracross','isams','powerschool','managebac','maia','google_classroom','fixture')),
+  kind        text NOT NULL,                          -- config.vocabulary 'source_system_kind'; was a CHECK naming ACS's incumbents (F65)
   name        text NOT NULL,
   config      jsonb NOT NULL DEFAULT '{}'::jsonb,     -- never secrets; those live in the key vault by reference
   active      boolean NOT NULL DEFAULT true,
@@ -3209,7 +3949,7 @@ CREATE TABLE ingest.import (
   import_kind         text NOT NULL,
   idempotency_key     text NOT NULL,                  -- sha256 of file + profile version: a re-upload is the same import
   status              text NOT NULL DEFAULT 'uploaded' CHECK (status IN ('uploaded','validating','validated','dry_run','committing','committed','failed','rolled_back')),
-  uploaded_by         text NOT NULL,
+  uploaded_by         text NOT NULL,                  -- for roster, staff, contacts and caseload imports, the approver (pass 2 D3's approved_by) must be a different person, and these never auto-approve (F57)
   uploaded_at         timestamptz NOT NULL DEFAULT now(),
   validated_at        timestamptz,
   committed_at        timestamptz,
@@ -3265,10 +4005,15 @@ CREATE TABLE ingest.import_change (
 -- ============================================================================
 -- 2.17 ai: model configuration and every generation. Pass 5 owns the content.
 -- ============================================================================
+-- Feature keys follow pass 5 D74 (§12.8 of the pass 7 review), less the two
+-- features Davide removed from v1: headline_rephrase (F52) and safety_screen,
+-- which runs as a lexicon with no model (decision C1). letter_draft is added
+-- when the letter engine is built. covered_model and zdr_eligible live on
+-- pass 5's ai.model registry (D62), not here (§12.9).
 CREATE TABLE ai.model_config (
   school_id       uuid REFERENCES core.school (id),   -- NULL = platform default
   id              uuid NOT NULL DEFAULT gen_random_uuid(),
-  feature         text NOT NULL CHECK (feature IN ('copilot','discovery_chat','pathway_analysis','meeting_brief','parent_email_draft','ee_feedback','statement_read','letter_draft','headline_rephrase','safety_screen')),
+  feature         text NOT NULL CHECK (feature IN ('copilot','discovery_chat','pathway_analysis','meeting_brief','parent_email_draft','ee_feedback','statement_read','quarantined_reader')),
   provider        text NOT NULL,                      -- 'anthropic','bedrock','foundry'
   model_id        text NOT NULL,                      -- never in code
   params          jsonb NOT NULL DEFAULT '{}'::jsonb, -- effort, max tokens, temperature
@@ -3306,7 +4051,10 @@ CREATE TABLE ai.generation (
   FOREIGN KEY (school_id, subject_student_id) REFERENCES sis.student (school_id, id)
 );
 CREATE INDEX generation_student ON ai.generation (school_id, subject_student_id, created_at DESC);
--- Reversible pseudonymisation for what leaves the region (pass 4 rule, pass 5 mechanism).
+-- Reversible pseudonymisation for what leaves the region (pass 4 rule, pass 5
+-- mechanism). No tier reads it: re-identification is ai.reidentify(generation),
+-- a definer function that checks the requester is the generation's requester,
+-- or holds read on its subject, in the current school (F44).
 CREATE TABLE ai.pseudonym_map (
   school_id     uuid NOT NULL REFERENCES core.school (id),
   id            uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -3319,16 +4067,20 @@ CREATE TABLE ai.pseudonym_map (
 
 -- ============================================================================
 -- 2.18 notify: the transactional outbox. Nothing is sent from a request
--- handler; a row is written in the same transaction as the action and the
--- worker delivers it. Payloads carry no welfare detail (pass 4 owns the rule).
+-- handler; a row is written in the same transaction as the action, through
+-- notify.enqueue() (§2.4), and the worker delivers it. Payloads carry no
+-- welfare detail (pass 4 owns the rule). Every outbound message kind is listed
+-- in pass 4 §5.8, with its recipient, channel and content allowlist, following
+-- decisions C2 and C3; a template not on that list does not exist (F28).
 -- ============================================================================
 CREATE TABLE notify.template (
-  key         text NOT NULL,                          -- 'magic_link','student_deadline_nudge','safeguarding_escalation','meeting_confirmation'
+  key         text NOT NULL,                          -- the email keys of pass 4 §5.8: 'magic_link','parent_update_waiting','student_deadline_nudge','safeguarding_escalation','escalation_reminder','safety_alert_notice','alert_unopened_notice','grooming_alert'; every other kind is in_app
   version     integer NOT NULL,
   channel     text NOT NULL CHECK (channel IN ('email','in_app')),
   subject     text,
   body        text NOT NULL,                          -- handlebars-style; variables validated against `variables`
-  variables   jsonb NOT NULL,
+  variables   jsonb NOT NULL,                         -- the allowlist; pass 4 D47 adds the CHECK
+  sender_roles text[] NOT NULL DEFAULT '{}',          -- acting roles that may cause it; system-sent templates list none (F02)
   active      boolean NOT NULL DEFAULT true,
   PRIMARY KEY (key, version)
 );
@@ -3341,7 +4093,12 @@ CREATE TABLE notify.outbox (
   template_key          text NOT NULL,
   template_version      integer NOT NULL,
   payload               jsonb NOT NULL,
-  dedupe_key            text NOT NULL,                -- e.g. 'nudge:<application_id>:T-7'
+  dedupe_key            text NOT NULL,                -- e.g. 'nudge:<application_id>:T-7'; deduplicates at enqueue
+  -- Deduplication at send (F77): the worker passes the outbox id to the email
+  -- provider as the request's idempotency key and keeps provider_message_id, so
+  -- a retry after an unclear response cannot send an escalation email twice.
+  -- No payload ever holds a credential: invitation and magic-link tokens are
+  -- minted by the worker at send time and exist only as hashes (F16).
   status                text NOT NULL DEFAULT 'queued' CHECK (status IN ('queued','sending','sent','delivered','bounced','failed','suppressed')),
   provider              text,
   provider_message_id   text,
@@ -3355,7 +4112,9 @@ CREATE TABLE notify.outbox (
   FOREIGN KEY (school_id, recipient_person_id) REFERENCES core.person (school_id, id),
   FOREIGN KEY (template_key, template_version) REFERENCES notify.template (key, version)
 );
-CREATE INDEX outbox_queue ON notify.outbox (status, not_before) WHERE status = 'queued';
+CREATE INDEX outbox_queue ON notify.outbox (school_id, status, not_before) WHERE status = 'queued';
+-- The worker finds which schools have due rows through notify.schools_with_due_outbox(),
+-- a definer function returning school ids only (F36), then delivers inside each school's transaction.
 ALTER TABLE signal.escalation ADD FOREIGN KEY (school_id, notification_id) REFERENCES notify.outbox (school_id, id);
 CREATE TABLE notify.preference (
   school_id   uuid NOT NULL REFERENCES core.school (id),
@@ -3385,12 +4144,22 @@ CREATE TABLE notify.in_app (
 -- `detail` holds identifiers and enumerations only. Names, note text, reasons
 -- and message bodies are never written here: the entry points at the record,
 -- and the record can be erased without breaking the log.
+--
+-- The taxonomy is one list (§12.16 of the pass 7 review): the keys below, pass 2
+-- D9, pass 4 D48 (which carries pass 8's additions) and pass 5 D71 are seeded
+-- together in B0 from packages/contracts/audit/actions.json. Each key appears
+-- once: PREVIEW_ACCESS belongs to pass 2 D9 and not to D48; the event
+-- sweep.completed belongs to §2.20 and not to pass 3 D28.
 CREATE TYPE audit.actor_kind AS ENUM ('user','system','support','ingest');
 
 CREATE TABLE audit.action (
-  key         text PRIMARY KEY,
-  category    text NOT NULL CHECK (category IN ('access','change','auth','config','ai','system')),
-  description text NOT NULL
+  key           text PRIMARY KEY,
+  category      text NOT NULL CHECK (category IN ('access','change','auth','config','ai','system')),
+  description   text NOT NULL,
+  -- which tiers may write this action through audit.record() (F75). Empty
+  -- means none: the seed sets each key's list from actions.json, so a key
+  -- nobody has placed is refused rather than open to every tier.
+  allowed_tiers auth.privilege_tier[] NOT NULL DEFAULT '{}'
 );
 INSERT INTO audit.action VALUES
  -- access (new: the prototype seeded FILE_ACCESS but never wrote it)
@@ -3439,7 +4208,7 @@ INSERT INTO audit.action VALUES
  ('ERASURE_REQUESTED','change',''), ('ERASURE_EXECUTED','change',''), ('RETENTION_PURGE','system','');
 
 CREATE TABLE audit.entry (
-  school_id           uuid NOT NULL,
+  school_id           uuid NOT NULL REFERENCES core.school (id),   -- a school row is never deleted (§2.3), so the log keeps its FK (§12.3)
   id                  uuid NOT NULL DEFAULT gen_random_uuid(),
   occurred_at         timestamptz NOT NULL DEFAULT now(),
   actor_kind          audit.actor_kind NOT NULL,
@@ -3485,14 +4254,23 @@ CREATE TRIGGER audit_append_only BEFORE UPDATE OR DELETE ON audit.entry
 -- The only way to write an audit entry. The school, the actor and the session
 -- come from the transaction context, never from the caller, so an entry cannot
 -- be written against another school or under another name. Every tier may
--- call it; no tier may INSERT into audit.entry directly.
+-- call it; no tier may INSERT into audit.entry directly. Pass 8 (F75): the
+-- action must list the caller's tier in audit.action.allowed_tiers, so a
+-- student session cannot write ESCALATED_SAFEGUARDING about anyone; the tier
+-- is the acting role's, read from the membership, because inside this
+-- function current_user is its owner.
 CREATE FUNCTION audit.record(
   p_action text, p_object_table text DEFAULT NULL, p_object_id uuid DEFAULT NULL,
   p_subject_student uuid DEFAULT NULL, p_purpose text DEFAULT NULL, p_detail jsonb DEFAULT '{}'::jsonb
 ) RETURNS uuid LANGUAGE plpgsql SECURITY DEFINER SET search_path = audit, auth, pg_temp AS $$
-DECLARE v_id uuid;
+DECLARE v_id uuid; v_tier auth.privilege_tier;
 BEGIN
   IF auth.current_school() IS NULL THEN RAISE EXCEPTION 'audit.record called with no tenant context'; END IF;
+  v_tier := CASE auth.actor_kind() WHEN 'system' THEN 'system' WHEN 'support' THEN 'support' WHEN 'ingest' THEN 'system'
+              ELSE (SELECT r.tier FROM auth.role r WHERE r.key = auth.current_role_key()) END;
+  IF NOT EXISTS (SELECT 1 FROM audit.action a WHERE a.key = p_action AND v_tier = ANY (a.allowed_tiers)) THEN
+    RAISE EXCEPTION 'tier % may not write audit action %', v_tier, p_action;
+  END IF;
   INSERT INTO audit.entry (school_id, actor_kind, actor_person_id, actor_label, acting_role, action,
                            object_table, object_id, subject_student_id, purpose, detail, request_id, session_id)
   VALUES (auth.current_school(),
@@ -3515,9 +4293,10 @@ ALTER FUNCTION audit.record(text, text, uuid, uuid, text, jsonb) OWNER TO caros_
 -- in the same transaction as the change, through one domain function, so an
 -- action cannot happen without its event.
 CREATE TABLE events.name (
-  key         text PRIMARY KEY,
-  description text NOT NULL,
-  metric      text                                    -- which reporting metric it feeds
+  key           text PRIMARY KEY,
+  description   text NOT NULL,
+  metric        text,                                 -- which reporting metric it feeds
+  allowed_tiers auth.privilege_tier[] NOT NULL DEFAULT '{}'   -- set by the seed, as for audit.action (F75)
 );
 INSERT INTO events.name VALUES
  ('sweep.completed','A sweep finished for a school','sweep_reliability'),
@@ -3560,7 +4339,7 @@ INSERT INTO events.name VALUES
  ('ai.generation','','ai'), ('ai.reviewed','','ai'), ('ai.safety_flag','','safeguarding');
 
 CREATE TABLE events.event (
-  school_id           uuid NOT NULL,
+  school_id           uuid NOT NULL REFERENCES core.school (id),
   id                  uuid NOT NULL DEFAULT gen_random_uuid(),
   occurred_at         timestamptz NOT NULL DEFAULT now(),
   name                text NOT NULL REFERENCES events.name (key),
@@ -3580,15 +4359,21 @@ CREATE INDEX event_name_time ON events.event (school_id, name, occurred_at);
 CREATE TRIGGER event_append_only BEFORE UPDATE OR DELETE ON events.event
   FOR EACH ROW EXECUTE FUNCTION core.forbid_change();
 
--- The only way to emit an event; same contract as audit.record().
+-- The only way to emit an event; same contract as audit.record(), including
+-- the per-tier allowlist (events.name.allowed_tiers, F75).
 CREATE FUNCTION events.emit(
   p_name text, p_subject_student uuid DEFAULT NULL, p_case_id uuid DEFAULT NULL, p_signal_id uuid DEFAULT NULL,
   p_intervention_id uuid DEFAULT NULL, p_object_table text DEFAULT NULL, p_object_id uuid DEFAULT NULL,
   p_payload jsonb DEFAULT '{}'::jsonb
 ) RETURNS uuid LANGUAGE plpgsql SECURITY DEFINER SET search_path = events, auth, pg_temp AS $$
-DECLARE v_id uuid;
+DECLARE v_id uuid; v_tier auth.privilege_tier;
 BEGIN
   IF auth.current_school() IS NULL THEN RAISE EXCEPTION 'events.emit called with no tenant context'; END IF;
+  v_tier := CASE auth.actor_kind() WHEN 'system' THEN 'system' WHEN 'support' THEN 'support' WHEN 'ingest' THEN 'system'
+              ELSE (SELECT r.tier FROM auth.role r WHERE r.key = auth.current_role_key()) END;
+  IF NOT EXISTS (SELECT 1 FROM events.name n WHERE n.key = p_name AND v_tier = ANY (n.allowed_tiers)) THEN
+    RAISE EXCEPTION 'tier % may not emit event %', v_tier, p_name;
+  END IF;
   INSERT INTO events.event (school_id, name, actor_kind, actor_person_id, subject_student_id, case_id, signal_id,
                             intervention_id, object_table, object_id, payload, request_id)
   VALUES (auth.current_school(), p_name,
@@ -3654,7 +4439,38 @@ CREATE TABLE privacy.table_registry (
   pii_columns     text[] NOT NULL DEFAULT '{}',       -- scrubbed on erasure
   retention_class text NOT NULL REFERENCES privacy.retention_class (key),
   timestamp_column text,                              -- the column retention is measured from
+  -- per tier, the columns it may UPDATE (and INSERT); §2.22 generates the
+  -- column-level grants from this and a test compares them (F15, F17)
+  writable_columns jsonb NOT NULL DEFAULT '{}',       -- {"student": ["goal_note"], "staff": [...]}
   PRIMARY KEY (schema_name, table_name)
+);
+
+-- A school may keep a class longer or shorter than the platform schedule, within
+-- its regulator's minimums (F65): one global schedule reasoned from ADEK meant a
+-- KHDA school could not differ. The retention job reads the override first.
+CREATE TABLE privacy.retention_override (
+  school_id        uuid NOT NULL REFERENCES core.school (id),
+  retention_class  text NOT NULL REFERENCES privacy.retention_class (key),
+  proposed_days    integer,
+  proposed_rule    text,                              -- e.g. 'until_25th_birthday_or_10y_after_leaving'
+  reason           text NOT NULL,
+  set_by_person_id uuid NOT NULL,
+  set_at           timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (school_id, retention_class),
+  FOREIGN KEY (school_id, set_by_person_id) REFERENCES core.person (school_id, id)
+);
+
+-- Stores that hold personal data outside the tenant tables (F36), so erasure
+-- and retention reach them: the pg-boss queue (payloads are ids only; completed
+-- jobs deleted after 7 days; archiving off), the email provider's delivery
+-- status (polled, not pushed through Event Grid, pass 4 §5.5), and any other
+-- store a later pass adds. The registry test fails if one is missing.
+CREATE TABLE privacy.non_tenant_store (
+  key             text PRIMARY KEY,                   -- 'pgboss.job','acs_email.delivery_status'
+  description     text NOT NULL,
+  holds           text NOT NULL,                      -- what personal data, in words
+  retention       text NOT NULL,
+  erasure_method  text NOT NULL
 );
 
 CREATE TABLE privacy.erasure_request (
@@ -3701,56 +4517,86 @@ BEGIN
                    d + (i || ' months')::interval, d + ((i + 1) || ' months')::interval);
     -- No direct privileges on partitions: every access goes through the parent,
     -- whose policies apply to the rows of every partition.
-    EXECUTE format('REVOKE ALL ON %I.%I FROM PUBLIC, caros_t_staff, caros_t_student, caros_t_guardian, caros_t_mentor, caros_t_system, caros_t_support',
+    EXECUTE format('REVOKE ALL ON %I.%I FROM PUBLIC, caros_t_staff, caros_t_teacher, caros_t_student, caros_t_guardian, caros_t_mentor, caros_t_ai, caros_t_system, caros_t_support',
                    split_part(p_parent::text, '.', 1), nm);
   END LOOP;
 END $$;
 
--- Schema usage for the tiers; table privileges follow the pattern:
---   staff/student/guardian/mentor: SELECT, INSERT, UPDATE on tenant tables (rows still gated by RLS);
+-- Schema usage for the tiers. Table privileges, revised by pass 8 (F13, F15,
+-- F17, F35, F44, F75):
+--   every user tier: SELECT on the schemas it has rows in, rows still gated by RLS;
+--   no user tier holds table-wide INSERT or UPDATE: both are column-level,
+--   generated from privacy.table_registry.writable_columns into one migration
+--   by tooling/grants/generate.ts, and a test compares the catalogue with the
+--   registry; state and authority columns are written only by definer
+--   transition functions (§2.1 rule 11);
 --   no DELETE anywhere except soft-delete columns; no UPDATE/DELETE on append-only tables;
---   system: everything the worker needs; support: SELECT only.
+--   caros_t_ai: SELECT on exactly the union of ai.feature_policy.allowed_fields,
+--   an allowlist generated the same way, with a CI test that it can select
+--   nothing else (pass 4 D55 as revised, F44);
+--   system: everything the worker needs;
+--   support: no base table at all; SELECT on the masked views in the
+--   `support` schema, each of which applies auth.support_grant_covers() (F35).
 GRANT USAGE ON SCHEMA core, auth, sis, engagement, ref, config, signal, ib, uni, discovery, family, mentor,
-                     doc, ingest, ai, notify, audit, events, privacy
-  TO caros_t_staff, caros_t_student, caros_t_guardian, caros_t_mentor, caros_t_system, caros_t_support;
-GRANT SELECT ON ALL TABLES IN SCHEMA ref TO caros_t_staff, caros_t_student, caros_t_guardian, caros_t_mentor, caros_t_system, caros_t_support;
+                     doc, ingest, ai, notify, audit, events, privacy, reporting
+  TO caros_t_staff, caros_t_teacher, caros_t_student, caros_t_guardian, caros_t_mentor, caros_t_ai, caros_t_system;
+GRANT USAGE ON SCHEMA ref, support TO caros_t_support;
+GRANT SELECT ON ALL TABLES IN SCHEMA ref
+  TO caros_t_staff, caros_t_teacher, caros_t_student, caros_t_guardian, caros_t_mentor, caros_t_ai, caros_t_system, caros_t_support;
 GRANT INSERT, UPDATE ON ALL TABLES IN SCHEMA ref TO caros_t_system;
-GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA core, sis, signal, ib, uni, discovery, family, mentor, doc, notify TO caros_t_staff;
-GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA core, sis, ib, uni, discovery, mentor, doc, notify TO caros_t_student;
-GRANT SELECT ON ALL TABLES IN SCHEMA signal TO caros_t_student;     -- RLS leaves them nothing to read; the grant keeps queries valid
-GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA core, sis, uni, family, mentor, doc, notify TO caros_t_guardian;
-GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA core, mentor, notify TO caros_t_mentor;
+GRANT SELECT ON ALL TABLES IN SCHEMA core, auth, sis, config, signal, ib, uni, discovery, family, mentor, doc, notify, reporting, ingest
+  TO caros_t_staff;
+GRANT SELECT ON ALL TABLES IN SCHEMA core, sis, config, signal, ib, uni, doc, notify TO caros_t_teacher;
+-- No grant on the signal schema for students (F13): the one signal table a
+-- student reads is their own reflections, granted by column below.
+GRANT SELECT ON ALL TABLES IN SCHEMA core, sis, ib, uni, discovery, mentor, doc, notify TO caros_t_student;
+GRANT SELECT ON ALL TABLES IN SCHEMA core, sis, uni, family, discovery, doc, notify TO caros_t_guardian;
+GRANT SELECT ON ALL TABLES IN SCHEMA core, mentor, notify TO caros_t_mentor;
+-- Column-level INSERT and UPDATE for the user tiers: generated (see above).
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA core, auth, sis, engagement, config, signal, ib, uni, discovery,
-                                                      family, mentor, doc, ingest, ai, notify, privacy TO caros_t_system;
-GRANT SELECT ON ALL TABLES IN SCHEMA core, auth, sis, engagement, config, signal, ib, uni, discovery, family, mentor, doc,
-                                     ingest, ai, notify, audit, events, privacy TO caros_t_support;
+                                                      family, mentor, doc, ingest, ai, notify, privacy, reporting TO caros_t_system;
 -- Audit and event rows are written only through audit.record() and events.emit().
-REVOKE INSERT ON audit.entry, events.event FROM PUBLIC, caros_t_staff, caros_t_student, caros_t_guardian, caros_t_mentor, caros_t_system, caros_t_support;
+REVOKE INSERT ON audit.entry, events.event FROM PUBLIC, caros_t_staff, caros_t_teacher, caros_t_student, caros_t_guardian,
+                                                caros_t_mentor, caros_t_ai, caros_t_system, caros_t_support;
 GRANT EXECUTE ON FUNCTION audit.record(text, text, uuid, uuid, text, jsonb),
                           events.emit(text, uuid, uuid, uuid, uuid, text, uuid, jsonb)
-  TO caros_t_staff, caros_t_student, caros_t_guardian, caros_t_mentor, caros_t_system, caros_t_support;
-GRANT SELECT ON audit.entry, events.event TO caros_t_staff, caros_t_system, caros_t_support;
+  TO caros_t_staff, caros_t_teacher, caros_t_student, caros_t_guardian, caros_t_mentor, caros_t_ai, caros_t_system;
+GRANT SELECT ON audit.entry, events.event TO caros_t_staff, caros_t_system;
 REVOKE UPDATE, DELETE ON audit.entry, events.event, signal.case_tier_history, signal.case_stage_history,
-                        signal.evidence_item, signal.case_note, ib.selection_event, ib.ee_event,
-                        discovery.message, discovery.xp_ledger, mentor.message FROM PUBLIC, caros_t_system;
--- Column-level limits where the row is visible but a field is not: the mentor
--- tier never reads contact details or dates of birth.
-REVOKE SELECT (email, google_subject, phone) ON core.person FROM caros_t_mentor;
+                        signal.evidence_item, signal.case_note, signal.escalation_update, ib.selection_event, ib.ee_event,
+                        discovery.message, discovery.xp_ledger, mentor.message, config.vocabulary_history
+  FROM PUBLIC, caros_t_system;
+-- Column-level limits where the row is visible but a field is not.
+REVOKE SELECT (email, google_subject, phone) ON core.person FROM caros_t_mentor, caros_t_staff, caros_t_teacher;  -- staff read contact columns through core.v_person_contact (§2.4a)
 REVOKE SELECT (date_of_birth, nationality_iso, fee_status_home_country, student_number) ON sis.student FROM caros_t_mentor;
 REVOKE SELECT (nationality_iso, fee_status_home_country) ON sis.student FROM caros_t_guardian, caros_t_student;
+REVOKE SELECT (reason_code, reason_label, minutes_late) ON sis.attendance_event FROM caros_t_teacher;       -- codes only (F75)
+REVOKE SELECT (case_id, status, routed_note, escalation_id) ON signal.teacher_flag FROM caros_t_teacher;    -- the routed label only (F58)
+GRANT SELECT (school_id, id, student_id, body, sent_at, seen_at) ON signal.student_reflection TO caros_t_student;  -- never safety_flag (F13)
+REVOKE SELECT (safety_flag) ON discovery.message FROM caros_t_student, caros_t_guardian;                    -- F13
+REVOKE SELECT (safety_flag) ON mentor.message FROM caros_t_student, caros_t_mentor;                         -- F13; pass 5 D69's extraction columns are revoked from the same tiers when they are added
 
 -- The tenant row itself has no school_id column: it is the school. Every tier
--- may read its own school's row; only the system tier and a caseload lead may
--- change it, through the domain layer.
+-- may read its own school's row. A school admin or caseload lead changes the
+-- school's own configuration through the domain layer; classification, purpose,
+-- branding and a synthetic tenant's letterhead are guarded by trigger (§2.3).
 ALTER TABLE core.school ENABLE ROW LEVEL SECURITY;
 ALTER TABLE core.school FORCE ROW LEVEL SECURITY;
 CREATE POLICY school_self ON core.school FOR SELECT USING (id = auth.current_school());
-CREATE POLICY school_write ON core.school FOR UPDATE USING (id = auth.current_school() AND auth.allowed('config', 'configure'))
+CREATE POLICY school_write ON core.school FOR UPDATE
+  USING (id = auth.current_school() AND auth.allowed(current_user, 'core.school', 'config', 'configure'))
   WITH CHECK (id = auth.current_school());
 CREATE POLICY school_create ON core.school FOR INSERT WITH CHECK (auth.actor_kind() = 'migration' AND current_user = 'caros_owner');
 
 -- Views evaluate the caller's row access, not the owner's, so a view can never
--- widen what a role may see.
+-- widen what a role may see. The exceptions are the named projection views of
+-- §2.4a (core.v_person_contact, mentor.v_mentee, mentor.v_family_pairing,
+-- signal.v_escalation_status, signal.v_teacher_flag_mine, signal.v_shadow_reveal,
+-- ib.v_signoff_card, ib.v_family_ib_status, ai.v_generation_meta and the
+-- `support` schema's masked views): each is owned by caros_policy, filters on
+-- auth.current_school(), checks role and scope itself, and projects only the
+-- columns its qualifier names. Pass 2 D12's and pass 3 D25's views are
+-- security_invoker too (F75; handoff).
 ALTER VIEW ib.v_subject_demand SET (security_invoker = on);
 ALTER VIEW ib.v_subject_viability SET (security_invoker = on);
 ALTER VIEW ib.v_cas_totals SET (security_invoker = on);
@@ -3766,18 +4612,33 @@ ALTER VIEW events.v_case_timeline SET (security_invoker = on);
 -- student reads their own row through 'self', a guardian through
 -- 'linked_children', a teacher through 'roster'; every role reads its own row
 -- through 'author'.
+--
+-- Revised by pass 8 (F02, F13, F15, F16, F59, F75). Child tables with no
+-- student column derive their subject through their parent (the first version
+-- left them with no subject, so only a school-scoped row could ever read them),
+-- and live and shadow rows carry different classes. The derivations are small
+-- STABLE definer helpers, owned by caros_policy, executable by no tier:
+--   signal.case_student(school, case)  signal.case_class(school, case)  -- 'signal' or 'signal_shadow'
+--   signal.run_class(school, run)      ib.selection_student(school, selection)
+--   mentor.pairing_student(school, pairing)  discovery.session_student(school, session)
+--   uni.statement_student(school, statement) uni.letter_student(school, letter)
+--   signal.intervention_student(school, intervention)  ai.generation_student(school, generation)
+--   signal.escalation_student(school, escalation)
 SELECT auth.protect('core.person', 'directory',
   '(SELECT s.id FROM sis.student s WHERE s.school_id = core.person.school_id AND s.person_id = core.person.id)',
   NULL, NULL, NULL, 'id');
 SELECT auth.protect('core.staff_profile', 'directory');
 SELECT auth.protect('core.school_module', 'reference');
-SELECT auth.protect('core.meeting', 'family', 'student_id');
-SELECT auth.protect('auth.membership', 'config', NULL, NULL, NULL, NULL, 'person_id');
-SELECT auth.protect('auth.caseload_assignment', 'config', 'student_id');
-SELECT auth.protect('auth.support_grant', 'config');
-SELECT auth.protect('auth.session', 'config', NULL, NULL, NULL, NULL, 'person_id');
-SELECT auth.protect('auth.magic_link', 'config', NULL, NULL, NULL, NULL, 'person_id');
-SELECT auth.protect('auth.role_permission', 'config', NULL, NULL, NULL, NULL, NULL, true);
+SELECT auth.protect('core.meeting', 'contact_record', 'student_id', p_author => 'staff_person_id',
+                    p_kind => 'kind_key');                                                        -- staff-only (F15); the coordinator's row carries row_kind 'selection_review'
+SELECT auth.protect('auth.membership', 'membership', NULL, NULL, NULL, NULL, 'person_id', p_verbs => '{configure}');
+SELECT auth.protect('auth.capability_grant', 'membership', p_verbs => '{configure}');
+SELECT auth.protect('auth.caseload_assignment', 'membership', 'student_id', p_author => 'counselor_person_id', p_verbs => '{configure}');
+SELECT auth.protect('auth.pastoral_assignment', 'membership', NULL, NULL, NULL, NULL, 'person_id', p_verbs => '{configure}');
+SELECT auth.protect('auth.support_grant', 'support_grant', p_verbs => '{approve}');
+SELECT auth.protect('auth.session', 'session', NULL, NULL, NULL, NULL, 'person_id');
+SELECT auth.protect('auth.magic_link', 'session', NULL, NULL, NULL, NULL, 'person_id');
+SELECT auth.protect('auth.role_permission', 'config', NULL, NULL, NULL, NULL, NULL, true, p_verbs => '{configure}');
 SELECT auth.protect('sis.academic_year', 'directory');
 SELECT auth.protect('sis.term', 'directory');
 SELECT auth.protect('sis.calendar_period', 'directory');
@@ -3786,49 +4647,63 @@ SELECT auth.protect('sis.year_group', 'directory');
 SELECT auth.protect('sis.programme', 'directory');
 SELECT auth.protect('sis.student', 'directory', 'id');
 SELECT auth.protect('sis.enrolment', 'directory', 'student_id');
+SELECT auth.protect('sis.enrolment_programme', 'directory',
+  '(SELECT e.student_id FROM sis.enrolment e WHERE e.school_id = sis.enrolment_programme.school_id AND e.id = sis.enrolment_programme.enrolment_id)');
 SELECT auth.protect('sis.external_identity', 'ingest');
 SELECT auth.protect('sis.subject', 'directory');
 SELECT auth.protect('sis.timetable_period', 'directory');
 SELECT auth.protect('sis.section', 'directory');
 SELECT auth.protect('sis.section_teacher', 'directory');
 SELECT auth.protect('sis.section_membership', 'directory', 'student_id', 'section_id');
+SELECT auth.protect('sis.tutor_group', 'directory');
+SELECT auth.protect('sis.tutor_group_member', 'directory', 'student_id');
 SELECT auth.protect('sis.assessment', 'academic', NULL, 'section_id');
 SELECT auth.protect('sis.grade', 'academic', 'student_id', 'section_id');
-SELECT auth.protect('sis.attendance_event', 'attendance', 'student_id');
+SELECT auth.protect('sis.attendance_event', 'attendance', 'student_id', 'section_id');          -- the section subject lets own_section match (F75)
 SELECT auth.protect('sis.behaviour_event', 'behaviour', 'student_id');
 SELECT auth.protect('sis.transcript', 'academic', 'student_id');
 SELECT auth.protect('engagement.activity_event', 'engagement', 'student_id');
-SELECT auth.protect('config.rule_set_version', 'config', NULL, NULL, NULL, NULL, NULL, true);
-SELECT auth.protect('config.vocabulary', 'reference', NULL, NULL, NULL, NULL, NULL, true);
-SELECT auth.protect('signal.sweep_run', 'signal');
+SELECT auth.protect('config.rule_set_version', 'config', NULL, NULL, NULL, NULL, NULL, true, p_verbs => '{configure}');
+SELECT auth.protect('config.vocabulary', 'reference', NULL, NULL, NULL, NULL, NULL, true, p_verbs => '{configure}');
+SELECT auth.protect('config.vocabulary_history', 'reference', NULL, NULL, NULL, NULL, NULL, true);
+SELECT auth.protect('signal.sweep_run', 'signal', p_class_expr => 'CASE WHEN shadow THEN ''signal_shadow'' ELSE ''signal'' END');
 SELECT auth.protect('signal.feature_snapshot', 'signal', 'student_id');
-SELECT auth.protect('signal.evaluation', 'signal', 'student_id');
-SELECT auth.protect('signal.signal', 'signal', 'student_id');
-SELECT auth.protect('signal.case', 'signal', 'student_id');
-SELECT auth.protect('signal.case_tier_history', 'signal');
-SELECT auth.protect('signal.case_stage_history', 'signal');
-SELECT auth.protect('signal.case_signal', 'signal');
-SELECT auth.protect('signal.evidence_item', 'signal');
-SELECT auth.protect('signal.case_context', 'signal');
+SELECT auth.protect('signal.evaluation', 'signal', 'student_id', p_class_expr => 'signal.run_class(school_id, sweep_run_id)');
+SELECT auth.protect('signal.signal', 'signal', 'student_id', p_class_expr => 'signal.run_class(school_id, sweep_run_id)');
+SELECT auth.protect('signal.case', 'signal', 'student_id', p_class_expr => 'CASE WHEN shadow THEN ''signal_shadow'' ELSE ''signal'' END');
+SELECT auth.protect('signal.case_tier_history', 'signal', 'signal.case_student(school_id, case_id)',
+                    p_class_expr => 'signal.case_class(school_id, case_id)');
+SELECT auth.protect('signal.case_stage_history', 'signal', 'signal.case_student(school_id, case_id)',
+                    p_class_expr => 'signal.case_class(school_id, case_id)');
+SELECT auth.protect('signal.case_signal', 'signal', 'signal.case_student(school_id, case_id)',
+                    p_class_expr => 'signal.case_class(school_id, case_id)');
+SELECT auth.protect('signal.evidence_item', 'signal', 'signal.case_student(school_id, case_id)',
+                    p_class_expr => 'signal.case_class(school_id, case_id)');
+SELECT auth.protect('signal.case_context', 'signal', 'signal.case_student(school_id, case_id)');
+SELECT auth.protect('signal.case_link', 'signal', 'signal.case_student(school_id, case_id)');
 SELECT auth.protect('signal.case_note', 'case_note', 'student_id');
 SELECT auth.protect('signal.intervention', 'signal', 'student_id');
-SELECT auth.protect('signal.intervention_step', 'signal');
-SELECT auth.protect('signal.escalation', 'safeguarding', 'student_id');
-SELECT auth.protect('signal.teacher_flag', 'teacher_flag', 'student_id', NULL, NULL, NULL, 'author_person_id');
+SELECT auth.protect('signal.intervention_step', 'signal', 'signal.intervention_student(school_id, intervention_id)');
+SELECT auth.protect('signal.escalation', 'safeguarding', 'student_id', p_author => 'raised_by_person_id',
+                    p_verbs => '{escalate}');
+SELECT auth.protect('signal.escalation_update', 'safeguarding', 'student_id', p_author => 'added_by_person_id',
+                    p_verbs => '{escalate}');
+SELECT auth.protect('signal.teacher_flag', 'teacher_flag', 'student_id', 'section_id', NULL, NULL, 'author_person_id',
+                    p_verbs => '{escalate}');
 SELECT auth.protect('signal.student_reflection', 'student_voice', 'student_id');
 SELECT auth.protect('ib.subject', 'ib');
 SELECT auth.protect('ib.subject_level_period', 'ib');
 SELECT auth.protect('ib.subject_teacher', 'ib');
 SELECT auth.protect('ib.prerequisite', 'ib');
-SELECT auth.protect('ib.selection_round', 'ib');
-SELECT auth.protect('ib.selection', 'ib', 'student_id');
-SELECT auth.protect('ib.selection_pick', 'ib', NULL, NULL, 'subject_id');
-SELECT auth.protect('ib.selection_signoff', 'ib', NULL, NULL, 'subject_id');
-SELECT auth.protect('ib.selection_event', 'ib');
+SELECT auth.protect('ib.selection_round', 'ib', p_verbs => '{configure}');
+SELECT auth.protect('ib.selection', 'ib', 'student_id', p_verbs => '{approve}');
+SELECT auth.protect('ib.selection_pick', 'ib', 'ib.selection_student(school_id, selection_id)', NULL, 'subject_id');
+SELECT auth.protect('ib.selection_signoff', 'ib', 'ib.selection_student(school_id, selection_id)', NULL, 'subject_id');
+SELECT auth.protect('ib.selection_event', 'ib', 'ib.selection_student(school_id, selection_id)');
 SELECT auth.protect('ib.cas_activity', 'ib');
 SELECT auth.protect('ib.cas_interest', 'ib', 'student_id');
 SELECT auth.protect('ib.cas_entry', 'ib', 'student_id');
-SELECT auth.protect('ib.ee_round', 'ib');
+SELECT auth.protect('ib.ee_round', 'ib', p_verbs => '{configure}');
 SELECT auth.protect('ib.ee_milestone', 'ib');
 SELECT auth.protect('ib.ee_milestone_due', 'ib');
 SELECT auth.protect('ib.ee_essay', 'ib', 'student_id', NULL, NULL, 'id');
@@ -3836,69 +4711,107 @@ SELECT auth.protect('ib.ee_milestone_completion', 'ib', NULL, NULL, NULL, 'essay
 SELECT auth.protect('ib.ee_reflection', 'ib', NULL, NULL, NULL, 'essay_id');
 SELECT auth.protect('ib.ee_draft', 'ib', NULL, NULL, NULL, 'essay_id');
 SELECT auth.protect('ib.ee_event', 'ib', NULL, NULL, NULL, 'essay_id');
-SELECT auth.protect('uni.student_target', 'university', 'student_id');
-SELECT auth.protect('uni.application', 'university', 'student_id');
-SELECT auth.protect('uni.offer', 'university', 'student_id');
-SELECT auth.protect('uni.document_request', 'university', 'student_id', NULL, NULL, NULL, 'requested_from_person_id');
-SELECT auth.protect('uni.statement', 'university', 'student_id');
-SELECT auth.protect('uni.statement_version', 'university');
-SELECT auth.protect('uni.statement_review', 'university');
-SELECT auth.protect('uni.reference_letter', 'university', 'student_id', NULL, NULL, NULL, 'author_person_id');
-SELECT auth.protect('uni.reference_letter_version', 'university');
-SELECT auth.protect('uni.author_voice_sample', 'university', NULL, NULL, NULL, NULL, 'author_person_id');
-SELECT auth.protect('uni.ap_exam_registration', 'university', 'student_id');
-SELECT auth.protect('discovery.session', 'discovery', 'student_id');
-SELECT auth.protect('discovery.message', 'discovery');
-SELECT auth.protect('discovery.pathway_proposal', 'discovery', 'student_id');
-SELECT auth.protect('discovery.approved_pathway', 'discovery', 'student_id');
-SELECT auth.protect('discovery.roadmap_progress', 'discovery', 'student_id');
-SELECT auth.protect('discovery.xp_ledger', 'discovery', 'student_id');
-SELECT auth.protect('discovery.network_contact', 'discovery', 'student_id');
-SELECT auth.protect('family.guardian_link', 'family', 'student_id', NULL, NULL, NULL, 'guardian_person_id');
-SELECT auth.protect('family.message', 'family', 'student_id');
-SELECT auth.protect('family.meeting_slot', 'family');
-SELECT auth.protect('family.meeting_request', 'family', 'student_id');
-SELECT auth.protect('family.contact_log', 'family', 'student_id');
-SELECT auth.protect('mentor.profile', 'mentor', NULL, NULL, NULL, NULL, 'person_id');
-SELECT auth.protect('mentor.pairing', 'mentor', 'student_id');
-SELECT auth.protect('mentor.session_request', 'mentor', 'student_id');
-SELECT auth.protect('mentor.session', 'mentor');
-SELECT auth.protect('mentor.message', 'mentor', NULL, NULL, NULL, NULL, 'sender_person_id');
-SELECT auth.protect('mentor.mentee_note', 'mentor', 'student_id');
-SELECT auth.protect('doc.file', 'documents', 'subject_student_id', NULL, NULL, NULL, 'uploaded_by_person_id');
-SELECT auth.protect('ingest.source_system', 'ingest');
-SELECT auth.protect('ingest.mapping_profile', 'ingest');
-SELECT auth.protect('ingest.import', 'ingest');
+SELECT auth.protect('uni.student_target', 'university', 'student_id', p_kind => '''target''');
+SELECT auth.protect('uni.application', 'university', 'student_id', p_kind => '''application''');
+SELECT auth.protect('uni.offer', 'university', 'student_id', p_kind => '''offer''');
+SELECT auth.protect('uni.document_request', 'university', 'student_id', p_addressee => 'requested_from_person_id',
+                    p_kind => '''document_request''');
+SELECT auth.protect('uni.statement', 'university', 'student_id', p_kind => '''statement''');
+SELECT auth.protect('uni.statement_version', 'university', 'uni.statement_student(school_id, statement_id)', p_kind => '''statement''');
+SELECT auth.protect('uni.statement_review', 'university', 'uni.statement_student(school_id, statement_id)',
+                    p_kind => '''statement''', p_verbs => '{approve}');
+SELECT auth.protect('uni.reference_letter', 'university', 'student_id', NULL, NULL, NULL, 'author_person_id', p_kind => '''letter''');
+SELECT auth.protect('uni.reference_letter_version', 'university', 'uni.letter_student(school_id, letter_id)', p_kind => '''letter''');
+SELECT auth.protect('uni.centre_statement', 'university', NULL, NULL, NULL, NULL, 'written_by_person_id', p_kind => '''centre_statement''');
+SELECT auth.protect('uni.school_deadline', 'university', p_kind => '''school_deadline''');
+SELECT auth.protect('uni.author_voice_sample', 'university', NULL, NULL, NULL, NULL, 'author_person_id', p_kind => '''voice_sample''');
+SELECT auth.protect('uni.ap_exam_registration', 'university', 'student_id', p_kind => '''exam''');
+SELECT auth.protect('discovery.session', 'discovery', 'student_id', p_kind => '''session''');
+SELECT auth.protect('discovery.message', 'discovery', 'discovery.session_student(school_id, session_id)', p_kind => '''message''');
+SELECT auth.protect('discovery.pathway_proposal', 'discovery', 'student_id', p_kind => '''proposal''', p_verbs => '{approve}');
+SELECT auth.protect('discovery.approved_pathway', 'discovery', 'student_id', p_kind => '''approved_pathway''');
+SELECT auth.protect('discovery.roadmap_progress', 'discovery', 'student_id', p_kind => '''approved_pathway''');
+SELECT auth.protect('discovery.xp_ledger', 'xp', 'student_id');                                   -- its own class (F77)
+SELECT auth.protect('discovery.network_contact', 'discovery', 'student_id', p_kind => '''network''');
+SELECT auth.protect('family.guardian_link', 'guardian_link', 'student_id', NULL, NULL, NULL, 'guardian_person_id');   -- F15
+SELECT auth.protect('family.message', 'family', 'student_id', NULL, NULL, NULL, 'sender_person_id',
+                    p_addressee => 'recipient_person_id');                                        -- by sender and recipient (F15)
+SELECT auth.protect('family.meeting_slot', 'family', NULL, NULL, NULL, NULL, 'staff_person_id');
+SELECT auth.protect('family.meeting_request', 'family', 'student_id', NULL, NULL, NULL, 'guardian_person_id');
+SELECT auth.protect('family.contact_log', 'contact_record', 'student_id', NULL, NULL, NULL, 'by_person_id');          -- staff-only (F15)
+SELECT auth.protect('mentor.profile', 'mentor', NULL, NULL, NULL, NULL, 'person_id', p_kind => '''profile''');
+SELECT auth.protect('mentor.pairing', 'mentor', 'student_id', p_pairing => 'id', p_kind => '''pairing''', p_verbs => '{approve}');
+SELECT auth.protect('mentor.session_request', 'mentor', 'mentor.pairing_student(school_id, pairing_id)', p_pairing => 'pairing_id', p_kind => '''thread''');
+SELECT auth.protect('mentor.session', 'mentor', 'mentor.pairing_student(school_id, pairing_id)', p_pairing => 'pairing_id', p_kind => '''thread''');
+SELECT auth.protect('mentor.message', 'mentor', 'mentor.pairing_student(school_id, pairing_id)', NULL, NULL, NULL, 'sender_person_id',
+                    p_pairing => 'pairing_id', p_kind => '''thread''');                           -- subject through the pairing (F59)
+SELECT auth.protect('mentor.mentee_note', 'mentor', 'student_id', p_pairing => 'pairing_id', p_kind => '''thread''');
+SELECT auth.protect('doc.file', 'documents', 'subject_student_id', NULL, NULL, NULL, 'uploaded_by_person_id',
+                    p_kind => 'kind', p_class_expr => 'data_class');                              -- the file's own class and kind (F15)
+SELECT auth.protect('ingest.source_system', 'ingest', p_verbs => '{configure}');
+SELECT auth.protect('ingest.mapping_profile', 'ingest', p_verbs => '{configure}');
+SELECT auth.protect('ingest.import', 'ingest', p_verbs => '{approve}');
 SELECT auth.protect('ingest.import_rejection', 'ingest');
 SELECT auth.protect('ingest.import_change', 'ingest');
 SELECT auth.protect('ai.model_config', 'config', NULL, NULL, NULL, NULL, NULL, true);
-SELECT auth.protect('ai.generation', 'ai', 'subject_student_id', NULL, NULL, NULL, 'requested_by_person_id');
-SELECT auth.protect('ai.pseudonym_map', 'ai');
-SELECT auth.protect('notify.outbox', 'config', NULL, NULL, NULL, NULL, 'recipient_person_id');
-SELECT auth.protect('notify.preference', 'config', NULL, NULL, NULL, NULL, 'person_id');
-SELECT auth.protect('notify.in_app', 'config', NULL, NULL, NULL, NULL, 'person_id');
+SELECT auth.protect('ai.generation', 'ai', 'subject_student_id', NULL, NULL, NULL, 'requested_by_person_id',
+                    p_kind => 'feature');                                                         -- students read only their own discovery and EE feedback (F15)
+SELECT auth.protect('ai.pseudonym_map', 'ai', 'ai.generation_student(school_id, generation_id)');  -- no tier row; read through ai.reidentify() (F44)
+SELECT auth.protect('notify.outbox', 'notification', p_addressee => 'recipient_person_id');     -- written only by notify.enqueue(); excluded from support grants (F16, F35)
+SELECT auth.protect('notify.preference', 'notification', NULL, NULL, NULL, NULL, 'person_id');
+SELECT auth.protect('notify.in_app', 'notification', p_addressee => 'person_id');
 SELECT auth.protect('audit.entry', 'audit', 'subject_student_id');
 SELECT auth.protect('events.event', 'reporting', 'subject_student_id');
-SELECT auth.protect('privacy.erasure_request', 'config');
-SELECT auth.protect('privacy.erasure_log', 'config');
+SELECT auth.protect('privacy.erasure_request', 'privacy_request', p_verbs => '{approve}');
+SELECT auth.protect('privacy.erasure_log', 'privacy_request');
+SELECT auth.protect('privacy.retention_override', 'config', p_verbs => '{configure}');
+-- reporting.agg_* tables (pass 6) are protected when they are created, each as
+-- class 'reporting' with the row kind of its report (F34).
+
+-- updated_at is maintained everywhere it exists (§12.3 of the pass 7 review).
+DO $$
+DECLARE t record;
+BEGIN
+  FOR t IN SELECT c.table_schema, c.table_name FROM information_schema.columns c
+           JOIN information_schema.tables tb ON tb.table_schema = c.table_schema AND tb.table_name = c.table_name
+           WHERE c.column_name = 'updated_at' AND tb.table_type = 'BASE TABLE'
+             AND c.table_schema NOT IN ('pg_catalog','information_schema','pgboss') LOOP
+    EXECUTE format('CREATE TRIGGER touch_updated_at BEFORE UPDATE ON %I.%I FOR EACH ROW EXECUTE FUNCTION core.touch_updated_at()',
+                   t.table_schema, t.table_name);
+  END LOOP;
+END $$;
+
+-- Every definer function in every CAROS schema: owned by caros_policy (or
+-- caros_jobs in `jobs`), and never executable by PUBLIC (F75). Grants to named
+-- tiers are listed with each function above; the convention test fails on any
+-- definer function without them.
+DO $$
+DECLARE f regprocedure;
+BEGIN
+  FOR f IN SELECT p.oid::regprocedure FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+           WHERE p.prosecdef AND n.nspname IN ('core','auth','sis','signal','ib','uni','discovery','family','mentor',
+                                               'doc','ingest','ai','notify','audit','events','privacy','reporting','support') LOOP
+    EXECUTE format('REVOKE ALL ON FUNCTION %s FROM PUBLIC', f);
+  END LOOP;
+END $$;
 
 -- Tables whose rows are visible to a person about themselves but that carry no
--- student subject (memberships, sessions, notifications) use the 'author'
--- scope with the person column, which the defaults above grant nowhere except
--- through the domain layer running as system. That is deliberate: a person
--- reads their own session through the application, not through RLS.
+-- student subject (memberships, sessions, notifications) use the 'author' or
+-- 'addressee' scope with the person column. Pass 4's matrix grants every role
+-- `session` and `notification` read on its own rows (F16), and nothing else:
+-- an outbox payload, a session or a cover reason is never school-readable.
 ```
 
-Two rows in `auth.role_permission` above deserve a sentence each. The counselor's `signal` and `case_note` permissions are scoped to the caseload, so a counselor who is not the owner and holds no cover assignment cannot open another counselor's case file, which is the strict reading of section 6; pass 4 decides whether the four HS counselors share visibility by default or by cover assignment. The teacher's `teacher_flag` permission is `write: roster` and `read: author`, which is exactly the prototype's "What I've logged" page: a teacher sees every flag they wrote and no flag anyone else wrote.
+Two defaults deserve a sentence each. The counselor's `signal` and `case_note` rows are scoped to the caseload, so a counselor who is not the owner and holds no cover assignment cannot open another counselor's case file; pass 4 §3.3 decided caseload plus explicit, logged cover, and until ACS answers question 65 a school may only narrow the defaults (F47, pass 4 D36). The teacher's `teacher_flag` rows are `write` on roster, subject-teacher and Extended Essay scopes and `read` on `author`, which is the prototype's "What I've logged" page: a teacher sees every flag they wrote, through a view that never says whether a case exists, and no flag anyone else wrote.
 ## 3. Entity relationship summary
 
-The school is the root of everything. A **school** has **people** (staff, students, guardians, mentors), and a person's rights come from **memberships** (a role, optional capabilities) and from relationship tables: **caseload assignments** for counselors, **section teachers** and **section memberships** for teachers, **guardian links** for parents, **pairings** for mentors. A **student** is a person with an academic identity: **enrolments** per academic year in a **year group** and a **programme**; **section memberships**; **grades** on **assessments** in **sections**; **attendance events**; **behaviour events**. The **calendar** (academic years, terms, calendar periods, school days) is per school.
+The school is the root of everything. A **school** has **people** (staff, students, guardians, mentors), and a person's rights come from **memberships** (a role, optional capabilities, each capability confirmed by a second administrator) and from relationship tables: **caseload assignments** for counselors, **pastoral assignments** and **tutor groups** where a school shares pastoral responsibility, **section teachers** and **section memberships** for teachers, **guardian links** for parents (one per SIS contact, activated per contact), **pairings** for mentors. A **student** is a person with an academic identity: **enrolments** per academic year in a **year group** and a **programme**; **section memberships**; **grades** on **assessments** in **sections**; **attendance events**; **behaviour events**. The **calendar** (academic years, terms, calendar periods, school days) is per school.
 
-The engine reads those facts and writes **feature snapshots** (the baseline: a series and a band per student, domain and measure), **evaluations** (one per student per **sweep run**, which fixes the three rule-set versions used) and **signals** (a rule firing, with frozen inputs). Signals attach to a **case** (one open per student), which carries **evidence items**, **tier and stage history**, **counselor context**, **notes**, **interventions** with steps, and at most one **escalation** to the safeguarding lead. **Teacher flags** enter the case through attachment. **Meetings** record conversations and are referenced by cases and, for the review conversation, by IB **selections**.
+The engine reads those facts and writes **feature snapshots** (the baseline: a series and a band per student, domain and measure), **evaluations** (one per student per **sweep run**, which fixes the three rule-set versions used) and **signals** (a rule firing, with frozen inputs). Signals attach to a **case** (one open live case per student, and while the school is in shadow one open shadow case), which carries **evidence items**, **tier and stage history**, **counselor context**, **notes**, **interventions** with steps, and **escalations** to the safeguarding lead (at most one open at a time, each with its **updates**, a later one linked to the one before). Cases of different students are **linked**, never merged. **Teacher flags** enter the case through attachment, and a teacher's safeguarding flag raises an escalation itself. **Meetings** record conversations and are referenced by cases and, for the review conversation, by IB **selections**.
 
-The IB module hangs off the tenant **IB subject catalogue** (with level periods, teachers, prerequisites): a **selection round** has **selections** with **picks**, **sign-offs** and an event log; **CAS entries** form a ledger per student against a **CAS activity** catalogue; an **Extended Essay** per student per **EE round** has milestones, completions, reflections and drafts. The university module hangs off **global reference data** (institutions, courses, entry requirements, costs, fee-status rules, deadlines, exam sessions), all sourced: a student's **targets** carry a rule-classified reach/match/safety, an **application** and **offers**; **document requests** track transcripts, references and forms; **statements** and **reference letters** are versioned. Discovery holds a **session** with **messages**, **pathway proposals** decided by a counselor, **approved pathways** with a roadmap snapshot, **roadmap progress** and an **XP ledger**. Family holds **messages**, **meeting slots and requests** and a **contact log**. Mentors hold **profiles**, **pairings**, **session requests**, **sessions**, **messages** and **notes**.
+The IB module hangs off the tenant **IB subject catalogue** (with level periods, teachers, prerequisites): a **selection round** has **selections** with **picks**, **sign-offs** and an event log; **CAS entries** form a ledger per student against a **CAS activity** catalogue; an **Extended Essay** per student per **EE round** has milestones, completions, reflections and drafts. The university module hangs off **global reference data** (institutions, courses, entry requirements, costs, fee-status rules, deadlines, exam sessions), all sourced: a student's **targets** carry a rule-classified reach/match/safety, an **application** and **offers**; **document requests** track transcripts, references and forms; **statements** are versioned in the sections their destination's **statement format** asks for, and **references** in their **reference format**, with the school's **centre statement** and its **internal deadlines**. Discovery holds a **session** with **messages**, **pathway proposals** decided by a counselor, **approved pathways** with a roadmap snapshot, **roadmap progress** and an **XP ledger** only the student reads. Family holds **messages**, **meeting slots and requests** and a **contact log**. Mentors hold **profiles**, **pairings**, **session requests**, **sessions**, **messages** and **notes**.
 
-Underneath: **files** (metadata; bytes in blob storage), **imports** with **mapping profiles**, **rejections** and **changes** (every fact row points at its import), **AI generations** with model configuration and pseudonym maps, a **notification outbox**, an append-only **audit** log with a hash chain, an append-only **event** stream, and the **privacy** registry that maps every table to a data class, subject, PII columns and retention class.
+Underneath: **files** (metadata, each with its own class and kind; bytes in blob storage), **imports** with **mapping profiles**, **rejections** and **changes** (every fact row points at its import), **AI generations** with model configuration and pseudonym maps, a **notification outbox** written only through one function, an append-only **audit** log with a hash chain, an append-only **event** stream, per-tenant **reporting aggregates**, **regulator profiles** that hold everything regulator-shaped, and the **privacy** registry that maps every table to a data class, subject, PII columns, writable columns and retention class, with per-school retention overrides and the stores outside the tenant tables.
 
 ## 4. Module map
 
@@ -3907,65 +4820,69 @@ Each module is a folder in `packages/domain`, a router in `packages/api`, a scre
 | Module | Owns (schemas / tables) | Serves (prototype screens, CONTEXT.md §8) | Depends on | Suggested owner |
 |---|---|---|---|---|
 | **tenant** | `core.school`, `school_module`, `sis.academic_year`, `term`, `calendar_period`, `school_day`, `year_group`, `programme`, `timetable_period`, `config.*`, `notify.template` | letterhead, thresholds, pilot and rollout, module gating | | Davide |
-| **identity** | `core.person`, `staff_profile`, `auth.*`, `sis.external_identity` | sign-in, role and capability admin, cover, support grants | tenant | Davide (pass 4 design) |
-| **record** | `sis.student`, `enrolment`, `subject`, `section*`, `assessment`, `grade`, `attendance_event`, `behaviour_event`, `transcript`, `engagement.*` | 360° file (record tabs), parent grades and transcripts, teacher class register roster | identity, ingest | teammate A |
+| **identity** | `core.person`, `staff_profile`, `auth.*` (including `pastoral_assignment` and `capability_grant`), `sis.external_identity` | sign-in, role and capability admin, cover, pastoral assignments, support grants | tenant | Davide (pass 4 design) |
+| **record** | `sis.student`, `enrolment`, `enrolment_programme`, `subject`, `section*`, `tutor_group*`, `assessment`, `grade`, `attendance_event`, `behaviour_event`, `transcript`, `engagement.*` | 360° file (record tabs), parent grades and transcripts, teacher class register roster | identity, ingest | teammate A |
 | **ingest** | `ingest.*`, `doc.file` for exports | import upload, dry run, commit, rollback, mapping profiles | record | teammate A (pass 2) |
 | **engine** (pure package) | none; reads through an input DTO | | | teammate B (pass 3) |
-| **signals** | `signal.sweep_run`, `feature_snapshot`, `evaluation`, `signal`, `case*`, `evidence_item`, `intervention*`, `escalation`, `case_note`, `case_context`, `teacher_flag`, `student_reflection`, `core.meeting` | caseload sheet, command centre, priority queue, signal intelligence, flags inbox, meetings, the ten dimension pages, case file, interventions, escalation; teacher register and "what I've logged" | record, identity, engine, notify | Davide + teammate B |
+| **signals** | `signal.sweep_run`, `feature_snapshot`, `evaluation`, `signal`, `case*` (including `case_link`), `evidence_item`, `intervention*`, `escalation`, `escalation_update`, `case_note`, `case_context`, `teacher_flag`, `student_reflection`, `core.meeting` | caseload sheet, command centre, priority queue, signal intelligence, flags inbox, meetings, the ten dimension pages, case file, interventions, escalation; teacher register and "what I've logged" | record, identity, engine, notify | Davide + teammate B |
 | **ib** | `ib.*` | IB selections queue, demand sheet, CAS cohort, EE coordinator; teacher sign-off and EE queue; student subjects, Diploma core | record, identity | teammate C |
-| **university** | `uni.*`, `ref.institution`, `course`, `entry_requirement`, `cost`, `fee_status_rule`, `deadline`, `exam_session`, `requirement_change` | application season and flow, list balance, deadlines, documents and references, personal statements, letter engine, student targets, AP exams, parent university requirements | record, identity | teammate C |
+| **university** | `uni.*`, `ref.institution`, `course`, `entry_requirement`, `cost`, `fee_status_rule`, `deadline`, `exam_session`, `requirement_change`, `destination_system`, `statement_format`, `reference_format` | application season and flow, list balance, deadlines, documents and references, personal statements, letter engine, student targets, AP exams, parent university requirements | record, identity | teammate C |
 | **discovery** | `discovery.*`, `ref.archetype*`, `ref.onboarding_question` | my pathway, pathway approvals, roadmap, XP | identity, ai | frontend pair (pass 5 for the chat) |
 | **family** | `family.*` | parent overview, messages, meet the counselor, meeting requests | record, identity, notify | frontend pair |
 | **mentor** | `mentor.*`, `discovery.network_contact` | find a mentor, my network, session requests, my mentees | identity | frontend pair |
 | **ai** | `ai.*` | co-pilot, briefs, drafts, EE feedback, statement read | every module's read functions | pass 5's builder |
 | **notify** | `notify.outbox`, `preference`, `in_app` | nudges, escalation email, magic links | tenant | Davide |
-| **audit and reporting** | `audit.*`, `events.*`, reporting views | reporting, audit trail on the case file | all | Davide |
-| **privacy** | `privacy.*` | erasure, retention jobs, subject access export | all | Davide (pass 4) |
+| **audit and reporting** | `audit.*`, `events.*`, `reporting.agg_*` tables (never materialised views, F34) | reporting, audit trail on the case file | all | Davide |
+| **privacy** | `privacy.*`, `ref.regulator_profile` | erasure, retention jobs, retention overrides, subject access export | all | Davide (pass 4) |
 
-Two invariants are enforced at the module boundary rather than in a table: the caseload (identity → `caseload_assignment`) and the Diploma cohort (ib → `v_diploma_cohort`) are exposed by different modules and there is no function anywhere that returns their union (invariant 7); and only the discovery module may write `xp_ledger` (invariant 10).
+Two invariants are enforced at the module boundary rather than in a table: the caseload (identity → `caseload_assignment`) and the Diploma cohort (ib → `v_diploma_cohort`) are exposed by different modules and there is no function anywhere that returns their union (invariant 7); and only the discovery module may write `xp_ledger`, which only the student reads (invariant 10). The module owners in the table apply once a second regular builder exists; until then every module is Davide's (decision C8).
 
 ## 5. Challenges
 
 Each challenge names the section 3 decision, states the alternative, what it costs and buys, and then continues to plan on the decision as given.
 
-**5.1 UAE residency now has a durability price that the decision did not price in.** *Decision challenged: data residency.* On 2 March 2026 the AWS UAE and Bahrain regions were physically damaged; on 15 September AWS declared the data hosted exclusively in one Dubai-region zone unrecoverable (DR-1 sources). Customers whose backups were in-country only have lost them. This plan keeps everything in the UAE and adds in-country redundancy across two Azure regions 140 kilometres apart, which covers a data-centre loss and not a country-level event. The alternative is an encrypted cold copy of the nightly backup in an EU region, with keys held in the UAE Key Vault, restorable only by a deliberate act. It costs a legal position (a copy of student data would sit outside the UAE, even encrypted), a data-processing-agreement clause, and about the price of the storage; it buys survival of the one scenario the region just demonstrated. Recommendation: put the question to ACS's leadership and to counsel now, in writing, with both options; plan on residency as decided until they answer. The schema, backups and infrastructure are unchanged either way.
+**5.1 UAE residency now has a durability price that the decision did not price in.** *Decision challenged: data residency.* The disruption to the AWS UAE and Bahrain regions began on 1 March 2026; on 15 September AWS declared the data hosted exclusively in one UAE-region zone unrecoverable, and in Bahrain declared data held anywhere in the region unrecoverable (DR-1 sources, as corrected by pass 8, F73). Bahrain is the country-level precedent: customers whose backups were in-country only lost them. This plan keeps everything in the UAE and adds in-country redundancy across two Azure regions 140 kilometres apart, which covers a data-centre loss and not a country-level event. The alternative is an encrypted cold copy of the nightly backup in an EU region, restorable only by a deliberate act. **Pass 8 corrects the first version's framing** (F22): a copy whose key exists only in the UAE cannot be decrypted after the loss it exists for, so the copy works only if key material is also held outside the UAE (a Managed HSM replica in an EU region, or security-domain shares held abroad by named people), with a named restore region and trigger and a restore drill there on synthetic data. It costs a legal position (a copy of student data, and the means to read it, would sit outside the UAE), a data-processing-agreement clause, ADEK's explicit consent under its Digital Policy 7.1.3.a (F04), and about the price of the storage and an HSM; it buys survival of the one scenario the region just demonstrated. Recommendation: put the real choice, (a) EU copy with keys abroad or (b) in-country only with the risk stated, to ACS's leadership and to counsel now, in writing; plan on residency as decided until they answer. The schema and backups are unchanged either way.
 
 **5.2 Overnight batch should be the ritual, not the only trigger.** *Decision challenged: signal engine timing.* The morning sweep is right for the baselines: they change when data arrives, which is termly or nightly. But three inputs arrive live and change what a counselor should do *today*: a teacher concern (three independent staff inside seven days is Tariq's safeguarding pattern, and waiting for 02:00 delays a referral by a school day), counselor context (which the prototype recalculates immediately, and which a counselor expects to see take effect while the modal is still open), and a safeguarding escalation. The alternative is a hybrid: the nightly sweep as designed, plus an event-triggered incremental evaluation of one student when a flag, a context note or an enrolment change lands. It costs one more code path in the worker and one more `sweep_trigger` value (already in the schema as `event`); it buys same-day corroboration and explainable context downgrades. Pass 3 is asked to argue it in full (CONTEXT.md §11.1); the schema supports both.
 
-**5.3 "Parents receive no email in v1" cannot mean no email.** *Decision challenged: outbound notifications.* Parents authenticate by magic link, which is an email. A meeting request needs a confirmation, which is an email or it is a request into silence. The decision should read: parents receive *transactional* email only (sign-in links, meeting confirmations), with no welfare content and no notifications, and the parent portal's failure mode named in PRODUCT.md (parents who do not open it) is accepted for v1. The AI parent-email drafts then land as counselor-approved in-app messages (`family.message`, `channel = 'in_app'`), which the parent sees on their next visit, and the "send by email" channel is a v2 flag. Cost: none now. Buys: a working parent login. Planned on that reading.
+**5.3 "Parents receive no email in v1" cannot mean no email.** *Decision challenged: outbound notifications.* Parents authenticate by magic link, which is an email. A meeting request needs a confirmation, which is an email or it is a request into silence. **Settled by Davide on 2026-09-24 (decision C2):** parents receive content-free transactional email: magic links, and role-only notices such as "a counselor at the school has sent you an update in CAROS; sign in to read it", which name the sender's role from a fixed list and never a person, the student or the topic (F60). The AI parent-email drafts land as counselor-approved in-app messages (`family.message`, `channel = 'in_app'`), which the parent is told of by that notice and reads after signing in. Pass 4 §5.8 lists every outbound message; CONTEXT §3 still needs its "Outbound notifications" row updated to match (handoff).
 
-**5.4 Five roles hold, but the coordinator, the safeguarding lead and the school's IT administrator need a place to stand.** *Decision challenged: roles.* The IB coordinator sees students outside any counselor's caseload; the Child Protection Officer must be able to acknowledge an escalation, which needs an account; someone at the school uploads exports and manages mapping profiles. None is a sixth role: they are **capabilities on a membership** (`ib_coordinator`, `safeguarding_lead`, `school_admin`, `caseload_lead`), stored as data, granted per school. That keeps the five roles and makes "more roles later" a row insert. If ACS's CPO turns out not to be a counselor, the capability model still works, because capabilities attach to a membership of any staff role. Planned on that reading; not a departure.
+**5.4 Five roles hold, but the coordinator, the safeguarding lead and the school's IT administrator need a place to stand.** *Decision challenged: roles.* The IB coordinator sees students outside any counselor's caseload; the Child Protection Officer must be able to acknowledge an escalation, which needs an account; someone at the school uploads exports and manages mapping profiles. The coordinator and the caseload lead are **capabilities on a counselor's membership**, stored as data, granted per school. **Revised by pass 8** (F16, F10): the first version also put `school_admin` and `safeguarding_lead` on a counselor membership, which gave an IT administrator or a Principal a counselor's break-glass path to welfare data. So `school_admin` is now a role with no caseload path, `safeguarding_lead` and the new `safeguarding_oversight` may sit on any staff membership, and a `staff` role with no data access carries them for someone who is neither counselor nor teacher. "More roles later" stays a row insert (§0.1).
 
-**5.5 A twelve-character escalation reason is a UI minimum, not a safeguarding one.** *Decision touched: invariant 5 ("requires a reason").* The prototype accepts twelve characters. A referral to a safeguarding lead is a document that may be read in a review a year later. The alternative is a structured reason (what was observed, why now, who else knows) with a forty-character minimum on the free text. Cost: thirty seconds of a counselor's time at the most serious moment in the product. Recommendation: ask the ACS counselors and the CPO what a referral must contain; the constraint is one number in the schema.
+**5.5 A twelve-character escalation reason is a UI minimum, not a safeguarding one.** *Decision touched: invariant 5 ("requires a reason").* The prototype accepts twelve characters. A referral to a safeguarding lead is a document that may be read in a review a year later. The alternative is a structured reason (what was observed, why now, who else knows) with a forty-character minimum on the free text. Cost: thirty seconds of a counselor's time at the most serious moment in the product. Pass 4 adopted the structured form (§5.3, D46); the minimums remain ACS's to adjust (question 60).
 
 **5.6 The complete schema is designed now and applied in phases.** *Decision: scope.* Agreed and planned on. The one thing to add: the migrations for a module land in the phase that first serves it (pass 6), from this design, so that no table exists in production with no code reading it and no test covering it. Designing everything now is what makes the phases cheap; migrating everything now is what makes the first restore drill slow.
 
-**5.7 The production frontend cannot be hosted on Vercel.** *Decision touched: frontend.* A consequence, not a challenge: Vercel has no UAE region, cannot pin logs, and builds in the US (DR-1). The Next.js app runs on Container Apps in UAE North; the frozen demo stays on Vercel because it holds only synthetic data.
+**5.7 The production frontend cannot be hosted on Vercel.** *Decision touched: frontend.* A consequence, not a challenge: Vercel has no UAE region, cannot pin logs, and builds in the US (DR-1). The Next.js app runs on Container Apps in UAE North; the frozen demo stays on Vercel because it holds only synthetic data. Framework-level caching in Next.js keys on arguments, not on the tenant context, so no authenticated route uses it (F75).
+
+**5.8 Known limitations, stated rather than hidden** (pass 8, F65). The subject-choice engine is IB-shaped and cannot serve a British school choosing A levels until it is generalised, which happens when such a school signs (DR-7.3). The Wellesmere tenant proves the second-school mechanisms, not a KHDA analysis: its regulator profile is empty until one is done (§2.7).
 
 ## 6. Open decisions
 
 | # | Decision | Options | Recommendation | Who decides |
 |---|---|---|---|---|
-| 1 | Out-of-country encrypted cold copy of backups | (a) none: in-country only, risk documented; (b) EU cold copy, UAE-held keys, DPA clause | (b), if ACS and counsel accept it in writing; otherwise (a) with the risk stated in the DPA | Davide, ACS leadership, counsel |
+| 1 | Out-of-country encrypted cold copy of backups | (a) none: in-country only, risk documented; (b) EU cold copy **with key material held outside the UAE** by named people, a named restore region and trigger, an EU restore drill on synthetic data, and a DPA clause (corrected by pass 8, F22: a UAE-only key cannot decrypt the copy after a country-level loss) | (b) if ACS and counsel accept it in writing and ADEK consents under Digital Policy 7.1.3.a (F04); otherwise (a) with the risk stated in the DPA | Davide, ACS leadership, counsel, ADEK |
 | 2 | When to re-evaluate AWS `me-central-1` | (a) never; (b) when AWS resumes billing and publishes a restoration statement | (b); the infrastructure module keeps the option cheap | Davide |
 | 3 | When the WAF must be on | (a) from the first deploy; (b) from the first real data; (c) after the IT review asks | (b) | pass 4, Davide |
 | 4 | RPC layer | (a) tRPC 11; (b) oRPC 1.x (OpenAPI built in, v2 in beta) | (a); add Hono + zod-openapi for the connector API later | Davide |
 | 5 | Infrastructure tool | (a) Terraform/OpenTofu with `azurerm`; (b) Bicep | (a): provider-neutral skill, and DR-1 makes provider moves plausible | Davide |
 | 6 | PostgreSQL major | (a) 17; (b) 18 | (a) at pilot; 18 at year 1 once the extension list is clean | Davide |
-| 7 | Session privilege model | (a) acting role per session (one tier, column privileges enforced in the database); (b) union of memberships (simpler, no DB column enforcement) | (a), as designed | pass 4 |
-| 8 | Counselor visibility across the HS team | (a) caseload-scoped (default rows in §2.4); (b) school-scoped signals for all counselors; (c) caseload plus explicit cover | (c) | ACS counselors, pass 4 |
-| 9 | Escalation reason minimum and structure | 12 characters (prototype); 40 with a structured form | 40 and structured | ACS counselors and CPO |
+| 7 | Session privilege model | (a) acting role per session (one tier, column privileges enforced in the database); (b) union of memberships (simpler, no DB column enforcement) | (a); decided by pass 4 §2.4, and the tier is now checked in the policy expression (F01) | closed |
+| 8 | Counselor visibility across the HS team | (a) caseload-scoped; (b) school-scoped signals for all counselors; (c) caseload plus explicit cover | (c), decided by pass 4 §3.3; narrow-only until ACS answers question 65, with widening of `signal` and `case_note` (never `safeguarding`) kept ready as an option (decision on F47) | ACS counselors |
+| 9 | Escalation reason minimum and structure | 12 characters (prototype); 40 with a structured form | 40 and structured, adopted by pass 4 (D46); the numbers are ACS's | ACS counselors and CPO |
 | 10 | Engagement domain: which sources, and retention | CAROS logins only; plus Google Classroom; 180 days proposed | decide after ACS answers Q14 in ACS-IT-QUESTIONS.md | pass 3, pass 4, ACS |
 | 11 | Case lifecycle defaults | monitoring window 90 days, auto-review 14 days (prototype), sweep hour 02:00 | keep the prototype's numbers as version 1 | ACS counselors |
 | 12 | Built-in PgBouncer at scale | (a) never; (b) at year 3 after the RLS suite passes under transaction pooling | (b) | Davide |
-| 13 | Audit hash chain | on (default in §2.19) or off | on | pass 4 |
+| 13 | Audit hash chain | on (default in §2.19) or off | on, decided by pass 4 §4.2 | closed |
 | 14 | Second synthetic school's name and regulator | "Wellesmere British School, Dubai" (KHDA) pending a directory check; or a Sharjah (SPEA) school for a third regulator | keep Wellesmere, check the KHDA directory | Davide |
-| 15 | Who is in the Diploma cohort in the choosing year | (a) every Grade 10 student (`ib_dp_candidate`); (b) only those who have declared IB | (a) at ACS, per Mr. Diaz's description; confirm | ACS (Q below) |
+| 15 | Who is in the Diploma cohort in the choosing year | (a) every Grade 10 student (`ib_dp_candidate`); (b) only those who have declared IB | (a) at ACS, per the coordinator's description recorded in PRODUCT.md; confirm | ACS (Q below) |
 | 16 | Retention numbers per class | proposals in `privacy.retention_class` | as proposed until counsel sets them | counsel (pass 4) |
-| 17 | Whether `strength` and `contribution` exist at all | define or remove | pass 3 must define both or the columns are dropped before the first real sweep | pass 3 |
+| 17 | Whether `strength` and `contribution` exist at all | define or remove | removed by pass 3 (D17, D18); no seed ever writes them (§12.11) | closed |
 | 18 | Test runner | Vitest 5 (19 days old) or Vitest 4.1 (maintained) | 5; a fresh repository should not start on a superseded major | Davide |
 
 ## 7. For other passes
+
+These were pass 1's requests to the passes that followed it. Where they conflict with the pass 8 revision, the handoff list at the end of `08-changelog.md` is the current one.
 
 **Pass 2 (ingest).** The tables in §2.16 and every `import_id` column; the fixture source kind and the classification trigger; the two seed exports (Veracross-shaped, iSAMS-shaped) as its first fixtures; `sis.external_identity` for identity resolution; `sis.section.feeder_set_key` and `sis.calendar_period.affects_domains` as normalisation targets; `ref.grade_scale` for normalisation; the requirement that rosters are imported and never typed; whether termly exports can populate `sis.grade` per assessment and `sis.attendance_event` per session, and what the weekly run looks like if they cannot.
 
@@ -3989,7 +4906,7 @@ In the style of `ACS-IT-QUESTIONS.md`; numbered to continue that file's list. Ea
 53. For each programme the school runs (IB Diploma, AP, ACS High School courses), which grade scale appears in the export: IB 1 to 7, AP 1 to 5, percentages, letters, a GPA? Do predicted grades appear separately from working grades?
 54. Which mathematics sets exist in Grade 10 (for example extended and foundation), and are they identifiable in the export? The IB prerequisite check compares against them.
 55. Does ManageBac hold CAS hours from previous years that would need to be imported as an opening balance?
-56. Who at the school would upload exports and maintain the column mapping: a registrar, IT, or a counselor? That person needs the `school_admin` capability.
+56. Who at the school would upload exports and maintain the column mapping: a registrar, IT, or a counselor? That person needs a `school_admin` membership, which since pass 8 is a role of its own with no access to welfare data (F16).
 
 **Identity and accounts · IT**
 
@@ -4004,7 +4921,7 @@ In the style of `ACS-IT-QUESTIONS.md`; numbered to continue that file's list. Ea
 
 **Data protection, hosting and legal · Data protection lead, leadership, legal**
 
-62. Cloud data centres in the UAE were physically damaged in March 2026 and some customer data was permanently lost. CAROS will keep all student data in the UAE across two Azure regions. Would ACS permit an encrypted backup copy, with keys held in the UAE, to be stored in the EU as protection against a country-level loss? If not, is ACS content to accept that risk in writing?
+62. Cloud data centres in the UAE and Bahrain were physically damaged in March 2026 and some customer data was permanently lost. CAROS will keep all student data in the UAE across two Azure regions. Would ACS permit an encrypted backup copy to be stored in the EU as protection against a country-level loss? For that copy to be restorable after such a loss, the means to decrypt it would also have to be held outside the UAE, by named people, and ADEK's consent would be needed first under its Digital Policy 7.1.3.a. If not, is ACS content to accept the country-level risk in writing? (Revised by pass 8, F22.)
 63. Does ACS have a business-continuity expectation for CAROS (how long it may be unavailable, how much data may be lost) that should shape the backup design?
 64. Does ADEK or ACS policy set a minimum retention period for counseling and safeguarding records after a student leaves? The schema needs a number per record class.
 
@@ -4021,9 +4938,9 @@ In the style of `ACS-IT-QUESTIONS.md`; numbered to continue that file's list. Ea
 
 ## Sources
 
-All retrieved 2026-09-22.
+All retrieved 2026-09-22, except where marked as re-checked on 2026-09-24 by the pass 8 revision.
 
-- AWS Health Dashboard feed: https://status.aws.amazon.com/rss/all.rss (items dated 2 Mar, 30 Apr and 15 Sep 2026 on `me-central-1` and `me-south-1`)
+- AWS Health Dashboard feed: https://status.aws.amazon.com/rss/all.rss (items dated 1 Mar, 30 Apr and 15 Sep 2026 on `me-central-1` and `me-south-1`; the first item's date corrected by pass 8, F73)
 - AWS UAE region launch: https://aws.amazon.com/blogs/aws/now-open-aws-region-in-the-united-arab-emirates-uae/
 - AWS General Reference endpoint tables (RDS, S3, SES, EventBridge Scheduler, Secrets Manager, KMS, CloudWatch Logs, Lambda, SQS, Step Functions, ECR, WAF, ACM, CloudTrail, App Runner, Bedrock): https://docs.aws.amazon.com/general/latest/gr/
 - AWS Fargate regions: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate-Regions.html
@@ -4040,7 +4957,7 @@ All retrieved 2026-09-22.
 - Azure Retail Prices API (all UAE North figures): https://prices.azure.com/api/retail/prices?api-version=2023-01-01-preview with `$filter=armRegionName eq 'uaenorth' and serviceName eq '<Azure Database for PostgreSQL | Storage | Azure Container Apps | Application Gateway | Key Vault | Log Analytics | Azure Monitor | Container Registry | Email | Bandwidth>'`; documented at https://learn.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices
 - Azure AI Foundry Claude models: https://learn.microsoft.com/en-us/azure/foundry/foundry-models/concepts/claude-models; partner model regions: https://learn.microsoft.com/en-us/azure/foundry/foundry-models/concepts/models-from-partners#region-availability-by-deployment-type; deployment types: https://learn.microsoft.com/en-us/azure/foundry/foundry-models/concepts/deployment-types
 - Microsoft Q&A on UAE region status (2 Apr 2026): https://learn.microsoft.com/en-us/answers/questions/5848347/inquiry-the-status-of-azure-cloud-services-in-the
-- Secondary reporting on the March 2026 strikes: https://www.techpolicy.press/the-legal-and-policy-fallout-from-data-center-strikes-in-the-middle-east-war/; https://www.theregister.com/2026/04/08/microsoft_armored_datacenters/; https://www.theregister.com/off-prem/2026/09/16/aws-says-wartime-damage-means-some-middle-east-cloud-resources-are-gone-for-good/
+- Secondary reporting on the March 2026 strikes: https://www.techpolicy.press/the-legal-and-policy-fallout-from-data-center-strikes-in-the-middle-east-war/; https://www.theregister.com/2026/04/08/microsoft_armored_datacenters/; https://www.theregister.com/off-prem/2026/09/16/aws-says-wartime-damage-means-some-middle-east-cloud-resources-are-gone-for-good/5296830 (the path without the trailing id returns 404; corrected by pass 8, F73)
 - Oracle Cloud regions: https://docs.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm; OCI PostgreSQL DR tutorial: https://docs.oracle.com/en/learn/full-stack-dr-pgsql-cold-dr/index.html
 - Alibaba Cloud regions: https://www.alibabacloud.com/help/en/doc-detail/40654.htm
 - Google Cloud Run locations: https://docs.cloud.google.com/run/docs/locations
@@ -4053,3 +4970,5 @@ All retrieved 2026-09-22.
 - tRPC v11: https://trpc.io/blog/announcing-trpc-v11; oRPC: https://orpc.dev/; pg-boss: https://github.com/timgit/pg-boss; Graphile Worker cron: https://worker.graphile.org/docs/cron; Zod 4: https://zod.dev/v4; Vitest 5: https://vitest.dev/blog/vitest-5
 - PostgreSQL: row security https://www.postgresql.org/docs/current/ddl-rowsecurity.html; CREATE POLICY https://www.postgresql.org/docs/current/sql-createpolicy.html; ALTER TABLE https://www.postgresql.org/docs/current/sql-altertable.html; CREATE ROLE https://www.postgresql.org/docs/current/sql-createrole.html; set_config https://www.postgresql.org/docs/current/functions-admin.html; SET https://www.postgresql.org/docs/current/sql-set.html; PostgreSQL 17 and 18 releases https://www.postgresql.org/about/news/postgresql-17-released-2936/ and https://www.postgresql.org/about/news/postgresql-18-released-3142/
 - PgBouncer features: https://www.pgbouncer.org/features.html
+- Re-checked 2026-09-24 (F71): Azure Retail Prices API, UAE North, `serviceName eq 'Microsoft Defender for Cloud'` (Defender for Storage: $0.0134 per account-hour, malware scanning $0.15 per GB) and `serviceName eq 'Key Vault'` (Premium HSM-protected RSA 2048-bit key, $1.32 per key-month). Blob SFTP at $0.30 per hour per account is as verified by the pass 7 review; the NAT gateway, Entra ID P2 and support-plan lines are assumptions, not retrieved.
+- `drizzle-orm/migrator` runs all pending migrations in one transaction: as read in the package source by the pass 7 review (F40); PostgreSQL refuses `CREATE INDEX CONCURRENTLY` inside a transaction block (https://www.postgresql.org/docs/current/sql-createindex.html)
