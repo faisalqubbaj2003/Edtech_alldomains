@@ -4404,7 +4404,7 @@ const GOAL_NEEDS={
    three year groups. Two numbers that mean different things must never be
    made to look like one number. Every screen below names which it holds. */
 const SEL_ROUND={year:"2027 / 28",opened:"10 November",closes:"5 December",
- coordinator:"Mr. A. Diaz",role:"IB Diploma Programme Coordinator",
+ coordinator:"Mr. K. Brennan",role:"IB Diploma Programme Coordinator",
  minNote:"A course runs at 8 students or more in most subjects, 6 in the arts.",
  deadlineIn:11};
 const DPC=[];
@@ -4536,13 +4536,13 @@ const SELREC={};
     rec.signs[p.s]={by:s.t,verdict:hl?"hl":"sl",when:["18 Nov","19 Nov","20 Nov"][Math.floor(rnd()*3)],
      note:hl?pick(NOTE_HL):pick(NOTE_SL)};});}
   if(st==="approved"){
-   rec.talk={when:"21 Nov",by:"Mr. A. Diaz",
+   rec.talk={when:"21 Nov",by:"Mr. K. Brennan",
     note:"Talked the whole selection through. The reasons on the form held up when I asked about them, and the Higher Levels are the right three."};
-   rec.log.unshift({when:"21 Nov",who:"Mr. A. Diaz",what:"Review conversation recorded. "+rec.talk.note});
-   rec.log.unshift({when:"21 Nov",who:"Mr. A. Diaz",what:"Selection approved. Six subjects confirmed for "+SEL_ROUND.year+"."});}
+   rec.log.unshift({when:"21 Nov",who:"Mr. K. Brennan",what:"Review conversation recorded. "+rec.talk.note});
+   rec.log.unshift({when:"21 Nov",who:"Mr. K. Brennan",what:"Selection approved. Six subjects confirmed for "+SEL_ROUND.year+"."});}
   if(st==="changes"){
    rec.returnNote="One of your Higher Levels needs a rethink after what your teacher wrote. Come and see me before you change it.";
-   rec.log.unshift({when:"20 Nov",who:"Mr. A. Diaz",what:"Sent back for a change. "+rec.returnNote});}
+   rec.log.unshift({when:"20 Nov",who:"Mr. K. Brennan",what:"Sent back for a change. "+rec.returnNote});}
   SELREC[d.id]=rec;
  });
  /* CAS. The run is the same cell the counselor reads across the caseload,
@@ -4818,7 +4818,7 @@ const EE_MILESTONES=[
  {id:"viva",label:"Viva voce, the final reflection",who:"Supervisor",rppf:true,d:{12:11}},
  {id:"submit",label:"Uploaded for assessment",who:"Coordinator",d:{12:16}}];
 const EE_ROUND={year:"2027",
- coordinator:"Mr. A. Diaz",
+ coordinator:"Mr. K. Brennan",
  rppf:"Reflections on Planning and Progress Form",
  words:4000,hours:40,
  cap:5,
