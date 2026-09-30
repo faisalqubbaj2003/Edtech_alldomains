@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# precheck.sh: a fast local mirror of the CAROS backend's CI and hooks,
+# precheck.sh: a fast local mirror of the Claros backend's CI and hooks,
 # run at the end of a session (mode 3). It reads the branch's changes against
 # main, including uncommitted and untracked files, and reports what a text
 # search can see. CI is the real gate; this only finds problems sooner.
@@ -94,7 +94,7 @@ while IFS="$(printf '\t')" read -r status path; do
   case "$path" in
     packages/engine/src/*)
       if ! is_exempt "$path"; then
-        hit=$(printf '%s\n' "$ADDED" | grep -nE 'Date\.now\(|new Date\(|Math\.random\(|from +["'"'"'](pg|fs|node:[a-z]+|drizzle-orm[^"'"'"']*|@caros/db)["'"'"']' | head -3)
+        hit=$(printf '%s\n' "$ADDED" | grep -nE 'Date\.now\(|new Date\(|Math\.random\(|from +["'"'"'](pg|fs|node:[a-z]+|drizzle-orm[^"'"'"']*|@claros/db)["'"'"']' | head -3)
         [ -n "$hit" ] && fail "$path: impure code in packages/engine (clock, randomness, I/O or database): $(printf '%s' "$hit" | tr '\n' ' ' | cut -c1-160)"
       fi ;;
   esac
@@ -105,6 +105,15 @@ while IFS="$(printf '\t')" read -r status path; do
       *.ts|*.tsx|*.js|*.jsx|*.sql|*.json)
         hit=$(printf '%s\n' "$ADDED" | grep -nE '\bGrade [0-9]{1,2}\b|Child Protection Officer|Designated Safeguarding Lead|\bADEK\b|\bKHDA\b|American Community School|ACS Abu Dhabi' | head -3)
         [ -n "$hit" ] && warn "$path: school-specific literal; read it from the tenant or its regulator profile: $(printf '%s' "$hit" | tr '\n' ' ' | cut -c1-160)" ;;
+    esac
+  fi
+
+  # 4b. The product was renamed Claros; the old name must not reach new code.
+  if ! is_exempt "$path"; then
+    case "$path" in
+      *.ts|*.tsx|*.js|*.jsx|*.sql|*.json|*.md|*.mdx|*.yml|*.yaml|*.toml|*.tf)
+        hit=$(printf '%s\n' "$ADDED" | grep -niE '\bcaros(_|-|/|\b)|@caros/' | head -3)
+        [ -n "$hit" ] && warn "$path: uses the old product name; map caros to claros (CONTEXT.md naming rule): $(printf '%s' "$hit" | tr '\n' ' ' | cut -c1-160)" ;;
     esac
   fi
 

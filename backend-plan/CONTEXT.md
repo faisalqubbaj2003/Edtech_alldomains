@@ -8,6 +8,13 @@ It was written on 2026-09-22 from the prototype at commit `fb28217` (`index.html
 
 **Updated 2026-09-24 in pass 8 session 3** to reflect Davide's decisions on the pass 7 review; the changes are listed in `out/08-changelog.md`.
 
+**Renamed Claros on 2026-09-29.** The product was called CAROS (Counselor OS) when this file and the planning passes were written, and they keep that name as history, as does the frozen prototype. The build uses the new name everywhere it writes one:
+
+- In copy, the product is **Claros**. "Counselor OS" and "Career OS" are not carried over. Section names are not decided yet, so code names surfaces by role (counselor, teacher, student, parent, mentor).
+- Every identifier the passes derive from the old name maps mechanically, lower-case `caros` to `claros`: `caros_t_system` becomes `claros_t_system`, `caros_owner` becomes `claros_owner`, `@caros/db` becomes `@claros/db`, `caros-prod` becomes `claros-prod`. Nothing else about the identifier changes.
+- No new identifier or string may use the old name. A session that finds one in the build fixes it in the same PR.
+- The UAE and WIPO trademark registers have not been checked for Claros yet.
+
 **This file is a map, not the territory.** This repository has a documented habit of describing a build that no longer exists. Where this file and `index.html` disagree, the code wins, and you should say so in your output.
 
 ---

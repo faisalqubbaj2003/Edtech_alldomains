@@ -50,3 +50,10 @@ The full table, with options and recommendations, is 06 §13; the O-numbers are 
 | C5 (revisit parental access at 18 if ACS or counsel prefers suspension) | The default is applied and question 148 asked | waits for the answers (O21) |
 
 Everything else decided on 2026-09-24 is applied in passes 1 to 6 and `CONTEXT.md`; `08-changelog.md` lists each change by finding.
+
+## Decisions taken after pass 8
+
+| Date | Decision | Changes |
+|---|---|---|
+| 2026-09-25 | **Decision C7 amended.** If Anthropic has not enabled zero data retention when B0 is ready to start, build sessions run on the CAROS Console organisation (API keys, standard retention) with synthetic data only, and move to the ZDR organisation as soon as it is enabled. ZDR on the build organisation becomes a hard gate before G-REAL. Rationale: no real data exists before G-REAL, so ZDR protects nothing yet, while waiting for Anthropic's eligibility review could stall B0 past checkpoint CP1 (23 October 2026). Anthropic's docs describe ZDR as per-organisation and for "qualified accounts", so approval is not guaranteed. | 06 §4 (C7), B0.15 week-one list, the G-REAL checklist; the backend repo's `docs/decisions/` should carry this as a decision record at B0 |
+| 2026-09-29 | **Renamed Claros.** The passes, `CONTEXT.md` and the frozen prototype keep the name CAROS as history. The build writes Claros in copy and maps every identifier mechanically from `caros` to `claros` (database roles, package scope, Azure resources); the rule is in `CONTEXT.md` above section 1. The build skill is renamed `claros-backend`. | `CONTEXT.md`; `skill/claros-backend/`; every name B0 creates |

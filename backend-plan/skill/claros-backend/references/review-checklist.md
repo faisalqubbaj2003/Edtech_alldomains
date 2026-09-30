@@ -19,7 +19,7 @@ These are the places where a mistake is silent: the tests pass, the demo works, 
 
 **Authorization and row-level security**
 - Every tenant table: `school_id` first, RLS enabled **and** `FORCE`d, the tenant policy `RESTRICTIVE`, and a query with no tenant context sees nothing (test it).
-- `SECURITY DEFINER` functions: inside one, `current_user` is the function's **owner**, not the caller. A check like `current_user = 'caros_t_system'` inside a definer function is always false or always true. The tier must be evaluated in the policy expression (which runs as the caller) and passed in as an argument. (Pass 7 finding F01.)
+- `SECURITY DEFINER` functions: inside one, `current_user` is the function's **owner**, not the caller. A check like `current_user = 'claros_t_system'` inside a definer function is always false or always true. The tier must be evaluated in the policy expression (which runs as the caller) and passed in as an argument. (Pass 7 finding F01.)
 - Login roles are per deployable (web, worker, migrator, support console), `NOINHERIT`, and the web identity cannot `SET ROLE` to system or support. Look for a test proving it.
 - A verb other than plain write (`escalate`, `approve`, `configure`) must work through RLS, not only in the domain layer; otherwise the first real escalation is refused, and the tempting quick fix is a broad `write` grant that widens access everywhere. (F02.)
 - A new permission row with a qualifier ("own only", "aggregates only", "existence and status only") needs the mechanism that enforces the qualifier **and** a negative test. A qualifier with no mechanism is just a comment.
@@ -53,6 +53,7 @@ These are the places where a mistake is silent: the tests pass, the demo works, 
 - Model output is a labelled draft. It never gates, ranks, or decides.
 
 **Portability**
+- Nothing under the old product name: no new `caros_...` role, `@caros/` import or "CAROS" in copy.
 - Nothing ACS-shaped as a literal: "Grade", a year number, "Child Protection Officer", "ADEK", an ACS person's name, a fixed school week. The Wellesmere tenant (British, Years 10 to 13, DSL, no IB) should pass the same tests.
 
 **Process**

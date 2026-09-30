@@ -1,5 +1,5 @@
 {
-  "skill_name": "caros-backend",
+  "skill_name": "claros-backend",
   "note": "Run these once the backend repository exists (after B0), in a worktree of that repository with a real docs/PLAN.md. Before B0 there is nothing for the skill to act on, so a run would test nothing.",
   "evals": [
     {

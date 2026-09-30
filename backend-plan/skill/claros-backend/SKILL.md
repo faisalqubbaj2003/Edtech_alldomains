@@ -1,11 +1,11 @@
 ---
-name: caros-backend
-description: The working procedure for every build session on the CAROS backend (the Next.js + Postgres build of CAROS Counselor OS on Azure UAE). Use it whenever a session starts, continues or finishes a task from docs/PLAN.md, writes or fixes a task brief, reviews a diff as the second model, closes a phase, or sets up the repository in phase B0. Also use it for any change touching migrations, row-level security, auth.allowed(), the signal engine, safeguarding escalation, the AI gateway, tenant seeds or the documentation, even if the user only says "next task", "pick up B1.6", "wrap up", "review this PR" or "keep going".
+name: claros-backend
+description: The working procedure for every build session on the Claros backend (the Next.js + Postgres build of Claros, formerly CAROS, on Azure UAE). Use it whenever a session starts, continues or finishes a task from docs/PLAN.md, writes or fixes a task brief, reviews a diff as the second model, closes a phase, or sets up the repository in phase B0. Also use it for any change touching migrations, row-level security, auth.allowed(), the signal engine, safeguarding escalation, the AI gateway, tenant seeds or the documentation, even if the user only says "next task", "pick up B1.6", "wrap up", "review this PR" or "keep going".
 ---
 
-# CAROS backend: how a build session works
+# Claros backend: how a build session works
 
-CAROS holds child welfare and safeguarding records about minors, under a real school's name, in a multi-tenant database. The build is done mostly by a coding agent across hundreds of short sessions, by one person, with teammates joining later. This skill is the procedure those sessions follow so that each one leaves the repository in a state the next one can trust.
+Claros holds child welfare and safeguarding records about minors, under a real school's name, in a multi-tenant database. The build is done mostly by a coding agent across hundreds of short sessions, by one person, with teammates joining later. This skill is the procedure those sessions follow so that each one leaves the repository in a state the next one can trust.
 
 It exists because this project has already lost work twice to the same two failures: a merge that silently replaced a whole file with an old copy, and documentation that described a build that no longer existed. Almost everything below is aimed at one of those two, or at the third risk that matters most here: real student data ending up somewhere it must never be.
 
@@ -18,6 +18,8 @@ This skill carries **procedure**. The **rules** live in the repository, and they
 - `.claude/settings.json` hooks: the things that are actually blocked (force pushes, merges, production access, reads outside the repository, edits to merged migrations and generated files, real names).
 - `docs/PLAN.md`: the live task list, every brief, the session notes.
 - `docs/spec/`: frozen copies of the eight planning passes. The design. The code is the truth; where they differ, say so in the PR and the decisions log.
+
+**The spec uses the product's old name, CAROS.** The product was renamed Claros on 2026-09-29, and the spec keeps the old name as history. When you write code, map every identifier from `caros` to `claros` (`caros_t_system` becomes `claros_t_system`, `@caros/db` becomes `@claros/db`), and write Claros in copy. The full rule is in `docs/spec/CONTEXT.md`, above section 1.
 
 Do not copy rules from those files into your reasoning as if this skill were the source. If a rule you need is not in them, that is a documentation gap to note in the PR, not something to invent.
 
@@ -62,6 +64,7 @@ These mistakes are easy to make and do not announce themselves. CI and the hooks
 - **An edit to a migration that is already on `main`.** A correction is a new migration.
 - **Personal data leaving the UAE** except through `packages/ai`'s gateway, pseudonymised, to a registry model with `covered_model = false` and `zdr_eligible = true`. Safeguarding, health, nationality and fairness data never go at all.
 - **Welfare detail in an email or a log line.** Emails carry references and roles, never anything about a child. Logs carry identifiers only.
+- **The old product name in new code.** An identifier copied from the spec as `caros_...` or `@caros/...`, or "CAROS" in copy. Renaming later means a migration for every database role that carries it.
 - **Resolving a merge conflict by taking one side of a file.** That is the exact failure that cost this project four phases of work. A conflicting branch is rebased in its own session with the conflict list in its brief.
 
 **If you see a real name where a synthetic one should be, or anything that looks like real student data, stop immediately.** Do not copy it, quote it, or "fix" it in place. Say what you saw and where, in the session and in the PR, and end the session. The same applies if a task would require a production credential, a support grant, or a file outside the repository: you never hold these, and the hooks will refuse them anyway.
