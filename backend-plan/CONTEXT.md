@@ -74,7 +74,7 @@ These came out of the interview. **Plan on them.** You are expected to challenge
 | Roles | The existing five: counselor, teacher, student, parent, mentor. The IB coordinator is a counselor view, not a sixth role. More roles later if needed. **Updated 2026-09-24 (F16, F10):** beside the five, `school_admin` is a role, not a capability on a counselor's membership, and a `staff` role with no data access of its own carries capabilities (for example `safeguarding_lead`) for leadership staff who are neither counselor nor teacher. |
 | Signal visibility | Tiers, signal scores, evidence chains and counselor notes are **staff-only**. Students and parents never see them. |
 | Tenancy | Multi-tenant from the first migration. Build so that a single school can also be given its own isolated deployment if it demands one. |
-| Models | The AI features call Claude. Model choice must be configuration, never code: a model was released in the middle of this planning process. |
+| Models | The AI features call Claude. Model choice must be configuration, never code: a model was released in the middle of this planning process. **Provider route decided 2026-10-01:** Anthropic declined a direct zero-data-retention arrangement for an organisation of Claros's size, so the product's AI features call Claude through **Amazon Bedrock**, in an EU or US geography, with `data_retention_mode` set to `none` at account level and enforced by an AWS service control policy. AWS is the sub-processor and Anthropic does not receive the data. Bedrock's default for Opus 5.5 is zero retention; Fable models require retention there and stay excluded. This satisfies pass 4's rule that only zero-retention, non-Covered models receive student-derived data. |
 
 ---
 
