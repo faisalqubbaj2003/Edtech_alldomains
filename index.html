@@ -4240,86 +4240,103 @@ const IB_GROUPS=[
    check is a comparison rather than an opinion. */
 const IB_SUBJECTS=[
  {id:"ENL",g:"g1",name:"English A: Literature",lv:["HL","SL"],t:"Mr. Adeyemi",per:{HL:"P2",SL:"P2"},min:10,cap:24,
+  needs:{lv:"HL",areas:["English"],pct:65,note:"Grade 10 English, with a mark around 65 or above. Literature at Higher Level reads eleven more works than Standard."},
   about:"Thirteen works read closely, across at least three literary forms and several centuries.",
   like:"You read more than you have read before, and you write about far less of it than you read. Most weeks are one text, one argument, and a seminar where you are expected to have a position.",
   assess:"Two exams, a taught oral, and an essay you write over the second year.",
   hard:"The volume of reading is the part students underestimate. The writing is a skill you build; the reading is time you have to find."},
  {id:"ELL",g:"g1",name:"English A: Language and literature",lv:["HL","SL"],t:"Mr. Adeyemi",per:{HL:"P2",SL:"P5"},min:10,cap:24,
+  needs:{lv:"HL",areas:["English"],pct:60,note:"Grade 10 English. Language and literature at Higher Level adds a comparative study."},
   about:"Half literature, half how language works in advertising, speeches, journalism and images.",
   like:"You will spend a week on a novel and the next on a campaign poster, using the same tools on both. Students who find pure literature airless often prefer this one.",
   assess:"Two exams, a taught oral, and a comparative essay at Higher Level.",
   hard:"The non-literary half looks easier and is not. Analysing an advert well is harder than analysing a poem badly."},
  {id:"ARA",g:"g1",name:"Arabic A: Literature",lv:["HL","SL"],t:"Ms. Nasser",per:{HL:"P5",SL:"P5"},min:8,cap:20,
+  needs:{lv:"HL",areas:["Languages"],pct:65,note:"Arabic to Grade 10 at first-language level. This is a literature course, not a language course."},
   about:"Literature in Arabic, for students whose Arabic is a first language rather than a school subject.",
   like:"Seminar-shaped, in Arabic throughout, with classical and modern texts sitting beside each other.",
   assess:"Two exams, a taught oral, and a written essay.",
   hard:"Written register. Speaking Arabic at home is not the same as writing literary analysis in it."},
  {id:"ARB",g:"g2",name:"Arabic B",lv:["HL","SL"],t:"Ms. Nasser",per:{HL:"P6",SL:"P6"},min:8,cap:22,
+  needs:{lv:"both",areas:["Languages"],note:"At least two years of Arabic. Students new to the language take ab initio instead."},
   about:"Arabic as an acquired language, built around five themes from identity to sharing the planet.",
   like:"Speaking every lesson. The course is organised around what you can do with the language, so a quiet term is a term you lose.",
   assess:"Reading and writing exams, plus a recorded individual oral.",
   hard:"If Arabic is your home language this is the wrong course, and the school will say so."},
  {id:"FRB",g:"g2",name:"French B",lv:["HL","SL"],t:"Ms. Laurent",per:{HL:"P6",SL:"P6"},min:8,cap:22,
+  needs:{lv:"both",areas:["Languages"],note:"At least two years of French. Students new to the language take ab initio instead."},
   about:"French built on at least two years of prior study, across the same five themes.",
   like:"Lessons run in French. The first term is uncomfortable and the third is not.",
   assess:"Reading and writing exams, plus a recorded individual oral.",
   hard:"Higher Level adds two literary works, which is a genuine step up rather than more of the same."},
  {id:"SPB",g:"g2",name:"Spanish B",lv:["HL","SL"],t:"Ms. Garcia",per:{HL:"P6",SL:"P6"},min:8,cap:22,
+  needs:{lv:"both",areas:["Languages"],note:"At least two years of Spanish. Students new to the language take ab initio instead."},
   about:"Spanish built on prior study, across the same five themes.",
   like:"Lessons run in Spanish, with a lot of speaking and a steady diet of authentic text.",
   assess:"Reading and writing exams, plus a recorded individual oral.",
   hard:"Vocabulary load is relentless and it does not respond to cramming."},
  {id:"SPI",g:"g2",name:"Spanish ab initio",lv:["SL"],t:"Ms. Garcia",per:{SL:"P3"},min:8,cap:20,
+  needs:{lv:"both",bars:"Spanish",note:"For students with little or no previous Spanish. Two years of prior study rules this course out; take Spanish B instead."},
   about:"Spanish from the beginning, for students who have not studied it before.",
   like:"Two years from nothing to holding a conversation. Fast, structured, and unforgiving about missed weeks.",
   assess:"Reading and writing exams, plus a recorded individual oral.",
   hard:"It is only open to genuine beginners, and eligibility is checked."},
  {id:"ECO",g:"g3",name:"Economics",lv:["HL","SL"],t:"Ms. Fahri",per:{HL:"P3",SL:"P3"},min:10,cap:24,
+  needs:{lv:"HL",areas:["Mathematics"],anyOf:["Social Science","Humanities"],pct:65,note:"Grade 10 Mathematics and a social science. Higher Level carries quantitative work every week."},
   about:"Microeconomics, macroeconomics, the global economy and development, taught around real policy.",
   like:"Diagrams, then arguments about what the diagrams leave out. You will be asked to evaluate rather than describe from the first month.",
   assess:"Exams, plus a portfolio of three commentaries written on real news articles.",
   hard:"Higher Level adds quantitative work. Students who chose it to avoid mathematics find that out in the second term."},
  {id:"BUS",g:"g3",name:"Business management",lv:["HL","SL"],t:"Mr. Haddad",per:{HL:"P4",SL:"P4"},min:10,cap:24,
+  needs:{lv:"HL",anyOf:["Social Science","Humanities"],note:"A Grade 10 social science or humanities course."},
   about:"How organisations are financed, run, marketed and changed.",
   like:"Case studies, most weeks, on companies you have heard of. More writing than students expect and more accounting than they expect.",
   assess:"Exams, plus a research project on one organisation at Higher Level.",
   hard:"The finance unit. It is arithmetic with vocabulary attached, and it separates the class."},
  {id:"HIS",g:"g3",name:"History",lv:["HL","SL"],t:"Ms. Sharma",per:{HL:"P3",SL:"P1"},min:10,cap:24,
+  needs:{lv:"HL",anyOf:["Humanities","Social Science"],pct:60,note:"Grade 10 Social Studies or an equivalent humanities course. Higher Level adds a depth study and far more writing."},
   about:"One thematic world-history study, one regional depth study, and a piece of independent research.",
   like:"Argument every week, from sources that disagree with each other. The essays are long and get longer.",
   assess:"Exams, plus a historical investigation you choose and research yourself.",
   hard:"Timed essay writing. Knowing the material and writing it in forty-five minutes are separate skills."},
  {id:"PSY",g:"g3",name:"Psychology",lv:["HL","SL"],t:"Ms. Johnson",per:{HL:"P5",SL:"P4"},min:10,cap:24,
+  needs:{lv:"HL",anyOf:["Science","Social Science"],note:"A Grade 10 science or social science course. Higher Level includes research methods and statistics."},
   about:"Behaviour explained biologically, cognitively and socioculturally, taught through the studies themselves.",
   like:"You learn studies the way a science student learns experiments: method, findings, and what the method could not show.",
   assess:"Exams, plus an experimental study you run and write up.",
   hard:"It is a science, not a discussion subject, and the command word is almost always evaluate."},
  {id:"GPO",g:"g3",name:"Global politics",lv:["HL","SL"],t:"Ms. Sharma",per:{HL:"P4",SL:"P2"},min:8,cap:20,
+  needs:{lv:"HL",anyOf:["Humanities","Social Science"],note:"A Grade 10 humanities or social science course."},
   about:"Power, sovereignty, human rights, development and peace, tested against current cases.",
   like:"The reading is the news. Class runs as structured disagreement, and you are expected to argue a position that is not your own.",
   assess:"Exams, plus an engagement activity you take part in and analyse.",
   hard:"Small cohort most years, so there is nowhere to hide in a seminar."},
  {id:"BIO",g:"g4",name:"Biology",lv:["HL","SL"],t:"Dr. Reid",per:{HL:"P2",SL:"P4"},min:10,cap:24,
+  needs:{lv:"HL",areas:["Science"],pct:70,note:"Grade 10 Science, with a mark around 70 or above. Higher Level covers roughly twice the content of Standard."},
   about:"Cells, molecular biology, genetics, ecology, physiology, and how biological knowledge is built.",
   like:"Lab most weeks. The content volume at Higher Level is the largest of any science here, and it accumulates rather than resets.",
   assess:"Exams, plus an individual scientific investigation.",
   hard:"Sheer volume. Falling four weeks behind in Biology is harder to recover than in any other subject on this list."},
  {id:"CHE",g:"g4",name:"Chemistry",lv:["HL","SL"],t:"Dr. Chen",per:{HL:"P4",SL:"P2"},min:10,cap:22,
+  needs:{lv:"HL",areas:["Science"],pct:75,note:"Grade 10 Chemistry or Science, with a mark around 75 or above. Higher Level assumes confident algebra alongside the chemistry."},
   about:"Structure, bonding, energetics, kinetics, equilibrium and organic chemistry.",
   like:"Problem sets. Chemistry rewards doing questions rather than reading notes, and the practical work is precise.",
   assess:"Exams, plus an individual scientific investigation.",
   hard:"It is the most mathematical of the three sciences, and Higher Level organic chemistry is a memory load."},
  {id:"PHY",g:"g4",name:"Physics",lv:["HL","SL"],t:"Dr. Reid",per:{HL:"P5",SL:"P5"},min:10,cap:22,
+  needs:{lv:"HL",areas:["Science","Mathematics"],pct:70,note:"Grade 10 Science and Mathematics. Higher Level physics is mathematical throughout, so the maths mark matters as much as the science one."},
   about:"Mechanics, waves, fields, energy and one option topic, taught mathematically throughout.",
   like:"Derivation and problem solving, with the laboratory used to test what the algebra claims.",
   assess:"Exams, plus an individual scientific investigation.",
   hard:"Physics HL alongside Mathematics: applications is a combination that fights itself. Take analysis and approaches if you can."},
  {id:"CSC",g:"g4",name:"Computer science",lv:["HL","SL"],t:"Mr. Patel",per:{HL:"P6",SL:"P1"},min:8,cap:20,
+  needs:{lv:"HL",anyOf:["Technology","Mathematics"],note:"A Grade 10 technology or mathematics course. No prior programming is assumed, but the logic load is heavy."},
   about:"How machines compute, plus a solution you design and build for a real client.",
   like:"Half theory that looks like discrete mathematics, half a two-year software project with a person waiting on it.",
   assess:"Exams, plus the developed solution and its documentation.",
   hard:"The project has a real deadline and no way to compress it. Students who start it late lose marks they cannot recover."},
  {id:"DES",g:"g4",name:"Design technology",lv:["HL","SL"],t:"Mr. Patel",per:{HL:"P1",SL:"P3"},min:8,cap:18,
+  needs:{lv:"HL",anyOf:["Technology","Arts"],note:"A Grade 10 technology or arts course."},
   about:"Design thinking, materials, manufacturing and sustainability, with a major design project.",
   like:"Workshop time and iteration. You will build things that do not work before you build one that does.",
   assess:"Exams, plus a design project carried through prototyping.",
@@ -4329,28 +4346,33 @@ const IB_SUBJECTS=[
   like:"Calculus arrives early and never leaves. Higher Level is the most demanding course in the diploma by hours.",
   assess:"Exams, plus a mathematical exploration you write yourself.",
   hard:"Engineering, physics, computer science and most economics degrees ask for this route, so it is chosen for reasons other than enjoyment more often than any other subject here.",
-  needs:{course:"extended mathematics",pct:85,lv:"HL"}},
+  needs:{lv:"HL",course:"extended mathematics",pct:85,areas:["Mathematics"],note:"Offered from the extended mathematics set, with a mark around 85 or above. This is the most demanding mathematics route in the diploma."}},
  {id:"MAI",g:"g5",name:"Mathematics: applications and interpretation",lv:["HL","SL"],t:"Mr. Yilmaz",per:{HL:"P1",SL:"P4"},min:10,cap:24,
+  needs:{lv:"HL",areas:["Mathematics"],pct:70,note:"Grade 10 Mathematics. Higher Level applications carries a statistics and modelling load."},
   about:"Modelling, statistics and applied calculus, taught with technology in hand throughout.",
   like:"You will use a graphing calculator constantly and model situations that come with messy numbers.",
   assess:"Exams, plus a mathematical exploration you write yourself.",
   hard:"Some engineering and physics courses will not accept it, even at Higher Level. Check the universities before choosing it."},
  {id:"VIS",g:"g6",name:"Visual arts",lv:["HL","SL"],t:"Ms. Wilson",per:{HL:"P4",SL:"P6"},min:8,cap:18,
+  needs:{lv:"both",anyOf:["Arts"],evidence:"a portfolio of recent work",note:"A Grade 10 arts course, and a portfolio shown to the department before the round closes."},
   about:"Studio practice, comparative study of other artists, and a resolved body of work.",
   like:"Studio time, a process journal that is genuinely assessed, and an exhibition at the end with your own commentary beside each piece.",
   assess:"A comparative study, the process portfolio, and the exhibition. No written exam.",
   hard:"The workload is continuous rather than seasonal. There is nothing to revise and nowhere to catch up."},
  {id:"MUS",g:"g6",name:"Music",lv:["HL","SL"],t:"Ms. Bianchi",per:{HL:"P5",SL:"P1"},min:6,cap:16,
+  needs:{lv:"both",anyOf:["Arts"],evidence:"an audition or a recording",note:"A Grade 10 music course, and an audition or recording. Reading notation is assumed."},
   about:"Performing, composing and researching music across several traditions.",
   like:"You will perform, write, and defend both. Practice happens outside lessons and the course assumes it.",
   assess:"Recorded performance and composition portfolios, plus a contemporary music enquiry.",
   hard:"It expects existing instrumental or vocal ability. Starting from nothing in Grade 11 is very hard."},
  {id:"THE",g:"g6",name:"Theatre",lv:["HL","SL"],t:"Ms. Wilson",per:{HL:"P2",SL:"P4"},min:6,cap:16,
+  needs:{lv:"both",anyOf:["Arts"],note:"A Grade 10 arts course, or evidence of performance experience."},
   about:"Theatre made, directed and researched, not theatre read.",
   like:"Rehearsal, collaboration and deadlines that involve other people. Missing a session costs four other students their session.",
   assess:"A research presentation, a collaborative project, and a director's notebook.",
   hard:"Group assessment. Your mark depends partly on people who are not you."},
  {id:"FIL",g:"g6",name:"Film",lv:["SL"],t:"Ms. Wilson",per:{SL:"P2"},min:6,cap:16,
+  needs:{lv:"both",anyOf:["Arts","Technology"],note:"A Grade 10 arts or technology course."},
   about:"Film history and theory, alongside films you make.",
   like:"Watching closely and shooting badly, then shooting less badly. Editing takes longer than anyone plans for.",
   assess:"A comparative study, a portfolio of production work, and a short film.",
@@ -4402,6 +4424,7 @@ const SEL_ROUND={year:"2027 / 28",opened:"10 November",closes:"5 December",
  minNote:"A course runs at 8 students or more in most subjects, 6 in the arts.",
  deadlineIn:11};
 const DPC=[];
+const PRIOR={};
 const CASREC={};
 const SELREC={};
 (function(){
@@ -4428,7 +4451,15 @@ const SELREC={};
     them and the rules panel contradicted the status above it. Level and
     period are decided together, slot by slot, against the periods already
     taken. */
- const buildPicks=()=>{
+ /* Given the student, the draw prefers subjects they actually qualify
+    for. Without that the picks are made blind to the prerequisites and
+    roughly half the year group ends up holding a requirement they do
+    not meet, which reads as a broken school rather than as a cohort
+    worth a coordinator's attention. A minority is left unqualified on
+    purpose: a student reaching past their record is the case this
+    panel exists to surface, and a screen with none of them proves
+    nothing. */
+ const buildPicks=(stu)=>{
   for(let attempt=0;attempt<40;attempt++){
    const picks={},used=[],taken=[];
    /* which three slots carry Higher Level is decided first, because it is
@@ -4451,6 +4482,12 @@ const SELREC={};
     /* a slot whose subjects offer only one level still has to be filled */
     if(!cand.length)cand=pool.filter(s=>s.lv.some(lv=>!used.includes(s.per[lv])));
     if(!cand.length){ok=false;return;}
+    /* about one pick in eight ignores the requirement, which is what
+       leaves real mismatches on the sheet */
+    if(stu&&cand.length>1&&rnd()<.88){
+     const fit=cand.filter(c=>{const lvTry=c.lv.includes(want)?want:c.lv[0];
+      return prereqCheck(c.id,lvTry,stu).k!=="unmet";});
+     if(fit.length)cand=fit;}
     const s=wpick(cand);
     const lv=s.lv.includes(want)&&!used.includes(s.per[want])?want
      :s.lv.find(x=>!used.includes(s.per[x]));
@@ -4489,6 +4526,49 @@ const SELREC={};
  addYear(11,30,[{id:"s12",name:"Tariq Al Balushi",av:"TB",goal:"Law"},{id:"s17",name:"Ivan Petrov",av:"IP",goal:"Mathematics"}]);
  addYear(12,34,[{id:"s3",name:"Sara Al Mansoori",av:"SA",goal:"Investment Banking"},
   {id:"s14",name:"Priya Raghunathan",av:"PR",goal:"Biomedical Science"}]);
+ /* ── PRIOR COURSES ──────────────────────────────────────────────────
+    What each student has already studied, which is what a prerequisite
+    is actually checked against. A requirement that only prints its own
+    text ("Grade 10 Science, 70 or above") leaves the student to work
+    out whether it applies to them; checked against this, the form can
+    say met, not met, or — the honest third answer — not recorded.
+
+    Every student takes the five core areas. The sixth is an elective,
+    and it is the one that decides whether the arts and technology
+    subjects are open to them, so it is drawn rather than assumed. Marks
+    are per area, because a prerequisite asks about a mark in the
+    subject it gates, not about an average.
+
+    Grade 9 and Grade 10 are kept separate: "Chemistry in Grade 9 or
+    Science since" is a real distinction when a student changed course
+    between the two years. */
+ const AREA_COURSE={English:"English",Mathematics:"Mathematics",Science:"Science",
+  "Social Science":"Social Studies",Humanities:"Humanities",Languages:"Language",
+  Arts:"Arts",Technology:"Design and Technology"};
+ const ELECTIVES=["Arts","Technology","Humanities","Social Science"];
+ const LANGS=["Arabic","French","Spanish"];
+ DPC.forEach(d=>{
+  const core=["English","Mathematics","Science","Social Science","Languages"];
+  const elective=ELECTIVES[Math.floor(rnd()*ELECTIVES.length)];
+  const lang=LANGS[Math.floor(rnd()*LANGS.length)];
+  /* A mark band per student, so a strong student is strong across the
+     row rather than strong in one area and weak in the next by accident
+     of the draw. The spread inside the band is what makes a single
+     subject fall below its own threshold. */
+  const band=58+Math.floor(rnd()*30);
+  const mk=()=>Math.max(42,Math.min(98,Math.round(band+(rnd()*18-9))));
+  const row=(area,yr)=>({area,yr,
+   name:area==="Languages"?lang+(yr===9?"":" II"):AREA_COURSE[area]+" "+yr,
+   mark:mk()});
+  const g9=core.concat([elective]).map(a=>row(a,9));
+  const g10=core.concat([elective]).map(a=>row(a,10));
+  /* Grade 10 mathematics is already modelled as a set, and the set is
+     the thing MAA asks about, so the maths row defers to it rather than
+     inventing a second number that could disagree with it. */
+  if(d.yr===10&&d.mark){const m=g10.find(c=>c.area==="Mathematics");
+   if(m){m.mark=d.mark;m.name=d.mathSet==="extended mathematics"?"Extended Mathematics 10":"Foundation Mathematics 10";}}
+  PRIOR[d.id]={g9,g10,lang,elective};
+ });
  /* Grade 10 carries a live selection round; Grades 11 and 12 are in the
     diploma already and carry a CAS record instead. */
  const stateFor=()=>{const r=rnd();
@@ -4511,7 +4591,7 @@ const SELREC={};
  DPC.filter(d=>d.yr===10).forEach(d=>{
   const st=d.id==="s10"?"draft":stateFor();
   if(st==="none"){SELREC[d.id]={sid:d.id,status:"none",picks:{},why:{},goalNote:"",signs:{},talk:null,log:[],v:0};return;}
-  const picks=buildPicks();
+  const picks=buildPicks(d);
   if(!picks){SELREC[d.id]={sid:d.id,status:"none",picks:{},why:{},goalNote:"",signs:{},talk:null,log:[],v:0};return;}
   /* drawn without replacement: three identical sentences on one form is
      what generated content looks like, and a reader spots it before they
@@ -4652,6 +4732,57 @@ CASREC.s17={hrs:{c:34,a:26,s:22},outcomes:5,last:"This week",pending:0,
    Everything a submission is gated on, as comparisons. `block` stops a
    submission; `ask` is surfaced to the student and carried into the
    coordinator's meeting prep as a question rather than a fault. */
+/* ── PREREQUISITES ───────────────────────────────────────────────────
+   One subject, one level, one student: has this student already studied
+   what the course asks for? Three answers, and the third is the one
+   that keeps the panel honest.
+
+   "unknown" is returned when the student has no course history on file
+   rather than when they fail. The generated cohort all have one, but a
+   student imported mid-round would not, and answering "not met" for a
+   record we have never seen would be the kind of confident wrong
+   statement this product exists not to make.
+
+   Evidence requirements — a portfolio, an audition — are reported and
+   never judged. The department decides those, not a table. */
+function prereqCheck(subId,lv,stu){
+ const s=IBS(subId); if(!s||!s.needs) return {k:"met",items:[]};
+ const n=s.needs;
+ if(n.lv==="HL"&&lv!=="HL") return {k:"met",items:[],slOnly:true};
+ const hist=stu&&PRIOR[stu.id];
+ if(!hist) return {k:"unknown",items:[{k:"unknown",t:"No course history on file"}]};
+ const all=hist.g9.concat(hist.g10);
+ const has=a=>all.filter(c=>c.area===a);
+ const best=a=>{const r=has(a);return r.length?Math.max.apply(null,r.map(c=>c.mark)):null;};
+ const items=[];
+ /* A disqualifier, not a requirement: ab initio is for beginners, so
+    prior study of that language is what rules it out. */
+ if(n.bars){const studied=hist.lang===n.bars;
+  items.push({k:studied?"unmet":"met",
+   t:studied?"Two years of "+n.bars+" already studied":"No prior "+n.bars});}
+ if(n.course){const ok=stu.mathSet===n.course;
+  items.push({k:stu.mathSet?(ok?"met":"unmet"):"unknown",
+   t:ok?"In the "+n.course+" set":stu.mathSet?"In the "+stu.mathSet+" set, not "+n.course:"Set not recorded"});}
+ (n.areas||[]).forEach(a=>{const r=has(a);
+  items.push({k:r.length?"met":"unmet",
+   t:r.length?r[r.length-1].name:"No "+a.toLowerCase()+" course on record"});});
+ if(n.anyOf){const hit=n.anyOf.filter(a=>has(a).length);
+  items.push({k:hit.length?"met":"unmet",
+   t:hit.length?has(hit[0])[has(hit[0]).length-1].name:"None of "+n.anyOf.join(" or ").toLowerCase()+" on record"});}
+ /* The mark is read from the area the course gates, not from an
+    average: a student can sit well above the bar overall and still be
+    under it in the one subject that matters here. */
+ if(n.pct){const area=(n.areas&&n.areas[0])||(n.anyOf&&n.anyOf.filter(a=>has(a).length)[0])||null;
+  const m=area?best(area):null;
+  items.push({k:m==null?"unknown":(m>=n.pct?"met":"unmet"),
+   t:m==null?"No mark recorded":m+" in "+area.toLowerCase()+", against "+n.pct});}
+ if(n.evidence) items.push({k:"evidence",t:"Requires "+n.evidence});
+ const k=items.some(i=>i.k==="unmet")?"unmet":items.some(i=>i.k==="unknown")?"unknown":"met";
+ return {k,items,note:n.note};
+}
+/* Shorthand for the chooser, which has room for a mark and not a list. */
+function prereqMark(subId,lv,stu){const r=prereqCheck(subId,lv,stu);
+ return r.k==="met"?"":r.k==="unmet"?"Requirement not met":"Requirement unconfirmed";}
 function selPicks(rec){return IB_GROUPS.map(gr=>[gr,rec.picks?rec.picks[gr.id]:null]).filter(x=>x[1]&&x[1].s);}
 function selHL(rec){return selPicks(rec).filter(([,p])=>p.lv==="HL").length;}
 function selPeriod(p){const s=IBS(p.s);return s?s.per[p.lv]:null;}
@@ -4681,13 +4812,28 @@ function selCheck(rec,stu){
  if(noWhy.length)out.push({k:"block",t:noWhy.length===1?"One subject has no reason written":noWhy.length+" subjects have no reason written",
   d:"Your coordinator reads these before he meets you, and the meeting is better when he has. A sentence is enough."});
  else if(selPicks(rec).length)out.push({k:"ok",t:"A reason on every subject",d:"These go to your coordinator with the selection."});
- /* prerequisite, as a comparison against the record rather than a view */
- selPicks(rec).forEach(([gr,p])=>{const s=IBS(p.s);
-  /* No record of the feeder set is not the same as being in the wrong one,
-     so a student the school has no data for is not warned about. */
-  if(s.needs&&p.lv===s.needs.lv&&stu&&stu.mathSet){const set=stu.mathSet;
-   if(set!==s.needs.course)out.push({k:"ask",q:"Talk me through "+s.name+" at Higher Level. What makes you think you can carry it?",t:s.name+" at Higher Level",
-    d:"It is offered from the "+s.needs.course+" set, and you are in the "+set+" set this year. Your teacher answers this one when the selection reaches him, so it is worth writing down why you want it."});}});
+ /* The feeder-set case is handled by prereqCheck below, which reads
+    the same `needs.course` field and reports it alongside every other
+    requirement. A separate rule here produced the finding twice. */
+ /* ── PREREQUISITES ──────────────────────────────────────────────────
+    Against the student's own course history, never against a cohort.
+    An unmet requirement is an "ask", never a "block": the product
+    decision is that this advises and does not gate. A student who has
+    read the requirement and still wants the course is exactly who the
+    coordinator's meeting is for, and a form that refused to send would
+    route that conversation into a corridor instead of onto a record. */
+ selPicks(rec).forEach(([gr,p])=>{const s2=IBS(p.s); if(!s2||!s2.needs||!stu)return;
+  const chk=prereqCheck(p.s,p.lv,stu);
+  if(chk.k==="unmet"){
+   const missed=chk.items.filter(i=>i.k==="unmet").map(i=>i.t).join("; ");
+   out.push({k:"ask",t:s2.name+(p.lv==="HL"?" at Higher Level":""),
+    q:"You have asked for "+s2.name+" without the usual preparation. What makes this the right course for you?",
+    d:(s2.needs.note||"")+" On this record: "+missed.charAt(0).toLowerCase()+missed.slice(1)+". Nothing stops the student choosing it, and the coordinator will want the reason."});}
+  else if(chk.k==="unknown")
+   out.push({k:"ask",t:s2.name+": record incomplete",
+    q:"We have no course record for "+s2.name+". Can the office confirm what was taken?",
+    d:"The requirement cannot be checked because the prior course record is missing. This is a records question rather than a judgement about the student."});
+ });
  /* the goal check, which never blocks */
  const goalKey=stu&&Object.keys(GOAL_NEEDS).find(k=>(stu.goal||"").includes(k));
  if(goalKey&&selPicks(rec).length>=4){const G=GOAL_NEEDS[goalKey],have=selPicks(rec).map(([,p])=>p.s);
