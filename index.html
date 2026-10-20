@@ -1489,7 +1489,7 @@ const STUDENTS=[
  headline:"Every individual signal is healthy. The pattern across them is not: eleven consecutive nights of platform activity after 01:00, and punctuality fraying in first period only.",
  plain:"Nothing here would raise a flag on its own, which is why it is worth a conversation. Priya's grades are the strongest in the year and rising. The engine is reading the cost of holding them: work displaced into the night, and the first lesson of the day paying for it. There is no crisis and no failure to point at, so this is a check-in, not an intervention.",
  signal:69,window:"11 days",severity:"Medium",nocause:true,
- context:["Attainment at or above personal band in every subject","Late arrivals confined to first period; none after 09:00","Carrying four HL subjects, the Extended Essay and the student council"],
+ context:["Attainment at or above personal band in every subject","Late arrivals confined to first period; none after 09:00","Taking four HL subjects, the Extended Essay and the student council"],
  baselines:{engagement:{label:"Platform activity after 01:00 (nights per week)",band:[0,2],series:[0,1,0,2,1,4,6,7],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"",anomalyFrom:5},
   attendance:{label:"First-period punctuality (on-time %)",band:[95,100],series:[100,100,98,100,96,90,84,80],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:5},
   academic:{label:"Overall attainment",band:[88,100],series:[94,95,96,96,97,97,98,98],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:99}},
@@ -2135,7 +2135,7 @@ function vCommand(){
   return `<div class="card" style="padding:17px 20px;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
    <div style="width:34px;height:34px;border-radius:var(--r);background:var(--monitorSoft);display:grid;place-items:center;color:var(--monitor);flex-shrink:0">${ic('eye',17)}</div>
    <div style="flex:1;min-width:220px;font-size:12.3px;color:var(--inkSoft);line-height:1.5">
-    <b style="color:var(--ink)">${q} student${q===1?'':'s'} being monitored.</b> Isolated signals with low signal strength and no corroboration. No action needed; the engine is watching for persistence.
+    <b style="color:var(--ink)">${q} student${q===1?'':'s'} being monitored.</b> Isolated signals with low signal strength and no corroboration. No action required; the engine continues to monitor for persistence.
     ${g?` <b style="color:var(--good)">${g} recovered</b> and ready to close.`:''}</div>
    <div style="display:flex;gap:8px;flex-shrink:0">
     <button class="btn btn-g btn-sm" data-prio="monitor">View monitored</button>
@@ -2193,7 +2193,7 @@ function vIntel(){
  </div>
 
  <div class="card" style="padding:20px;margin-bottom:18px">
-  <h2 class="sechead">${ic('layers',13)} Cohort signal matrix · who is showing what</h2>
+  <h2 class="sechead">${ic('layers',13)} Cohort signal matrix · signals by domain</h2>
   <div style="font-size:12px;color:var(--inkSoft);margin-bottom:14px;line-height:1.5">A single signal is usually noise. The engine escalates when independent domains corroborate each other. That correlation is what separates a real concern from a bad week.</div>
   <div style="overflow-x:auto"><table class="sheet" style="font-size:12px">
    <thead><tr><th style="text-align:left;padding:9px 10px;font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--inkMute);border-bottom:1px solid var(--line)">Student</th>
@@ -2233,7 +2233,7 @@ function vIntel(){
       <div style="font-size:11.5px;color:var(--inkMute);margin-top:3px;line-height:1.5">${d}</div></div>`).join('')}
   </div>
   <div class="card" style="padding:20px">
-   <h2 class="sechead">${ic('lock',13)} What this engine will never do</h2>
+   <h2 class="sechead">${ic('lock',13)} System limitations</h2>
    ${["Present a mental-health or safeguarding diagnosis","Assign a permanent risk label to a child","Take disciplinary action or remove an opportunity","Send external communication without human confirmation","Show sensitive notes outside an authorised role","Generate a safeguarding conclusion from a language model"]
      .map(x=>`<div style="display:flex;gap:9px;align-items:flex-start;padding:9px 0;font-size:12.3px;color:var(--inkSoft);border-bottom:1px solid var(--lineSoft)">${ic('x',15)}<span>${x}</span></div>`).join('')}
    <div style="background:var(--urgentSoft);border-radius:var(--r);padding:13px 15px;margin-top:13px;font-size:11.5px;color:var(--t-urgent-deep);line-height:1.55">
@@ -2302,7 +2302,7 @@ function vCase(c){
   </div>
 
   <div style="padding:18px 22px">
-   <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--inkMute);font-weight:700;margin-bottom:8px">What changed</div>
+   <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--inkMute);font-weight:700;margin-bottom:8px">Change recorded</div>
    <div class="prose" style="font-size:16px;line-height:1.65;color:var(--ink);margin-bottom:12px">${c.headline}</div>
    <div style="font-size:12.8px;color:var(--inkSoft);line-height:1.6;padding-left:13px;border-left:2px solid ${P.c}">${c.plain}</div>
    ${c.nocause?`<div style="display:flex;gap:8px;align-items:center;margin-top:13px;background:var(--panel);border-radius:var(--r);padding:10px 13px;font-size:11.5px;color:var(--inkSoft)">${ic('alert',15)}<span><b>The system does not infer a cause.</b> It has detected that a pattern changed and surfaced the evidence. Interpretation is yours.</span></div>`:''}
@@ -2310,7 +2310,7 @@ function vCase(c){
 
   ${!has.evidence?`<div style="padding:0 22px 18px">
    <div style="border-top:1px solid var(--line);padding-top:13px;font-size:12.3px;color:var(--ink-3);line-height:1.6">
-    Signal strength, duration and severity are all measurements of a threshold crossing. Nothing has crossed one, so there is nothing to measure${c.roster?'.':'. The engine is watching, and will open a case if that changes.'}</div></div>`:`
+    Signal strength, duration and severity are all measurements of a threshold crossing. Nothing has crossed one, so there is nothing to measure${c.roster?'.':'. The engine continues to monitor and will open a case if that changes.'}</div></div>`:`
   <div style="padding:0 22px 18px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
    <div style="background:var(--surface-3);border-radius:var(--r);padding:13px 15px">
     <div style="font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px;display:flex;align-items:center;gap:5px">Signal strength
@@ -2319,7 +2319,7 @@ function vCase(c){
     <div style="flex:1">${meter(c.signal,c.signal>=75?'var(--crit)':c.signal>=55?'var(--warn)':'var(--mute)')}</div></div>
     <div style="font-size:10.8px;color:var(--ink-3);margin-top:6px;line-height:1.4">${c.signal>=75?'Multiple domains corroborate each other':c.signal>=55?'More than one signal, not yet conclusive':'Isolated signal, watching for persistence'}</div></div>
    <div style="background:var(--panel);border-radius:var(--r);padding:13px 15px">
-    <div style="font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">How long it has persisted</div>
+    <div style="font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">Duration</div>
     <div class="stamp" style="font-size:22px;font-weight:600">${c.window}</div></div>
    <div style="background:var(--panel);border-radius:var(--r);padding:13px 15px">
     <div style="font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--inkMute);margin-bottom:6px">Severity</div>
@@ -2500,7 +2500,7 @@ function vUni(){
   {s:"Yousef Bin Saeed",av:"YB",p:"monitor",task:"UCAS submission",d:18,ok:true},
   {s:"Omar Farouk",av:"OF",p:"monitor",task:"UCAS submission",d:18,ok:true}];
  return `<div class="fade">
- ${head("Where every list stands","University guidance is a complete operating system inside the platform, and its signals feed the same intelligence engine as attendance and academics.")}
+ ${head("University list status","University guidance is a complete operating system inside the platform, and its signals feed the same intelligence engine as attendance and academics.")}
 
  ${(()=>{
    const listed=all.filter(c=>c.uni.targets.length);
@@ -2939,7 +2939,7 @@ function vArch(){
   ["Anomaly","A statistically or rule-detected deviation from that baseline."],
   ["Concern case","A grouped set of related signals requiring review, intervention or escalation."],
   ["Intervention","A human action: check-in, parent contact, teacher coordination, referral, action plan or monitoring."],
-  ["Outcome","What changed after intervention: resolved, reduced, unchanged or escalated."]];
+  ["Outcome","Change recorded after intervention: resolved, reduced, unchanged or escalated."]];
  return `<div class="fade">
  ${head("From raw school data to an explainable signal","Nothing in this system is a black box. Original evidence and derived interpretation are stored separately, so any flag from any past date can still be explained.")}
  <div class="card" style="padding:22px;margin-bottom:16px">
@@ -3017,7 +3017,7 @@ function vPilot(){
     .map(x=>`<div style="display:flex;gap:8px;align-items:flex-start;padding:4px 0;font-size:12px;color:var(--warn-ink);line-height:1.5">${ic('check',13)}<span>${x}</span></div>`).join('')}</div></div></div>
  </div>
  <div class="card" style="padding:20px;margin-top:16px">
-  <h2 class="sechead">${ic('brief',13)} The five design principles this is built on</h2>
+  <h2 class="sechead">${ic('brief',13)} Design principles</h2>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 20px">
   ${[["Relief before complexity","Every feature must remove work or surface something important. It must not create another dashboard staff have to remember to check."],
      ["Change detection before static judgment","A student's deviation from their own baseline is usually more meaningful than their position against a cohort average."],
@@ -3493,7 +3493,7 @@ function sheetRail(){
  <div class="stamp" style="font-size:17px;font-weight:600;color:var(--ink);margin:3px 0 2px">${DAY.long}</div>
  <div class="fig" style="font-size:11px;color:var(--ink-3);margin-bottom:20px">Engine swept ${DAY.sweep} · ${meets.length} meetings · ${due.length} follow-ups</div>
 
- ${moved.length||opened.length?`<h2 class="railh">What changed overnight</h2>
+ ${moved.length||opened.length?`<h2 class="railh">Overnight changes</h2>
  <div style="margin-bottom:22px">
   ${moved.map(c=>`<button class="railrow" data-file="${c.id}">
    <div style="display:flex;align-items:center;gap:7px">
@@ -3963,7 +3963,7 @@ const MEETING_TOPICS=[
  ["uni","University choices and requirements","Which universities, which courses, and whether the student is on track for them"],
  ["grades","Grades and predicted grades","Working grades, predictions, and what they mean for university offers"],
  ["pathway","IB, AP and subject choices","Whether the current programme fits the student's plans"],
- ["wellbeing","How the student is doing more generally","Wellbeing, workload, motivation"],
+ ["wellbeing","General student progress","Wellbeing, workload, motivation"],
  ["other","Something else","Anything not covered above"]];
 const MEETING_SLOTS=["Tue 2 Dec · 15:30","Tue 2 Dec · 16:15","Wed 3 Dec · 08:00","Wed 3 Dec · 15:30","Thu 4 Dec · 16:00","Fri 5 Dec · 08:15"];
 
@@ -4601,7 +4601,7 @@ const CAS_OUTCOMES=["Identify your own strengths and areas for growth",
    letting a student believe a number is a regulation. */
 const CAS_HOURS_NOTE="Hours are this school's own expectation, roughly 50 across each strand over 18 months. The IB itself asks for a balanced 18-month engagement and evidence of the seven outcomes rather than a total.";
 
-/* What the school runs. Every entry here is demonstration content: these
+/* School provision. Every entry here is demonstration content: these
    are plausible school activities, not a list of anything a real school
    offers, and the demonstration stamp on the letterhead covers them. */
 const CAS_OPPS=[
@@ -5154,7 +5154,7 @@ function vStuSubjectRecord(c,grade){
  if(grade===9)return `<div class="fade">
   ${head("Two years before you choose, and worth seeing now",
    "You will pick six diploma subjects in Grade 10, or an AP-based route instead. Nothing here needs a decision yet. It is here so the choice is not the first time you meet it.")}
-  <h2 class="sechead">What a diploma is made of</h2>
+  <h2 class="sechead">Diploma components</h2>
   <div class="sheetbox">${IB_GROUPS.map(gr=>`<div class="selrow-static">
    <span class="lstamp void">${gr.n}</span>
    <div style="min-width:0"><div class="selrow-t">${gr.label}</div>
@@ -5171,7 +5171,7 @@ function vStuSubjectRecord(c,grade){
  return `<div class="fade">
   ${head(ib?"Current course load":"Your courses this year",
    ib?`Six subjects, three at Higher Level, plus theory of knowledge, the extended essay and CAS.${c.pred&&c.pred!=="—"?" Your predicted total is "+c.pred+".":""}`
-     :"Your AP courses, the teacher for each, and where your grade currently sits against the class.")}
+     :"Your AP courses, the teacher for each, and your current grade relative to the class.")}
   ${classes.length?`${tally([["Subjects",String(classes.length),ib?"the diploma shape":"AP route"],
    ...(total?[["Predicted",String(total)+" / 42","subject points, before the core"]]:[]),
    ["At higher level",String(classes.filter(x=>/HL/.test(x.name)).length||"—"),ib?"of six":"not applicable"]])}
@@ -5262,7 +5262,7 @@ function vSelForm(rec,stu){
      </div>`;}).join("")}
   </div>
 
-  <h2 class="sechead" style="margin-top:26px">Every diploma also carries these</h2>
+  <h2 class="sechead" style="margin-top:26px">Additional diploma requirements</h2>
   <div class="sheetbox">${DP_CORE.map(([k,n,d])=>`<div class="selrow-static">
    <span class="lstamp">${k==="CAS"?"C":k==="EE"?"E":"T"}</span>
    <div style="min-width:0"><div class="selrow-t">${n}</div><div class="selrow-n">${d}</div></div></div>`).join("")}</div>
@@ -5483,7 +5483,7 @@ function vTSelCard(x,cls){
      <div><div class="selrow-t">${rec.signs[p.s].verdict==="hl"?"Supported at Higher Level":rec.signs[p.s].verdict==="sl"?"Standard Level suggested":"Concern raised"}</div>
      <div class="selrow-n">${rec.signs[p.s].by}, ${rec.signs[p.s].when}. ${rec.signs[p.s].note}</div></div>
     </div>`:`<div class="revacts">
-     <button class="btn btn-p" data-sign="${d.id}:${p.s}:hl">${p.lv==="HL"?"They can carry it at Higher Level":"Happy at this level"}</button>
+     <button class="btn btn-p" data-sign="${d.id}:${p.s}:hl">${p.lv==="HL"?"Suitable for Higher Level":"Happy at this level"}</button>
      ${p.lv==="HL"?`<button class="btn btn-g" data-sign="${d.id}:${p.s}:sl">Suggest Standard Level</button>`:""}
      <button class="btn btn-g" data-sign="${d.id}:${p.s}:concern">Raise a concern</button>
     </div>`}
@@ -5606,7 +5606,7 @@ function vStuCAS(embedded){
    </div>
   </div>
 
-  <h2 class="sechead" style="margin-top:26px">${tags.length?"What fits":"What the school runs"}</h2>
+  <h2 class="sechead" style="margin-top:26px">${tags.length?"Suitable options":"School provision"}</h2>
   ${tags.length?`<div class="sheetbox">${matches.map(({o,hit})=>`<div class="casent">
    <span class="lstamp">${o.st.toUpperCase()}</span>
    <div style="min-width:0;flex:1">
@@ -5620,7 +5620,7 @@ function vStuCAS(embedded){
     <button class="btn btn-g btn-sm" data-casjoin="${o.id}">Ask to join</button>
    </div>
   </div>`).join("")}</div>
-  ${matches.length<CAS_OPPS.length?`<div style="margin-top:12px">${empty((CAS_OPPS.length-matches.length)+" more the school runs",
+  ${matches.length<CAS_OPPS.length?`<div style="margin-top:12px">${empty((CAS_OPPS.length-matches.length)+" further options offered",
    "Everything else on the list, whether or not it matches what you picked above. A CAS activity you would have done anyway is not a worse one.",
    `<button class="btn btn-g btn-sm" data-casall="1">${S.casAll?"Hide them":"Show all "+CAS_OPPS.length}</button>`)}</div>`:""}
   ${S.casAll?`<div class="sheetbox" style="margin-top:12px">${CAS_OPPS.filter(o=>!matches.some(m=>m.o.id===o.id)).map(o=>`<div class="casent">
@@ -5685,7 +5685,7 @@ function vStuEE(c){
    </div>`:""}
   </div>
 
-  <h2 class="sechead" style="margin-top:26px">What happens, and when</h2>
+  <h2 class="sechead" style="margin-top:26px">Process and timeline</h2>
   <div class="sheetbox">
    ${plan.map((m,i)=>{const done=r.done[m.id],isNext=next&&next.m.id===m.id;
     return `<div class="selrow-static"${isNext?' style="box-shadow:inset 2px 0 0 var(--school-primary)"':''}>
@@ -5821,10 +5821,10 @@ function vTEECard(d,r,load,cap){
      <p class="prose" style="font-size:13.4px;color:var(--ink);line-height:1.6;margin:4px 0 0;max-width:66ch">${r.rq}</p>
     </div>
    </div>
-   <div class="revwhy"><div class="appa" style="color:var(--ink-4)">Why they picked it</div>
+   <div class="revwhy"><div class="appa" style="color:var(--ink-4)">Stated reason</div>
     <p class="prose">${r.why}</p></div>
    <div class="revrec">
-    <div class="appa" style="color:var(--ink-4)">What taking this would mean</div>
+    <div class="appa" style="color:var(--ink-4)">Implications of this choice</div>
     <div class="sheetscroll"><table class="sheet mini"><tbody>
      <tr><td>Your supervision load</td><td>${load} of ${cap}${over?", at or over the school's guide":""}</td><td class="num">${load}</td></tr>
      <tr><td>Subject</td><td>${sub?sub.name+", which you teach":"Not set"}</td><td class="num">${sub?sub.per[sub.lv[0]]:"—"}</td></tr>
@@ -5960,7 +5960,7 @@ function vCoordEE(){
    body:"Every student in Grades 11 and 12 has a supervisor and has passed the checkpoints behind them. This list holds only the students you would otherwise have to find by asking around.",
    action:`<button class="btn btn-g btn-sm" data-eefilter="all">Show the whole cohort</button>`})}</div>`}
 
-  <h2 class="sechead" style="margin-top:30px">Where supervision has landed</h2>
+  <h2 class="sechead" style="margin-top:30px">Supervision allocation</h2>
   <div class="selrow-n" style="margin-bottom:12px;max-width:70ch">The guide is ${EE_ROUND.cap} essays each. Nothing enforces it, which is exactly why it needs to be visible: without this column the same four teachers absorb a year group and nobody finds out until one of them says so.</div>
   <div class="sheetscroll"><table class="sheet"><thead><tr>
    <th style="width:34%">Teacher</th><th>Subjects</th><th class="num">Supervising</th><th class="num">Guide</th><th style="width:150px">Standing</th>
@@ -6254,7 +6254,7 @@ function vSelDemand(){
    ["Over cap",String(over.length),"teaching groups too large"],
    ["Counted",String(sent+c.draft)+" of "+DPC.filter(d=>d.yr===10).length,"drafts included, marked"],
    ["Round closes",SEL_ROUND.closes,SEL_ROUND.deadlineIn+" days"]])}
-  ${under.length?`<h2 class="sechead" style="margin-top:26px">Below the minimum to run</h2>
+  ${under.length?`<h2 class="sechead" style="margin-top:26px">Below minimum enrolment</h2>
   <div class="sheetbox">${under.map(v=>`<div class="selrow-static">
    <span class="lstamp void">${v.n}</span>
    <div style="min-width:0;flex:1"><div class="selrow-t">${v.s.name}</div>
@@ -6280,11 +6280,11 @@ function vSelDemand(){
     <td class="num">${r.tot}</td>
     <td class="num" style="color:var(--ink-4)">${r.s.min}</td><td class="num" style="color:var(--ink-4)">${r.s.cap}</td>
     <td>${r.state==="under"?`<b style="color:var(--margin)">Below minimum</b>`
-     :r.state==="over"?`<b style="color:var(--ink)">Over cap by ${r.n-r.s.cap}</b>`:"Runs"}</td>
+     :r.state==="over"?`<b style="color:var(--ink)">Over cap by ${r.n-r.s.cap}</b>`:"Offered"}</td>
    </tr>`).join("")}
   </tbody></table></div>
 
-  <h2 class="sechead" style="margin-top:30px">Where the timetable is tight</h2>
+  <h2 class="sechead" style="margin-top:30px">Timetable constraints</h2>
   <div class="selrow-n" style="margin-bottom:12px;max-width:66ch">Every subject in a period is a subject nobody can take alongside the others in it. A student who wants two of these has to drop one, and they find that out on their own form rather than in August.</div>
   <div class="sheetscroll"><table class="sheet"><thead><tr>
    <th style="width:90px">Period</th><th>Subjects timetabled against each other, and how many chose each</th>
@@ -6324,7 +6324,7 @@ function vCasCohort(){
  return `<div class="fade">
   ${head(gap.length?gap.length+" students have recorded nothing for three months":"Every diploma student is still moving in CAS",
    `Grades 11 and 12 of the Diploma cohort, ${cohort.length} students. ${CAS_HOURS_NOTE}`)}
-  ${tally([["Nothing for 3 months",String(gap.length),"the gap that costs a diploma"],
+  ${tally([["No activity for 3 months",String(gap.length),"the gap that costs a diploma"],
    ["A strand below expected hours",String(cohort.filter(x=>x.sum&&x.sum.thin.length).length),"balance is the requirement"],
    ["Reflections outstanding",String(cohort.reduce((a,x)=>a+(x.sum?x.sum.pending:0),0)),"hours without evidence"],
    ["In the cohort",String(cohort.length),"Grades 11 and 12"]])}
@@ -7257,10 +7257,10 @@ function vDiscoverFlow(){
  if(a.drive)rows.push(["Feels capable when",a.drive]);
  if(a.spark)rows.push(["Wants at 25",a.spark]);
  if(!introDone)rows.push(["Your three answers","Skipped, nothing to start from yet"]);
- rows.push(["Pathway","Nothing decided yet"],["Signed off by",SCHOOL.counselor]);
+ rows.push(["Pathway","No decision recorded"],["Signed off by",SCHOOL.counselor]);
  return `<div class="fade" style="max-width:640px;margin:0 auto;padding-top:20px">
   <div class="railh" style="margin-bottom:9px">My pathway</div>
-  <h1 class="stamp" style="margin:0 0 10px;font-size:27px;font-weight:600;line-height:1.15">Nothing is decided yet</h1>
+  <h1 class="stamp" style="margin:0 0 10px;font-size:27px;font-weight:600;line-height:1.15">No decision recorded</h1>
   <div class="prose" style="font-size:14px;color:var(--ink-2);line-height:1.7;max-width:62ch;margin-bottom:26px">This page is blank on purpose. It fills in from a conversation, a real back-and-forth rather than a form, and nothing it produces becomes a plan until ${SCHOOL.counselor} has read it and signed it off.</div>
 
   <div style="border:1.5px solid var(--rule-3);background:var(--stock);margin-bottom:24px">
@@ -7283,7 +7283,7 @@ function vPathExplorer(navAttr,uniTab,contactTab){
  const c=g(PARENT_ME);
  return `
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <h2 class="sechead">${ic('route',13)} What ${c.name.split(' ')[0]} is doing now</h2>
+  <h2 class="sechead">${ic('route',13)} Current activity</h2>
   ${c.track==="IB"?`<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--ok-bg);border:1px solid var(--ok-line);border-radius:var(--r);padding:16px">
    <span style="color:var(--ok);display:flex">${ic('checkC',22)}</span>
    <div style="flex:1;min-width:220px"><b style="font-size:14px;color:var(--ok-ink)">${c.name.split(' ')[0]} is on the full IB Diploma.</b>
@@ -7317,7 +7317,7 @@ function vPathExplorer(navAttr,uniTab,contactTab){
     <td style="padding:12px 10px;line-height:1.6;color:var(--ink-2);vertical-align:top">${r[2]}</td></tr>`).join('')}</tbody></table></div>
  </div>
 <div class="card" style="padding:20px;margin-bottom:16px">
-  <h2 class="sechead">${ic('trend',13)} Where these choices have led</h2>
+  <h2 class="sechead">${ic('trend',13)} Outcomes of these choices</h2>
   <div style="font-size:12.3px;color:var(--ink-3);line-height:1.6;margin-bottom:18px">Every family faces the same question before finalising subject choices: which combination leads where? Pick a country to see real students from this school: what they took, IB or AP, and which university they now attend.</div>
 
   <div style="font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);margin-bottom:9px">Which country is she considering?</div>
@@ -7471,7 +7471,7 @@ function vHSGuide(){
  </div>
 
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <h2 class="sechead">${ic('trend',13)} How GPA and weighting actually work</h2>
+  <h2 class="sechead">${ic('trend',13)} GPA and weighting explained</h2>
   <div style="display:flex;flex-direction:column;gap:14px">
    <div style="border:1px solid var(--line);border-radius:var(--r);padding:14px 16px">
     <b style="font-size:13px">Unweighted GPA</b>
@@ -7999,7 +7999,7 @@ function vParent(){
   <div style="display:flex;gap:13px;align-items:flex-start">
    <div style="width:38px;height:38px;border-radius:var(--r);background:var(--rose);color:var(--on-rose);display:grid;place-items:center;flex-shrink:0">${ic('spark',19)}</div>
    <div style="flex:1">
-    <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--rose-2);font-weight:700;margin-bottom:6px">Where things stand at this stage</div>
+    <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--rose-2);font-weight:700;margin-bottom:6px">Current position</div>
     <div style="font-size:14px;font-weight:600;color:var(--ink);margin-bottom:6px;line-height:1.4">This year is about understanding the system, not choosing within it.</div>
     <div style="font-size:12.8px;color:var(--ink-2);line-height:1.65;margin-bottom:9px">Before Grade 10's real decision between IB and AP, it helps to understand how grading works here and what subjects exist. There is a full guide covering both.</div>
     <button class="btn btn-sm" style="margin-top:4px;background:var(--rose);color:var(--on-rose)" data-pv="guide">${ic('book',13)} Open the High School Guide</button>
@@ -8008,7 +8008,7 @@ function vParent(){
   <div style="display:flex;gap:13px;align-items:flex-start">
    <div style="width:38px;height:38px;border-radius:var(--r);background:var(--rose);color:var(--on-rose);display:grid;place-items:center;flex-shrink:0">${ic('spark',19)}</div>
    <div style="flex:1">
-    <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--rose-2);font-weight:700;margin-bottom:6px">How you can help this week</div>
+    <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--rose-2);font-weight:700;margin-bottom:6px">Recommended actions this week</div>
     <div style="font-size:14px;font-weight:600;color:var(--ink);margin-bottom:6px;line-height:1.4">${HELP_THIS_WEEK.headline}</div>
     <div style="font-size:12.8px;color:var(--ink-2);line-height:1.65;margin-bottom:9px">${HELP_THIS_WEEK.detail}</div>
     <div style="font-size:12.3px;color:var(--ink-3);line-height:1.6;padding-top:9px;border-top:1px solid var(--rose-line-2)">${HELP_THIS_WEEK.secondary}</div>
@@ -8018,7 +8018,7 @@ function vParent(){
   <div style="display:flex;gap:13px;align-items:flex-start">
    <div style="width:38px;height:38px;border-radius:var(--r);background:var(--rose);color:var(--on-rose);display:grid;place-items:center;flex-shrink:0">${ic('spark',19)}</div>
    <div style="flex:1">
-    <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--rose-2);font-weight:700;margin-bottom:6px">Where things stand at this stage</div>
+    <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--rose-2);font-weight:700;margin-bottom:6px">Current position</div>
     <div style="font-size:14px;font-weight:600;color:var(--ink);margin-bottom:6px;line-height:1.4">There is nothing to apply for yet, and that is right for Grade 10.</div>
     <div style="font-size:12.8px;color:var(--ink-2);line-height:1.65;margin-bottom:9px">The one real decision at this stage is IB versus AP, and which subjects within that. The most useful thing a parent can do right now is look at where each combination has actually led other students, not guess.</div>
     <button class="btn btn-sm" style="margin-top:4px;background:var(--rose);color:var(--on-rose)" data-pv="pathway">${ic('route',13)} See where past choices have led</button>
@@ -8027,7 +8027,7 @@ function vParent(){
   <div style="display:flex;gap:13px;align-items:flex-start">
    <div style="width:38px;height:38px;border-radius:var(--r);background:var(--rose);color:var(--on-rose);display:grid;place-items:center;flex-shrink:0">${ic('spark',19)}</div>
    <div style="flex:1">
-    <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--rose-2);font-weight:700;margin-bottom:6px">Where things stand at this stage</div>
+    <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--rose-2);font-weight:700;margin-bottom:6px">Current position</div>
     <div style="font-size:14px;font-weight:600;color:var(--ink);margin-bottom:6px;line-height:1.4">This is the year to start narrowing down real options.</div>
     <div style="font-size:12.8px;color:var(--ink-2);line-height:1.65;margin-bottom:9px">The subject path is set. The application itself is still a year away. This is a good time to start building a realistic shortlist of countries and universities, without the deadline pressure that arrives in the final year.</div>
     <button class="btn btn-sm" style="margin-top:4px;background:var(--rose);color:var(--on-rose)" data-pv="pathway">${ic('route',13)} Explore countries and universities</button>
@@ -8097,7 +8097,7 @@ function vParent(){
  </div>
 
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <h2 class="sechead">${ic('star',13)} What ${c.name.split(" ")[0]} has been achieving</h2>
+  <h2 class="sechead">${ic('star',13)} Recent achievements</h2>
   ${(()=>{const achList=PARENT_ACHIEVEMENTS_BY_GRADE[S.previewGrade||12]||PARENT_ACHIEVEMENTS_BY_GRADE[12];
    return achList.map((a,i)=>`<div style="display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:${i<achList.length-1?'1px solid var(--line)':'none'}">
    <div style="width:30px;height:30px;border-radius:var(--r);background:var(--rose-bg);color:var(--rose);display:grid;place-items:center;flex-shrink:0">${ic(a.icon,15)}</div>
@@ -8107,7 +8107,7 @@ function vParent(){
  </div>
 
  <div class="card" style="padding:20px;margin-bottom:16px">
-  <h2 class="sechead">${ic('clock',13)} What is coming up</h2>
+  <h2 class="sechead">${ic('clock',13)} Upcoming</h2>
   ${(pg===12?[["UCAS submission","18 days","var(--warn)"],["Personal statement final draft","This week","var(--warn)"],["Semester 1 transcript issued","20 January","var(--ink-3)"],["Parents' evening","5 December","var(--ink-3)"]]
      :pg===11?[["Semester 1 transcript issued","20 January","var(--ink-3)"],["Parents' evening","5 December","var(--ink-3)"],["University shortlist review with counselor","Next scheduled meeting","var(--ink-3)"]]
      :[["Semester 1 transcript issued","20 January","var(--ink-3)"],["Parents' evening","5 December","var(--ink-3)"],["Subject confirmation deadline","End of this term","var(--warn)"]])
@@ -8794,7 +8794,7 @@ function vStuTargets(){
  ${held.length?`<div style="font-size:11.8px;color:var(--ink-3);margin-top:10px;line-height:1.6;max-width:70ch">A chance is an estimate of a decision nobody has made yet. Where the decision has come back, that column is left blank. The offer is the fact, not the forecast.</div>`:''}
 
  ${c.uni.flags&&c.uni.flags.length?`<div style="margin-top:22px;padding-top:16px;border-top:1.5px solid var(--rule-3)">
-  <div class="railh" style="margin-bottom:9px">What ${counselorShort()} is watching</div>
+  <div class="railh" style="margin-bottom:9px">Under counselor review</div>
   ${c.uni.flags.map(f=>`<div style="display:flex;gap:10px;align-items:flex-start;padding:6px 0;font-size:12.8px;color:var(--ink-2);line-height:1.55">
    <span class="lstamp void" aria-hidden="true">!</span><span>${f}</span></div>`).join('')}
   ${noSafety?`<div style="font-size:12.3px;color:var(--ink-3);line-height:1.65;margin-top:11px;max-width:68ch">Every university on this list sits at match or above. That is not a weak list; it is a list with no floor. Adding one secure option costs you none of the ambitious ones.</div>`:''}
@@ -8827,7 +8827,7 @@ function vStuNet(){
  return `<div class="fade">
  ${head("Contacts on your pathway","Alumni you have spoken to, and people you already know who sit somewhere on your route. Every entry is yours, and none of it is visible to other students.")}
  ${net.length?`<div style="overflow-x:auto"><table class="sheet" style="font-size:12.5px">
-  <thead><tr><th scope="col">Name</th><th scope="col">How you know them</th><th scope="col" style="width:120px">Standing</th></tr></thead>
+  <thead><tr><th scope="col">Name</th><th scope="col">Relationship</th><th scope="col" style="width:120px">Standing</th></tr></thead>
   <tbody>${net.map(n=>`<tr>
    <td style="color:var(--ink);font-weight:600">${n.n}</td>
    <td>${n.r}</td>
@@ -8876,7 +8876,7 @@ function vMentorMentees(){
  </div>
  ${tally([["Students",ms.length,"Matched by the school, not by a marketplace"],
   ["Sessions so far",ms.reduce((a,m)=>a+m.s,0),"Logged against the two files above"],
-  ["Cost","None","Nobody is billing you, and nobody is billing them"]])}
+  ["Cost","None","No charge applies to either party"]])}
  </div>`;}
 /* ═══════════ MODALS ═══════════ */
 function modalEl(){
@@ -8900,7 +8900,7 @@ function modalEl(){
     <div class="stamp" style="font-size:21px;font-weight:600">${c.name}</div>
     <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:3px">${c.yr} · ${c.goal} · Predicted ${c.pred}</div></div>
    <div style="padding:22px 24px">
-    <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--inkMute);font-weight:700;margin-bottom:7px">What changed</div>
+    <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--inkMute);font-weight:700;margin-bottom:7px">Change recorded</div>
     <div style="font-size:13px;line-height:1.65;color:var(--ink);margin-bottom:15px">${c.headline}</div>
     <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--inkMute);font-weight:700;margin-bottom:7px">Context on file</div>
     ${c.context.map(x=>`<div style="display:flex;gap:8px;padding:4px 0;font-size:12.3px;color:var(--inkSoft)">${ic('checkC',13)}<span>${x}</span></div>`).join('')}
