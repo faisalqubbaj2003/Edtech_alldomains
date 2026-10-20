@@ -1523,13 +1523,13 @@ const STUDENTS=[
 
 {id:"s16",name:"Noor Bin Hamad",yr:"Grade 12",av:"NH",prio:"review",owner:"Ms. Haddad",goal:"Architecture",gpa:"3.8",pred:"A*AB",
  headline:"Two teacher references outstanding at eleven days to deadline. Nothing here is Noor's to fix.",
- plain:"Every part of this application that belongs to Noor is finished and on time. The gap is the school's: two of the three references she needs have not been written, and one has been chased twice. This sits in Review because it is not urgent yet. But it is the school's obligation, not hers, and it will become urgent without anyone doing anything wrong.",
+ plain:"Every part of this application that belongs to Noor is finished and on time. The gap is the school's: two of the three references she needs have not been written, and one has received two reminders. This sits in Review because it is not urgent yet. But it is the school's obligation, not hers, and it will become urgent without anyone doing anything wrong.",
  signal:58,window:"Ongoing",severity:"Low",nocause:false,
- context:["Statement complete and in final review since 8 November","All wellbeing domains inside baseline","Mr. Yilmaz has been chased twice; Ms. Fahri once"],
+ context:["Statement complete and in final review since 8 November","All wellbeing domains inside baseline","Mr. Yilmaz has received two reminders; Ms. Fahri one"],
  baselines:{university:{label:"Application completeness",band:[60,100],series:[42,55,68,78,86,90,90,90],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:99},
   academic:{label:"Overall attainment",band:[82,96],series:[89,91,88,92,90,91,89,92],pts:["W1","W2","W3","W4","W5","W6","W7","W8"],unit:"%",anomalyFrom:99}},
  evidence:[
-  {dom:"university",src:"Documents & references",date:"Live",txt:"Two of three references outstanding. Mr. Yilmaz chased 8 and 17 November; Ms. Fahri chased 15 November. No response logged.",w:34},
+  {dom:"university",src:"Documents & references",date:"Live",txt:"Two of three references outstanding. Mr. Yilmaz reminded 8 and 17 November; Ms. Fahri reminded 15 November. No response logged.",w:34},
   {dom:"university",src:"Deadline radar",date:"Live",txt:"UCAS deadline in 11 days. School policy asks for all references filed by T-14.",w:21},
   {dom:"positive",src:"Essay workspace",date:"8 Nov",txt:"Personal statement complete and in final review; portfolio submitted.",w:-16},
   {dom:"positive",src:`Gradebook · ${SIS}`,date:"Rolling",txt:"Attainment stable and inside her band across all subjects.",w:-10}],
@@ -2407,7 +2407,7 @@ function vCase(c){
    </div>
 
    <div class="card" style="padding:18px">
-    <h2 class="sechead">${ic('brief',13)} ${open?"Triage this case":c.prio==="good"?"Close this case":"Nothing is being asked of you"}</h2>
+    <h2 class="sechead">${ic('brief',13)} ${open?"Triage this case":c.prio==="good"?"Close this case":"No action required"}</h2>
     ${open?'':`<div style="font-size:11.8px;color:var(--ink-3);line-height:1.55;margin:-3px 0 11px">${c.prio==="good"?"The signals that opened this case have recovered. The only thing outstanding is a documented outcome, the record schools most often lose.":"This case sits in "+P.label+": "+P.sla.toLowerCase()+". These controls are here if your judgement differs from the engine's."}</div>`}
     <div style="display:flex;flex-direction:column;gap:7px">
      ${c.prio==="good"?`<button class="btn btn-p" data-act="closecase:${c.id}" style="width:100%">${ic('checkC',15)} Record outcome & close</button>`:''}
@@ -2642,7 +2642,7 @@ function cpqMatch(v){
 
 function vCopilot(){
  return `<div class="fade">
- ${head("Ask across your students","Every question runs against your assigned students only. Every answer shows its evidence, and every draft is labelled and editable. No external message is ever sent without your confirmation.")}
+ ${head("Query your caseload","Every question runs against your assigned students only. Every answer shows its evidence, and every draft is labelled and editable. No external message is ever sent without your confirmation.")}
  <div class="card" style="padding:20px;margin-bottom:16px">
   <div style="display:flex;gap:10px;margin-bottom:14px">
    <input id="cpin" aria-label="Ask about your cohort" placeholder="Ask about your cohort…" value="${S.cpQ||''}" style="flex:1;border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;font-size:13px;color:var(--ink)">
@@ -2863,12 +2863,12 @@ const DOCS=[
 const TASKS=[
 {t:"Private check-in with Ahmed",due:"Today",who:"You",src:"Case · urgent",done:false},
 {t:"Confirm Layla's UCAT booking",due:"Today",who:"You",src:"Case · check-in",done:false},
-{t:"Chase Mr. Davies + Dr. Reid for Ahmed's references",due:"Tomorrow",who:"Automated",src:"Workflow",done:false},
+{t:"Request references from Mr. Davies and Dr. Reid",due:"Tomorrow",who:"Automated",src:"Workflow",done:false},
 {t:"Propose Bath/Bristol to Sara as a secure floor",due:"20 Nov",who:"You",src:"Case · review",done:false},
 {t:"Send Grade 12 parent progress summaries",due:"22 Nov",who:"Automated",src:"Reporting",done:false},
-{t:"Chase Ahmed's outstanding school forms",due:"25 Nov",who:"Automated",src:"Workflow",done:false},
+{t:"Request Ahmed's outstanding school forms",due:"25 Nov",who:"Automated",src:"Workflow",done:false},
 {t:"Close Maryam's case with a documented outcome",due:"Done",who:"You",src:"Case · positive",done:true}];
-const STMAP={sent:["var(--good)","var(--goodSoft)","Sent"],received:["var(--good)","var(--goodSoft)","Received"],final:["var(--good)","var(--goodSoft)","Final"],draft:["var(--review)","var(--reviewSoft)","Draft"],chased:["var(--checkin)","var(--checkinSoft)","Chased"],pending:["var(--checkin)","var(--checkinSoft)","Pending"],none:["var(--urgent)","var(--urgentSoft)","Not started"],complete:["var(--good)","var(--goodSoft)","Complete"],missing:["var(--urgent)","var(--urgentSoft)","Missing"]};
+const STMAP={sent:["var(--good)","var(--goodSoft)","Sent"],received:["var(--good)","var(--goodSoft)","Received"],final:["var(--good)","var(--goodSoft)","Final"],draft:["var(--review)","var(--reviewSoft)","Draft"],chased:["var(--checkin)","var(--checkinSoft)","Reminder sent"],pending:["var(--checkin)","var(--checkinSoft)","Pending"],none:["var(--urgent)","var(--urgentSoft)","Not started"],complete:["var(--good)","var(--goodSoft)","Complete"],missing:["var(--urgent)","var(--urgentSoft)","Missing"]};
 /* The tally deliberately takes no colour. The rows it replaced painted their
    figures in tier colours the figures had no claim on — "Balanced lists 67%"
    in check-in orange — which spends the one vocabulary the product cannot
@@ -2882,7 +2882,7 @@ function vFlow(){
  const outstanding=DOCS.reduce((a,d)=>a+d.teach.filter(t=>t.st!=="received").length+(d.cr==="none"?1:0)+(d.forms==="missing"?1:0)+(d.tr==="pending"?1:0),0);
  return `<div class="fade">
  ${head("The administration layer, removed","This is the bucket of the counselor's job that contains no counseling value: transcripts, forms, chasing teachers, tracking who has submitted what. The system runs it so you do not have to be the person chasing everyone else.")}
- ${tally([["Items outstanding",outstanding,"Across 6 students"],["Auto-chases sent",23,"This term, none by hand"],["Docs on time","96%","Cohort average"],["Manual requests issued",0,"Was around 40 a season"]])}
+ ${tally([["Items outstanding",outstanding,"Across 6 students"],["Automated reminders sent",23,"This term, none by hand"],["Docs on time","96%","Cohort average"],["Manual requests issued",0,"Was around 40 a season"]])}
 
  <div class="card" style="padding:20px;margin-bottom:16px">
   <h2 class="sechead">${ic('doc',13)} Document & reference status · per student, per application</h2>
@@ -2910,10 +2910,10 @@ function vFlow(){
     <div><div style="font-size:12.5px;font-weight:${t.done?400:600};color:${t.done?'var(--inkMute)':'var(--ink)'};text-decoration:${t.done?'line-through':'none'}">${t.t}</div>
     <div style="font-size:10.5px;color:var(--inkMute);margin-top:2px">${t.src} · ${t.who}</div></div>
     <span class="chip" style="background:${t.done?'var(--goodSoft)':t.due==="Today"?'var(--urgentSoft)':'var(--panel)'};color:${t.done?'var(--good)':t.due==="Today"?'var(--urgent)':'var(--inkMute)'};border:${t.done||t.due==="Today"?'none':'1px solid var(--line)'}">${t.due}</span></div>`).join('')}
-   <div style="font-size:10.5px;color:var(--inkMute);margin-top:11px;line-height:1.45">Reminders, form chases and scheduled reports run themselves once marked <b>Automated</b>. You only see them so nothing is invisible.</div>
+   <div style="font-size:10.5px;color:var(--inkMute);margin-top:11px;line-height:1.45">Reminders, form requests and scheduled reports run themselves once marked <b>Automated</b>. You only see them so nothing is invisible.</div>
   </div>
   <div class="card" style="padding:20px">
-   <h2 class="sechead">${ic('refresh',13)} What runs without you</h2>
+   <h2 class="sechead">${ic('refresh',13)} Automated processes</h2>
    ${[["Deadline reminders to students","Fires at T-21, T-14, T-7 and T-2 days per application","23 sent"],
       ["Teacher reference requests","Initial request plus two escalating reminders","11 sent"],
       ["Transcript & form packaging","Assembled per student per university, status tracked","6 active"],
@@ -3053,7 +3053,7 @@ s10:{stmt:0,stmtLabel:"Not applicable yet",days:0,offers:0,subm:0,tot:0,tr:"none
     trefs:[],forms:"complete",beh:0},
 s11:{stmt:0,stmtLabel:"Not applicable yet",days:0,offers:0,subm:0,tot:1,tr:"none",cref:"none",
     trefs:[],forms:"complete",beh:0},
-/* The six P3 cases. Noor's two chased references and Daniel's logged offer are
+/* The six P3 cases. Noor's two reminded references and Daniel's logged offer are
    the same facts their evidence chains cite — the application side and the
    case file have to agree, or the evidence chain stops being one. */
 s12:{stmt:0,stmtLabel:"Not applicable yet",days:0,offers:0,subm:0,tot:0,tr:"none",cref:"none",
@@ -3309,7 +3309,7 @@ const AGENDA=[
 {t:"08:15",dur:"15 min",k:"prep",title:"Morning triage review",loc:"",why:"Three students moved priority overnight after the 07:04 sweep.",go:"si-cases"},
 {t:"09:00",dur:"30 min",k:"meet",title:"Check-in with Ahmed Khalifa",loc:"Room C12",why:"Urgent · Maths collapse, three lates, teacher concern. Open-ended opening, do not lead with the grade.",sid:"s1"},
 {t:"10:00",dur:"20 min",k:"meet",title:"Confirm Layla Haddad's UCAT booking",loc:"Room C12",why:"Check-in · 21 days silent and the UCAT window closes in nine days.",sid:"s2"},
-{t:"11:15",dur:"—",k:"task",title:"Approve the reference chase for Mr. Davies and Dr. Reid",loc:"Automated · needs your approval",why:"Ahmed's two teacher references are still pending with 18 days to the deadline."},
+{t:"11:15",dur:"—",k:"task",title:"Approve the reference request for Mr. Davies and Dr. Reid",loc:"Automated · needs your approval",why:"Ahmed's two teacher references are still pending with 18 days to the deadline."},
 {t:"13:30",dur:"45 min",k:"meet",title:"Parent meeting with the Al Mansoori family",loc:"Meeting Room 2",why:"Sara's list has no floor. Frame the safety school as an addition, keep LSE intact.",sid:"s3"},
 {t:"15:00",dur:"20 min",k:"task",title:"Close Maryam's case with a documented outcome",loc:"",why:"Attendance recovered 79% → 98% and has held for three weeks.",sid:"s5"},
 {t:"16:00",dur:"—",k:"admin",title:"Review Grade 12 parent summaries",loc:"Scheduled to send 22 Nov",why:"Drafted automatically. Nothing leaves until you approve it."}];
@@ -3507,7 +3507,7 @@ function sheetRail(){
    <div style="font-size:11.3px;color:var(--ink-3);line-height:1.45;margin-top:2px">Opened at ${DAY.sweep} · ${PRIO[c.prio].label}</div></button>`).join('')}
  </div>`:''}
 
- <h2 class="railh">Your day</h2>
+ <h2 class="railh">Today’s schedule</h2>
  <div style="margin-bottom:22px">
   ${AGENDA.map(a=>{const K=KIND[a.k];
    return `<button class="railrow" ${a.sid?`data-file="${a.sid}"`:a.go?`data-cnav="${a.go}"`:'data-toast="Nothing to open on this block"'} style="display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:start">
@@ -3626,7 +3626,7 @@ function vTClass(){
  const roster=cls.students.map(id=>g(id)).filter(Boolean);
  const surname=TEACHER.name.split(" ").slice(-1)[0];
  return `<div class="fade">
- ${head("Following the lesson",cls.label+" · "+cls.period+". Tap a student to log something. It takes about fifteen seconds and goes straight to their counselor. You never chase anyone or fill in a form twice.")}
+ ${head("Following the lesson",cls.label+" · "+cls.period+". Tap a student to log something. It takes about fifteen seconds and goes straight to their counselor. You never need to follow up manually or complete a form twice.")}
  <div class="card" style="padding:15px 18px;margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
   <div style="width:34px;height:34px;border-radius:var(--r);background:var(--brand-3);display:grid;place-items:center;color:var(--brand-2);flex-shrink:0">${ic('checkC',17)}</div>
   <div style="flex:1;min-width:200px;font-size:12.3px;color:var(--ink-2);line-height:1.5">
@@ -3645,7 +3645,7 @@ function vTClass(){
   </div>`;}).join(''):`<div style="font-size:12.3px;color:var(--ink-3);line-height:1.6">No students on this register yet.</div>`}
  </div>
  <div class="card" style="padding:16px 18px;margin-top:16px">
-  <h2 class="sechead">${ic('list',13)} What you have logged</h2>
+  <h2 class="sechead">${ic('list',13)} Submitted reports</h2>
   ${TFLAGS.filter(f=>f.by.indexOf(surname)>-1).map(f=>{
    var K=FLAG_KINDS.find(function(k){return k.k===f.kind;});
    var routed=f.routed?'<div style="font-size:11px;color:var(--ok);margin-top:5px;display:flex;align-items:center;gap:5px">'+ic('checkC',12)+' '+f.routed+'</div>':'';
@@ -5169,7 +5169,7 @@ function vStuSubjectRecord(c,grade){
    action:`<button class="btn btn-g btn-sm" data-snav="explore">Read how IB and AP differ</button>`})}</div>
  </div>`;
  return `<div class="fade">
-  ${head(ib?"What you are carrying this year":"Your courses this year",
+  ${head(ib?"Current course load":"Your courses this year",
    ib?`Six subjects, three at Higher Level, plus theory of knowledge, the extended essay and CAS.${c.pred&&c.pred!=="—"?" Your predicted total is "+c.pred+".":""}`
      :"Your AP courses, the teacher for each, and where your grade currently sits against the class.")}
   ${classes.length?`${tally([["Subjects",String(classes.length),ib?"the diploma shape":"AP route"],
@@ -5286,7 +5286,7 @@ function vSelForm(rec,stu){
  </div>`;}
 
 function statusHead(rec){
- return {submitted:"Sent, and waiting on your teachers",
+ return {submitted:"Submitted, awaiting teacher response",
   signed:"Your teachers have answered",
   changes:"Your coordinator has asked for a change",
   approved:"Your subjects are confirmed"}[rec.status]||"Your selection";}
@@ -5410,16 +5410,16 @@ function vTSelReview(){
  const done=all.filter(x=>x.subs.every(s=>x.rec.signs[s.p.s]));
  const cls=TEACHER.classes.find(c=>/Grade 10/.test(c.label));
  return `<div class="fade">
-  ${head(waiting.length?"Grade 10 wants to take your subject next year":"Every level question has been answered",
+  ${head(waiting.length?"Grade 10 students requesting your subject next year":"Every level question has been answered",
    `${TEACHER.subject} selections for ${SEL_ROUND.year}. You are asked about the level, not about the rest of the diploma. ${SEL_ROUND.coordinator} decides the selection once you and the student have both answered.`)}
-  ${tally([["Waiting on you",String(waiting.length),waiting.length?"before "+SEL_ROUND.closes:"nothing outstanding"],
+  ${tally([["Awaiting your action",String(waiting.length),waiting.length?"before "+SEL_ROUND.closes:"nothing outstanding"],
    ["Answered",String(done.length),"this round"],
    ["At higher level",String(all.length),"the only ones you are asked about"],
    ["At standard level",String(slCount()),"no answer needed"]])}
-  ${waiting.length?`<h2 class="sechead" style="margin-top:26px">Waiting on you</h2>
+  ${waiting.length?`<h2 class="sechead" style="margin-top:26px">Awaiting your action</h2>
   ${waiting.map(x=>vTSelCard(x,cls)).join("")}`
-  :`<div style="margin-top:24px">${moment({art:"steady",title:"Nothing waiting on you",
-    body:"A selection lands here when a Grade 10 student picks "+TEACHER.subject.toLowerCase()+" and sends their form. This page only ever holds the ones still waiting on your answer, so it empties as you work.",
+  :`<div style="margin-top:24px">${moment({art:"steady",title:"Nothing awaiting your action",
+    body:"A selection lands here when a Grade 10 student picks "+TEACHER.subject.toLowerCase()+" and sends their form. This page only ever holds the ones still awaiting your response, so it empties as you work.",
     action:`<button class="btn btn-g btn-sm" data-tnav="class">Back to the register</button>`})}</div>`}
   ${done.length?`<h2 class="sechead" style="margin-top:30px">Already answered</h2>
   <div class="sheetbox">${done.map(x=>{const sg=x.rec.signs[x.subs[0].p.s];
@@ -5460,7 +5460,7 @@ function vTSelCard(x,cls){
     ${why?`<div class="revwhy"><div class="appa" style="color:var(--ink-4)">In their words</div>
      <p class="prose">${why}</p></div>`:empty("No reason written","The form asks for one and this student sent it before writing it. Worth asking in the lesson.")}
     <div class="revrec">
-     <div class="appa" style="color:var(--ink-4)">What you already know</div>
+     <div class="appa" style="color:var(--ink-4)">Established context</div>
      <div class="sheetscroll"><table class="sheet mini"><tbody>
       ${mark?`<tr><td>Your class</td><td>${mark.label}</td><td class="num">${mark.avg}%</td></tr>`:""}
       ${d.mathSet?`<tr><td>Set this year</td><td>${d.mathSet==="foundation"?"Foundation":"Extended"} ${TEACHER.subject.toLowerCase()}</td><td class="num">${d.mark?d.mark+"%":"—"}</td></tr>`:""}
@@ -5552,7 +5552,7 @@ function vStuCAS(embedded){
  if(!c)return empty("No student selected","Pick a grade above to open a student's portal.");
  const ib=c.track==="IB",sum=casSum(c.id),tags=CAS_INTERESTS[c.id]||[],matches=casMatches(c.id);
  return `<div${embedded?"":' class="fade"'}>
-  ${embedded?"":head(ib&&sum?"Where your CAS stands":ib?"Your CAS record opens in Grade 11":"What is on offer, and what fits you",
+  ${embedded?"":head(ib&&sum?"Where your CAS stands":ib?"Your CAS record opens in Grade 11":"Available options and suitability",
    ib&&sum?`Creativity, activity and service, over the eighteen months of the diploma. ${CAS_HOURS_NOTE}`
    :ib?"CAS runs across Grades 11 and 12. Until then this page is here so you can see what the school actually offers and start something you would have joined anyway."
    :c.track==="AP"?"CAS is a requirement of the IB Diploma, and you are on the AP route, so none of this is assessed for you. The activities are open to every student in the school and universities read them the same way."
@@ -5669,7 +5669,7 @@ function vStuEE(c){
     <div style="min-width:0;flex:1">
      <div class="selrow-t">${sub?sub.name:"Subject not set"}</div>
      <p class="prose" style="font-size:13.4px;color:var(--ink);line-height:1.6;margin:6px 0 0;max-width:66ch">${r.rq}</p>
-     ${r.why?`<div class="appa" style="color:var(--ink-4);margin-top:10px">Why you chose it</div>
+     ${r.why?`<div class="appa" style="color:var(--ink-4);margin-top:10px">Stated reason</div>
       <p class="prose" style="font-size:12.3px;color:var(--ink-2);line-height:1.6;margin:3px 0 0;max-width:66ch">${r.why}</p>`:""}
     </div>
    </div>
@@ -5681,7 +5681,7 @@ function vStuEE(c){
    </div>`:r.status==="proposed"?`<div class="selrow-static">
     <span class="lstamp void">·</span>
     <div style="min-width:0"><div class="selrow-t">With ${r.target}</div>
-     <div class="selrow-n">Sent ${r.done.propose}. They accept it, ask you to sharpen the question, or pass it to a colleague who fits it better. You see which here, and you do not have to chase it.</div></div>
+     <div class="selrow-n">Sent ${r.done.propose}. They accept it, ask you to sharpen the question, or pass it to a colleague who fits it better. You see which here, and no follow-up is required from you.</div></div>
    </div>`:""}
   </div>
 
@@ -5764,18 +5764,18 @@ function vTEE(){
  const load=mine.length,cap=EE_ROUND.cap,over=load>=cap;
  const flagged=mine.filter(x=>eeStalled(x.d.id));
  return `<div class="fade">
-  ${head(q.length?q.length===1?"One student wants you to supervise their essay":q.length+" students want you to supervise their essay"
+  ${head(q.length?q.length===1?"One student has requested your supervision":q.length+" students have requested your supervision"
     :flagged.length?"Two essays are behind schedule":"Your Extended Essay supervision",
    `Proposals reach you here rather than by email, with the question and the student's reason already written. You are carrying ${load} ${load===1?"essay":"essays"} against a guide of ${cap}. ${EE_ROUND.capNote}`)}
-  ${tally([["Waiting on you",String(q.length),q.length?"a proposal each":"nothing outstanding"],
+  ${tally([["Awaiting your action",String(q.length),q.length?"a proposal each":"nothing outstanding"],
    ["Supervising",load+" of "+cap,over?"at or over the guide":"room for "+(cap-load)+" more"],
    ["Reflections recorded",String(mine.reduce((a,x)=>a+eeReflectionsDone(x.d.id),0)),"across your students"],
    ["Behind schedule",String(flagged.length),flagged.length?"a checkpoint has passed":"all on schedule"]])}
 
-  ${q.length?`<h2 class="sechead" style="margin-top:26px">Waiting on you</h2>
+  ${q.length?`<h2 class="sechead" style="margin-top:26px">Awaiting your action</h2>
   ${q.map(({d,r})=>vTEECard(d,r,load,cap)).join("")}`
   :`<div style="margin-top:24px">${moment({art:"open",title:"No proposals waiting",
-    body:"A Grade 11 student choosing a subject you teach sends their question here, with their reason for it already written. This page holds only what is still waiting on your answer.",
+    body:"A Grade 11 student choosing a subject you teach sends their question here, with their reason for it already written. This page holds only what is still awaiting your response.",
     action:`<button class="btn btn-g btn-sm" data-tnav="class">Back to the register</button>`})}</div>`}
 
   <h2 class="sechead" style="margin-top:30px">Your students</h2>
@@ -6059,10 +6059,10 @@ const SEL_STATE={
  none:{l:"·",t:"Not started",n:"Nothing submitted, and the round is still open."},
  draft:{l:"D",t:"Drafting",n:"Started, not sent."},
  submitted:{l:"S",t:"With teachers",n:"Sent. Waiting on the teachers of the Higher Level subjects."},
- signed:{l:"T",t:"Waiting on you",n:"Teachers have answered. It needs the conversation."},
+ signed:{l:"T",t:"Awaiting your action",n:"Teachers have answered. It needs the conversation."},
  changes:{l:"R",t:"Returned",n:"You asked for a change. Back with the student."},
  approved:{l:"A",t:"Confirmed",n:"Conversation recorded and selection approved."}};
-const SEL_FILTERS=[["act","Waiting on you"],["sent","Sent"],["not","Not started"],["all","Everyone"]];
+const SEL_FILTERS=[["act","Awaiting your action"],["sent","Sent"],["not","Not started"],["all","Everyone"]];
 const selWithTeachers=()=>DPC.filter(d=>d.yr===10&&SELREC[d.id]&&SELREC[d.id].status==="submitted").length;
 function selRows(){
  const f=S.selFilter||"act";
@@ -6079,7 +6079,7 @@ function vSelQueue(){
  return `<div class="fade">
   ${head("What Grade 10 has chosen, and who is still waiting",
    `The ${SEL_ROUND.year} round. ${round} students in the year group, closing ${SEL_ROUND.closes}. This is the Diploma cohort, not your caseload.`)}
-  ${tally([["Waiting on you",String(selWaiting()),"teachers have answered"],
+  ${tally([["Awaiting your action",String(selWaiting()),"teachers have answered"],
    ["With teachers",String(selWithTeachers()),"not yours yet"],
    ["Confirmed",String(c.approved),"conversation recorded"],
    ["Not started",String(c.none+c.draft),SEL_ROUND.deadlineIn+" days left"]])}
@@ -6112,7 +6112,7 @@ function vSelQueue(){
     action:`<button class="btn btn-g btn-sm" data-selfilter="all">Show everyone</button>`})}</div>`}
  </div>`;}
 function selEmptyTitle(){const f=S.selFilter||"act";
- return f==="act"?"Nothing is waiting on you":f==="not"?"Everyone has started":f==="sent"?"Nothing has been sent yet":"No students in this year group";}
+ return f==="act"?"Nothing awaiting your action":f==="not"?"Everyone has started":f==="sent"?"Nothing has been sent yet":"No students in this year group";}
 function selEmptyBody(){const f=S.selFilter||"act";
  return f==="act"?"A selection reaches this list once the teachers of its Higher Level subjects have answered. Until then it is with them, and the list is empty because the work is elsewhere rather than because nothing is happening."
   :f==="not"?"Every student in the year group has at least opened their form. The round still closes on "+SEL_ROUND.closes+"."
@@ -7265,7 +7265,7 @@ function vDiscoverFlow(){
 
   <div style="border:1.5px solid var(--rule-3);background:var(--stock);margin-bottom:24px">
    <div style="padding:9px 18px;background:var(--band);border-bottom:1px solid var(--rule)">
-    <span class="railh" style="margin:0">What your record holds today</span></div>
+    <span class="railh" style="margin:0">Current record</span></div>
    <div style="padding:4px 18px 12px">
     ${rows.map(([k,v])=>`<div class="kv"><span>${k}</span><b style="text-align:right">${v}</b></div>`).join('')}
    </div></div>
@@ -7274,7 +7274,7 @@ function vDiscoverFlow(){
   <div style="font-size:12.3px;color:var(--ink-3);margin-top:12px;line-height:1.6;max-width:62ch">It goes as long as it needs to and you can stop at any point. A quiz can sort you into a category; it cannot tell wanting to build something apart from wanting to work at something built, which is the difference this is listening for.</div>
 
   <div style="margin-top:22px;padding-top:16px;border-top:1px solid var(--rule)">
-   <button class="btn btn-g btn-sm" data-onb-restart="1">${ic('list',14)} ${introDone?'Change your three answers':'Answer the three questions'}</button>
+   <button class="btn btn-g btn-sm" data-onb-restart="1">${ic('list',14)} ${introDone?'Revise your responses':'Answer the three questions'}</button>
    <div style="font-size:11.8px;color:var(--ink-3);margin-top:8px;line-height:1.55;max-width:58ch">${introDone?'The three you answered when you joined. Changing them changes where the conversation starts.':'You skipped these. They are three taps, and they give the conversation somewhere to start.'}</div>
   </div>
  </div>`;}
@@ -7503,7 +7503,7 @@ function vApprovals(){
  const pending=PENDING_APPROVALS.filter(p=>p.status==="pending");
  const done=PENDING_APPROVALS.filter(p=>p.status!=="pending");
  return `<div class="fade">
- ${head("Roadmaps waiting on your review","Students go through a guided discovery process before ever seeing a roadmap. Nothing reaches them until you've reviewed what came out of it. You can approve as many paths as make sense, or send them back to explore further.")}
+ ${head("Roadmaps awaiting your review","Students go through a guided discovery process before ever seeing a roadmap. Nothing reaches them until you've reviewed what came out of it. You can approve as many paths as make sense, or send them back to explore further.")}
 ${(()=>{const stats=discoveryCohortStats();
    if(!stats.studentsWithDiscovery)return'';
    const archColors={finance:'var(--brand)',tech:'var(--info)',medicine:'var(--crit)',venture:'var(--ok)',design:'var(--rose)'};
@@ -7556,7 +7556,7 @@ ${(()=>{const stats=discoveryCohortStats();
      <button class="btn btn-g" style="margin-left:auto" data-decline-path="${p.id}">Send back for more discovery</button>
     </div>
    </div>`;}).join('')
-  :`<div class="card" style="padding:30px;text-align:center;color:var(--ink-3);font-size:13px">Nothing waiting on you right now.</div>`}
+  :`<div class="card" style="padding:30px;text-align:center;color:var(--ink-3);font-size:13px">Nothing awaiting your action at present.</div>`}
 
  ${done.length?`<div style="font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);margin:22px 0 11px">Reviewed</div>
  ${done.map(p=>{const c=g(p.sid);
@@ -7936,7 +7936,7 @@ ${(()=>{const stats=psCohortStats();
      <button class="btn btn-g btn-sm" data-ps-changes="${sub.id}">${ic('alert',13)} Needs another draft</button>
     </div>
    </div>
-  </div>`;}).join(''):`<div class="card" style="padding:24px;text-align:center;color:var(--ink-4);font-size:13px">Nothing waiting on you right now.</div>`}
+  </div>`;}).join(''):`<div class="card" style="padding:24px;text-align:center;color:var(--ink-4);font-size:13px">Nothing awaiting your action at present.</div>`}
  ${done.length?`<div style="font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);margin:22px 0 11px">Already reviewed · ${done.length}</div>
   ${done.map(sub=>{const c=g(sub.sid);return `<div class="card" style="padding:14px 18px;margin-bottom:9px;display:flex;align-items:center;gap:12px">
    ${av(c.av,c.prio,32)}<b style="font-size:12.8px;flex:1">${c.name} · ${sub.uni}</b>
@@ -8114,7 +8114,7 @@ function vParent(){
    .map(x=>`<div class="kv"><span>${x[0]}</span><b style="color:${x[2]}">${x[1]}</b></div>`).join('')}
   <button class="btn btn-p btn-sm" style="margin-top:14px" data-pv="meetings">${ic('brief',13)} Book a meeting with Ms. Haddad</button></div>
  <div class="card" style="padding:20px">
-  <h2 class="sechead">${ic('shield',13)} What you can and cannot see</h2>
+  <h2 class="sechead">${ic('shield',13)} Access and visibility</h2>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 20px">
    <div>${["Attendance and punctuality","Working and predicted grades","Semesterly transcripts","University list, requirements and deadlines","Messages from the counselor"].map(x=>`<div style="display:flex;gap:8px;padding:7px 0;font-size:12.3px;color:var(--ink-2)">${ic('checkC',14)}<span>${x}</span></div>`).join('')}</div>
    <div>${["Private counseling notes","Teacher concern wording","Internal signal analysis","Other students' information"].map(x=>`<div style="display:flex;gap:8px;padding:7px 0;font-size:12.3px;color:var(--ink-4)">${ic('x',14)}<span>${x}</span></div>`).join('')}</div>
@@ -8419,7 +8419,7 @@ function vStuProgress(){
   ${c.baselines.attendance?baseChart(c.baselines.attendance):''}
   <div style="font-size:11.5px;color:var(--ink-3);margin-top:8px">The band is your own usual range, and you are inside it.</div></div>
  <div class="card" style="padding:20px">
-  <h2 class="sechead">${ic('msg',13)} Tell your counselor something</h2>
+  <h2 class="sechead">${ic('msg',13)} Submit a note to your counselor</h2>
   <div style="font-size:12.3px;color:var(--ink-3);margin-bottom:12px;line-height:1.5">Anything you want Ms. Haddad to know before your next meeting. Only she sees this, not your teachers and not your parents.</div>
   ${SREFLECT.map(r=>`<div style="background:var(--stock-3);border-left:1px solid var(--rule-2);padding:12px 14px;margin-bottom:9px">
    <div style="font-size:12.5px;color:var(--ink);line-height:1.55">${r.txt}</div>
@@ -8453,7 +8453,7 @@ function vFlagInbox(){
       :`<button class="btn btn-g btn-sm" data-file="${f.sid}">Open file</button>`}
     </div></div></div>`;};
  return `<div class="fade">
- ${head("What your teachers noticed","Teachers log what they see after a lesson: the thing no system can detect. Every flag lands here, and the teacher is told what happened with it.")}
+ ${head("Teacher observations","Teachers log what they see after a lesson: the thing no system can detect. Every flag lands here, and the teacher is told what happened with it.")}
  <div class="card" style="padding:15px 18px;margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
   <div style="width:34px;height:34px;border-radius:var(--r);background:var(--brand-3);display:grid;place-items:center;color:var(--brand-2);flex-shrink:0">${ic('spark',17)}</div>
   <div style="flex:1;min-width:220px;font-size:12.3px;color:var(--ink-2);line-height:1.5">
@@ -8746,7 +8746,7 @@ function vStuTargets(){
  const c=g(PARENT_ME);
  const targets=(c.uni&&c.uni.targets)||[];
  if(!targets.length)return `<div class="fade">
-  ${head("Where you stand")}
+  ${head("Current standing")}
   ${moment({art:"open",title:"No universities on your list yet",body:"Lists are built in Grade 12 with "+SCHOOL.counselor+". Nothing is missing from this page; it fills in when the list does."})}
  </div>`;
  /* An offer already decided outranks every estimate on the page. Sara has
@@ -8755,7 +8755,7 @@ function vStuTargets(){
  const held=targets.filter(t=>{const o=OFFERS[t.u];return o&&o.status!=="pending";});
  const noSafety=!targets.some(t=>t.b==="safety");
  return `<div class="fade">
- ${head("Where you stand","Every university on your list, what each one is for, and where a decision has already come back.")}
+ ${head("Current standing","Every university on your list, what each one is for, and where a decision has already come back.")}
 
  ${held.map(t=>{const o=OFFERS[t.u];const cond=o.status==="conditional";
   return `<div style="border:1.5px solid var(--rule-3);background:var(--stock);margin-bottom:18px">
@@ -8767,7 +8767,7 @@ function vStuTargets(){
     <div class="stamp" style="font-size:20px;font-weight:600;line-height:1.2;color:var(--ink)">${t.u}</div>
     <div style="font-size:12.5px;color:var(--ink-3);margin-top:3px">${t.c}</div>
     ${cond&&(o.youCondition||o.condition)?`<div style="margin-top:14px;padding-top:13px;border-top:1px solid var(--rule)">
-     <div class="railh" style="margin-bottom:6px">What you need to keep</div>
+     <div class="railh" style="margin-bottom:6px">Required records</div>
      <div style="font-size:13.5px;color:var(--ink);line-height:1.6;max-width:66ch">${o.youCondition||o.condition}</div>
      ${(o.youDetail||o.detail)?`<div style="font-size:12.3px;color:var(--ink-3);line-height:1.6;margin-top:9px;max-width:66ch">${o.youDetail||o.detail}</div>`:''}
     </div>`:''}
@@ -8825,7 +8825,7 @@ function vStuNet(){
  const c=g(PARENT_ME);
  const net=NETWORK[c.id]||[];
  return `<div class="fade">
- ${head("The people on your path","Alumni you have spoken to, and people you already know who sit somewhere on your route. Every entry is yours, and none of it is visible to other students.")}
+ ${head("Contacts on your pathway","Alumni you have spoken to, and people you already know who sit somewhere on your route. Every entry is yours, and none of it is visible to other students.")}
  ${net.length?`<div style="overflow-x:auto"><table class="sheet" style="font-size:12.5px">
   <thead><tr><th scope="col">Name</th><th scope="col">How you know them</th><th scope="col" style="width:120px">Standing</th></tr></thead>
   <tbody>${net.map(n=>`<tr>
@@ -8864,7 +8864,7 @@ function vMentorReq(){
 function vMentorMentees(){
  const ms=[{n:"Sara Al Mansoori",av:"SA",goal:"Goldman IBD",s:1,next:"Spring week strategy"},{n:"Omar Farouk",av:"OF",goal:"Entrepreneurship",s:2,next:"Networking into VC"}];
  return `<div class="fade">
- ${head("Students you are guiding","Each one is walking a route you have already walked.")}
+ ${head("Students under your guidance","Each one is walking a route you have already walked.")}
  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
  ${ms.map(m=>`<div class="card lift" style="padding:20px">
   <div style="display:flex;gap:12px;margin-bottom:13px">${av(m.av,"student",44)}
@@ -8876,7 +8876,7 @@ function vMentorMentees(){
  </div>
  ${tally([["Students",ms.length,"Matched by the school, not by a marketplace"],
   ["Sessions so far",ms.reduce((a,m)=>a+m.s,0),"Logged against the two files above"],
-  ["Cost to you","None","Nobody is billing you, and nobody is billing them"]])}
+  ["Cost","None","Nobody is billing you, and nobody is billing them"]])}
  </div>`;}
 /* ═══════════ MODALS ═══════════ */
 function modalEl(){
