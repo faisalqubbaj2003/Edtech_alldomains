@@ -1930,7 +1930,7 @@ function roleNav(role){
     reference a teacher opens far less often. "My Classes" used to sit first
     in this list while the app itself opened straight to the register — the
     nav order was still pointing at the card grid it no longer led with. */
- if(role==="teacher")return [["class","My Class Register","users"],["tclasses","My Classes","book"],["classapprovals","Subject choices","check"],["ee","Extended essays","doc"],["tlog","What I've logged","list"]];
+ if(role==="teacher")return [["class","My Class Register","users"],["tclasses","My Classes","book"],["classapprovals","Subject choices","check"],["ee","Extended essays","doc"],["tlog","Submitted reports","list"]];
  if(role==="mentor")return [["requests","Session Requests","inbox",MENTOR_REQS.length],["mentees","My Mentees","users"]];
  return [["cohort-schedule","Caseload","users"],["si-cases","Priority","alert"],["meetings","Meetings","brief"],["flags","Flags","inbox"]];
 }
@@ -1939,7 +1939,7 @@ function palCommands(role){
  const nav=roleNav(role);
  const base=nav.map(([id,label,icon])=>({id,label:`Open ${label}`,icon,action:`nav:${id}`}));
  if(role==="counselor"){base.push({id:"cohort-schedule",label:"Open the caseload sheet",icon:"users",action:"nav:cohort-schedule"},{id:"flags",label:"Open teacher flags",icon:"inbox",action:"nav:flags"},{id:"meetings",label:"Open meetings",icon:"brief",action:"nav:meetings"},{id:"thresholds",label:"Tune thresholds",icon:"gauge",action:"nav:thresholds"});}
- else if(role==="teacher"){base.push({id:"class",label:"Open my class",icon:"users",action:"nav:class"},{id:"tlog",label:"Open logged concerns",icon:"list",action:"nav:tlog"});}
+ else if(role==="teacher"){base.push({id:"class",label:"Open my class",icon:"users",action:"nav:class"},{id:"tlog",label:"Open submitted concerns",icon:"list",action:"nav:tlog"});}
  else if(role==="student"){base.push({id:"discover",label:"Restart my pathway",icon:"spark",action:"nav:discover"},{id:"progress",label:"Open my progress",icon:"trend",action:"nav:progress"});}
  else if(role==="parent"){base.push({id:"overview",label:"Open family overview",icon:"home",action:"nav:overview"},{id:"messages",label:"Open messages",icon:"msg",action:"nav:messages"});}
  else if(role==="mentor"){base.push({id:"requests",label:"Open session requests",icon:"inbox",action:"nav:requests"},{id:"mentees",label:"Open my mentees",icon:"users",action:"nav:mentees"});}
@@ -2354,7 +2354,7 @@ function vCase(c){
      <h3 class="sechead" style="margin-bottom:9px">${ic('eye',13)} Known contextual factors</h3>
      ${c.context.length?c.context.map(x=>`<div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;font-size:12.2px;color:var(--inkSoft)">${ic('checkC',14)}<span>${x}</span></div>`).join('')
       :empty("No context on file","Nothing has been added that would explain or qualify what the signals show. If you know something the school's data cannot see, adding it here recalculates the case.")}
-     <button class="btn btn-g btn-sm" data-addctx="${c.id}" style="margin-top:10px">${ic('plus',13)} Add context I know about</button>
+     <button class="btn btn-g btn-sm" data-addctx="${c.id}" style="margin-top:10px">${ic('plus',13)} Add known context</button>
      <div style="font-size:10.5px;color:var(--inkMute);margin-top:7px;line-height:1.45">Adding context you hold, such as a known family situation or an authorised absence, recalculates signal strength and may downgrade the case automatically.</div>
     </div></div>`:''}
 
@@ -2528,8 +2528,8 @@ function vUni(){
     ${d.ok?chip("On track","var(--good)","var(--goodSoft)","checkC"):chip(urgent?"At risk":"Watch",col,d.d<=10?'var(--urgentSoft)':'var(--reviewSoft)',"alert")}
    </div>`;}).join('')}
   <div style="display:flex;gap:9px;margin-top:14px">
-   <button class="btn btn-p btn-sm" data-toast="Automated nudges sent to 3 students and copied to you">${ic('send',13)} Send automated nudges</button>
-   <button class="btn btn-g btn-sm" data-toast="Teacher reference requests sent to 4 teachers">${ic('users',13)} Chase teacher references</button></div>
+   <button class="btn btn-p btn-sm" data-toast="Automated nudges sent to 3 students and copied to you">${ic('send',13)} Send automated reminders</button>
+   <button class="btn btn-g btn-sm" data-toast="Teacher reference requests sent to 4 teachers">${ic('users',13)} Request outstanding references</button></div>
  </div>
 
  ${noSafety.length?`<div class="card" style="padding:18px 20px;margin-bottom:16px;background:var(--reviewSoft);border-color:var(--warn-line-2)">
@@ -2882,7 +2882,7 @@ function vFlow(){
  const outstanding=DOCS.reduce((a,d)=>a+d.teach.filter(t=>t.st!=="received").length+(d.cr==="none"?1:0)+(d.forms==="missing"?1:0)+(d.tr==="pending"?1:0),0);
  return `<div class="fade">
  ${head("The administration layer, removed","This is the bucket of the counselor's job that contains no counseling value: transcripts, forms, chasing teachers, tracking who has submitted what. The system runs it so you do not have to be the person chasing everyone else.")}
- ${tally([["Items outstanding",outstanding,"Across 6 students"],["Auto-chases sent",23,"This term, none by hand"],["Docs on time","96%","Cohort average"],["Manual chases by you",0,"Was around 40 a season"]])}
+ ${tally([["Items outstanding",outstanding,"Across 6 students"],["Auto-chases sent",23,"This term, none by hand"],["Docs on time","96%","Cohort average"],["Manual requests issued",0,"Was around 40 a season"]])}
 
  <div class="card" style="padding:20px;margin-bottom:16px">
   <h2 class="sechead">${ic('doc',13)} Document & reference status · per student, per application</h2>
@@ -2896,9 +2896,9 @@ function vFlow(){
     <td style="padding:11px 8px">${d.teach.map(t=>`<div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;white-space:nowrap"><span style="font-size:11.3px;color:var(--inkSoft)">${t.n}</span>${stTag(t.st)}</div>`).join('')}</td>
     <td style="padding:11px 8px">${stTag(d.forms)}</td></tr>`).join('')}</tbody></table></div>
   <div style="display:flex;gap:9px;margin-top:15px;flex-wrap:wrap">
-   <button class="btn btn-p btn-sm" data-toast="Reminders sent to 3 teachers · you were copied, nothing left your outbox unseen">${ic('send',13)} Chase all outstanding references</button>
+   <button class="btn btn-p btn-sm" data-toast="Reminders sent to 3 teachers · you were copied, nothing left your outbox unseen">${ic('send',13)} Request all outstanding references</button>
    <button class="btn btn-g btn-sm" data-toast="Transcript request queued for Omar">${ic('doc',13)} Request Omar's transcript</button>
-   <button class="btn btn-g btn-sm" data-toast="Form reminder sent to Ahmed and copied to his tutor">${ic('alert',13)} Chase Ahmed's forms</button></div>
+   <button class="btn btn-g btn-sm" data-toast="Form reminder sent to Ahmed and copied to his tutor">${ic('alert',13)} Request Ahmed's outstanding forms</button></div>
   <div style="font-size:10.5px;color:var(--inkMute);margin-top:10px;line-height:1.45">No external communication is sent without school-approved workflow and your confirmation. Every automated message is logged and visible to you.</div>
  </div>
 
@@ -2914,7 +2914,7 @@ function vFlow(){
   </div>
   <div class="card" style="padding:20px">
    <h2 class="sechead">${ic('refresh',13)} What runs without you</h2>
-   ${[["Deadline nudges to students","Fires at T-21, T-14, T-7 and T-2 days per application","23 sent"],
+   ${[["Deadline reminders to students","Fires at T-21, T-14, T-7 and T-2 days per application","23 sent"],
       ["Teacher reference requests","Initial request plus two escalating reminders","11 sent"],
       ["Transcript & form packaging","Assembled per student per university, status tracked","6 active"],
       ["Parent progress summaries","Scheduled, school-approved template, counselor-approved before send","Next: 22 Nov"],
@@ -3030,7 +3030,7 @@ function vPilot(){
  </div></div>`;}
 /* ═══════════ RAG MODEL ═══════════ */
 const RAG={critical:{c:"var(--urgent)",bg:"var(--urgentSoft)",l:"Critical",o:0},
- watch:{c:"var(--review)",bg:"var(--reviewSoft)",l:"Take a look",o:1},
+ watch:{c:"var(--review)",bg:"var(--reviewSoft)",l:"Requires review",o:1},
  good:{c:"var(--good)",bg:"var(--goodSoft)",l:"On track",o:2}};
 
 /* application-side data per student */
@@ -3108,7 +3108,7 @@ function dimDocs(c){const a=APP[c.id];
  out+=a.trefs.filter(t=>t.st!=="received").length;
  const v=out===0?"All received":`${out} outstanding`;
  if(out>=3)return{r:"critical",v,note:"Multiple items missing"};
- if(out>=1)return{r:"watch",v,note:"Chase in progress"};
+ if(out>=1)return{r:"watch",v,note:"Request in progress"};
  return{r:"good",v,note:"Nothing outstanding"};}
 function dimProgress(c){const a=APP[c.id];
  if(!inCycle(c))return notYet("Not started");
@@ -3176,7 +3176,7 @@ const CATS=[
     has open. The school runs no separate coordination department, so this is a
     category rather than a sixth role. */
  {id:"ib",label:"IB Diploma",ic:"route",sub:[
-   ["ib-selections","Subject selections"],["ib-demand","Which courses can run"],["ib-ee","Extended essays"],["ib-cas","CAS progress"]]},
+   ["ib-selections","Subject selections"],["ib-demand","Courses offered"],["ib-ee","Extended essays"],["ib-cas","CAS progress"]]},
  {id:"si",label:"Student Intelligence",ic:"radar",sub:[
    ["si-cases","Priority cases"],["si-why","How detection works"],
    ["si-attendance","Attendance"],["si-punctuality","Punctuality & tardiness"],
@@ -3228,7 +3228,7 @@ function sidebarC(){
       let badge="";
       if(cn){badge=`<span style="display:flex;gap:3px;margin-left:auto;align-items:center">
         ${cn.critical?`<span title="Critical" style="width:6px;height:6px;border-radius:var(--r-dot);background:var(--t-urgent-field)"></span>`:''}
-        ${cn.watch?`<span title="Take a look" style="width:6px;height:6px;border-radius:var(--r-dot);background:var(--t-checkin-field)"></span>`:''}
+        ${cn.watch?`<span title="Requires review" style="width:6px;height:6px;border-radius:var(--r-dot);background:var(--t-checkin-field)"></span>`:''}
         ${!cn.critical&&!cn.watch?`<span title="All on track" style="width:6px;height:6px;border-radius:var(--r-dot);background:var(--t-good-field);opacity:.75"></span>`:''}</span>`;}
       else if(k==="cohort-schedule"||k==="si-cases"){badge=`<span style="margin-left:auto;font-size:10.5px;font-weight:700;color:var(--school-on-accent);background:var(--school-accent);border-radius:var(--r);padding:1px 6px">${needToday()}</span>`;}
       else if(k==="si-interventions"){const n=S.ivs.filter(i=>i.status==="open").length;badge=`<span style="margin-left:auto;font-size:10.5px;font-weight:700;color:var(--school-on-accent);background:var(--school-accent);border-radius:var(--r);padding:1px 6px">${n}</span>`;}
@@ -3626,7 +3626,7 @@ function vTClass(){
  const roster=cls.students.map(id=>g(id)).filter(Boolean);
  const surname=TEACHER.name.split(" ").slice(-1)[0];
  return `<div class="fade">
- ${head("After your lesson",cls.label+" · "+cls.period+". Tap a student to log something. It takes about fifteen seconds and goes straight to their counselor. You never chase anyone or fill in a form twice.")}
+ ${head("Following the lesson",cls.label+" · "+cls.period+". Tap a student to log something. It takes about fifteen seconds and goes straight to their counselor. You never chase anyone or fill in a form twice.")}
  <div class="card" style="padding:15px 18px;margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
   <div style="width:34px;height:34px;border-radius:var(--r);background:var(--brand-3);display:grid;place-items:center;color:var(--brand-2);flex-shrink:0">${ic('checkC',17)}</div>
   <div style="flex:1;min-width:200px;font-size:12.3px;color:var(--ink-2);line-height:1.5">
@@ -3754,7 +3754,7 @@ const PARENT_ACHIEVEMENTS_BY_GRADE={
 const HELP_THIS_WEEK = {
  headline:"Her personal statement could use a calm conversation this weekend",
  detail:"Sara's application pack is 62% complete with 18 days to the UCAS deadline, and her personal statement has sat at draft 2 for eleven days. She's strongest when talking about the trade-policy project. Asking her to walk you through what she found, out loud, often helps her find the words to write it down.",
- secondary:"She also doesn't have a safety school on her list yet. If it comes up naturally, a gentle nudge to add one alongside LSE would help. She wouldn't be lowering her ambition, just giving herself a floor.",
+ secondary:"She also doesn't have a safety school on her list yet. If it comes up naturally, recommending one alongside LSE would be appropriate. She wouldn't be lowering her ambition, just giving herself a floor.",
  topic:"uni"};
 
 /* Attendance calendar — November 2025, UAE school week (Sun–Thu) */
@@ -4628,7 +4628,7 @@ const CAS_INTERESTS={s3:["debate","business","sport"],s11:["code","sport"],s10:[
 
 /* Sara's record, authored. She is the product's deepest student and her CAS
    tells the same story her case file does: strong, engaged, and quietly
-   overcommitted, with service the strand that slipped while she was busy
+   overcommitted, with service the strand that fell behind while she was busy
    being excellent at the other two. */
 CASREC.s3={hrs:{c:64,a:52,s:14},outcomes:5,last:"3 weeks ago",pending:2,
  run:["kept","kept","kept","kept","soft","kept","kept","kept","kept","kept","soft","kept","kept","soft","none","none","soft","kept"],
@@ -5512,8 +5512,8 @@ function vStuCore(){
  if(!(c.track==="IB"&&grade>=11))return vStuCAS();
  const tab=S.coreTab||"ee";
  const nudge=eeNudge(c.id),sum=casSum(c.id),stall=casStalled(c.id);
- const t=nudge&&nudge.tone==="late"?"Something in your core has already slipped"
-  :nudge?"What your core needs next"
+ const t=nudge&&nudge.tone==="late"?"A core requirement is now overdue"
+  :nudge?"Outstanding requirements in your core"
   :stall?"Your core, and the strand that is thin"
   :"Where your core stands";
  return `<div class="fade">
@@ -5598,7 +5598,7 @@ function vStuCAS(embedded){
    <button class="btn btn-g" data-snav="stuclass">Back to your subjects</button>
   </div>`:""}
 
-  <h2 class="sechead" style="margin-top:${ib&&sum?"32px":"6px"}">What you actually do</h2>
+  <h2 class="sechead" style="margin-top:${ib&&sum?"32px":"6px"}">Your responsibilities</h2>
   <div class="sheetbox" style="padding:16px 18px">
    <div class="selrow-n" style="margin-bottom:11px">The three questions you answered when you signed in were about where you might work one day. These are about what you enjoy, which is a different question and the one that matches you to something worth joining. ${tags.length?"Change them whenever they stop being true.":""}</div>
    <div class="tagrow">
@@ -5765,12 +5765,12 @@ function vTEE(){
  const flagged=mine.filter(x=>eeStalled(x.d.id));
  return `<div class="fade">
   ${head(q.length?q.length===1?"One student wants you to supervise their essay":q.length+" students want you to supervise their essay"
-    :flagged.length?"Two of your essays have slipped":"Your Extended Essay supervision",
+    :flagged.length?"Two essays are behind schedule":"Your Extended Essay supervision",
    `Proposals reach you here rather than by email, with the question and the student's reason already written. You are carrying ${load} ${load===1?"essay":"essays"} against a guide of ${cap}. ${EE_ROUND.capNote}`)}
   ${tally([["Waiting on you",String(q.length),q.length?"a proposal each":"nothing outstanding"],
    ["Supervising",load+" of "+cap,over?"at or over the guide":"room for "+(cap-load)+" more"],
    ["Reflections recorded",String(mine.reduce((a,x)=>a+eeReflectionsDone(x.d.id),0)),"across your students"],
-   ["Slipped",String(flagged.length),flagged.length?"a checkpoint has passed":"all on schedule"]])}
+   ["Behind schedule",String(flagged.length),flagged.length?"a checkpoint has passed":"all on schedule"]])}
 
   ${q.length?`<h2 class="sechead" style="margin-top:26px">Waiting on you</h2>
   ${q.map(({d,r})=>vTEECard(d,r,load,cap)).join("")}`
@@ -5985,7 +5985,7 @@ function vEEStudent(sid){
  const cands=r.subject&&r.status!=="none"?eeCandidates(r.subject):EE_SUPERVISORS;
  return `<div class="fade">
   <button class="btn btn-g btn-sm" style="margin-bottom:14px" data-eeback="1">${ic("arrow-left",14)} All essays</button>
-  ${head(flag?d.name+", and what has slipped":d.name+" is on schedule",
+  ${head(flag?d.name+", and what is behind schedule":d.name+" is on schedule",
    `Grade ${d.yr} · ${d.goal} · ${r.supervisor?"supervised by "+r.supervisor:r.target?"proposal with "+r.target:"no supervisor"}. ${flag?flag+".":"Nothing outstanding."}`)}
   ${stu?`<div class="sheetbox" style="margin-bottom:20px"><div class="selrow-static">
    ${av(d.av,"counselor",38)}
@@ -6248,7 +6248,7 @@ function vSelDemand(){
   if(inPer.length>1)clashes.push({per,rows:inPer});});
  const c=selCounts(),sent=c.submitted+c.signed+c.approved+c.changes;
  return `<div class="fade">
-  ${head("Which courses can run next year",
+  ${head("Which courses are offered next year",
    `Counted from ${sent+c.draft} Grade 10 selections, ${sent} of them sent and ${c.draft} still in draft. ${SEL_ROUND.minNote} Nothing here is a decision: the round closes ${SEL_ROUND.closes}.`)}
   ${tally([["Below minimum",String(under.length),under.length===1?"subject would not run":"subjects would not run"],
    ["Over cap",String(over.length),"teaching groups too large"],
@@ -6325,11 +6325,11 @@ function vCasCohort(){
   ${head(gap.length?gap.length+" students have recorded nothing for three months":"Every diploma student is still moving in CAS",
    `Grades 11 and 12 of the Diploma cohort, ${cohort.length} students. ${CAS_HOURS_NOTE}`)}
   ${tally([["Nothing for 3 months",String(gap.length),"the gap that costs a diploma"],
-   ["A strand running thin",String(cohort.filter(x=>x.sum&&x.sum.thin.length).length),"balance is the requirement"],
+   ["A strand below expected hours",String(cohort.filter(x=>x.sum&&x.sum.thin.length).length),"balance is the requirement"],
    ["Reflections outstanding",String(cohort.reduce((a,x)=>a+(x.sum?x.sum.pending:0),0)),"hours without evidence"],
    ["In the cohort",String(cohort.length),"Grades 11 and 12"]])}
   <div class="filterbar" role="group" aria-label="Filter CAS cohort">
-   ${[["flag","Needs a nudge"],["g11","Grade 11"],["g12","Grade 12"],["all","Everyone"]].map(([k,l])=>
+   ${[["flag","Needs attention"],["g11","Grade 11"],["g12","Grade 12"],["all","Everyone"]].map(([k,l])=>
     `<button class="tab${f===k?" on":""}" data-casfilter="${k}" aria-pressed="${f===k}">${l}</button>`).join("")}
   </div>
   ${rows.length?`<div class="sheetscroll"><table class="sheet wide"><thead><tr>
@@ -7429,7 +7429,7 @@ Universities in ${cty==="UK"?"the United Kingdom":cty==="US"?"the United States"
    `;})()}
  </div>
  <div class="card" style="padding:20px">
-  <h2 class="sechead">${ic('alert',13)} The confusion we hear most often</h2>
+  <h2 class="sechead">${ic('alert',13)} Most frequent points of confusion</h2>
   ${[["\u201cIs IB harder than AP?\u201d","They are difficult in different ways. IB is broader and more sustained across two years. AP is deeper in fewer subjects and concentrated around exams. Universities do not treat one as automatically stronger."],
      ["\u201cWill AP hurt her chances in the UK?\u201d","Not automatically, but UK universities usually ask for a specific number of APs at specific scores, and the requirement is less standardised. The IB maps more cleanly onto a UK offer."],
      ["\u201cCan she switch now?\u201d","In Grade 12, no. Switching pathway is a Year 11 decision at this school. This page exists so that families with younger children can make that choice with the full picture."],
@@ -7712,7 +7712,7 @@ function vPSOverview(c,uniOptions){
  const stmts=S.psStatements||{};
  const systemKeys=Object.keys(groups).length?Object.keys(groups):["_generic"];
  return `<div class="fade" style="max-width:720px;margin:0 auto">
- ${head("Get an honest, detailed read before your counselor does","Applications don't work university-by-university. UCAS sends one statement to every UK choice; Common App sends one main essay to every US choice. This is organised the same way: one draft per application system, not per school.")}
+ ${head("Obtain a detailed assessment before counselor review","Applications don't work university-by-university. UCAS sends one statement to every UK choice; Common App sends one main essay to every US choice. This is organised the same way: one draft per application system, not per school.")}
  <div class="card" style="padding:22px;margin-bottom:16px;background:var(--info-bg);border-color:#B2DDFF">
   <div style="display:flex;gap:11px;align-items:flex-start">
    ${ic('shield',18)}<div style="font-size:12.3px;color:var(--info-ink);line-height:1.6"><b>This is a tool, not a verdict.</b> Nothing here is submitted anywhere on your behalf. Your counselor reads the statement herself before anything is final. This just means her first read starts from something more finished.</div>
@@ -7885,7 +7885,7 @@ function vPSReviews(){
  const pending=PS_SUBMISSIONS.filter(p=>p.status==="pending");
  const done=PS_SUBMISSIONS.filter(p=>p.status!=="pending");
  return `<div class="fade">
- ${head("Statements awaiting your read","Students get an automated benchmark read first. This is where your judgement takes over. The AI's analysis is included for context, never as a substitute for you reading the real thing.")}
+ ${head("Statements awaiting your review","Students get an automated benchmark read first. This is where your judgement takes over. The AI's analysis is included for context, never as a substitute for you reading the real thing.")}
 ${(()=>{const stats=psCohortStats();
    if(!stats)return'';
    return `<div class="card" style="padding:22px;margin-bottom:20px;background:var(--surface-2)">
@@ -8037,7 +8037,7 @@ function vParent(){
   <div style="display:flex;align-items:center;gap:11px;margin-bottom:${S.earlyStart?'14':'4'}px">
    <div style="width:34px;height:34px;border-radius:var(--r);background:var(--brand-3);color:var(--brand-2);display:grid;place-items:center;flex-shrink:0">${ic('zap',17)}</div>
    <div style="flex:1">
-    <div style="font-size:13.5px;font-weight:700">Getting a head start</div>
+    <div style="font-size:13.5px;font-weight:700">Beginning preparation early</div>
     <div style="font-size:11.5px;color:var(--ink-3);margin-top:1px">Some students begin over the summer before Grade 12, or in the second semester of Grade 11</div>
    </div>
    <div class="tog ${S.earlyStart?'on':''}" data-earlystart="1"></div>
@@ -8395,7 +8395,7 @@ function vStuProgress(){
  const psRec=Object.values(S.psStatements||{}).find(r=>r&&r.versions&&r.versions.length);
  const psTile=psRec?{v:"Draft "+psRec.versions.length,c:"var(--warn)"}:{v:"Not started",c:"var(--ink-3)"};
  return `<div class="fade">
- ${head("How I'm actually doing","Your grades, attendance and trajectory, the same information your counselor sees, so there are no surprises.")}
+ ${head("Current standing","Your grades, attendance and trajectory, the same information your counselor sees, so there are no surprises.")}
  ${tally([["Attendance",attTxt,"Against your own record, not the year group"],
   [c.track==="IB"?"Predicted total":c.track==="AP"?"AP exams this year":"Predicted",predDisplay,"What your teachers currently forecast"],
   ["Statement",psTile.v,"In the Personal Statement Lab"]])}
@@ -8803,7 +8803,7 @@ function vStuTargets(){
 
 function vStuMentors(){
  return `<div class="fade">
- ${head("Talk to someone who walked it","Former students who took the route you are looking at. The school arranges the introduction, every conversation happens inside the platform, and it is recorded. Nobody is billing you, and nothing here is private from your counselor.")}
+ ${head("Speak with an alumnus who followed this route","Former students who took the route you are looking at. The school arranges the introduction, every conversation happens inside the platform, and it is recorded. Nobody is billing you, and nothing here is private from your counselor.")}
  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
  ${MENTORS.map((m,i)=>`<div class="card lift" style="padding:20px;animation:rise .4s ${i*.05}s backwards">
   <div style="display:flex;gap:13px;margin-bottom:12px">
@@ -8835,7 +8835,7 @@ function vStuNet(){
  :empty("Nobody on your record yet","Your network fills in as you talk to alumni and add people you already know. An empty page here is a starting point, not a gap in your file.")}
  <div style="display:flex;gap:9px;margin-top:15px;flex-wrap:wrap">
   <button class="btn btn-p btn-sm" data-snav="mentors">${ic('plus',13)} Find a mentor</button>
-  <button class="btn btn-g btn-sm" data-toast="Add someone you already know; a family contact counts">${ic('plus',13)} Add someone I know</button></div>
+  <button class="btn btn-g btn-sm" data-toast="Add someone you already know; a family contact counts">${ic('plus',13)} Add a known contact</button></div>
  </div>`;}
 
 /* ═══════════ MENTOR ═══════════ */
@@ -8916,7 +8916,7 @@ function modalEl(){
    <div style="display:flex;gap:13px;margin-bottom:16px">${av(mt.av,"mentor",46)}
     <div><div style="display:flex;align-items:center;gap:6px"><b style="font-size:15.5px">${mt.n}</b>${ic('checkC',14)}</div>
     <div style="font-size:12.2px;color:var(--inkSoft)">${mt.role} · ${mt.uni}</div></div></div>
-   ${[["Length","45 minutes · video call"],["Arranged by","The school · no charge"],["Walked your route",mt.path.slice(1).join(" → ")]].map(([l,r])=>`<div class="kv"><span style="color:var(--ink-3)">${l}</span><b>${r}</b></div>`).join('')}
+   ${[["Length","45 minutes · video call"],["Arranged by","The school · no charge"],["Followed your route",mt.path.slice(1).join(" → ")]].map(([l,r])=>`<div class="kv"><span style="color:var(--ink-3)">${l}</span><b>${r}</b></div>`).join('')}
    <div style="font-size:12.5px;font-weight:600;margin:15px 0 8px">Pick a time</div>
    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
     ${slots.map((s,i)=>`<div data-slot="${i}" style="padding:10px;min-height:44px;display:grid;place-items:center;border:1px solid ${S.selSlot===i?'var(--school-primary)':'var(--rule-2)'};background:${S.selSlot===i?'var(--school-primary)':'var(--stock)'};color:${S.selSlot===i?'var(--school-on-primary)':'var(--ink-2)'};text-align:center;font-size:11.8px;font-weight:600;cursor:pointer">${s}</div>`).join('')}</div>
