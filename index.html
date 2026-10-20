@@ -663,6 +663,34 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
 /* The requirement chip. Three states, and each carries a mark as well
    as a colour: met, not met, and unconfirmed. Tier colours are not
    used here — a prerequisite is not a severity. */
+/* A section inside an opened subject. The heading carries its own
+   verdict chip, so the answer is readable before the prose under it. */
+/* The subject picker in the recommendation modal. A grid, because six
+   chips of very different widths wrapped into a ragged block that read
+   as an accident rather than as a list. */
+.subgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(192px,1fr));gap:7px}
+.subopt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;
+ padding:9px 12px;min-height:44px;background:var(--stock);border:1px solid var(--rule-2);
+ border-radius:var(--r);cursor:pointer;transition:border-color .12s,background .12s}
+.subopt:hover{border-color:var(--rule-3);background:var(--band)}
+.subopt.on{background:var(--school-primary);border-color:var(--school-primary)}
+.subopt.on .subopt-n,.subopt.on .subopt-m{color:var(--school-on-primary)}
+.subopt-n{font-family:var(--f-content);font-size:12.5px;font-weight:600;color:var(--ink);line-height:1.3}
+.subopt-m{font-family:var(--f-apparatus);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-4)}
+.checklist.tight .checkrow{padding:7px 10px}
+.optsec{padding:12px 0;border-top:1px solid var(--rule)}
+.optsec:first-child{border-top:0;padding-top:2px}
+.optsec-h{display:flex;align-items:center;gap:9px;margin-bottom:7px;flex-wrap:wrap}
+.optsec-p{margin:0;font-size:12.3px;color:var(--ink-2);line-height:1.6;max-width:68ch}
+/* Alternatives sit in a row of equal cards: three courses being weighed
+   against each other should not be read as a ranked list. */
+.altgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(176px,1fr));gap:8px}
+.altcard{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;
+ padding:10px 12px;min-height:44px;background:var(--stock);border:1px solid var(--rule-2);
+ border-radius:var(--r);cursor:pointer;transition:border-color .12s,background .12s}
+.altcard:hover{border-color:var(--rule-3);background:var(--band)}
+.altcard-n{font-family:var(--f-content);font-size:12.6px;font-weight:600;color:var(--ink);line-height:1.35}
+.altcard-m{font-family:var(--f-apparatus);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-4)}
 .prq{display:inline-flex;align-items:center;gap:4px;font-family:var(--f-apparatus);font-size:10.5px;
  font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px 2px 5px;
  border-radius:var(--r-sm);border:1px solid var(--rule-2);color:var(--ink-3);background:var(--stock)}
@@ -1691,6 +1719,12 @@ lettered:false,
 palOpen:false,palQuery:"",palActiveIndex:0,palResults:[]};
 const R=document.getElementById("root");
 const g=id=>S.cases.find(c=>c.id===id);
+/* A register may hold caseload students or Diploma cohort students. Any
+   screen that reads across both resolves through this: the caseload
+   first, because that is where a full case record lives, then the
+   cohort. Resolving through `g` alone returned undefined for a cohort
+   student and crashed on the next property read. */
+const anyStudent=id=>S.cases.find(c=>c.id===id)||(typeof DPC!=="undefined"?DPC.find(d=>d.id===id):null)||null;
 /* Attendance is quoted to the parent and to the student on separate screens.
    Both read it here so the same girl cannot be 98% to her father and 97% to
    herself, which is what two different fallback literals used to produce. */
@@ -3670,7 +3704,7 @@ function vTClass(){
     the two populations are deliberately separate, and this is the one
     screen that reads across both. Resolve from the caseload first,
     then the cohort, so neither list silently renders empty. */
- const roster=cls.students.map(id=>g(id)||DPC.find(d=>d.id===id)).filter(Boolean);
+ const roster=cls.students.map(anyStudent).filter(Boolean);
  const surname=TEACHER.name.split(" ").slice(-1)[0];
  return `<div class="fade">
  ${head("Following the lesson",cls.label+" · "+cls.period+". Tap a student to log something. It takes about fifteen seconds and goes straight to their counselor. You never need to follow up manually or complete a form twice.")}
@@ -3762,20 +3796,25 @@ function eligModal(){
    <div style="flex:1"><h2 style="font-family:var(--f-apparatus);font-size:17px;font-weight:600">Recommended level</h2>
     <div style="font-size:12.2px;color:var(--ink-3);margin-top:3px">${stu.name} \u00b7 ${stu.mathSet?stu.mathSet+" set, "+stu.mark:"Grade 10"}</div></div>
    ${mcloseBtn()}</div>
-  <div class="appa" style="margin:16px 0 8px">Subject</div>
-  <div style="display:flex;gap:7px;flex-wrap:wrap">
-   ${opts.map(o=>`<button class="tagbtn${f.s===o.id?" on":""}" data-eligsub="${o.id}">${o.name}${o.t===TEACHER.name?"":" \u00b7 associated"}</button>`).join("")}
-  </div>
-  <div style="font-size:11.4px;color:var(--ink-4);margin-top:9px;line-height:1.5">
-   ${TEACHER.subject} feeds these courses. A recommendation outside them belongs to the teacher who takes that subject.</div>
+  ${(()=>{ /* Own subjects first and labelled as such, then the courses
+     the teacher's subject feeds. Repeating "associated" on every chip
+     said it six times and grouping says it once. */
+   const own=opts.filter(o=>o.t===TEACHER.name),near=opts.filter(o=>o.t!==TEACHER.name);
+   const grid=list=>`<div class="subgrid">${list.map(o=>`<button class="subopt${f.s===o.id?" on":""}" data-eligsub="${o.id}">
+     <span class="subopt-n">${o.name}</span><span class="subopt-m">${o.lv.join(" / ")} \u00b7 ${o.t.split(" ").slice(-1)[0]}</span></button>`).join("")}</div>`;
+   return `${own.length?`<div class="appa" style="margin:16px 0 7px">Your subject</div>${grid(own)}`:""}
+    ${near.length?`<div class="appa" style="margin:15px 0 7px">Courses ${TEACHER.subject.toLowerCase()} feeds</div>${grid(near)}
+     <div style="font-size:11.4px;color:var(--ink-4);margin-top:8px;line-height:1.5">A recommendation outside these belongs to the teacher who takes that subject.</div>`:""}`;})()}
   ${sub?`<div class="appa" style="margin:18px 0 8px">Level</div>
   <div style="display:flex;gap:9px">
    ${["HL","SL"].map(lv=>`<button class="lvbtn${f.lv===lv?" on":""}" data-eliglv="${lv}">${lv}</button>`).join("")}
    <button class="tagbtn${f.lv==="either"?" on":""}" data-eliglv="either" style="flex:1">Either level</button></div>
-  ${chk?`<div class="checklist" style="margin-top:14px">
-   ${chk.items.length?chk.items.map(i=>`<div class="checkrow ${i.k==="unmet"?"block":"ask"}">
+  ${chk?`<div class="appa" style="margin:16px 0 7px">This student against the requirement</div>
+   <div class="checklist tight">
+   ${chk.slOnly?`<div class="checkrow ask">${ic('check',13)}<span>No requirement at Standard Level</span></div>`
+    :chk.items.length?chk.items.map(i=>`<div class="checkrow ${i.k==="unmet"?"block":"ask"}">
      ${i.k==="unmet"?ic('x',13):i.k==="met"?ic('check',13):ic('alert',13)}<span>${i.t}</span></div>`).join(""):
-     `<div class="checkrow ask">${ic('check',13)}<span>No prerequisite at this level</span></div>`}
+     `<div class="checkrow ask">${ic('check',13)}<span>No prerequisite recorded</span></div>`}
    </div>`:""}
   <div class="appa" style="margin:18px 0 8px">Note for the student</div>
   <textarea id="eligNote" data-elignote="1" placeholder="What you have seen in class. The student reads this beside the subject." style="width:100%;min-height:74px">${(f.note||"").replace(/</g,"&lt;")}</textarea>
@@ -3786,7 +3825,8 @@ function eligModal(){
  </div></div>`;}
 function tflagModal(){
  if(!S.modal||S.modal.type!=="tflag")return "";
- const c=g(S.modal.id);const kind=S.tKind||"concern";
+ const c=anyStudent(S.modal.id); if(!c)return "";
+ const kind=S.tKind||"concern";
  const K=FLAG_KINDS.find(k=>k.k===kind);
  const picked=S.tTags||[];
  const cls=TEACHER.classes.find(x=>(x.students||[]).includes(c.id))||TEACHER.classes.find(x=>x.id===S.tClass)||TEACHER.classes[0];
@@ -4948,6 +4988,26 @@ function prereqCheck(subId,lv,stu){
  return {k,items,note:n.note};
 }
 /* Shorthand for the chooser, which has room for a mark and not a list. */
+/* ── ALTERNATIVES ───────────────────────────────────────────────────
+   What else fills this slot, for a student looking at a subject whose
+   requirement they do not meet. Restricted to the same group, because
+   the slot still has to be filled from it, and to subjects that
+   actually fit the timetable alongside what they have already chosen.
+
+   A recommendation from a teacher sorts first: a student deciding
+   between two courses they qualify for is better served by the one
+   somebody has already said yes to. */
+function altsFor(subId,list,rec,stu,groupId){
+ const taken=selPicks(rec).filter(([g2])=>g2.id!==groupId).map(([,p])=>p.s);
+ return list.filter(a=>a.id!==subId&&!taken.includes(a.id))
+  .map(a=>{const open=a.lv.filter(lv=>!selClashWith(rec,a.id,lv,groupId).length);
+   if(!open.length)return null;
+   const lv=open.includes("HL")?"HL":open[0];
+   const c=prereqCheck(a.id,lv,stu);
+   if(c.k==="unmet")return null;
+   const r=eligFor(stu&&stu.id,a.id);
+   return {s:a,lv,open,rec:r,score:(r?0:1)+(c.k==="met"?0:1)};})
+  .filter(Boolean).sort((x,y)=>x.score-y.score).slice(0,3);}
 function prereqMark(subId,lv,stu){const r=prereqCheck(subId,lv,stu);
  return r.k==="met"?"":r.k==="unmet"?"Requirement not met":"Requirement unconfirmed";}
 function selPicks(rec){return IB_GROUPS.map(gr=>[gr,rec.picks?rec.picks[gr.id]:null]).filter(x=>x[1]&&x[1].s);}
@@ -5712,7 +5772,7 @@ function vSelChooser(gr,list,rec,stu){
     </div>
    </div>
    <div class="opt-more">
-    <button class="linkish" data-seldesc="${s.id}" aria-expanded="${openDesc}">${openDesc?"Less":"What it is like"}</button>
+    <button class="linkish" data-seldesc="${s.id}" aria-expanded="${openDesc}">${openDesc?"Less":"Requirement, advice and alternatives"}</button>
     ${already?"":!openLv.length?`<span class="selrow-n">${s.lv.map(lv=>selClashWith(rec,s.id,lv,gr.id).length?s.per[lv]+" is your "+selClashWith(rec,s.id,lv,gr.id)[0]:null).filter(Boolean).join(". ")}.</span>`
      :""}
     ${(()=>{ /* the requirement, and whether this student meets it */
@@ -5728,24 +5788,45 @@ function vSelChooser(gr,list,rec,stu){
       return `<span class="prq prq-rec" title="${r.note||""}">${ic('user',12)}${r.by.split(" ").slice(-1)[0]} suggests ${r.lv==="either"?"either level":r.lv}</span>`;})()}
    </div>
    ${openDesc?`<div class="opt-desc">
-    <div class="dl"><span class="appa">The year</span><p>${s.like}</p></div>
-    <div class="dl"><span class="appa">Assessed by</span><p>${s.assess}</p></div>
-    ${s.needs?(()=>{const lvTry=openLv.includes("HL")?"HL":openLv[0]||s.lv[0];
-      const c=prereqCheck(s.id,lvTry,stu);
-      return `<div class="dl"><span class="appa">Requirement</span><div>
-       <p style="margin-bottom:${c.items.length?"8px":"0"}">${s.needs.note||""}</p>
-       ${c.slOnly?`<p class="selrow-n" style="margin:0">Checked at Higher Level only.</p>`:
-        c.items.length?`<div class="checklist">${c.items.map(i=>`<div class="checkrow ${i.k==="unmet"?"block":"ask"}">
-          ${i.k==="unmet"?ic('x',13):i.k==="met"?ic('check',13):ic('alert',13)}
-          <span>${i.t}</span></div>`).join("")}</div>`:""}
-       ${c.k==="unmet"?`<p class="selrow-n" style="margin:8px 0 0">You can still choose it. Your coordinator will ask for the reason, and you can request a meeting from the form.</p>`:""}
-      </div></div>`;})():""}
-    ${(()=>{const r=eligFor(stu&&stu.id,s.id); if(!r)return"";
-      return `<div class="dl"><span class="appa">Your teacher</span><div>
-       <p style="margin:0">${r.by} suggests <b>${r.lv==="either"?"either level":r.lv}</b> for you${r.note?": "+r.note:"."}</p>
-       <p class="selrow-n" style="margin:6px 0 0">Recorded ${r.when}. This is advice, not a restriction.</p></div></div>`;})()}
-    <div class="dl"><span class="appa">The hard part</span><p>${s.hard}</p></div>
-    <div class="dl"><span class="appa">Taught by</span><p>${s.t}. ${via.under?"Chosen by "+via.n+" so far and it needs "+via.min+", so it may not run.":"Running next year, with "+via.n+" so far."}</p></div>
+    ${(()=>{ /* What the student came here to check, before the prose:
+       the requirement, what a teacher has said, and what else fits. */
+      const lvTry=openLv.includes("HL")?"HL":openLv[0]||s.lv[0];
+      const c=s.needs?prereqCheck(s.id,lvTry,stu):null;
+      const r=eligFor(stu&&stu.id,s.id);
+      const alts=(c&&c.k==="unmet")?altsFor(s.id,list,rec,stu,gr.id):[];
+      const head=(t,k)=>`<div class="optsec-h"><span class="appa">${t}</span>${k?`<span class="prq prq-${k}">${
+        k==="met"?ic('check',12):k==="unmet"?ic('alert',12):k==="rec"?ic('user',12):ic('eye',12)}${
+        k==="met"?"Met":k==="unmet"?"Not met":k==="rec"?"Advised":"Unconfirmed"}</span>`:""}</div>`;
+      let out="";
+      if(c&&!c.slOnly){
+       out+=`<div class="optsec">${head("Requirement",c.k)}
+        <p class="optsec-p">${s.needs.note||""}</p>
+        ${c.items.length?`<div class="checklist" style="margin-top:9px">${c.items.map(i=>`<div class="checkrow ${i.k==="unmet"?"block":"ask"}">
+          ${i.k==="unmet"?ic('x',13):i.k==="met"?ic('check',13):ic('alert',13)}<span>${i.t}</span></div>`).join("")}</div>`:""}
+        ${c.k==="unmet"?`<p class="optsec-p" style="margin-top:9px">This does not stop you choosing it. Your coordinator will ask for the reason, and the form lets you request a meeting.</p>`:""}
+       </div>`;}
+      else if(c&&c.slOnly){
+       out+=`<div class="optsec">${head("Requirement")}<p class="optsec-p">${s.needs.note||""} Checked at Higher Level only.</p></div>`;}
+      out+=`<div class="optsec">${head("Teacher advice",r?"rec":null)}
+        ${r?`<p class="optsec-p"><b>${r.by}</b> suggests <b>${r.lv==="either"?"either level":r.lv}</b>${r.note?": "+r.note:"."}</p>
+            <p class="optsec-p" style="color:var(--ink-4);margin-top:5px">Recorded ${r.when}. Advice, not a restriction.</p>`
+          :`<p class="optsec-p" style="color:var(--ink-4)">No teacher has recorded a level for you on this subject.</p>`}
+       </div>`;
+      if(alts.length){
+       out+=`<div class="optsec">${head("Alternatives in this group")}
+        <p class="optsec-p" style="color:var(--ink-4);margin-bottom:8px">These fit your timetable and you meet what they ask for.</p>
+        <div class="altgrid">${alts.map(a=>`<button class="altcard" data-selpick="${gr.id}:${a.s.id}:${a.lv}">
+          <span class="altcard-n">${a.s.name}</span>
+          <span class="altcard-m">${a.lv} \u00b7 ${a.s.per[a.lv]}${a.rec?" \u00b7 "+a.rec.by.split(" ").slice(-1)[0]+" advises "+a.rec.lv:""}</span>
+         </button>`).join("")}</div>
+       </div>`;}
+      return out;})()}
+    <div class="optsec">${`<div class="optsec-h"><span class="appa">The course</span></div>`}
+     <div class="dl"><span class="appa">The year</span><p>${s.like}</p></div>
+     <div class="dl"><span class="appa">Assessed by</span><p>${s.assess}</p></div>
+     <div class="dl"><span class="appa">The hard part</span><p>${s.hard}</p></div>
+     <div class="dl"><span class="appa">Taught by</span><p>${s.t}.${via.under?" Chosen by "+via.n+" so far against a minimum of "+via.min+", so it may not run.":""}</p></div>
+    </div>
    </div>`:""}
   </div>`;};
  return `<div class="selchoose">
@@ -9622,7 +9703,8 @@ function bind(){
    if(i>-1)S.tTags.splice(i,1);else S.tTags.push(t);
    const n=document.getElementById("tnote");if(n)S.tNote=n.value;draw();});
  q("[data-tsave]",e=>e.onclick=()=>{
-   const id=e.dataset.tsave,c=g(id);const n=document.getElementById("tnote");
+   const id=e.dataset.tsave,c=anyStudent(id); if(!c)return;
+   const n=document.getElementById("tnote");
    const txt=(n?n.value:"").trim()||S.tTags.join(", ")||"Logged after lesson.";
    const K=FLAG_KINDS.find(k=>k.k===S.tKind);
    TFLAGS.unshift({id:"tf"+Date.now(),sid:id,student:c.name,av:c.av,by:TEACHER.name+" · "+TEACHER.subject,
