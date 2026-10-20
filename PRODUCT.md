@@ -19,13 +19,13 @@ Four secondary audiences, each with a genuinely different job — not the same d
 
 ## Product Purpose
 
-CAROS helps a counseling team notice which students need support *before those students ask*, absorbs the administrative weight of the university application cycle, and gives every stakeholder in a student's journey exactly the view they need and nothing more.
+CLAROS helps a counseling team notice which students need support *before those students ask*, absorbs the administrative weight of the university application cycle, and gives every stakeholder in a student's journey exactly the view they need and nothing more.
 
 Success is the counselor ending the day confident that nobody fell through a gap, and able to prove to school leadership that the intervention happened and worked.
 
 ## Positioning
 
-The mechanism a neighboring product cannot truthfully copy is **deviation from a student's own baseline**, not from a cohort average. CAROS learns each student's personal normal band across academics, attendance, engagement, behaviour, teacher sentiment and university progress, and raises a signal when *that student* moves against *their own* history. A cohort-average tool cannot see a strong student quietly declining, or a struggling student genuinely recovering.
+The mechanism a neighboring product cannot truthfully copy is **deviation from a student's own baseline**, not from a cohort average. CLAROS learns each student's personal normal band across academics, attendance, engagement, behaviour, teacher sentiment and university progress, and raises a signal when *that student* moves against *their own* history. A cohort-average tool cannot see a strong student quietly declining, or a struggling student genuinely recovering.
 
 The second differentiator is that the counselor's caseload is a **triaged queue with real SLA states**, not a list — five severity tiers (urgent → check-in → review → monitor → good) that order the day.
 
@@ -37,20 +37,20 @@ Competitive frame: Naviance is the incumbent schools complain about; Scoir is th
 - The application cycle is deadline-shaped and unforgiving; letters, transcripts, and offers all have dates that cannot slip.
 - Safeguarding escalation to a named Designated Safeguarding Lead is a real, consequential, logged act — not a UI state.
 - Evidence chains matter: every signal must show what fed it, because the counselor has to justify her attention to parents and leadership.
-- Academic data at pilot arrives as a termly CSV exported from the school's SIS (iSAMS / PowerSchool / Veracross shaped). No live SIS integration. **ACS runs Veracross**, so the ACS rendition names Veracross; the SIS name is a school-record field (`sis`), not a hardcoded string.
+- Academic data at pilot arrives as a termly CSV exported from the school's SIS (iSAMS / PowerSchool / Veracross shaped). No live SIS integration. The SIS name is a school-record field (`sis`), never a hardcoded string.
 
-### Verified ACS facts, checked against their own published sources 2026-09-04
+### Structural findings from the 2026-09-04 reference school
 
-Checked because the demo carries their name, and a school notices its own vocabulary faster than it notices a feature. Re-verify before quoting any of it back to them.
+**The build is no longer branded to any school** (see Brand Commitments). These findings came from one real international school's published sources and still shape the product, so they are kept; the school's name is not. Re-verify against whichever school a pilot actually lands with.
 
-- **Roughly 1,200 to 1,315 students, KG1 through Grade 12**, from 80+ countries. The school's own site says ~1,315; the US State Department 2026 fact sheet, using figures the school supplied in April 2026, says ~1,200. The Saadiyat campus is built for up to 1,550.
-- **Nine counselors: four High School, three Middle School, two Elementary.** All are titled simply "Counselor" or "HS Counselor". **There is no Head of University Counseling and no separate university counseling department** — the High School Counseling Team does that work alongside everything else. The earlier persona title was invented and has been corrected.
-- No published caseload or ratio. But at a senior cohort of roughly 80 to 95, Grades 9–12 is about 320 to 380 students across four counselors, so **the demo's caseload of 87 is close to their real per-counselor load.** That figure should stay.
-- **The safeguarding role is Child Protection Officer**, not Designated Safeguarding Lead. Their Student Safeguarding and Child Protection Handbook names a "Lead Child Protection Officer" and routes concerns through the HS Principal and HS Counselors. It uses DSL nowhere. DSL is British-school vocabulary and has been moved to the unbranded rendition only.
-- **ACS offers the IB Diploma Programme, Advanced Placement, and its own ACS High School courses.** The IB-versus-AP surface is therefore well matched, but the real choice is three ways, not two. The product still models it as a binary plus "undecided".
-- The school publishes that 95% of each senior class attends university and 89% are accepted to their top choice. **These are ACS's claims, not ours.** Do not restate them as CAROS outcomes.
+- **An international school of roughly 1,200 to 1,315 students, KG1 through Grade 12**, drawing from 80+ countries. Useful as the order of magnitude a pilot should assume.
+- **Counselors are titled simply "Counselor" or "HS Counselor".** There is commonly **no Head of University Counseling and no separate university counseling department** — the high school counseling team does that work alongside everything else. The persona title was corrected accordingly.
+- At a senior cohort of roughly 80 to 95, Grades 9–12 is about 320 to 380 students across four counselors, so **the demo's caseload of 87 is close to a real per-counselor load.** That figure should stay.
+- **The safeguarding role may be Child Protection Officer rather than Designated Safeguarding Lead.** DSL is British-school vocabulary; a US-curriculum international school is likelier to use Child Protection Officer. Both live in the school record (`safeguarding`), never hardcoded, so a pilot takes its own term.
+- **A school may offer the IB Diploma Programme, Advanced Placement and its own high school courses.** The IB-versus-AP surface is therefore well matched, but the real choice can be three ways, not two. The product still models it as a binary plus "undecided".
+- Published outcome claims (university attendance, top-choice acceptance) belong to the school that published them. **Never restate a school's claims as CLAROS outcomes.**
 
-No real ACS student, family or staff member is represented anywhere in the build. The counselor, the safeguarding lead and every family are fictional, and stay fictional.
+No real student, family or staff member is represented anywhere in the build. The counselor, the safeguarding lead and every family are fictional, and stay fictional.
 - Four destination systems are modelled: UK, US, UAE, Canada. Canada is deliberate — domestic-vs-international tuition by passport is the clearest demonstration of the fee-status logic.
 
 ## Capabilities and Constraints
@@ -59,13 +59,13 @@ No real ACS student, family or staff member is represented anywhere in the build
 
 ### The IB module, added 2026-09-10
 
-Driven by a counselor meeting with Mr. Diaz at ACS, and the first part of the product shaped by a named user's own workflow rather than by a design review. His process today is verbal choices written into a notebook, carried to the counselors, then worked up by hand into whether a course can run. He wants to keep the conversation and hand back the clerical half.
+Driven by a meeting with the reference school's IB coordinator, and the first part of the product shaped by a named user's own workflow rather than by a design review. His process today is verbal choices written into a notebook, carried to the counselors, then worked up by hand into whether a course can run. He wants to keep the conversation and hand back the clerical half.
 
 - **Subject selection** runs as a round with an open and close date. A Grade 10 student fills six group slots, chooses a level, and writes a reason against each choice. The reason is required, because it is what turns the counselor's meeting from collection into guidance.
 - **The rules are deterministic tables**, per the trust spine: group coverage, HL count, period clashes, prerequisites, stated-goal alignment and whether the course will run. Nothing that gates a submission is model output.
 - **Sign-off is subject teacher, then coordinator.** A teacher answers only the level question and only for subjects they teach. The coordinator decides the whole selection.
 - **The conversation is a gate.** A selection cannot be approved until a dated, attributed record of the review meeting exists. This is a product rule, not a UI state, and it is the point of the module.
-- **The coordinator is a counselor view, not a sixth role**, matching the verified ACS structure.
+- **The coordinator is a counselor view, not a sixth role**, matching the verified counseling-team structure.
 - **CAS** covers the three strands, the seven learning outcomes, hours as a school-level expectation (the IB itself no longer specifies 150), reflections, and a coordinator view of who has stopped and in which strand. Interests are captured where they are used rather than in the three-tap sign-in gate, and matched to browsable school activities with the match's reason shown.
 
 ### The Extended Essay, added 2026-09-10
@@ -84,7 +84,7 @@ Every research question in the build is authored, and none repeats. The Diploma 
 
 **A second population exists, and must stay separate.** The caseload is 87 students across Grades 9–12 belonging to one counselor. The Diploma cohort is the school's IB population across three year groups (Grade 10 choosing, Grades 11 and 12 in the programme). They answer different questions and no screen may total them together.
 
-The IB subject catalogue, its descriptions, the school activities behind CAS, every Extended Essay research question and both cohorts are synthetic demonstration content. No ACS course list, programme, co-curricular offering or student essay is represented.
+The IB subject catalogue, its descriptions, the school activities behind CAS, every Extended Essay research question and both cohorts are synthetic demonstration content. No real school's course list, programme, co-curricular offering or student essay is represented.
 
 **Technical constraints:** one self-contained `index.html`. Vanilla JS, no framework, no build step, no backend, no package manager, no test suite. All data in memory; refresh resets the demo. Must run offline from a double-clicked file. `draw()` rebuilds the whole tree on every state change — this is the governing performance and motion constraint.
 
@@ -96,7 +96,7 @@ The IB subject catalogue, its descriptions, the school activities behind CAS, ev
 
 ## Brand Commitments
 
-- The name is **CAROS — Counselor OS**. "Career OS" is the student-facing name for the student portal.
+- The name is **CLAROS — Counselor OS**. "Career OS" is the student-facing name for the student portal.
 - **The trust spine: rules decide, the model writes.** Deterministic tables own entry requirements, prerequisites, fee status, tuition, deadlines and reach/match/safety classification. The model only interprets, names, phrases and converses. Every number a student sees must trace to a source. This is a binding product principle and any interface must make provenance visible rather than implying machine omniscience.
 - **Gamification on the student side is permitted, and is a deliberate reversal.** The earlier position ("no streaks, no confetti, no characters, no points — a Grade 12 applying to university is a serious audience") was overturned by the team on 2026-09-02 in favour of retention. The build already reflects the new position: a milestone roadmap awards XP and fires a confetti burst on completion. Future work should design this properly as a first-class part of the student register rather than treating it as a bolt-on, and must not reintroduce the old prohibition. The counselor, parent, teacher and mentor surfaces remain ungamified.
 - Mentor contact is in-platform only, for safeguarding.
@@ -108,10 +108,10 @@ Real assets: `index.html` (the full working prototype), `README.md`, `CLAUDE.md`
 **Absences future work must not fabricate — this section is load-bearing:**
 
 - **There is no real partner school's data in the product.** Every student, family, grade, message and meeting in the prototype is synthetic demo content, and "Ms. Reem Haddad" is fictional.
-- **From 2026-09-02 the demo is branded as the American Community School of Abu Dhabi** for the pilot with one of their counselors, replacing the invented "Al Bateen Academy" (which had to go regardless — ACS occupied the Al Bateen campus for fifty years before moving to Saadiyat Island, so the old name reads as their former campus). **Branding the demo with a real school's name makes the synthetic-data label a hard requirement, not a nicety:** these are fabricated student welfare and safeguarding records under a real institution's identity, and a screenshot can travel. A persistent, visible "demonstration data" marker must be present on any surface showing student records while a real school's name is applied — it is not to be hidden for a cleaner demo screenshot. No real ACS student, staff member or outcome may be represented.
+- **From 2026-10-20 the demo carries no school identity at all.** It was briefly branded to a real international school for a pilot; that branding, its crest and its name were removed, and the seeded school record now ships with an empty name, short form and initials so the letterhead reads as CLAROS alone. **The synthetic-data marker stays regardless.** The original reason was that a real institution's identity sat over fabricated welfare records; the records are still fabricated, a screenshot still travels, and a demo showing student welfare data owes the viewer that label. It is gated on the school record, not on a debug flag, so it cannot be switched off for a cleaner screenshot. If a partner school's name is ever applied again, the marker becomes non-negotiable and no real student, staff member or outcome may be represented.
 - There are no real testimonials, customers, outcomes, benchmarks, pricing, or press. None may be invented or implied anywhere in the interface.
 - Alumni outcome data backing the IB-vs-AP explainer is synthetic.
-- The current probability figure in the student pathway view is fabricated in code (a hardcoded start plus fixed increments per checkbox). It is not a model output and must not be presented as one.
+- ~~The current probability figure in the student pathway view is fabricated in code.~~ **Removed 2026-10.** The hardcoded probability and the view it drove are gone from the build. The per-university "Chance" column on the student targets table survives and is hand-authored roster data, not a model output; it must not be presented as one.
 
 Synthetic demonstration content is legitimate design material and should be authored at full fidelity — but it is labeled as demo content, and no commercial or factual claim rides on it.
 
@@ -120,7 +120,9 @@ Synthetic demonstration content is legitimate design material and should be auth
 1. **Attention is the scarce resource.** Every screen either helps the counselor decide who to see next, or defends a decision she already made. A number nobody acts on does not belong in the interface.
 2. **Signals are personal, never comparative.** Deviation is measured against the student's own baseline band. Never rank students against each other.
 3. **Provenance over authority.** Show the evidence chain and the source. The product never asks to be believed; it shows its work.
-4. **Register follows audience.** A parent's portal and a counselor's console are different emotional instruments. Differentiation between roles is a feature, not inconsistency to be normalized away. The student surface may motivate; the counselor surface may not.
+4. **One register, formal, across every role.** *Reversed 2026-10-20.* This principle previously read "Register follows audience" and held that a parent's portal and a counselor's console were different emotional instruments. The team overturned it: CLAROS is a startup selling to schools, and a product holding safeguarding records should not change voice depending on who is reading. Interface copy is formal, precise and consistent on all five surfaces — headings are noun phrases, not questions; idiom ("needs a nudge", "chase", "take a look") is replaced by the term a school would use in writing. Do not restore the old differentiation.
+
+   **The exception, and it is not a loophole: people in the product still sound like people.** Parent and counselor message threads, quoted parent questions in the IB/AP explainer, co-pilot queries typed in natural language, student statement drafts and Extended Essay research questions are *content*, not interface. A message thread written in corporate register reads as fabricated and damages the demo. Formalise the chrome; leave the humans alone.
 5. **Absence is information.** A Grade 9 family's near-empty portal is correct, not broken — and the interface must say *why* it is empty, or the family stops opening it.
 
 ## Accessibility & Inclusion
