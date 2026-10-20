@@ -651,20 +651,30 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
  border-left:2px solid var(--margin)}
 .selslot+.selslot{border-top:1px solid var(--rule)}
 .selslot.void{background:var(--stock-3)}
-.selrow,.selrow-static,.casent{display:flex;align-items:flex-start;gap:13px;padding:13px 16px}
+.selrow,.selrow-static,.casent{display:flex;align-items:flex-start;gap:13px;padding:14px 16px}
+/* The marks on their own line, with room around them. Two of these can
+   appear on one subject and they are the part of the row a student is
+   meant to stop at, so they are not pushed against the teacher's name
+   above them. */
+.selmarks{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:7px}
 .selrow-static:nth-child(even),.casent:nth-child(even){background:var(--band)}
-.selrow-t{font-size:13.2px;font-weight:600;color:var(--ink);line-height:1.3}
+.selrow-t{font-size:13.2px;font-weight:600;color:var(--ink);line-height:1.35}
 .selrow-n{font-size:11.8px;color:var(--ink-3);line-height:1.55;margin-top:2px;max-width:70ch}
 .selrow-r{display:flex;gap:7px;align-items:center;flex-shrink:0;margin-left:auto}
-.selwhy{padding:0 16px 12px 58px;background:inherit;display:flex;align-items:baseline;gap:12px}
+.selwhy{padding:2px 16px 14px 58px;background:inherit;display:flex;align-items:baseline;gap:12px}
 /* The rationale is one sentence, so it is one line until it is not.
    A three-line box on each of six slots added 400px of empty field to
-   a form whose whole argument is that it is short. */
-.selwhy .whyfield{flex:1;min-width:0;min-height:38px;height:38px;box-sizing:border-box;
- resize:vertical;padding:9px 11px;line-height:1.4}
+   a form whose whole argument is that it is short.
+
+   It is also capped. Left to stretch, a one-sentence field ran the
+   full width of a wide screen on all six slots, which reads as six
+   empty banners rather than six short answers; the cap puts it on the
+   same measure as the prose beside it. */
+.selwhy .whyfield{flex:1;min-width:0;max-width:72ch;min-height:34px;height:34px;box-sizing:border-box;
+ resize:vertical;padding:8px 11px;line-height:1.4}
 /* It grows when it is being written in, and only then. */
-.selwhy .whyfield:focus{height:76px}
-@media(max-width:640px){.selwhy{flex-direction:column;gap:5px;padding-left:16px}.selwhy .whyfield{width:100%}}
+.selwhy .whyfield:focus{height:72px}
+@media(max-width:640px){.selwhy{flex-direction:column;gap:5px;padding-left:16px}.selwhy .whyfield{width:100%;max-width:none}}
 .selwhy textarea{font-size:12.5px;line-height:1.5}
 /* The level, printed rather than chipped. It is not severity, so it takes
    the ledger stamp's register and never a tier colour. */
@@ -721,7 +731,7 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
 .altcard-n{font-family:var(--f-content);font-size:12.6px;font-weight:600;color:var(--ink);line-height:1.35}
 .altcard-m{font-family:var(--f-apparatus);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-4)}
 .prq{display:inline-flex;align-items:center;gap:4px;font-family:var(--f-apparatus);font-size:10.5px;
- font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px 2px 5px;
+ font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:3px 9px 3px 7px;
  border-radius:var(--r-sm);border:1px solid var(--rule-2);color:var(--ink-3);background:var(--stock)}
 .prq svg{width:12px;height:12px}
 .prq-met{color:var(--t-good);border-color:var(--t-good)}
@@ -1728,7 +1738,7 @@ audit:JSON.parse(JSON.stringify(AUDIT)),
 toast:null,modal:null,cpQ:null,cpA:null,cpLoad:false,
 letter:"idle",thresh:{acad:2,att:3,eng:14,persist:3},
 sortBy:"prio",noteDraft:{},caseNotes:{},escReason:"",selSlot:null,
-uniOpen:"",pmTopic:"",pmSlot:null,pmNote:"",pathDegree:"",pathCountry:"UK",previewGrade:12,previewTrack:"AP",earlyStart:false,
+uniOpen:"",pmTopic:"",pmSlot:null,pmNote:"",pathDegree:"",pathCountry:"UK",previewGrade:12,previewTrack:"AP",earlyStart:false,offerOpen:null,
 discoverStage:null,onbStep:0,onbAnswers:{},chatLog:[],chatStep:0,rankedArchetypes:null,selectedArchetypes:[],pathwaysSubmitted:false,activeArchetype:null,roadmapProgress:{},
 fileId:null,fileTab:"synth",
 cat:{cohort:true,uni:false,ib:false,si:false,sys:false},ragFilter:"all",
@@ -3637,28 +3647,62 @@ const TEACHER={name:"Mr. J. Davies",subject:"Mathematics",av:"JD",
    the recommendation next to it, so a physics recommendation from a
    mathematics teacher is read as what it is. */
 const TEACHES_TOWARD={
- Mathematics:["MAA","MAI","PHY","ECO","BUS","CSC"],
- Science:["BIO","CHE","PHY","PSY","DES"],
- English:["ENL","ELL","HIS","GPO"],
- "Social Science":["ECO","BUS","HIS","PSY","GPO"],
- Humanities:["HIS","GPO","PSY","BUS"],
- Languages:["ARA","ARB","FRB","SPB","SPI"],
- Arts:["VIS","MUS","THE","FIL","DES"],
- Technology:["CSC","DES","MAI"]
+ Mathematics:["MAA","MAI","PHY","ECO","BUS"],
+ Science:["BIO","CHE","PHY","SEH","ESS"],
+ English:["ENL","ELL","HIS","GEO"],
+ "Social Studies":["ECO","BUS","HIS","GEO","ESS"],
+ Humanities:["HIS","GEO","BUS","ESS"],
+ Languages:["ARB","FRB","SPB","FRI","SPI","FRA","SST"],
+ Arts:["VIS","FIL"],
+ Technology:["MAI"]
+};
+/* The same right, over the Advanced Placement offer. It is a separate
+   map rather than a merged one because the two programmes ask the
+   teacher a different question: for the diploma it is which level, and
+   for Advanced Placement there is no level, only whether the course is
+   the right one. A single list would have invited one answer to serve
+   for both. */
+const AP_TEACHES_TOWARD={
+ Mathematics:["APSTA","APCAL","APCSP","APCSA","APPHY"],
+ Science:["APBIO","APCHE","APPHY"],
+ English:["APLNG","APLIT","APSEM"],
+ "Social Studies":["APUSH","APGOV","APCGP","APPSY"],
+ Humanities:["APUSH","APGOV","APCGP","APSEM"],
+ Arts:["AP2D","AP3D"],
+ Technology:["APCSP","APCSA","APCYB","AP2D","AP3D"]
 };
 /* Catalogue names are the IB's own and stay that way in prose. In a
    chip row six of them wrap into a block nobody reads, so these are
    the short forms, used only where space is the constraint. */
 const SUB_SHORT={MAA:"Maths: Analysis",MAI:"Maths: Applications",ENL:"English A: Lit",
- ELL:"English A: Lang & Lit",ARA:"Arabic A: Lit",ARB:"Arabic B",FRB:"French B",SPB:"Spanish B",
- SPI:"Spanish ab initio",BUS:"Business",CSC:"Computer science",DES:"Design tech",GPO:"Global politics"};
+ ELL:"English A: Lang & Lit",FRA:"French A: Lang & Lit",SST:"Language A: self-taught",
+ ARB:"Arabic B",FRB:"French B",SPB:"Spanish B",FRI:"French ab initio",
+ SPI:"Spanish ab initio",BUS:"Business",GEO:"Geography",
+ ESS:"Environmental systems",SEH:"Sports & health science"};
 function subShort(x){const s=typeof x==="string"?IBS(x):x;return s?(SUB_SHORT[s.id]||s.name):"";}
 function recommendable(subjectArea){return (TEACHES_TOWARD[subjectArea]||[]).map(IBS).filter(Boolean);}
+function recommendableAP(subjectArea){return (AP_TEACHES_TOWARD[subjectArea]||[]).map(APC).filter(Boolean);}
 /* ELIG[sid][subjectId] = {lv,by,when,note}. A recommendation, never a
    permission: nothing in selCheck reads this as a gate. */
 const ELIG={};
 function eligFor(sid,subId){return (ELIG[sid]||{})[subId]||null;}
 function eligList(sid){const e=ELIG[sid]||{};return Object.keys(e).map(k=>Object.assign({s:k},e[k]));}
+/* AP_ELIG[sid][courseId] = {ok,by,when,note}. The Advanced Placement
+   equivalent, and deliberately a different shape: there is no Higher
+   or Standard in Advanced Placement, so a teacher is not recommending
+   a level, they are answering whether the course is the right one.
+   `ok:false` is a real answer and is shown to the student with the
+   reasoning attached. It is still advice and still never a gate. */
+const AP_ELIG={};
+function apEligFor(sid,cid){return (AP_ELIG[sid]||{})[cid]||null;}
+function apEligList(sid){const e=AP_ELIG[sid]||{};return Object.keys(e).map(k=>Object.assign({c:k},e[k]));}
+/* APSEL[sid] = {picks:[courseId], why:{courseId:text}, state, talk}.
+   The same record as a diploma selection, minus the parts that only
+   the diploma has: no six groups, no levels, no timetable periods
+   published for Advanced Placement here. The one rule it keeps is the
+   one the module exists for, that a selection is not approved before
+   the conversation is recorded. */
+const APSEL={};
 
 /* what a teacher can log — structured tags, then free text */
 const FLAG_KINDS=[
@@ -3827,14 +3871,24 @@ function eligModal(){
  const f=S.eligForm||{};
  const opts=recommendable(TEACHER.subject);
  const own=opts.filter(o=>o.t===TEACHER.name),near=opts.filter(o=>o.t!==TEACHER.name);
+ /* The Advanced Placement courses the same teacher's subject feeds.
+    They sit in their own section because the question is a different
+    one: Advanced Placement has no Higher or Standard, so a teacher is
+    not choosing a level, they are saying whether the course suits the
+    student. One combined chip row would have invited a level answer
+    for a course that has no levels. */
+ const apOpts=recommendableAP(TEACHER.subject);
  const sub=f.s?IBS(f.s):null;
+ const apc=f.ap?APC(f.ap):null;
  const prior=f.s?eligFor(stu.id,f.s):null;
+ const apPrior=f.ap?apEligFor(stu.id,f.ap):null;
+ const apChk=apc?apPrereqCheck(f.ap,stu):null;
  const chk=sub&&f.lv?prereqCheck(f.s,f.lv,stu):null;
  /* One line, not a checklist. The teacher needs the verdict and the
     number behind it; the full breakdown belongs on the student's own
     screen, where they have the room and the reason to read it. */
  const vd=!chk?null:chk.slOnly?{k:"met",t:"no requirement at Standard Level"}
-  :{k:chk.k,t:(chk.items.filter(i=>i.k===chk.k).map(i=>i.t)[0]||"").replace(/^./,c=>c.toLowerCase())};
+  :{k:chk.k,t:(chk.items.filter(i=>i.k===chk.k).map(i=>i.t)[0]||"")};
  const chip=o=>`<button class="tagbtn${f.s===o.id?" on":""}" data-eligsub="${o.id}">${subShort(o)}</button>`;
  const hint=t=>`<span style="text-transform:none;letter-spacing:0;font-family:var(--f-content);font-weight:400;color:var(--ink-4)">${t}</span>`;
  return `<div class="modalbg" data-mbg="1"><div class="modal pop" role="dialog" aria-modal="true" aria-label="Recommend a level">
@@ -3847,7 +3901,7 @@ function eligModal(){
   </div>
   <div style="padding:0 22px 22px">
 
-  <div class="appa">Subject ${hint("— "+TEACHER.subject.toLowerCase()+" and the courses it feeds")}</div>
+  <div class="appa">Diploma subject ${hint("— "+TEACHER.subject.toLowerCase()+" and the courses it feeds")}</div>
   <div class="chiprow">${own.map(chip).join("")}${near.map(chip).join("")}</div>
 
   ${sub?`<div class="appa" style="margin-top:16px">Level</div>
@@ -3862,8 +3916,22 @@ function eligModal(){
   <textarea id="eligNote" data-elignote="1" rows="2" placeholder="What you have seen in class." style="width:100%;margin-top:7px">${(f.note||"").replace(/</g,"&lt;")}</textarea>
   ${prior?`<div style="font-size:11.4px;color:var(--ink-4);margin-top:7px">Replaces the recommendation recorded ${prior.when}.</div>`:""}`:""}
 
+  ${apOpts.length?`<div class="appa" style="margin-top:${sub?"20":"16"}px">Advanced Placement ${hint("— no level to set, only whether the course suits them")}</div>
+  <div class="chiprow">${apOpts.map(o=>`<button class="tagbtn${f.ap===o.id?" on":""}" data-eligap="${o.id}">${o.name.replace(/^AP /,"")}</button>`).join("")}</div>
+  ${apc?`<div class="appa" style="margin-top:16px">Your answer</div>
+  <div class="seg" role="group" aria-label="Suitability">
+   ${[["yes","Recommend it"],["no","Do not recommend"]].map(([v,l])=>
+     `<button class="segbtn${f.apok===v?" on":""}" data-eligapok="${v}">${l}</button>`).join("")}</div>
+  ${apChk?`<div class="noteband${apChk.k==="unmet"?" warn":""}">
+    ${apChk.k==="unmet"?ic('alert',15):apChk.k==="met"?ic('checkC',15):ic('eye',15)}
+    <div><b>${apChk.k==="met"?"Meets the published requirement":apChk.k==="unmet"?"Does not meet the published requirement":"Requirement unconfirmed"}</b>${
+     (apChk.items.filter(i=>i.k===apChk.k).map(i=>i.t)[0]||"")?" · "+(apChk.items.filter(i=>i.k===apChk.k).map(i=>i.t)[0]||""):""}.${apChk.k==="unmet"?" You can still recommend it.":""}</div></div>`:""}
+  <div class="appa" style="margin-top:16px">Note ${hint("— the student reads this")}</div>
+  <textarea id="eligApNote" data-eligapnote="1" rows="2" placeholder="Why this course does or does not suit them." style="width:100%;margin-top:7px">${(f.apnote||"").replace(/</g,"&lt;")}</textarea>
+  ${apPrior?`<div style="font-size:11.4px;color:var(--ink-4);margin-top:7px">Replaces the answer recorded ${apPrior.when}.</div>`:""}`:""}`:""}
+
   <div style="display:flex;gap:9px;margin-top:19px">
-   <button class="btn btn-p" data-eligsave="${stu.id}" ${sub&&f.lv?"":"disabled"} style="flex:2">${ic('check',15)} Record it</button>
+   <button class="btn btn-p" data-eligsave="${stu.id}" ${(sub&&f.lv)||(apc&&f.apok)?"":"disabled"} style="flex:2">${ic('check',15)} Record it</button>
    <button class="btn btn-g" data-mclose="1" style="flex:1">Cancel</button></div>
   </div>
  </div></div>`;}
@@ -4060,9 +4128,9 @@ const UNI_REQS={
          {c:"Mathematics at HL",need:"Recommended, not required",have:"Taking Maths AA HL",ok:true},
          {c:"SAT or ACT",need:"Optional since 2024",have:"Not submitted",ok:true,soft:true}]},
    {name:"AP route",status:"alternative",note:"Also accepted. Sara would need to sit AP exams externally.",
-    req:[{c:"AP Calculus BC",need:"Score 4 or 5",have:"Not taken",ok:false},
-         {c:"AP Microeconomics",need:"Score 4 or 5",have:"Not taken",ok:false},
-         {c:"AP English Language",need:"Score 4 or 5",have:"Not taken",ok:false}]}]}};
+    req:[{c:"AP Calculus AB",need:"Score 4 or 5",have:"Not taken",ok:false},
+         {c:"AP Statistics",need:"Score 4 or 5",have:"Not taken",ok:false},
+         {c:"AP English Language and Composition",need:"Score 4 or 5",have:"Not taken",ok:false}]}]}};
 
 
 /* ═══════════ IB vs AP OUTCOMES EXPLORER ═══════════
@@ -4124,26 +4192,26 @@ const PATH_ALUMNI=[
  {name:"Omar K.",grad:2024,path:"IB",subjects:"Maths AA HL · Economics HL · English HL",points:38,degree:"Economics",country:"UK",uni:"London School of Economics",outcome:"offer",note:"A strong, focused HL combination for Economics applicants."},
  {name:"Layla S.",grad:2023,path:"IB",subjects:"Maths AA HL · Economics HL · Business SL",points:40,degree:"Economics",country:"UK",uni:"University College London",outcome:"offer",note:""},
  {name:"Ali N.",grad:2024,path:"IB",subjects:"Economics HL · History HL · English HL",points:34,degree:"Economics",country:"UK",uni:"University of Bath",outcome:"offer",note:"Chose Economics with a history-and-English combination, less maths-heavy than most on this list."},
- {name:"Rashid H.",grad:2024,path:"AP",subjects:"AP Calc BC · AP Micro · AP Macro · AP Lang",points:"5,5,4,4",degree:"Economics",country:"US",uni:"NYU Stern",outcome:"offer",note:"Took the AP route specifically for a US-focused application."},
+ {name:"Rashid H.",grad:2024,path:"AP",subjects:"AP Calc AB · AP Stats · AP Lang · AP US Gov",points:"5,5,4,4",degree:"Economics",country:"US",uni:"NYU Stern",outcome:"offer",note:"Took the AP route specifically for a US-focused application."},
  {name:"Fatima Z.",grad:2023,path:"IB",subjects:"Maths AA HL · Economics HL · Business SL",points:36,degree:"Economics",country:"UAE",uni:"NYU Abu Dhabi",outcome:"offer",note:""},
  {name:"Hessa A.",grad:2024,path:"IB",subjects:"Maths AA HL · Physics HL · Chemistry HL",points:41,degree:"Engineering",country:"UK",uni:"Imperial College London",outcome:"offer",note:""},
  {name:"Tariq M.",grad:2023,path:"IB",subjects:"Maths AA HL · Physics HL · Chemistry SL",points:35,degree:"Engineering",country:"UK",uni:"University of Manchester",outcome:"offer",note:""},
- {name:"Jad F.",grad:2024,path:"AP",subjects:"AP Calc BC · AP Physics C · AP Chem",points:"5,4,5",degree:"Engineering",country:"US",uni:"Georgia Tech",outcome:"offer",note:""},
+ {name:"Jad F.",grad:2024,path:"AP",subjects:"AP Calc AB · AP Physics 1 · AP Chem",points:"5,4,5",degree:"Engineering",country:"US",uni:"Georgia Tech",outcome:"offer",note:""},
  {name:"Noor F.",grad:2023,path:"IB",subjects:"Biology HL · Chemistry HL · Maths AA HL",points:42,degree:"Medicine",country:"UK",uni:"UCL Medical School",outcome:"offer",note:""},
  {name:"Salma B.",grad:2024,path:"IB",subjects:"Biology HL · Chemistry HL · Maths AA SL",points:39,degree:"Medicine",country:"UK",uni:"King's College London",outcome:"offer",note:""},
- {name:"Khalid M.",grad:2024,path:"AP",subjects:"AP Bio · AP Chem · AP Calc BC · AP Physics",points:"5,5,5,4",degree:"Medicine",country:"US",uni:"Johns Hopkins",outcome:"offer",note:""},
+ {name:"Khalid M.",grad:2024,path:"AP",subjects:"AP Bio · AP Chem · AP Calc AB · AP Physics 1",points:"5,5,5,4",degree:"Medicine",country:"US",uni:"Johns Hopkins",outcome:"offer",note:""},
  {name:"Reem S.",grad:2023,path:"IB",subjects:"Biology HL · Chemistry HL · Maths AA HL",points:33,degree:"Medicine",country:"UAE",uni:"Khalifa University",outcome:"offer",note:""},
- {name:"Yousef B.",grad:2023,path:"IB",subjects:"Maths AA HL · Computer Science HL · Physics SL",points:39,degree:"Computer Science",country:"UK",uni:"University of Edinburgh",outcome:"offer",note:""},
- {name:"Dana R.",grad:2024,path:"AP",subjects:"AP CS A · AP Calc BC · AP Physics C",points:"5,4,5",degree:"Computer Science",country:"US",uni:"UC Berkeley",outcome:"offer",note:""},
- {name:"Bilal T.",grad:2023,path:"IB",subjects:"Maths AA HL · Computer Science HL · Physics HL",points:37,degree:"Computer Science",country:"UAE",uni:"Khalifa University",outcome:"offer",note:""},
+ {name:"Yousef B.",grad:2023,path:"IB",subjects:"Maths AA HL · Physics HL · Economics SL",points:39,degree:"Computer Science",country:"UK",uni:"University of Edinburgh",outcome:"offer",note:""},
+ {name:"Dana R.",grad:2024,path:"AP",subjects:"AP CS A · AP Calc AB · AP Physics 1",points:"5,4,5",degree:"Computer Science",country:"US",uni:"UC Berkeley",outcome:"offer",note:""},
+ {name:"Bilal T.",grad:2023,path:"IB",subjects:"Maths AA HL · Physics HL · Geography HL",points:37,degree:"Computer Science",country:"UAE",uni:"Khalifa University",outcome:"offer",note:""},
  {name:"Huda A.",grad:2024,path:"IB",subjects:"Business HL · Economics HL · Maths AI SL",points:32,degree:"Business",country:"UK",uni:"University of Leeds",outcome:"offer",note:""},
- {name:"Ziad K.",grad:2023,path:"AP",subjects:"AP Micro · AP Macro · AP Stats",points:"4,4,5",degree:"Business",country:"US",uni:"Boston University",outcome:"offer",note:""},
+ {name:"Ziad K.",grad:2023,path:"AP",subjects:"AP Stats · AP Seminar · AP US Gov",points:"4,4,5",degree:"Business",country:"US",uni:"Boston University",outcome:"offer",note:""},
  {name:"Mona R.",grad:2024,path:"IB",subjects:"Business HL · Economics SL · English HL",points:29,degree:"Business",country:"UK",uni:"Coventry University",outcome:"offer",note:""},
  {name:"Zayd O.",grad:2024,path:"IB",subjects:"Maths AA HL · Physics HL · Chemistry SL",points:34,degree:"Engineering",country:"UAE",uni:"Khalifa University",outcome:"offer",note:""},
  {name:"Amna Q.",grad:2023,path:"IB",subjects:"Business HL · Economics HL · Maths AI SL",points:31,degree:"Business",country:"UAE",uni:"American University of Sharjah",outcome:"offer",note:""},
- {name:"Karim S.",grad:2024,path:"AP",subjects:"AP Micro · AP Macro · AP Calc AB",points:"4,4,4",degree:"Business",country:"UAE",uni:"NYU Abu Dhabi",outcome:"offer",note:""},
- {name:"Lamia H.",grad:2023,path:"IB",subjects:"Maths AA HL · Computer Science HL · Physics HL",points:38,degree:"Computer Science",country:"UK",uni:"University of Bristol",outcome:"offer",note:""},
- {name:"Idris W.",grad:2024,path:"AP",subjects:"AP Calc BC · AP Micro · AP Stats",points:"4,5,4",degree:"Economics",country:"US",uni:"University of Chicago",outcome:"offer",note:""},
+ {name:"Karim S.",grad:2024,path:"AP",subjects:"AP Stats · AP Seminar · AP Calc AB",points:"4,4,4",degree:"Business",country:"UAE",uni:"NYU Abu Dhabi",outcome:"offer",note:""},
+ {name:"Lamia H.",grad:2023,path:"IB",subjects:"Maths AA HL · Physics HL · Geography HL",points:38,degree:"Computer Science",country:"UK",uni:"University of Bristol",outcome:"offer",note:""},
+ {name:"Idris W.",grad:2024,path:"AP",subjects:"AP Calc AB · AP Stats · AP US Gov",points:"4,5,4",degree:"Economics",country:"US",uni:"University of Chicago",outcome:"offer",note:""},
  {name:"Sofia P.",grad:2023,path:"IB",subjects:"Biology HL · Chemistry HL · Maths AI SL",points:37,degree:"Medicine",country:"UK",uni:"University of Manchester",outcome:"offer",note:""},
  {name:"Marwan D.",grad:2024,path:"IB",subjects:"Maths AA HL · Physics HL · Economics SL",points:36,degree:"Engineering",country:"UK",uni:"University of Bath",outcome:"offer",note:""},
  {name:"Noura T.",grad:2023,path:"IB",subjects:"Maths AA HL · Economics HL · Business SL",points:35,degree:"Economics",country:"UK",uni:"Warwick",outcome:"offer",note:""},
@@ -4197,16 +4265,6 @@ function gradeSwitcher(){
   <span style="font-size:11px;color:var(--ink-4);margin-left:auto">Each grade is a different real student and family, so every stage can be shown in a single session</span>
  </div>`;}
 
-/* ═══ HIGH SCHOOL GUIDE — Grade 9 orientation content ═══ */
-const COURSE_CATALOG=[
- {dept:"Mathematics",courses:["Mathematics: Analysis & Approaches","Mathematics: Applications & Interpretation","AP Calculus AB/BC","AP Statistics"]},
- {dept:"Sciences",courses:["Biology","Chemistry","Physics","Environmental Systems","AP Biology","AP Chemistry","AP Physics"]},
- {dept:"English",courses:["English Literature","English Language & Literature","AP English Language","AP English Literature"]},
- {dept:"Humanities & Social Science",courses:["Economics","Business Management","History","Geography","Psychology","AP Micro/Macroeconomics","AP US History","AP Psychology"]},
- {dept:"Languages",courses:["Arabic A","Arabic B","French","Spanish","Mandarin"]},
- {dept:"Arts & Design",courses:["Visual Arts","Design Technology","Film","Music"]},
- {dept:"Core (IB only)",courses:["Theory of Knowledge","Extended Essay","CAS (Creativity, Activity, Service)"]}];
-
 /* ═══════════ MY CLASSES — Student course selection and teacher approval ═════════════
    Core workflow: Student views current classes + grades, selects AP/IB/Standard combos
    for target universities, sends to counselor + relevant teachers for approval. */
@@ -4221,135 +4279,33 @@ const UNI_COURSE_REQUIREMENTS={
 
 /* Student's current classes (dynamic per student) */
 /* Available courses by grade — all students can see and select from their grade's offerings */
-const COURSES_BY_GRADE={
- 9:[
-  {name:"AP Calculus AB",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"AP",period:"P1",current:null},
-  {name:"AP Biology",subject:"Science",teacher:"Dr. Reid",pathway:"AP",period:"P2",current:null},
-  {name:"AP United States History",subject:"Humanities",teacher:"Ms. Sharma",pathway:"AP",period:"P3",current:null},
-  {name:"AP English Language & Composition",subject:"English",teacher:"Mr. Adeyemi",pathway:"AP",period:"P4",current:null},
-  {name:"AP Spanish Language & Culture",subject:"Languages",teacher:"Ms. Garcia",pathway:"AP",period:"P5",current:null},
-  {name:"AP Psychology",subject:"Social Science",teacher:"Ms. Johnson",pathway:"AP",period:"P6",current:null},
-   {name:"AP Statistics",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"AP",period:"P1",current:null},
-   {name:"AP Environmental Science",subject:"Science",teacher:"Dr. Reid",pathway:"AP",period:"P2",current:null},
-   {name:"AP Computer Science Principles",subject:"Technology",teacher:"Mr. Patel",pathway:"AP",period:"P3",current:null},
-   {name:"AP Human Geography",subject:"Humanities",teacher:"Ms. Sharma",pathway:"AP",period:"P4",current:null},
-   {name:"AP French Language & Culture",subject:"Languages",teacher:"Ms. Laurent",pathway:"AP",period:"P5",current:null},
-   {name:"AP Art and Design",subject:"Arts",teacher:"Ms. Wilson",pathway:"AP",period:"P6",current:null},
-  {name:"Mathematics Grade 9 Fundamentals",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"Standard",period:"P1",current:null},
-  {name:"English Grade 9",subject:"English",teacher:"Mr. Adeyemi",pathway:"Standard",period:"P4",current:null},
-  {name:"Science Grade 9",subject:"Science",teacher:"Dr. Reid",pathway:"Standard",period:"P2",current:null},
-   {name:"Social Studies Grade 9",subject:"Humanities",teacher:"Ms. Sharma",pathway:"Standard",period:"P3",current:null},
-   {name:"Algebra I",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"Standard",period:"P1",current:null},
-   {name:"Geometry",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"Standard",period:"P1",current:null},
-   {name:"Biology Grade 9",subject:"Science",teacher:"Dr. Reid",pathway:"Standard",period:"P2",current:null},
-   {name:"Chemistry Foundations",subject:"Science",teacher:"Dr. Chen",pathway:"Standard",period:"P2",current:null},
-   {name:"World Geography",subject:"Humanities",teacher:"Ms. Sharma",pathway:"Standard",period:"P3",current:null},
-   {name:"Introduction to Economics",subject:"Social Science",teacher:"Ms. Fahri",pathway:"Standard",period:"P4",current:null},
-   {name:"Computer Science Foundations",subject:"Technology",teacher:"Mr. Patel",pathway:"Standard",period:"P3",current:null},
-   {name:"Visual Arts Grade 9",subject:"Arts",teacher:"Ms. Wilson",pathway:"Standard",period:"P6",current:null},
-   {name:"French Grade 9",subject:"Languages",teacher:"Ms. Laurent",pathway:"Standard",period:"P5",current:null},
-   {name:"Spanish Grade 9",subject:"Languages",teacher:"Ms. Garcia",pathway:"Standard",period:"P5",current:null}
- ],
- 10:[
-  {name:"IB Mathematics: Analysis & Approaches SL",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"IB",period:"P1",current:85},
-  {name:"IB Physics SL",subject:"Science",teacher:"Dr. Reid",pathway:"IB",period:"P2",current:82},
-  {name:"IB History HL",subject:"Humanities",teacher:"Ms. Sharma",pathway:"IB",period:"P3",current:88},
-  {name:"IB English Literature SL",subject:"English",teacher:"Mr. Adeyemi",pathway:"IB",period:"P4",current:86},
-  {name:"IB Spanish B SL",subject:"Languages",teacher:"Ms. Garcia",pathway:"IB",period:"P5",current:84},
-  {name:"IB Chemistry SL",subject:"Science",teacher:"Dr. Chen",pathway:"IB",period:"P6",current:79},
-   {name:"IB Biology SL",subject:"Science",teacher:"Dr. Reid",pathway:"IB",period:"P2",current:null},
-   {name:"IB Business Management SL",subject:"Social Science",teacher:"Mr. Haddad",pathway:"IB",period:"P3",current:null},
-   {name:"IB Economics SL",subject:"Social Science",teacher:"Ms. Fahri",pathway:"IB",period:"P4",current:null},
-   {name:"IB Psychology SL",subject:"Social Science",teacher:"Ms. Johnson",pathway:"IB",period:"P5",current:null},
-   {name:"IB Visual Arts SL",subject:"Arts",teacher:"Ms. Wilson",pathway:"IB",period:"P6",current:null},
-   {name:"IB Design Technology SL",subject:"Technology",teacher:"Mr. Patel",pathway:"IB",period:"P1",current:null},
-   {name:"IB French B SL",subject:"Languages",teacher:"Ms. Laurent",pathway:"IB",period:"P5",current:null},
-  {name:"AP Calculus AB",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"AP",period:"P1",current:null},
-  {name:"AP Biology",subject:"Science",teacher:"Dr. Reid",pathway:"AP",period:"P2",current:null},
-  {name:"AP World History",subject:"Humanities",teacher:"Ms. Sharma",pathway:"AP",period:"P3",current:null},
-  {name:"AP English Language & Composition",subject:"English",teacher:"Mr. Adeyemi",pathway:"AP",period:"P4",current:null},
-  {name:"AP Spanish Language & Culture",subject:"Languages",teacher:"Ms. Garcia",pathway:"AP",period:"P5",current:null},
-  {name:"AP Chemistry",subject:"Science",teacher:"Dr. Chen",pathway:"AP",period:"P6",current:null},
-   {name:"AP Statistics",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"AP",period:"P1",current:null},
-   {name:"AP Environmental Science",subject:"Science",teacher:"Dr. Reid",pathway:"AP",period:"P2",current:null},
-   {name:"AP Computer Science Principles",subject:"Technology",teacher:"Mr. Patel",pathway:"AP",period:"P3",current:null},
-   {name:"AP Psychology",subject:"Social Science",teacher:"Ms. Johnson",pathway:"AP",period:"P4",current:null},
-   {name:"AP Microeconomics",subject:"Social Science",teacher:"Ms. Fahri",pathway:"AP",period:"P5",current:null},
-   {name:"AP Art and Design",subject:"Arts",teacher:"Ms. Wilson",pathway:"AP",period:"P6",current:null},
-   {name:"AP French Language & Culture",subject:"Languages",teacher:"Ms. Laurent",pathway:"AP",period:"P5",current:null},
-  {name:"Mathematics Grade 10",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"Standard",period:"P1",current:null},
-  {name:"English Grade 10",subject:"English",teacher:"Mr. Adeyemi",pathway:"Standard",period:"P4",current:null},
-  {name:"Science Grade 10",subject:"Science",teacher:"Dr. Reid",pathway:"Standard",period:"P2",current:null},
-   {name:"History Grade 10",subject:"Humanities",teacher:"Ms. Sharma",pathway:"Standard",period:"P3",current:null},
-   {name:"World Literature Grade 10",subject:"English",teacher:"Mr. Adeyemi",pathway:"Standard",period:"P4",current:null},
-   {name:"Biology Grade 10",subject:"Science",teacher:"Dr. Reid",pathway:"Standard",period:"P2",current:null},
-   {name:"Chemistry Grade 10",subject:"Science",teacher:"Dr. Chen",pathway:"Standard",period:"P6",current:null},
-   {name:"Economics and Business Grade 10",subject:"Social Science",teacher:"Ms. Fahri",pathway:"Standard",period:"P3",current:null},
-   {name:"Psychology Grade 10",subject:"Social Science",teacher:"Ms. Johnson",pathway:"Standard",period:"P5",current:null},
-   {name:"Computer Science Grade 10",subject:"Technology",teacher:"Mr. Patel",pathway:"Standard",period:"P1",current:null},
-   {name:"Visual Arts Grade 10",subject:"Arts",teacher:"Ms. Wilson",pathway:"Standard",period:"P6",current:null},
-   {name:"French Grade 10",subject:"Languages",teacher:"Ms. Laurent",pathway:"Standard",period:"P5",current:null},
-   {name:"Spanish Grade 10",subject:"Languages",teacher:"Ms. Garcia",pathway:"Standard",period:"P5",current:null}
- ],
- 11:[
-  {name:"IB Mathematics: Analysis & Approaches HL",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"IB",period:"P1",current:87},
-  {name:"IB Physics HL",subject:"Science",teacher:"Dr. Reid",pathway:"IB",period:"P2",current:84},
-  {name:"IB Chemistry SL",subject:"Science",teacher:"Dr. Chen",pathway:"IB",period:"P3",current:86},
-  {name:"IB History HL",subject:"Humanities",teacher:"Ms. Sharma",pathway:"IB",period:"P4",current:89},
-  {name:"IB English Literature HL",subject:"English",teacher:"Mr. Adeyemi",pathway:"IB",period:"P5",current:85},
-  {name:"IB Spanish B SL",subject:"Languages",teacher:"Ms. Garcia",pathway:"IB",period:"P6",current:88},
-  {name:"IB Economics SL",subject:"Social Science",teacher:"Ms. Fahri",pathway:"IB",period:"P1",current:91},
-  {name:"AP Calculus BC",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"AP",period:"P1",current:null},
-  {name:"AP Physics C: Mechanics",subject:"Science",teacher:"Dr. Reid",pathway:"AP",period:"P2",current:null},
-  {name:"AP Chemistry",subject:"Science",teacher:"Dr. Chen",pathway:"AP",period:"P3",current:null},
-  {name:"AP United States History",subject:"Humanities",teacher:"Ms. Sharma",pathway:"AP",period:"P4",current:null},
-  {name:"AP English Literature & Composition",subject:"English",teacher:"Mr. Adeyemi",pathway:"AP",period:"P5",current:null},
-  {name:"AP Spanish Language & Culture",subject:"Languages",teacher:"Ms. Garcia",pathway:"AP",period:"P6",current:null},
-  {name:"AP Microeconomics",subject:"Social Science",teacher:"Ms. Fahri",pathway:"AP",period:"P1",current:null},
-  {name:"AP Macroeconomics",subject:"Social Science",teacher:"Ms. Fahri",pathway:"AP",period:"P2",current:null},
-  {name:"Mathematics Grade 11 Advanced",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"Standard",period:"P1",current:null},
-  {name:"English Grade 11 Advanced",subject:"English",teacher:"Mr. Adeyemi",pathway:"Standard",period:"P5",current:null},
-  {name:"Science Grade 11 Advanced",subject:"Science",teacher:"Dr. Reid",pathway:"Standard",period:"P2",current:null}
- ],
- 12:[
-  {name:"IB Mathematics: Analysis & Approaches HL",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"IB",period:"P2",current:88},
-  {name:"IB Physics SL",subject:"Science",teacher:"Dr. Reid",pathway:"IB",period:"P5",current:81},
-  {name:"IB Chemistry HL",subject:"Science",teacher:"Dr. Chen",pathway:"IB",period:"P3",current:85},
-  {name:"IB History HL",subject:"Humanities",teacher:"Ms. Sharma",pathway:"IB",period:"P1",current:90},
-  {name:"IB English Literature HL",subject:"English",teacher:"Mr. Adeyemi",pathway:"IB",period:"P6",current:84},
-  {name:"IB Economics HL",subject:"Social Science",teacher:"Ms. Fahri",pathway:"IB",period:"P4",current:92},
-  {name:"IB Business Management SL",subject:"Social Science",teacher:"Mr. Haddad",pathway:"IB",period:"P1",current:89},
-  {name:"IB Arabic B SL",subject:"Languages",teacher:"Ms. Nasser",pathway:"IB",period:"P3",current:85},
-  {name:"AP Calculus BC",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"AP",period:"P1",current:null},
-  {name:"AP Physics C: Mechanics",subject:"Science",teacher:"Dr. Reid",pathway:"AP",period:"P2",current:null},
-  {name:"AP Chemistry",subject:"Science",teacher:"Dr. Chen",pathway:"AP",period:"P3",current:null},
-  {name:"AP United States History",subject:"Humanities",teacher:"Ms. Sharma",pathway:"AP",period:"P4",current:null},
-  {name:"AP English Literature & Composition",subject:"English",teacher:"Mr. Adeyemi",pathway:"AP",period:"P5",current:null},
-  {name:"AP Microeconomics",subject:"Social Science",teacher:"Ms. Fahri",pathway:"AP",period:"P1",current:null},
-  {name:"AP Macroeconomics",subject:"Social Science",teacher:"Ms. Fahri",pathway:"AP",period:"P2",current:null},
-  {name:"AP Spanish Language & Culture",subject:"Languages",teacher:"Ms. Garcia",pathway:"AP",period:"P6",current:null},
-  {name:"Advanced Calculus Standard",subject:"Mathematics",teacher:"Mr. Yilmaz",pathway:"Standard",period:"P1",current:null},
-  {name:"Advanced English Composition",subject:"English",teacher:"Mr. Adeyemi",pathway:"Standard",period:"P5",current:null}
- ]
-};
+
 
 const G12_IB_TIMETABLE={
+ /* Both timetables are the real offer and nothing else: six subjects
+    from the catalogue, at levels the school actually runs, in six
+    different periods. The version these replaced carried a diploma
+    physics course at Standard Level and a diploma psychology course,
+    neither of which exists here, and it gave two students the same
+    mathematics teacher the catalogue assigns elsewhere. A student
+    portal that prints a course the school does not run is worse than
+    one that prints nothing. */
  s3:[
-  {code:"Ma1",name:"IB Mathematics: Analysis & Approaches HL",teacher:"Mr. Yilmaz",period:"P2",grade:6,avg:5,scale:"ib",pathway:"IB",required:{lse:true,imperial:true,cambridge:true}},
-  {code:"Ec1",name:"IB Economics HL",teacher:"Ms. Fahri",period:"P4",grade:7,avg:5,scale:"ib",pathway:"IB",required:{lse:true,nyu:true}},
-  {code:"En1",name:"IB English Literature HL",teacher:"Mr. Adeyemi",period:"P6",grade:6,avg:5,scale:"ib",pathway:"IB",required:{lse:true,ucl:false}},
-  {code:"Bu1",name:"IB Business Management SL",teacher:"Mr. Haddad",period:"P1",grade:6,avg:5,scale:"ib",pathway:"IB",required:{lse:false,nyu:true}},
-  {code:"Ar1",name:"Arabic B SL",teacher:"Ms. Nasser",period:"P3",grade:6,avg:5,scale:"ib",pathway:"IB",required:{}},
-  {code:"Ph1",name:"IB Physics SL",teacher:"Dr. Reid",period:"P5",grade:5,avg:5,scale:"ib",pathway:"IB",required:{imperial:true}}],
+  {code:"Ma1",name:"IB Mathematics: Analysis and Approaches HL",teacher:"Mr. J. Davies",period:"P1",grade:7,avg:5,scale:"ib",pathway:"IB",required:{lse:true,imperial:true,cambridge:true}},
+  {code:"En1",name:"IB English A: Literature SL",teacher:"Mr. Adeyemi",period:"P2",grade:6,avg:5,scale:"ib",pathway:"IB",required:{lse:true}},
+  {code:"Ec1",name:"IB Economics HL",teacher:"Ms. Fahri",period:"P3",grade:7,avg:5,scale:"ib",pathway:"IB",required:{lse:true,nyu:true}},
+  {code:"Bu1",name:"IB Business management SL",teacher:"Mr. Haddad",period:"P4",grade:6,avg:5,scale:"ib",pathway:"IB",required:{nyu:true}},
+  {code:"Es1",name:"IB Environmental systems and societies HL",teacher:"Ms. Wilson",period:"P5",grade:6,avg:5,scale:"ib",pathway:"IB",required:{}},
+  {code:"Ar1",name:"IB Arabic B SL",teacher:"Ms. Nasser",period:"P6",grade:6,avg:5,scale:"ib",pathway:"IB",required:{}}],
  /* Four at Higher Level, which is what her case file has always said she
     is carrying, and the reason the workload signal reads the way it does. */
  s14:[
-  {code:"Bi1",name:"IB Biology HL",teacher:"Dr. Reid",period:"P2",grade:7,avg:5,scale:"ib",pathway:"IB",required:{}},
-  {code:"Ch1",name:"IB Chemistry HL",teacher:"Dr. Chen",period:"P4",grade:7,avg:5,scale:"ib",pathway:"IB",required:{}},
-  {code:"Ma4",name:"IB Mathematics: Analysis & Approaches HL",teacher:"Mr. Yilmaz",period:"P1",grade:7,avg:5,scale:"ib",pathway:"IB",required:{}},
-  {code:"En4",name:"IB English Literature HL",teacher:"Mr. Adeyemi",period:"P6",grade:6,avg:5,scale:"ib",pathway:"IB",required:{}},
-  {code:"Sp4",name:"IB Spanish B SL",teacher:"Ms. Garcia",period:"P5",grade:7,avg:5,scale:"ib",pathway:"IB",required:{}},
-  {code:"Py4",name:"IB Psychology SL",teacher:"Ms. Johnson",period:"P3",grade:7,avg:5,scale:"ib",pathway:"IB",required:{}}]};
+  {code:"Ma4",name:"IB Mathematics: Analysis and Approaches HL",teacher:"Mr. J. Davies",period:"P1",grade:7,avg:5,scale:"ib",pathway:"IB",required:{}},
+  {code:"Bi4",name:"IB Biology HL",teacher:"Dr. Reid",period:"P2",grade:7,avg:5,scale:"ib",pathway:"IB",required:{}},
+  {code:"Hi4",name:"IB History HL",teacher:"Ms. Sharma",period:"P3",grade:6,avg:5,scale:"ib",pathway:"IB",required:{}},
+  {code:"Ch4",name:"IB Chemistry HL",teacher:"Dr. Chen",period:"P4",grade:7,avg:5,scale:"ib",pathway:"IB",required:{}},
+  {code:"En4",name:"IB English A: Language and literature SL",teacher:"Mr. Adeyemi",period:"P5",grade:6,avg:5,scale:"ib",pathway:"IB",required:{}},
+  {code:"Sp4",name:"IB Spanish B SL",teacher:"Ms. Garcia",period:"P6",grade:7,avg:5,scale:"ib",pathway:"IB",required:{}}]};
 
 function getStudentClasses(sid){
  const student=g(sid);
@@ -4373,31 +4329,43 @@ function getStudentClasses(sid){
  if(grade===12&&student.track==="IB"){
   return G12_IB_TIMETABLE[student.id]||[];
  } else if(grade>=11&&student.track==="AP"){
+  /* Advanced Placement as the school actually offers it. Calculus BC
+     and Physics C were on this list and are not courses here: the
+     offer is Calculus AB in Grade 12 and Physics 1, so a Grade 11
+     student is taking Pre-Calculus now and chooses Calculus AB for
+     next year. That sequence is the reason the chooser has anything
+     to say to him. */
   return [
-   {code:"Ma2",name:"AP Calculus BC",teacher:"Mr. Yilmaz",period:"P1",grade:88,avg:84,scale:"pct",pathway:"AP",required:{imperial:true}},
-   {code:"Cs2",name:"AP Computer Science A",teacher:"Mr. Patel",period:"P2",grade:91,avg:83,scale:"pct",pathway:"AP",required:{}},
-   {code:"Ph2",name:"AP Physics C: Mechanics",teacher:"Dr. Reid",period:"P3",grade:84,avg:81,scale:"pct",pathway:"AP",required:{imperial:true}},
-   {code:"St2",name:"AP Statistics",teacher:"Ms. Sharma",period:"P4",grade:87,avg:85,scale:"pct",pathway:"AP",required:{}},
-   {code:"En2",name:"AP English Language & Composition",teacher:"Mr. Adeyemi",period:"P5",grade:85,avg:84,scale:"pct",pathway:"AP",required:{}},
-   {code:"Ar2",name:"Arabic B",teacher:"Ms. Nasser",period:"P6",grade:86,avg:85,scale:"pct",pathway:"AP",required:{}}
+   {code:"Pc2",name:"Pre-Calculus",teacher:"Mr. J. Davies",period:"P1",grade:86,avg:83,scale:"pct",pathway:"Standard",required:{imperial:true}},
+   {code:"Cp2",name:"AP Computer Science Principles",teacher:"Mr. Patel",period:"P2",grade:91,avg:83,scale:"pct",pathway:"AP",required:{}},
+   {code:"Ph2",name:"AP Physics 1",teacher:"Mr. Patel",period:"P3",grade:84,avg:81,scale:"pct",pathway:"AP",required:{imperial:true}},
+   {code:"Sp2",name:"Spanish Intermediate",teacher:"Ms. Garcia",period:"P4",grade:81,avg:80,scale:"pct",pathway:"Standard",required:{}},
+   {code:"En2",name:"AP English Language and Composition",teacher:"Mr. Adeyemi",period:"P5",grade:85,avg:84,scale:"pct",pathway:"AP",required:{}},
+   {code:"Us2",name:"AP United States History",teacher:"Ms. Sharma",period:"P6",grade:87,avg:84,scale:"pct",pathway:"AP",required:{}}
   ];
  } else if(grade>=11){
   return [
-   {code:"Ma2",name:"IB Mathematics: Analysis & Approaches HL",teacher:"Mr. Yilmaz",period:"P1",grade:6,avg:5,scale:"ib",pathway:"IB",required:{lse:true,imperial:true}},
-   {code:"Ph2",name:"IB Physics HL",teacher:"Dr. Reid",period:"P2",grade:5,avg:5,scale:"ib",pathway:"IB",required:{imperial:true}},
-   {code:"Ch2",name:"IB Chemistry SL",teacher:"Dr. Chen",period:"P3",grade:6,avg:5,scale:"ib",pathway:"IB",required:{ucl:true}},
-   {code:"Hi2",name:"IB History HL",teacher:"Ms. Sharma",period:"P4",grade:6,avg:5,scale:"ib",pathway:"IB",required:{lse:true}},
-   {code:"En2",name:"IB English Literature HL",teacher:"Mr. Adeyemi",period:"P5",grade:6,avg:5,scale:"ib",pathway:"IB",required:{lse:true}},
+   {code:"Ma2",name:"IB Mathematics: Analysis and Approaches HL",teacher:"Mr. J. Davies",period:"P1",grade:6,avg:5,scale:"ib",pathway:"IB",required:{lse:true,imperial:true}},
+   {code:"En2",name:"IB English A: Literature HL",teacher:"Mr. Adeyemi",period:"P2",grade:6,avg:5,scale:"ib",pathway:"IB",required:{lse:true}},
+   {code:"Ec2",name:"IB Economics SL",teacher:"Ms. Fahri",period:"P3",grade:6,avg:5,scale:"ib",pathway:"IB",required:{lse:true}},
+   {code:"Bu2",name:"IB Business management SL",teacher:"Mr. Haddad",period:"P4",grade:6,avg:5,scale:"ib",pathway:"IB",required:{}},
+   {code:"Ph2",name:"IB Physics HL",teacher:"Mr. Patel",period:"P5",grade:5,avg:5,scale:"ib",pathway:"IB",required:{imperial:true}},
    {code:"Sp2",name:"IB Spanish B SL",teacher:"Ms. Garcia",period:"P6",grade:6,avg:5,scale:"ib",pathway:"IB",required:{}}
   ];
  } else if(grade===10){
+  /* The Grade 10 courses the school runs, which is the integrated
+     sequence rather than named single sciences. "Biology Grade 10"
+     and "History Grade 10" were on this list and are not courses
+     here: science runs as Science 10 for everyone, which is exactly
+     why every diploma science asks for Science 10 and nothing more
+     specific. */
   return [
-   {code:"Ma3",name:"Mathematics Grade 10",teacher:"Mr. Yilmaz",period:"P1",grade:85,avg:84,scale:"pct",pathway:"Standard",required:{}},
-   {code:"Bi3",name:"Biology Grade 10",teacher:"Dr. Reid",period:"P2",grade:82,avg:81,scale:"pct",pathway:"Standard",required:{}},
-   {code:"Hi3",name:"History Grade 10",teacher:"Ms. Sharma",period:"P3",grade:88,avg:87,scale:"pct",pathway:"Standard",required:{}},
-   {code:"En3",name:"English Grade 10",teacher:"Mr. Adeyemi",period:"P4",grade:86,avg:85,scale:"pct",pathway:"Standard",required:{}},
-   {code:"Fr3",name:"French Grade 10",teacher:"Ms. Laurent",period:"P5",grade:84,avg:83,scale:"pct",pathway:"Standard",required:{}},
-   {code:"Cs3",name:"Computer Science Grade 10",teacher:"Mr. Patel",period:"P6",grade:79,avg:78,scale:"pct",pathway:"Standard",required:{}}
+   {code:"Ma3",name:"Integrated Math 2",teacher:"Mr. J. Davies",period:"P1",grade:85,avg:84,scale:"pct",pathway:"Standard",required:{}},
+   {code:"Sc3",name:"Science 10",teacher:"Dr. Reid",period:"P2",grade:82,avg:81,scale:"pct",pathway:"Standard",required:{}},
+   {code:"Us3",name:"US History in a Global Context",teacher:"Ms. Sharma",period:"P3",grade:88,avg:87,scale:"pct",pathway:"Standard",required:{}},
+   {code:"En3",name:"English 10",teacher:"Mr. Adeyemi",period:"P4",grade:86,avg:85,scale:"pct",pathway:"Standard",required:{}},
+   {code:"Fr3",name:"French Intermediate",teacher:"Ms. Laurent",period:"P5",grade:84,avg:83,scale:"pct",pathway:"Standard",required:{}},
+   {code:"De3",name:"Intro to Design and Engineering",teacher:"Mr. Patel",period:"P6",grade:79,avg:78,scale:"pct",pathway:"Standard",required:{}}
   ];
  } else {
   // Grade 9 - show all available courses for selection
@@ -4441,153 +4409,408 @@ const IB_GROUPS=[
  {n:5,id:"g5",label:"Mathematics",note:"Two routes. Which route you take matters more than which level."},
  {n:6,id:"g6",label:"Arts, or a sixth subject",note:"An arts subject, or a second subject from groups 1 to 4."}];
 
+/* ── THE HIGH SCHOOL COURSE OFFER ───────────────────────────────────
+   Every course the school runs outside the two diploma programmes:
+   sixty-two of them, across Grades 9 to 12, with the grade levels
+   each is open to and its published prerequisite. Taken from a real
+   programme of study and carried without the school's name. Nothing
+   outside this list is offered anywhere in the build, because a
+   catalogue that invents a course is a catalogue a counselor cannot
+   trust.
+
+   The gate is the same structure the diploma and Advanced Placement
+   courses use, so one engine answers a prerequisite question wherever
+   it is asked: `pre` is every course required, `anyPre` is one of,
+   `rec` names the teacher whose recommendation is needed, `ext` is a
+   requirement met before high school and so outside this record,
+   `prof` is a proficiency the department confirms, and `cond` and
+   `sst` are the two courses whose entry is decided by a committee
+   rather than by a transcript. */
+const HS_COURSES=[
+ {id:"INTF",n:"Introduction to Film and Media Production",dept:"Creative Arts",gr:[9,10,11,12],gate:{},
+  note:"No prior course is required."},
+ {id:"ADVF",n:"Advanced Film and Media Production",dept:"Creative Arts",gr:[10,11,12],gate:{pre:["INTF"]},
+  note:"Introduction to Film and Media Production, or an equivalent course."},
+ {id:"FILMS",n:"Film Studies 1 / 2",dept:"Creative Arts",gr:[11,12],gate:{anyPre:["INTF","FART"]},
+  note:"Introduction to Film and Media Production, or Foundation Art & Design. Prior film experience is preferred and enrolment is considered case by case. Parental permission is required."},
+ {id:"FART",n:"Foundation Art & Design",dept:"Creative Arts",gr:[9,10,11,12],gate:{},
+  note:"No prior course is required."},
+ {id:"SCER",n:"Sculpture & Ceramics",dept:"Creative Arts",gr:[9,10,11,12],gate:{},
+  note:"No prior course is required."},
+ {id:"DRPA",n:"Drawing & Painting",dept:"Creative Arts",gr:[9,10,11,12],gate:{},
+  note:"No prior course is required."},
+ {id:"TTD",n:"Technical Theatre Design",dept:"Creative Arts",gr:[9,10,11,12],gate:{},
+  note:"No prior course is required."},
+ {id:"THPR",n:"Theatre Production",dept:"Creative Arts",gr:[9,10,11,12],gate:{},
+  note:"No prior course is required."},
+ {id:"ACTG",n:"Acting for Stage and Screen",dept:"Creative Arts",gr:[9,10,11,12],gate:{},
+  note:"No prior course is required."},
+ {id:"WBAND",n:"Wind Band",dept:"Creative Arts",gr:[9,10,11,12],gate:{},
+  note:"No prior course is required. Open to beginners on a band instrument."},
+ {id:"CBAND",n:"Concert Band",dept:"Creative Arts",gr:[9,10,11,12],gate:{ext:"previous study of a woodwind, brass or percussion instrument"},
+  note:"Previous study of a woodwind, brass or percussion instrument. Instruments can be rented for a small fee."},
+ {id:"CORCH",n:"Chamber Orchestra",dept:"Creative Arts",gr:[9,10,11,12],gate:{ext:"previous study of violin, cello or double bass",rec:"music"},
+  note:"Previous study of violin, cello or double bass, and a teacher's recommendation."},
+ {id:"MCHOIR",n:"Mixed Choir",dept:"Creative Arts",gr:[9,10,11,12],gate:{rec:"music"},
+  note:"A teacher's recommendation."},
+ {id:"CCHOIR",n:"Chamber Choir",dept:"Creative Arts",gr:[9,10,11,12],gate:{anyPre:["MCHOIR"],rec:"music"},
+  note:"Previous enrolment in choir or an equivalent ensemble, and a teacher's recommendation or audition with the director."},
+ {id:"POPM",n:"Popular Music",dept:"Creative Arts",gr:[9,10,11,12],gate:{ext:"middle school music or similar experience"},
+  note:"Middle school exploring music, or similar experience."},
+ {id:"ENSDS",n:"Ensemble / Directed Studies",dept:"Creative Arts",gr:[11,12],gate:{rec:"music"},
+  note:"A teacher's recommendation."},
+ {id:"IDE",n:"Intro to Design and Engineering",dept:"Technology",gr:[9,10,11,12],gate:{},
+  note:"No prior course is required."},
+ {id:"ADE",n:"Advanced Design and Engineering",dept:"Technology",gr:[10,11,12],gate:{pre:["IDE"]},
+  note:"Intro to Design and Engineering, or an equivalent course."},
+ {id:"ICN",n:"Introduction to Cybersecurity and Networking",dept:"Technology",gr:[9,10,11,12],gate:{},
+  note:"No prior course is required."},
+ {id:"ASE",n:"Advanced Software Engineering",dept:"Technology",gr:[11,12],gate:{anyPre:["APCSA"],rec:"technology"},
+  note:"AP Computer Science A, or a teacher's recommendation."},
+ {id:"ENG9",n:"English 9",dept:"English",gr:[9],gate:{ext:"Language Arts 8"},
+  note:"Language Arts 8."},
+ {id:"ENG10",n:"English 10",dept:"English",gr:[10],gate:{pre:["ENG9"]},
+  note:"English 9."},
+ {id:"ISLA",n:"Islamic Studies in Arabic",dept:"Islamic Studies",gr:[9,10,11,12],gate:{},
+  note:"No prerequisite is stated. Taught in Arabic, and the route for Arab passport holders seeking the national equivalency, who sit the ministry examination in Arabic in Grade 12."},
+ {id:"ISLE",n:"Islamic Studies in English",dept:"Islamic Studies",gr:[9,10,11,12],gate:{},
+  note:"No prerequisite is stated. Taught in English, and the route for non-Arab passport holders seeking the national equivalency, who sit the ministry examination in English in Grade 12."},
+ {id:"FALG",n:"Foundations of Algebra",dept:"Mathematics",gr:[9],gate:{ext:"Grade 8 Mathematics"},
+  note:"Grade 8 Mathematics, or an equivalent."},
+ {id:"IM1",n:"Integrated Math 1",dept:"Mathematics",gr:[9,10],gate:{ext:"Grade 8 Mathematics"},
+  note:"Grade 8 Mathematics, or an equivalent."},
+ {id:"IM2",n:"Integrated Math 2",dept:"Mathematics",gr:[9,10,11],gate:{pre:["IM1"]},
+  note:"Successful completion of Integrated Math 1, or an equivalent."},
+ {id:"IM3",n:"Integrated Math 3",dept:"Mathematics",gr:[10,11,12],gate:{pre:["IM2"]},
+  note:"Successful completion of Integrated Math 2, or an equivalent."},
+ {id:"PREC",n:"Pre-Calculus",dept:"Mathematics",gr:[11],gate:{pre:["IM3"],rec:"mathematics"},
+  note:"Integrated Math 3 or an equivalent, and a teacher's recommendation."},
+ {id:"APPM",n:"Applied Mathematics",dept:"Mathematics",gr:[11,12],gate:{pre:["IM2"],rec:"mathematics"},
+  note:"Integrated Math 2 or an equivalent, and only with a teacher's recommendation."},
+ {id:"PEH9",n:"Physical Education and Health 9",dept:"Physical Education",gr:[9],gate:{},
+  note:"No prior course is required."},
+ {id:"PEH10",n:"Physical Education and Health 10",dept:"Physical Education",gr:[10],gate:{pre:["PEH9"]},
+  note:"Physical Education and Health 9."},
+ {id:"FIT1",n:"Fitness and Theory 1",dept:"Physical Education",gr:[10,11,12],gate:{},
+  note:"No prior course is required."},
+ {id:"FIT2",n:"Fitness and Theory 2",dept:"Physical Education",gr:[10,11,12],gate:{anyPre:["FIT1"],rec:"physical education"},
+  note:"Fitness and Theory 1, or a teacher's recommendation."},
+ {id:"SPLD",n:"Sports Leadership",dept:"Physical Education",gr:[10,11,12],gate:{},
+  note:"No prior course is required."},
+ {id:"AEDGE",n:"Athlete's Edge: Science of Movement",dept:"Physical Education",gr:[9,10,11,12],gate:{},
+  note:"No prior course is required."},
+ {id:"SCI9",n:"Science 9",dept:"Science",gr:[9],gate:{},
+  note:"No prior course is required."},
+ {id:"SCI10",n:"Science 10",dept:"Science",gr:[10],gate:{pre:["SCI9"]},
+  note:"Science 9, or a comparable course."},
+ {id:"WH9",n:"World History",dept:"Social Studies",gr:[9],gate:{},
+  note:"No prior course is required."},
+ {id:"USH",n:"US History in a Global Context",dept:"Social Studies",gr:[10,11,12],gate:{},
+  note:"No prior course is required."},
+ {id:"PBM",n:"Principles of Business Management",dept:"Social Studies",gr:[10,11,12],gate:{},
+  note:"No prior course is required."},
+ {id:"ARN1",n:"Arabic Novice 1",dept:"World Languages",gr:[9,10,11,12],gate:{},
+  note:"No prior course is required."},
+ {id:"ARN2",n:"Arabic Novice 2",dept:"World Languages",gr:[9,10,11,12],gate:{pre:["ARN1"]},
+  note:"Arabic Novice 1, or an equivalent."},
+ {id:"ARI1",n:"Arabic Intermediate 1",dept:"World Languages",gr:[9,10,11,12],gate:{pre:["ARN2"]},
+  note:"Arabic Novice, or an equivalent."},
+ {id:"ARI2",n:"Arabic Intermediate 2",dept:"World Languages",gr:[9,10,11,12],gate:{pre:["ARI1"]},
+  note:"Arabic Intermediate 1, or an equivalent."},
+ {id:"ARV1",n:"Arabic Advanced 1",dept:"World Languages",gr:[10,11,12],gate:{pre:["ARI2"]},
+  note:"Arabic Intermediate, or an equivalent."},
+ {id:"ARV2",n:"Arabic Advanced 2",dept:"World Languages",gr:[11,12],gate:{pre:["ARV1"]},
+  note:"Arabic Advanced 1, or an equivalent."},
+ {id:"MSA9",n:"Modern Standard Arabic 9",dept:"World Languages",gr:[9],gate:{ext:"Modern Standard Arabic, Grade 8"},
+  note:"Modern Standard Arabic in Grade 8, or an equivalent."},
+ {id:"MSA10",n:"Modern Standard Arabic 10",dept:"World Languages",gr:[10],gate:{pre:["MSA9"]},
+  note:"Modern Standard Arabic 9, or an equivalent."},
+ {id:"FRN",n:"French Novice",dept:"World Languages",gr:[9,10,11,12],gate:{},
+  note:"No prior course is required."},
+ {id:"FRNH",n:"French Novice High",dept:"World Languages",gr:[9,10,11,12],gate:{pre:["FRN"]},
+  note:"French Novice, or an equivalent."},
+ {id:"FRI1",n:"French Intermediate",dept:"World Languages",gr:[9,10,11,12],gate:{pre:["FRNH"],rec:"language"},
+  note:"French Novice High or an equivalent, and a teacher's recommendation."},
+ {id:"FRIH",n:"French Intermediate High",dept:"World Languages",gr:[9,10,11,12],gate:{pre:["FRI1"],rec:"language"},
+  note:"French Intermediate or an equivalent, and a teacher's recommendation."},
+ {id:"FRAD",n:"French Advanced",dept:"World Languages",gr:[9,10,11,12],gate:{pre:["FRIH"],rec:"language"},
+  note:"French Intermediate High or an equivalent, and a teacher's recommendation."},
+ {id:"FRLL",n:"French Language and Literature 9/10",dept:"World Languages",gr:[9,10],gate:{prof:"French",rec:"language"},
+  note:"A highly proficient speaker, and a teacher's recommendation."},
+ {id:"SPN",n:"Spanish Novice",dept:"World Languages",gr:[9,10,11,12],gate:{},
+  note:"No prior course is required."},
+ {id:"SPNH",n:"Spanish Novice High",dept:"World Languages",gr:[9,10,11,12],gate:{pre:["SPN"]},
+  note:"Spanish Novice, or an equivalent."},
+ {id:"SPI1",n:"Spanish Intermediate",dept:"World Languages",gr:[9,10,11,12],gate:{pre:["SPNH"],rec:"language"},
+  note:"Spanish Novice High or an equivalent, and a teacher's recommendation."},
+ {id:"SPIH",n:"Spanish Intermediate High",dept:"World Languages",gr:[9,10,11,12],gate:{pre:["SPI1"],rec:"language"},
+  note:"Spanish Intermediate or an equivalent, and a teacher's recommendation."},
+ {id:"SPAD",n:"Spanish Advanced",dept:"World Languages",gr:[9,10,11,12],gate:{pre:["SPIH"],rec:"language"},
+  note:"Spanish Intermediate High or an equivalent, and a teacher's recommendation."},
+ {id:"DMDA",n:"Decoding Media in the Digital Age",dept:"Electives",gr:[9,10,11,12],gate:{},
+  note:"No prior course is required."},
+ {id:"SDS",n:"Self-Directed Studies",dept:"Electives",gr:[11,12],gate:{cond:true},
+  note:"Enrolment is conditional upon meeting eligibility requirements. It carries no credit."},
+ {id:"LLAB",n:"Learning Lab",dept:"Student Support",gr:[9,10,11,12],gate:{sst:true},
+  note:"A recommendation from the Student Support Team."},
+];
+const HSC=id=>HS_COURSES.find(c=>c.id===id)||null;
+const hsName=id=>{const c=HSC(id);return c?c.n:id;};
+/* The departments, in the order the programme of study prints them.
+   This is the only list of subject areas in the build: the course
+   catalogue, the student's own record and the teacher's register all
+   read it, so a department cannot exist in one place and not another. */
+const HS_DEPTS=["Creative Arts","Technology","English","Islamic Studies","Mathematics",
+ "Physical Education","Science","Social Studies","World Languages","Electives","Student Support"];
+/* Every course on offer for a given grade, across all three
+   programmes, which is what a student choosing next year's courses is
+   actually looking at. */
+function offerFor(grade){
+ const g=grade||9;
+ return {hs:HS_COURSES.filter(c=>c.gr.includes(g)),
+  ap:AP_COURSES.filter(c=>(c.gr||[]).includes(g)),
+  ib:g>=11?IB_SUBJECTS.slice():[]};
+}
+
+/* ── ADVANCED PLACEMENT ─────────────────────────────────────────────
+   The AP offer, with the same two-layer requirement as the diploma
+   catalogue: `gate` is the published requirement and is checked
+   against the course record; `signal` is what a teacher weighs when
+   asked whether the course is the right one. AP has no level
+   question, so there is no HL or SL here and no level recommendation.
+*/
+const AP_COURSES=[
+ {id:"AP2D",name:"AP 2D Art and Design",area:"Arts",gr:[11,12],cr:1.0,
+  gate:{courses:["ADE"],rec:"arts"},
+  note:"Advanced Design and Engineering or an equivalent, and a teacher's recommendation. The course is an external portfolio of twenty pieces."},
+ {id:"AP3D",name:"AP 3D Art and Design",area:"Arts",gr:[11,12],cr:1.0,
+  gate:{courses:["ADE"],rec:"arts"},
+  note:"Advanced Design and Engineering or an equivalent, and a teacher's recommendation. A sustained investigation of materials and processes, submitted as a portfolio."},
+ {id:"APCYB",name:"AP Cybersecurity",area:"Technology",gr:[10,11,12],cr:1.0,
+  gate:{},
+  note:"No prior course is required. New for this year."},
+ {id:"APCSP",name:"AP Computer Science Principles",area:"Technology",gr:[10,11,12],cr:1.0,
+  gate:{signalOnly:true},
+  note:"No prior course is named. The stated requirement is a foundation in mathematical expressions, linear equations and problem solving, which is a judgement rather than a record check."},
+ {id:"APCSA",name:"AP Computer Science A",area:"Technology",gr:[10,11,12],cr:1.0,
+  gate:{courses:["APCSP"],rec:"technology",gr10rec:true},
+  note:"AP Computer Science Principles or an equivalent. Grade 10 entry requires a teacher's recommendation."},
+ {id:"APLNG",name:"AP English Language and Composition",area:"English",gr:[11],cr:1.0,
+  gate:{courses:["ENG10"]},
+  note:"English 10. Taken in Grade 11, before AP Literature in Grade 12."},
+ {id:"APLIT",name:"AP English Literature and Composition",area:"English",gr:[12],cr:1.0,
+  gate:{courses:["APLNG"]},
+  note:"AP English Language and Composition. The second course in a two-year sequence."},
+ {id:"APSTA",name:"AP Statistics",area:"Mathematics",gr:[11,12],cr:1.0,
+  gate:{courses:["IM3"],rec:"mathematics"},
+  note:"Integrated Math 3 or an equivalent, and a mathematics teacher's recommendation."},
+ {id:"APCAL",name:"AP Calculus AB",area:"Mathematics",gr:[12],cr:1.0,
+  gate:{courses:["PREC"],rec:"mathematics"},
+  note:"Pre-Calculus or an equivalent, and a mathematics teacher's recommendation."},
+ {id:"APPHY",name:"AP Physics 1",area:"Science",gr:[11,12],cr:1.0,
+  gate:{courses:["SCI10","IM3"],rec:"science"},
+  note:"Science 10, a science teacher's recommendation, and completion of Integrated Math 3."},
+ {id:"APBIO",name:"AP Biology",area:"Science",gr:[11,12],cr:1.0,
+  gate:{courses:["SCI10"],rec:"science"},
+  note:"Science 10 and a science teacher's recommendation."},
+ {id:"APCHE",name:"AP Chemistry",area:"Science",gr:[11,12],cr:1.0,
+  gate:{courses:["SCI10","IM3"],rec:"science"},
+  note:"Science 10, a science teacher's recommendation, and completion of Integrated Math 3."},
+ {id:"APUSH",name:"AP United States History",area:"Social Studies",gr:[10,11,12],cr:1.0,
+  gate:{rec:"social studies and English"},
+  note:"A social studies and an English teacher's recommendation. No prior course is named."},
+ {id:"APGOV",name:"AP United States Government and Politics",area:"Social Studies",gr:[11,12],cr:1.0,
+  gate:{courses:["WH9","USH"]},
+  note:"Social studies credit for Grades 9 and 10."},
+ {id:"APCGP",name:"AP Comparative Government and Politics",area:"Social Studies",gr:[11,12],cr:1.0,
+  gate:{courses:["WH9","USH"]},
+  note:"Social studies credit for Grades 9 and 10."},
+ {id:"APPSY",name:"AP Psychology",area:"Social Studies",gr:[12],cr:1.0,
+  gate:{},
+  note:"No prior course is required."},
+ {id:"APSEM",name:"AP Seminar",area:"English",gr:[11,12],cr:1.0,
+  gate:{anyCourse:["ENG10"],rec:"teacher"},
+  note:"A teacher's recommendation, or successful completion of English 10."},
+];
+const APC=id=>AP_COURSES.find(c=>c.id===id)||null;
+
 /* The subject catalogue. `per` is the period each level runs at, and it is
    what makes a clash real rather than decorative: two subjects a student
    has chosen at the same period cannot both be taken, and the form says so
    on the option before it is picked rather than after.
    `min` and `cap` are the school's own thresholds for running a class.
-   `needs` is the prerequisite, expressed as a course and a mark so the
-   check is a comparison rather than an opinion. */
+
+   Levels are the real offer and not every subject offers both: physics
+   runs at Higher Level only, applications and interpretation at
+   Standard only, and the two ab initio languages and the self-taught
+   literature course at Standard only. A catalogue that offered every
+   subject at both levels printed level choices the school cannot
+   timetable.
+
+   `gate` and `signal` are the two halves of a requirement and they are
+   not the same kind of thing. `gate` is the published prerequisite: a
+   named prior course, a proficiency, a teacher's recommendation. It is
+   checked against the course record and it is answerable yes or no.
+   `signal` is what the level conversation turns on: a mark in the area
+   the course leans on, a mathematics set, a portfolio. It never blocks
+   anything. Collapsing the two produced a form that refused a student
+   over a mark, which is a judgement a table should not be making. */
 const IB_SUBJECTS=[
  {id:"ENL",g:"g1",name:"English A: Literature",lv:["HL","SL"],t:"Mr. Adeyemi",per:{HL:"P2",SL:"P2"},min:10,cap:24,
-  needs:{lv:"HL",areas:["English"],pct:65,note:"Grade 10 English, with a mark around 65 or above. Literature at Higher Level reads eleven more works than Standard."},
+  gate:{courses:["ENG10"],note:"English 10."},
+  signal:{lv:"HL",areas:["English"],pct:65,note:"Literature at Higher Level reads eleven more works than Standard, so the Grade 10 English mark is what the level question turns on."},
   about:"Thirteen works read closely, across at least three literary forms and several centuries.",
   like:"You read more than you have read before, and you write about far less of it than you read. Most weeks are one text, one argument, and a seminar where you are expected to have a position.",
   assess:"Two exams, a taught oral, and an essay you write over the second year.",
   hard:"The volume of reading is the part students underestimate. The writing is a skill you build; the reading is time you have to find."},
  {id:"ELL",g:"g1",name:"English A: Language and literature",lv:["HL","SL"],t:"Mr. Adeyemi",per:{HL:"P2",SL:"P5"},min:10,cap:24,
-  needs:{lv:"HL",areas:["English"],pct:60,note:"Grade 10 English. Language and literature at Higher Level adds a comparative study."},
+  gate:{courses:["ENG10"],note:"English 10."},
+  signal:{lv:"HL",areas:["English"],pct:60,note:"Language and literature at Higher Level adds a comparative study."},
   about:"Half literature, half how language works in advertising, speeches, journalism and images.",
   like:"You will spend a week on a novel and the next on a campaign poster, using the same tools on both. Students who find pure literature airless often prefer this one.",
   assess:"Two exams, a taught oral, and a comparative essay at Higher Level.",
   hard:"The non-literary half looks easier and is not. Analysing an advert well is harder than analysing a poem badly."},
- {id:"ARA",g:"g1",name:"Arabic A: Literature",lv:["HL","SL"],t:"Ms. Nasser",per:{HL:"P5",SL:"P5"},min:8,cap:20,
-  needs:{lv:"HL",areas:["Languages"],pct:65,note:"Arabic to Grade 10 at first-language level. This is a literature course, not a language course."},
-  about:"Literature in Arabic, for students whose Arabic is a first language rather than a school subject.",
-  like:"Seminar-shaped, in Arabic throughout, with classical and modern texts sitting beside each other.",
-  assess:"Two exams, a taught oral, and a written essay.",
-  hard:"Written register. Speaking Arabic at home is not the same as writing literary analysis in it."},
+ {id:"FRA",g:"g1",name:"French A: Language and literature",lv:["HL","SL"],t:"Ms. Laurent",per:{HL:"P5",SL:"P5"},min:8,cap:20,
+  gate:{prof:"French",rec:"language",note:"A highly proficient speaker and writer of French, and a teacher's recommendation."},
+  signal:{lv:"both",areas:["Languages"],pct:75,note:"A course for students already highly proficient in written and spoken French. This is literature and language study, not language learning."},
+  about:"Four literary works at Standard Level and six at Higher Level, read alongside non-literary texts ranging from editorials and advertisements to satire and video.",
+  like:"You write about an advertisement one week and a novel the next, with the same analytical apparatus. Lessons assume you already speak and write French at a high level, so the work is analysis rather than language learning.",
+  assess:"Two written assessments and an individual oral connecting two works to a global issue, with a further essay at Higher Level.",
+  hard:"Fluency is not the same as literary analysis, and the marks go to the second. Higher Level reads six works rather than four and adds an externally assessed essay of 1200 to 1500 words, which is a further assessment rather than a longer version of an existing one."},
+ {id:"SST",g:"g1",name:"Language A: Literature, self-taught",lv:["SL"],t:"Mr. A. Serrano",per:{SL:"P6"},min:1,cap:8,
+  gate:{prof:"the chosen language",coord:true,note:"A highly proficient speaker and writer of the chosen language, with enrolment granted in partnership with the Diploma Programme Coordinator."},
+  signal:{lv:"both",note:"Proficiency in the chosen language has to be established, and enrolment is granted in partnership with the Diploma Programme Coordinator."},
+  about:"Seven literary works in a language of the student's own, at Standard Level only, across three areas of exploration: readers, writers and text; time and space; intertextuality.",
+  like:"There is no class and no teacher. You read to a schedule you set yourself and meet an external tutor, and the work in any given week is whatever you have decided it is.",
+  assess:"Two written assessments at the end of the two years, plus an oral assessment.",
+  hard:"Nothing in the timetable compels the reading, so seven works and two years of notes rest on a schedule the student maintains alone. Enrolment is granted in partnership with the Diploma Programme Coordinator, and proficiency in the language has to be established before the course is approved."},
  {id:"ARB",g:"g2",name:"Arabic B",lv:["HL","SL"],t:"Ms. Nasser",per:{HL:"P6",SL:"P6"},min:8,cap:22,
-  needs:{lv:"both",areas:["Languages"],note:"At least two years of Arabic. Students new to the language take ab initio instead."},
+  gate:{years:{lang:"Arabic",n:4},note:"Four or more years of formal study in Arabic. There is no beginners' route in Arabic here."},
+  signal:{lv:"both",areas:["Languages"],note:"Four or more years of formal Arabic. Students new to the language have no ab initio route here."},
   about:"Arabic as an acquired language, built around five themes from identity to sharing the planet.",
   like:"Speaking every lesson. The course is organised around what you can do with the language, so a quiet term is a term you lose.",
   assess:"Reading and writing exams, plus a recorded individual oral.",
   hard:"If Arabic is your home language this is the wrong course, and the school will say so."},
- {id:"FRB",g:"g2",name:"French B",lv:["HL","SL"],t:"Ms. Laurent",per:{HL:"P6",SL:"P6"},min:8,cap:22,
-  needs:{lv:"both",areas:["Languages"],note:"At least two years of French. Students new to the language take ab initio instead."},
+ {id:"FRB",g:"g2",name:"French B",lv:["HL","SL"],t:"Ms. Laurent",per:{HL:"P6",SL:"P3"},min:8,cap:22,
+  gate:{courses:["FRIH"],rec:"language",note:"French Intermediate High or an equivalent, and a teacher's recommendation."},
+  signal:{lv:"both",areas:["Languages"],note:"French Intermediate High or an equivalent. Students new to the language take ab initio instead."},
   about:"French built on at least two years of prior study, across the same five themes.",
   like:"Lessons run in French. The first term is uncomfortable and the third is not.",
   assess:"Reading and writing exams, plus a recorded individual oral.",
   hard:"Higher Level adds two literary works, which is a genuine step up rather than more of the same."},
- {id:"SPB",g:"g2",name:"Spanish B",lv:["HL","SL"],t:"Ms. Garcia",per:{HL:"P6",SL:"P6"},min:8,cap:22,
-  needs:{lv:"both",areas:["Languages"],note:"At least two years of Spanish. Students new to the language take ab initio instead."},
+ {id:"SPB",g:"g2",name:"Spanish B",lv:["HL","SL"],t:"Ms. Garcia",per:{HL:"P3",SL:"P6"},min:8,cap:22,
+  gate:{courses:["SPIH"],rec:"language",note:"Spanish Intermediate High or an equivalent, and a teacher's recommendation."},
+  signal:{lv:"both",areas:["Languages"],note:"Spanish Intermediate High or an equivalent. Students new to the language take ab initio instead."},
   about:"Spanish built on prior study, across the same five themes.",
   like:"Lessons run in Spanish, with a lot of speaking and a steady diet of authentic text.",
   assess:"Reading and writing exams, plus a recorded individual oral.",
   hard:"Vocabulary load is relentless and it does not respond to cramming."},
- {id:"SPI",g:"g2",name:"Spanish ab initio",lv:["SL"],t:"Ms. Garcia",per:{SL:"P3"},min:8,cap:20,
-  needs:{lv:"both",bars:"Spanish",note:"For students with little or no previous Spanish. Two years of prior study rules this course out; take Spanish B instead."},
+ {id:"FRI",g:"g2",name:"French ab initio",lv:["SL"],t:"Ms. Laurent",per:{SL:"P1"},min:8,cap:20,
+  gate:{bars:"French",note:"No prior course is required, and prior study of French rules the course out."},
+  signal:{lv:"both",bars:"French",note:"For students with little or no previous French. Prior study of the language rules this course out; take French B instead."},
+  about:"French from no prior knowledge, at Standard Level only, across listening, speaking, reading and writing.",
+  like:"Most of what you say in the first year is a learned phrase used correctly. Speaking comes first and the reading and writing are built behind it.",
+  assess:"Listening, reading and writing exams, plus a recorded individual oral.",
+  hard:"Eligibility is checked, and prior exposure to French, including a year of it at a younger age, makes a student ineligible. Two years is enough to hold a conversation only if no week is missed, because each unit assumes the phrases taught in the one before."},
+ {id:"SPI",g:"g2",name:"Spanish ab initio",lv:["SL"],t:"Ms. Garcia",per:{SL:"P1"},min:8,cap:20,
+  gate:{bars:"Spanish",note:"No prior course is required, and prior study of Spanish rules the course out."},
+  signal:{lv:"both",bars:"Spanish",note:"For students with little or no previous Spanish. Prior study of the language rules this course out; take Spanish B instead."},
   about:"Spanish from the beginning, for students who have not studied it before.",
   like:"Two years from nothing to holding a conversation. Fast, structured, and unforgiving about missed weeks.",
   assess:"Reading and writing exams, plus a recorded individual oral.",
   hard:"It is only open to genuine beginners, and eligibility is checked."},
  {id:"ECO",g:"g3",name:"Economics",lv:["HL","SL"],t:"Ms. Fahri",per:{HL:"P3",SL:"P3"},min:10,cap:24,
-  needs:{lv:"HL",areas:["Mathematics"],anyOf:["Social Science","Humanities"],pct:65,note:"Grade 10 Mathematics and a social science. Higher Level carries quantitative work every week."},
+  gate:{note:"No prior course is required."},
+  signal:{lv:"HL",areas:["Mathematics"],anyOf:["Social Studies"],pct:65,note:"No course is required. Higher Level carries quantitative work every week, so the Grade 10 mathematics mark is the useful signal."},
   about:"Microeconomics, macroeconomics, the global economy and development, taught around real policy.",
   like:"Diagrams, then arguments about what the diagrams leave out. You will be asked to evaluate rather than describe from the first month.",
   assess:"Exams, plus a portfolio of three commentaries written on real news articles.",
   hard:"Higher Level adds quantitative work. Students who chose it to avoid mathematics find that out in the second term."},
  {id:"BUS",g:"g3",name:"Business management",lv:["HL","SL"],t:"Mr. Haddad",per:{HL:"P4",SL:"P4"},min:10,cap:24,
-  needs:{lv:"HL",anyOf:["Social Science","Humanities"],note:"A Grade 10 social science or humanities course."},
+  gate:{note:"No prior course is required."},
+  signal:{lv:"HL",anyOf:["Social Studies"],note:"No course is required. Principles of Business Management is the usual route in."},
   about:"How organisations are financed, run, marketed and changed.",
   like:"Case studies, most weeks, on companies you have heard of. More writing than students expect and more accounting than they expect.",
   assess:"Exams, plus a research project on one organisation at Higher Level.",
   hard:"The finance unit. It is arithmetic with vocabulary attached, and it separates the class."},
  {id:"HIS",g:"g3",name:"History",lv:["HL","SL"],t:"Ms. Sharma",per:{HL:"P3",SL:"P1"},min:10,cap:24,
-  needs:{lv:"HL",anyOf:["Humanities","Social Science"],pct:60,note:"Grade 10 Social Studies or an equivalent humanities course. Higher Level adds a depth study and far more writing."},
+  gate:{note:"No prior course is required."},
+  signal:{lv:"HL",anyOf:["Social Studies"],pct:60,note:"No course is required. Higher Level adds a depth study and far more writing, so the Grade 10 social studies mark is the useful signal."},
   about:"One thematic world-history study, one regional depth study, and a piece of independent research.",
   like:"Argument every week, from sources that disagree with each other. The essays are long and get longer.",
   assess:"Exams, plus a historical investigation you choose and research yourself.",
   hard:"Timed essay writing. Knowing the material and writing it in forty-five minutes are separate skills."},
- {id:"PSY",g:"g3",name:"Psychology",lv:["HL","SL"],t:"Ms. Johnson",per:{HL:"P5",SL:"P4"},min:10,cap:24,
-  needs:{lv:"HL",anyOf:["Science","Social Science"],note:"A Grade 10 science or social science course. Higher Level includes research methods and statistics."},
-  about:"Behaviour explained biologically, cognitively and socioculturally, taught through the studies themselves.",
-  like:"You learn studies the way a science student learns experiments: method, findings, and what the method could not show.",
-  assess:"Exams, plus an experimental study you run and write up.",
-  hard:"It is a science, not a discussion subject, and the command word is almost always evaluate."},
- {id:"GPO",g:"g3",name:"Global politics",lv:["HL","SL"],t:"Ms. Sharma",per:{HL:"P4",SL:"P2"},min:8,cap:20,
-  needs:{lv:"HL",anyOf:["Humanities","Social Science"],note:"A Grade 10 humanities or social science course."},
-  about:"Power, sovereignty, human rights, development and peace, tested against current cases.",
-  like:"The reading is the news. Class runs as structured disagreement, and you are expected to argue a position that is not your own.",
-  assess:"Exams, plus an engagement activity you take part in and analyse.",
-  hard:"Small cohort most years, so there is nowhere to hide in a seminar."},
+ {id:"GEO",g:"g3",name:"Geography",lv:["HL","SL"],t:"Ms. Bianchi",per:{HL:"P4",SL:"P2"},min:10,cap:24,
+  gate:{note:"No prior course is required."},
+  signal:{lv:"HL",anyOf:["Social Studies"],note:"No course is required. Higher Level adds three extension units and one further theme."},
+  about:"Population, economic development, resource use, sustainability and climate change, together with the physical processes behind global patterns.",
+  like:"Case studies accumulate across both years and you are expected to cite them by name, with figures. Written answers are built to a command term rather than written freely.",
+  assess:"Exams, plus a written fieldwork investigation.",
+  hard:"Higher Level adds three extension units on globalization and one further theme, so the Higher Level papers cover material Standard Level students never meet. The command term decides the mark, and an explanation written where an evaluation was asked for loses most of it."},
+ {id:"ESS",g:"g4",alt:"g3",name:"Environmental systems and societies",lv:["HL","SL"],t:"Ms. Wilson",per:{HL:"P5",SL:"P2"},min:10,cap:24,
+  gate:{courses:["SCI10"],rec:"science",note:"Science 10 and a science teacher's recommendation."},
+  signal:{lv:"HL",areas:["Science"],pct:65,note:"Counts for Group 3 or Group 4, never both."},
+  about:"Ecology, biodiversity, climate change and natural resources, studied through perspectives, systems and sustainability, and the one subject that may be counted in either Group 3 or Group 4.",
+  like:"You argue a position on an environmental question and then account for the positions you did not take, including those held in cultures other than your own. Laboratory and field work run alongside, thirty hours at Standard Level and fifty at Higher Level.",
+  assess:"Exams, plus an independent practical investigation.",
+  hard:"It fills one group and not two, so counting it for Group 4 leaves a Group 3 subject still to be found. Answers are marked on justification, and a correct fact with no argument attached earns little."},
  {id:"BIO",g:"g4",name:"Biology",lv:["HL","SL"],t:"Dr. Reid",per:{HL:"P2",SL:"P4"},min:10,cap:24,
-  needs:{lv:"HL",areas:["Science"],pct:70,note:"Grade 10 Science, with a mark around 70 or above. Higher Level covers roughly twice the content of Standard."},
+  gate:{courses:["SCI10"],rec:"science",note:"Science 10 and a science teacher's recommendation."},
+  signal:{lv:"HL",areas:["Science"],pct:70,note:"Higher Level covers roughly twice the content of Standard."},
   about:"Cells, molecular biology, genetics, ecology, physiology, and how biological knowledge is built.",
   like:"Lab most weeks. The content volume at Higher Level is the largest of any science here, and it accumulates rather than resets.",
   assess:"Exams, plus an individual scientific investigation.",
   hard:"Sheer volume. Falling four weeks behind in Biology is harder to recover than in any other subject on this list."},
  {id:"CHE",g:"g4",name:"Chemistry",lv:["HL","SL"],t:"Dr. Chen",per:{HL:"P4",SL:"P2"},min:10,cap:22,
-  needs:{lv:"HL",areas:["Science"],pct:75,note:"Grade 10 Chemistry or Science, with a mark around 75 or above. Higher Level assumes confident algebra alongside the chemistry."},
+  gate:{courses:["SCI10"],rec:"science",note:"Science 10 and a science teacher's recommendation."},
+  signal:{lv:"HL",areas:["Science"],pct:75,note:"Higher Level assumes confident algebra alongside the chemistry."},
   about:"Structure, bonding, energetics, kinetics, equilibrium and organic chemistry.",
   like:"Problem sets. Chemistry rewards doing questions rather than reading notes, and the practical work is precise.",
   assess:"Exams, plus an individual scientific investigation.",
   hard:"It is the most mathematical of the three sciences, and Higher Level organic chemistry is a memory load."},
- {id:"PHY",g:"g4",name:"Physics",lv:["HL","SL"],t:"Dr. Reid",per:{HL:"P5",SL:"P5"},min:10,cap:22,
-  needs:{lv:"HL",areas:["Science","Mathematics"],pct:70,note:"Grade 10 Science and Mathematics. Higher Level physics is mathematical throughout, so the maths mark matters as much as the science one."},
+ {id:"PHY",g:"g4",name:"Physics",lv:["HL"],t:"Mr. Patel",per:{HL:"P5"},min:10,cap:22,
+  gate:{courses:["SCI10","IM2"],rec:"science",note:"Science 10, a science teacher's recommendation, and Integrated Math 2 or an equivalent."},
+  signal:{lv:"HL",areas:["Science","Mathematics"],pct:70,note:"Offered at Higher Level only. The course is mathematical throughout, so the mathematics mark matters as much as the science mark."},
   about:"Mechanics, waves, fields, energy and one option topic, taught mathematically throughout.",
   like:"Derivation and problem solving, with the laboratory used to test what the algebra claims.",
   assess:"Exams, plus an individual scientific investigation.",
-  hard:"Physics HL alongside Mathematics: applications is a combination that fights itself. Take analysis and approaches if you can."},
- {id:"CSC",g:"g4",name:"Computer science",lv:["HL","SL"],t:"Mr. Patel",per:{HL:"P6",SL:"P1"},min:8,cap:20,
-  needs:{lv:"HL",anyOf:["Technology","Mathematics"],note:"A Grade 10 technology or mathematics course. No prior programming is assumed, but the logic load is heavy."},
-  about:"How machines compute, plus a solution you design and build for a real client.",
-  like:"Half theory that looks like discrete mathematics, half a two-year software project with a person waiting on it.",
-  assess:"Exams, plus the developed solution and its documentation.",
-  hard:"The project has a real deadline and no way to compress it. Students who start it late lose marks they cannot recover."},
- {id:"DES",g:"g4",name:"Design technology",lv:["HL","SL"],t:"Mr. Patel",per:{HL:"P1",SL:"P3"},min:8,cap:18,
-  needs:{lv:"HL",anyOf:["Technology","Arts"],note:"A Grade 10 technology or arts course."},
-  about:"Design thinking, materials, manufacturing and sustainability, with a major design project.",
-  like:"Workshop time and iteration. You will build things that do not work before you build one that does.",
-  assess:"Exams, plus a design project carried through prototyping.",
-  hard:"It reads as the practical option and is assessed as a science."},
+  hard:"Physics runs at Higher Level only, so there is no Standard Level to fall back on if the pace does not suit. Alongside Mathematics: applications it is a combination that fights itself; take analysis and approaches if you can."},
+ {id:"SEH",g:"g4",name:"Sports, exercise and health science",lv:["HL","SL"],t:"Mr. Yilmaz",per:{HL:"P6",SL:"P1"},min:8,cap:22,
+  gate:{courses:["SCI10"],rec:"science",note:"Science 10 and a science teacher's recommendation."},
+  signal:{lv:"HL",areas:["Science"],pct:62,note:"Higher Level adds further material on every topic and twenty more laboratory hours."},
+  about:"Exercise physiology and nutrition, biomechanics, and sports psychology and motor learning, taught alongside a laboratory programme.",
+  like:"Laboratory work most weeks, forty hours at Standard Level and sixty at Higher Level, ending in an investigation you design yourself. The interdisciplinary Group 4 Project falls at the end of the first year.",
+  assess:"Exams, plus an independent practical investigation assessed against criteria set by the IB.",
+  hard:"The anatomy and physiology are memorised in detail rather than read once. The practical hours are the smaller part of the grade and the written papers decide it."},
  {id:"MAA",g:"g5",name:"Mathematics: analysis and approaches",lv:["HL","SL"],t:"Mr. J. Davies",per:{HL:"P1",SL:"P1"},min:12,cap:24,
+  gate:{courses:["IM3"],rec:"mathematics",note:"Integrated Math 3 or an equivalent, and a mathematics teacher's recommendation."},
+  signal:{lv:"HL",course:"extended mathematics",pct:85,areas:["Mathematics"],note:"Integrated Math 3 and a mathematics teacher's recommendation. Higher Level is usually offered from the extended set, with a mark around 85 or above."},
   about:"Algebra, functions, trigonometry, calculus and proof, taught for mathematical reasoning.",
   like:"Calculus arrives early and never leaves. Higher Level is the most demanding course in the diploma by hours.",
   assess:"Exams, plus a mathematical exploration you write yourself.",
-  hard:"Engineering, physics, computer science and most economics degrees ask for this route, so it is chosen for reasons other than enjoyment more often than any other subject here.",
-  needs:{lv:"HL",course:"extended mathematics",pct:85,areas:["Mathematics"],note:"Offered from the extended mathematics set, with a mark around 85 or above. This is the most demanding mathematics route in the diploma."}},
- {id:"MAI",g:"g5",name:"Mathematics: applications and interpretation",lv:["HL","SL"],t:"Mr. Yilmaz",per:{HL:"P1",SL:"P4"},min:10,cap:24,
-  needs:{lv:"HL",areas:["Mathematics"],pct:70,note:"Grade 10 Mathematics. Higher Level applications carries a statistics and modelling load."},
+  hard:"Engineering, physics, computer science and most economics degrees ask for this route, so it is chosen for reasons other than enjoyment more often than any other subject here."},
+ {id:"MAI",g:"g5",name:"Mathematics: applications and interpretation",lv:["SL"],t:"Ms. Johnson",per:{SL:"P4"},min:10,cap:24,
+  gate:{courses:["IM2"],rec:"mathematics",note:"Successful completion of Integrated Math 2 or an equivalent, and a mathematics teacher's recommendation."},
+  signal:{lv:"both",areas:["Mathematics"],pct:60,note:"Offered at Standard Level only. Integrated Math 2 is the gate, which makes this the open mathematics route."},
   about:"Modelling, statistics and applied calculus, taught with technology in hand throughout.",
   like:"You will use a graphing calculator constantly and model situations that come with messy numbers.",
   assess:"Exams, plus a mathematical exploration you write yourself.",
-  hard:"Some engineering and physics courses will not accept it, even at Higher Level. Check the universities before choosing it."},
+  hard:"Some engineering and physics degrees will not accept it at all, and it runs at Standard Level only, so there is no higher route within it. Check the universities before choosing it."},
  {id:"VIS",g:"g6",name:"Visual arts",lv:["HL","SL"],t:"Ms. Wilson",per:{HL:"P4",SL:"P6"},min:8,cap:18,
-  needs:{lv:"both",anyOf:["Arts"],evidence:"a portfolio of recent work",note:"A Grade 10 arts course, and a portfolio shown to the department before the round closes."},
+  gate:{courses:["FART"],anyCourse:["DRPA","SCER"],rec:"arts",evidence:"a portfolio of recent work",note:"Foundation Art & Design, one of Drawing & Painting or Sculpture & Ceramics, a teacher's recommendation, and a portfolio shown to the department."},
+  signal:{lv:"both",anyOf:["Arts"],evidence:"a portfolio of recent work",note:"Foundation Art & Design, one of Drawing & Painting or Sculpture & Ceramics, and a portfolio shown to the department before the round closes."},
   about:"Studio practice, comparative study of other artists, and a resolved body of work.",
   like:"Studio time, a process journal that is genuinely assessed, and an exhibition at the end with your own commentary beside each piece.",
   assess:"A comparative study, the process portfolio, and the exhibition. No written exam.",
   hard:"The workload is continuous rather than seasonal. There is nothing to revise and nowhere to catch up."},
- {id:"MUS",g:"g6",name:"Music",lv:["HL","SL"],t:"Ms. Bianchi",per:{HL:"P5",SL:"P1"},min:6,cap:16,
-  needs:{lv:"both",anyOf:["Arts"],evidence:"an audition or a recording",note:"A Grade 10 music course, and an audition or recording. Reading notation is assumed."},
-  about:"Performing, composing and researching music across several traditions.",
-  like:"You will perform, write, and defend both. Practice happens outside lessons and the course assumes it.",
-  assess:"Recorded performance and composition portfolios, plus a contemporary music enquiry.",
-  hard:"It expects existing instrumental or vocal ability. Starting from nothing in Grade 11 is very hard."},
- {id:"THE",g:"g6",name:"Theatre",lv:["HL","SL"],t:"Ms. Wilson",per:{HL:"P2",SL:"P4"},min:6,cap:16,
-  needs:{lv:"both",anyOf:["Arts"],note:"A Grade 10 arts course, or evidence of performance experience."},
-  about:"Theatre made, directed and researched, not theatre read.",
-  like:"Rehearsal, collaboration and deadlines that involve other people. Missing a session costs four other students their session.",
-  assess:"A research presentation, a collaborative project, and a director's notebook.",
-  hard:"Group assessment. Your mark depends partly on people who are not you."},
- {id:"FIL",g:"g6",name:"Film",lv:["SL"],t:"Ms. Wilson",per:{SL:"P2"},min:6,cap:16,
-  needs:{lv:"both",anyOf:["Arts","Technology"],note:"A Grade 10 arts or technology course."},
+ {id:"FIL",g:"g6",name:"Film",lv:["HL","SL"],t:"Mr. A. Serrano",per:{HL:"P2",SL:"P2"},min:6,cap:16,
+  gate:{anyCourse:["INTF","FART"],note:"Introduction to Film and Media Production, or Foundation Art & Design."},
+  signal:{lv:"both",anyOf:["Arts"],note:"Introduction to Film and Media Production, or Foundation Art & Design."},
   about:"Film history and theory, alongside films you make.",
   like:"Watching closely and shooting badly, then shooting less badly. Editing takes longer than anyone plans for.",
-  assess:"A comparative study, a portfolio of production work, and a short film.",
-  hard:"Equipment time is finite and shared, so the students who book early are the ones who finish."}];
-
+  assess:"A comparative study, a portfolio of production work, and a short film, with a further reflection on artistic intentions at Higher Level.",
+  hard:"Equipment time is finite and shared, so the students who book early are the ones who finish."},
+];
 /* The three compulsory components. They are on the form because leaving
    them off the form is how a student meets them for the first time in
    October of Grade 11. */
@@ -4597,7 +4820,59 @@ const DP_CORE=[
  ["CAS","Creativity, activity, service","Eighteen months of engagement across three strands, with reflection. Tracked in this portal from the first week of Grade 11."]];
 
 const IBS=id=>IB_SUBJECTS.find(s=>s.id===id)||null;
-const IB_BY_GROUP=gid=>IB_SUBJECTS.filter(s=>s.g===gid);
+/* Environmental systems and societies is the one subject the IB lets a
+   student count in either Group 3 or Group 4, so it appears in both
+   lists and `alt` is what puts it there. It still fills one slot and
+   not two: the form takes it for whichever group the student placed
+   it in, and the subject's own copy says so. */
+const IB_BY_GROUP=gid=>IB_SUBJECTS.filter(s=>s.g===gid||s.alt===gid);
+
+/* ═══ THE COURSE CATALOGUE AS THE GRADE 9 STUDENT MEETS IT ═══
+   Derived from the three programme lists rather than written out
+   again. It used to be a hand-maintained copy, and it had drifted:
+   it offered Mandarin, music and design technology at diploma level,
+   two economics courses and a human geography course under Advanced
+   Placement, and a diploma psychology course, none of which the
+   school runs. A student was being shown a catalogue that did not
+   exist, and a counselor reading it would have advised against the
+   timetable. Deriving it means a course can only appear here if it
+   appears in the offer. */
+const COURSE_CATALOG=(()=>{
+ const byDept={};
+ HS_COURSES.forEach(c=>{(byDept[c.dept]=byDept[c.dept]||[]).push(c.n);});
+ AP_COURSES.forEach(c=>{const d=c.area==="Technology"?"Technology":c.area==="Arts"?"Creative Arts":c.area;
+  (byDept[d]=byDept[d]||[]).push(c.name);});
+ IB_SUBJECTS.forEach(s=>{const d=({g1:"English",g2:"World Languages",g3:"Social Studies",
+  g4:"Science",g5:"Mathematics",g6:"Creative Arts"})[s.g];
+  (byDept[d]=byDept[d]||[]).push("IB "+s.name+" "+s.lv.join("/"));});
+ byDept["Diploma core"]=DP_CORE.map(([,n])=>n);
+ return HS_DEPTS.concat(["Diploma core"]).filter(d=>byDept[d])
+  .map(d=>({dept:d,courses:byDept[d]}));
+})();
+
+/* Everything a student in a given grade can be enrolled in, across
+   all three programmes. One derived list, so the grade a course is
+   open to is stated once in the catalogue and nowhere else. */
+const COURSES_BY_GRADE=(()=>{
+ const T={English:"Mr. Adeyemi",Mathematics:"Mr. J. Davies",Science:"Dr. Reid",
+  "Social Studies":"Ms. Sharma","World Languages":"Ms. Laurent","Creative Arts":"Ms. Wilson",
+  Technology:"Mr. Patel","Physical Education":"Mr. Yilmaz","Islamic Studies":"Ms. Nasser",
+  Electives:"Ms. Bianchi","Student Support":"Ms. Johnson"};
+ const out={};
+ [9,10,11,12].forEach(g=>{
+  const rows=[];
+  HS_COURSES.filter(c=>c.gr.includes(g)).forEach(c=>rows.push({
+   name:c.n,subject:c.dept,teacher:T[c.dept]||"Ms. Johnson",pathway:"Standard",
+   period:null,current:null,cid:c.id}));
+  AP_COURSES.filter(c=>(c.gr||[]).includes(g)).forEach(c=>rows.push({
+   name:c.name,subject:c.area,teacher:T[c.area]||"Ms. Johnson",pathway:"AP",
+   period:null,current:null,cid:c.id}));
+  if(g>=11)IB_SUBJECTS.forEach(s=>s.lv.forEach(lv=>rows.push({
+   name:"IB "+s.name+" "+lv,subject:s.name,teacher:s.t,pathway:"IB",
+   period:s.per[lv],current:null,cid:s.id,lv})));
+  out[g]=rows;});
+ return out;
+})();
 /* Group 6 is the arts, or a second subject from groups 1 to 4. The rule is
    real IB structure, so the sixth slot offers a genuinely wider list. */
 const SLOT6=()=>IB_SUBJECTS.filter(s=>s.g==="g6"||["g1","g2","g3","g4"].includes(s.g));
@@ -4613,13 +4888,13 @@ const GOAL_NEEDS={
  "Veterinary Medicine":{need:["BIO","CHE"],want:[],say:"Veterinary medicine asks for chemistry and biology, usually both at Higher Level."},
  "Dentistry":{need:["BIO","CHE"],want:[],say:"Dentistry asks for chemistry and biology at Higher Level."},
  "Biomedical Science":{need:["BIO"],want:["CHE"],say:"Biomedical science asks for biology, and chemistry is expected at most universities."},
- "Computer Science":{need:["MAA"],want:["CSC"],say:"Computer science asks for analysis and approaches at Higher Level almost everywhere."},
+ "Computer Science":{need:["MAA"],want:[],say:"Computer science asks for analysis and approaches at Higher Level almost everywhere. There is no Diploma computer science course here, so the programming evidence has to come from elsewhere."},
  "Economics":{need:["MAA"],want:["ECO"],say:"Economics at the more selective universities asks for analysis and approaches at Higher Level."},
  "Investment Banking":{need:["MAA"],want:["ECO"],say:"The economics and finance degrees this route runs through ask for analysis and approaches."},
  "Finance":{need:["MAA"],want:["ECO"],say:"Finance degrees ask for mathematics, and analysis and approaches is the route they expect."},
  "Architecture":{need:[],want:["VIS","PHY"],say:"Architecture asks for a portfolio. Visual arts is the usual route to one, and some schools ask for mathematics or physics."},
- "Law":{need:[],want:["HIS","GPO"],say:"Law asks for no specific subject, and it asks for evidence you can build an argument in writing."},
- "Psychology":{need:[],want:["PSY","BIO"],say:"Psychology is a science at most universities, so at least one science is usually expected."},
+ "Law":{need:[],want:["HIS","GEO"],say:"Law asks for no specific subject, and it asks for evidence you can build an argument in writing."},
+ "Psychology":{need:[],want:["BIO","SEH"],say:"Psychology is a science at most universities, so at least one science is usually expected. There is no Diploma psychology course here; sports, exercise and health science carries the nearest psychology content."},
  "Mathematics":{need:["MAA"],want:[],say:"Mathematics degrees ask for analysis and approaches at Higher Level without exception."},
  "Business & Management":{need:[],want:["ECO","BUS"],say:"Business degrees rarely require a named subject, though mathematics is asked for by the quantitative ones."}};
 
@@ -4645,10 +4920,11 @@ const SELREC={};
  /* Weighted so the demand sheet tells the truth about a real school: a few
     subjects oversubscribed, a long middle, and three or four that will not
     run. An even spread would make the viability screen pointless. */
- const W={ENL:26,ELL:16,ARA:9,ARB:18,FRB:14,SPB:16,SPI:6,
-  ECO:26,BUS:22,HIS:14,PSY:20,GPO:5,
-  BIO:26,CHE:18,PHY:16,CSC:12,DES:5,
-  MAA:34,MAI:22,VIS:10,MUS:4,THE:5,FIL:4};
+ const W={ENL:26,ELL:16,FRA:5,SST:2,
+  ARB:18,FRB:14,SPB:16,FRI:5,SPI:6,
+  ECO:26,BUS:22,HIS:14,GEO:9,
+  BIO:26,CHE:18,PHY:16,SEH:11,ESS:13,
+  MAA:34,MAI:22,VIS:16,FIL:10};
  const wpick=list=>{const tot=list.reduce((a,s)=>a+(W[s.id]||8),0);let r=rnd()*tot;
   for(const s of list){r-=(W[s.id]||8);if(r<=0)return s;}return list[list.length-1];};
  const goals=["Medicine","Engineering","Computer Science","Economics","Law","Architecture","Business & Management","Psychology","Biomedical Science","Mathematics","Finance","Dentistry"];
@@ -4668,13 +4944,33 @@ const SELREC={};
     worth a coordinator's attention. A minority is left unqualified on
     purpose: a student reaching past their record is the case this
     panel exists to surface, and a screen with none of them proves
-    nothing. */
+    nothing.
+
+    The two layers are weighted differently here, and they have to be.
+    A published prerequisite the student does not hold is now a block,
+    so a pick that breaks one is not an interesting edge case but a
+    selection the form will refuse: those are kept to a deliberate few
+    (`GATE_REACH`). A mark below the bar is still only a question, so
+    those are left to fall out of the draw at the rate they naturally
+    do. Filtering both at one rate put sixty-two of eighty-two
+    selections into a blocked state, which is the same broken-school
+    reading in a new costume. */
+ const GATE_REACH=.07;
  const buildPicks=(stu)=>{
-  for(let attempt=0;attempt<40;attempt++){
+  for(let attempt=0;attempt<160;attempt++){
    const picks={},used=[],taken=[];
    /* which three slots carry Higher Level is decided first, because it is
       what makes a period free or not */
+   /* The order the slots are filled in is shuffled, and that matters
+      more than it looks. Filling them in group order left group 6
+      until last, so it received whatever single period the other five
+      had not taken and an arts subject ran at that period only by
+      luck. Visual arts and film finished with rolls of two and three
+      against minimums of eight and six, and the demand sheet showed a
+      school with no arts running at all. A student does not choose
+      their sixth subject last, and the draw should not either. */
    const slots=IB_GROUPS.map(gr=>gr.id);
+   for(let i=slots.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[slots[i],slots[j]]=[slots[j],slots[i]];}
    const hlSlots=slots.slice();
    for(let i=hlSlots.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[hlSlots[i],hlSlots[j]]=[hlSlots[j],hlSlots[i]];}
    const wantHL=new Set(hlSlots.slice(0,3));
@@ -4692,12 +4988,30 @@ const SELREC={};
     /* a slot whose subjects offer only one level still has to be filled */
     if(!cand.length)cand=pool.filter(s=>s.lv.some(lv=>!used.includes(s.per[lv])));
     if(!cand.length){ok=false;return;}
-    /* about one pick in eight ignores the requirement, which is what
-       leaves real mismatches on the sheet */
-    if(stu&&cand.length>1&&rnd()<.88){
-     const fit=cand.filter(c=>{const lvTry=c.lv.includes(want)?want:c.lv[0];
-      return prereqCheck(c.id,lvTry,stu).k!=="unmet";});
-     if(fit.length)cand=fit;}
+    /* The gate first, and nearly always: a handful of students reach
+       past a published requirement on purpose, everyone else is drawn
+       from what they are eligible for.
+
+       When nothing in the slot passes the gate, the attempt is
+       abandoned rather than filled with a pick the form would refuse.
+       Every student in this cohort has at least one lawful selection
+       available, so a slot with no eligible candidate means an
+       earlier slot took the period or the subject this one needed,
+       and the answer is to draw again. Falling back to the unfiltered
+       list instead is what put most of the year group into a blocked
+       state. */
+    if(stu&&rnd()>GATE_REACH){
+     const pass=cand.filter(c=>{const lvTry=c.lv.includes(want)?want:c.lv[0];
+      return prereqCheck(c.id,lvTry,stu).gate!=="unmet";});
+     if(!pass.length){ok=false;return;}
+     cand=pass;
+     /* Then the marks, at a looser rate, so a reasonable number of
+        selections carry a question without carrying a blocker. A mark
+        is only ever a question, so this one does fall back. */
+     if(cand.length>1&&rnd()<.72){
+      const fit=cand.filter(c=>{const lvTry=c.lv.includes(want)?want:c.lv[0];
+       return prereqCheck(c.id,lvTry,stu).k!=="unmet";});
+      if(fit.length)cand=fit;}}
     const s=wpick(cand);
     const lv=s.lv.includes(want)&&!used.includes(s.per[want])?want
      :s.lv.find(x=>!used.includes(s.per[x]));
@@ -4753,12 +5067,34 @@ const SELREC={};
     Science since" is a real distinction when a student changed course
     between the two years. */
  const AREA_COURSE={English:"English",Mathematics:"Mathematics",Science:"Science",
-  "Social Science":"Social Studies",Humanities:"Humanities",Languages:"Language",
+  "Social Studies":"Social Studies",Humanities:"Humanities",Languages:"Language",
   Arts:"Arts",Technology:"Design and Technology"};
- const ELECTIVES=["Arts","Technology","Humanities","Social Science"];
+ /* Weighted toward the arts, because the sixth slot offers an arts
+    subject to roughly two in five students and the gate is checked
+    against this list. Drawing the elective evenly left only about one
+    student in eight holding the foundation and studio courses visual
+    arts asks for, so neither arts subject reached the roll it needs
+    to run and the demand sheet showed a school with no arts at all. */
+ const ELECTIVES=["Arts","Arts","Arts","Technology","Humanities","Social Studies"];
  const LANGS=["Arabic","French","Spanish"];
+ /* Each ladder, in order, with the rung a student reached. The B
+    language gates name the second rung from the top, which is what
+    makes reaching it the record worth keeping. */
+ const LADDER={Arabic:["ARN1","ARN2","ARI1","ARI2","ARV1","ARV2"],
+  French:["FRN","FRNH","FRI1","FRIH","FRAD"],
+  Spanish:["SPN","SPNH","SPI1","SPIH","SPAD"]};
+ /* The elective decides whether the arts, design and film gates are
+    open, so it is drawn as a real pair of courses rather than as a
+    label. Visual arts asks for a foundation course and one of two
+    studio courses; film asks for either of two; the Advanced
+    Placement art courses ask for the design pathway. */
+ const ELECTIVE_COURSES={
+  Arts:[["FART","DRPA"],["FART","SCER"],["FART","DRPA"],["FART","INTF"],["INTF","ADVF"],["TTD","ACTG"]],
+  Technology:[["IDE","ADE"],["IDE"],["IDE","ICN"],["ICN"]],
+  Humanities:[["USH"],["USH","PBM"]],
+  "Social Studies":[["PBM"],["PBM","USH"]]};
  DPC.forEach(d=>{
-  const core=["English","Mathematics","Science","Social Science","Languages"];
+  const core=["English","Mathematics","Science","Social Studies","Languages"];
   const elective=ELECTIVES[Math.floor(rnd()*ELECTIVES.length)];
   const lang=LANGS[Math.floor(rnd()*LANGS.length)];
   /* A mark band per student, so a strong student is strong across the
@@ -4777,7 +5113,43 @@ const SELREC={};
      inventing a second number that could disagree with it. */
   if(d.yr===10&&d.mark){const m=g10.find(c=>c.area==="Mathematics");
    if(m){m.mark=d.mark;m.name=d.mathSet==="extended mathematics"?"Extended Mathematics 10":"Foundation Mathematics 10";}}
-  PRIOR[d.id]={g9,g10,lang,elective};
+  /* The course record, which is what the gate is checked against. A
+     gate names a course, so only a course list can answer it; an area
+     with a mark on it cannot say whether Integrated Math 3 was taken.
+
+     The mathematics set and Integrated Math 3 are deliberately not
+     the same fact, and conflating them was wrong in a way worth
+     recording. The set is a stream inside the course: a foundation
+     and an extended group both work through Integrated Math 3, at
+     different paces. So the set is a signal about how a student is
+     handling mathematics, and the course is the gate. Deriving the
+     gate from the set barred every foundation student from analysis
+     and approaches outright, which is not the school's rule and which
+     blocked three quarters of the year group.
+
+     The students who genuinely do not hold Integrated Math 3 are the
+     ones who started on Foundations of Algebra and are a year behind
+     the sequence. That is a real case and a small one, and it is the
+     only one the mathematics gate should catch.
+
+     Science, English and social studies run as one integrated course
+     for everyone, so every student holds Science 10 and English 10
+     and those gates are met across the cohort. That is true of the
+     programme rather than an accident of the draw: the discriminating
+     records are the mathematics sequence and how far up a language
+     ladder a student reached. */
+  const behind=rnd()<.09;
+  const courses=["ENG9","ENG10","SCI9","SCI10","WH9"];
+  if(behind)courses.push("FALG","IM1","IM2");
+  else courses.push("IM1","IM2","IM3");
+  const lad=LADDER[lang];
+  const rung=rnd()<.26?1:rnd()<.5?2:rnd()<.78?4:5;
+  const reached=lad.slice(0,Math.min(rung,lad.length));
+  reached.forEach(c=>courses.push(c));
+  const langYears=reached.length;
+  const ec=ELECTIVE_COURSES[elective]||[[]];
+  ec[Math.floor(rnd()*ec.length)].forEach(c=>{if(courses.indexOf(c)<0)courses.push(c);});
+  PRIOR[d.id]={g9,g10,lang,elective,courses,langYears};
  });
  /* ── THE EXTENDED SET REGISTER ─────────────────────────────────────
     Mr. Davies's Grade 10 class, filled from the students who actually
@@ -4820,6 +5192,59 @@ const SELREC={};
    ECO:{lv:"HL",by:"Ms. Fahri",when:"19 Nov",
    note:"Argues well in class and reads around the subject. Higher Level economics would suit her."}};
  })();
+ /* ── THE STUDENTS OUTSIDE THE DIPLOMA COHORT ───────────────────────
+    Two of the named students the portal opens on are not in `DPC` and
+    should not be: it is the Diploma population, and one of them is on
+    the Advanced Placement route while the other is in Grade 9 and has
+    chosen nothing. Both still need a course record, because the gate
+    is checked against the record and "no course record on file" is
+    the one answer neither of them should give.
+
+    Authored rather than drawn. These are the two students a demo
+    actually opens, so their records carry the cases worth showing:
+    the Advanced Placement student holds the mathematics and English
+    sequence and meets most of what he is choosing from, and is short
+    of the design pathway, which is what closes the two art courses to
+    him. */
+ PRIOR.s11={lang:"Spanish",langYears:3,elective:"Technology",
+  /* The courses he holds plus the ones he is sitting this year, which
+     is what a school checks a prerequisite against during a selection
+     round: a Grade 11 student choosing Grade 12 courses is judged on
+     the year in progress, not only on the year completed. His
+     timetable and this record name the same six courses, and they
+     have to, or the portal shows him enrolled in a course his own
+     record does not know about. */
+  courses:["ENG9","ENG10","SCI9","SCI10","WH9","USH","IM1","IM2","IM3","PREC","SPN","SPNH","SPI1","IDE","APLNG","APCSP"],
+  g9:[{area:"English",yr:9,name:"English 9",mark:88},{area:"Mathematics",yr:9,name:"Mathematics 9",mark:84},
+   {area:"Science",yr:9,name:"Science 9",mark:82},{area:"Social Studies",yr:9,name:"Social Studies 9",mark:86},
+   {area:"Languages",yr:9,name:"Spanish",mark:79},{area:"Technology",yr:9,name:"Design and Technology 9",mark:85}],
+  g10:[{area:"English",yr:10,name:"English 10",mark:90},{area:"Mathematics",yr:10,name:"Mathematics 10",mark:86},
+   {area:"Science",yr:10,name:"Science 10",mark:84},{area:"Social Studies",yr:10,name:"Social Studies 10",mark:88},
+   {area:"Languages",yr:10,name:"Spanish II",mark:81},{area:"Technology",yr:10,name:"Design and Technology 10",mark:87}]};
+ PRIOR.s9={lang:"French",langYears:1,elective:"Arts",
+  courses:["ENG9","SCI9","WH9","IM1","FRN","FART"],
+  g9:[{area:"English",yr:9,name:"English 9",mark:76},{area:"Mathematics",yr:9,name:"Mathematics 9",mark:71},
+   {area:"Science",yr:9,name:"Science 9",mark:74},{area:"Social Studies",yr:9,name:"Social Studies 9",mark:78},
+   {area:"Languages",yr:9,name:"French",mark:72},{area:"Arts",yr:9,name:"Arts 9",mark:83}],
+  g10:[]};
+ /* ── ADVANCED PLACEMENT RECOMMENDATIONS ────────────────────────────
+    The same right as the diploma side, answering a different
+    question. Advanced Placement has no Higher or Standard, so there
+    is no level to recommend: a teacher says whether the course is the
+    right one for this student, and may say no. `ok:false` is a real
+    answer here and the student sees it with the reasoning, which is
+    the point of recording it rather than leaving it in a corridor. */
+ AP_ELIG.s11={
+  APCAL:{ok:true,by:"Mr. J. Davies",when:"18 Nov",
+   note:"Pre-Calculus is going well and the algebra is secure. Calculus AB is the right next course."},
+  APPHY:{ok:true,by:"Mr. Patel",when:"19 Nov",
+   note:"Comfortable with the mathematical side, which is where Physics 1 separates students."},
+  APLIT:{ok:true,by:"Mr. Adeyemi",when:"17 Nov",
+   note:"The analytical writing in Language and Composition is already at the standard Literature asks for."},
+  APSTA:{ok:false,by:"Mr. J. Davies",when:"18 Nov",
+   note:"Taking Statistics alongside Calculus AB is two mathematics courses in one year, and Calculus is the one his universities will ask about. Worth a conversation before deciding."},
+  APCHE:{ok:false,by:"Dr. Chen",when:"20 Nov",
+   note:"The Grade 10 science mark is sound but the course assumes more laboratory confidence than the record shows. Physics 1 is the stronger science for him this year."}};
  /* Grade 10 carries a live selection round; Grades 11 and 12 are in the
     diploma already and carry a CAS record instead. */
  const stateFor=()=>{const r=rnd();
@@ -4849,7 +5274,12 @@ const SELREC={};
      read any of them */
   const bag=WHY_STOCK.slice();
   for(let i=bag.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[bag[i],bag[j]]=[bag[j],bag[i]];}
-  const why={};Object.keys(picks).forEach((k,i)=>{why[k]=st==="draft"&&rnd()<.4?"":bag[i%bag.length];});
+  /* A draft's reasons start empty. The field is the student's to write
+     and a form that arrives pre-filled never shows anyone writing in
+     it. Sent selections keep theirs, because a submitted form with no
+     reasons on it would contradict the rule this module exists to
+     enforce and the "Reasons written" count above it. */
+  const why={};Object.keys(picks).forEach((k,i)=>{why[k]=st==="draft"?"":bag[i%bag.length];});
   const sent=["12 Nov","14 Nov","17 Nov","19 Nov","21 Nov"][Math.floor(rnd()*5)];
   const rec={sid:d.id,status:st,picks,why,goalNote:"",signs:{},talk:null,
    submitted:st==="draft"?null:sent,log:[],v:st==="draft"?0:1};
@@ -4911,12 +5341,9 @@ const SELREC={};
 SELREC.s10={sid:"s10",status:"draft",v:0,submitted:null,talk:null,signs:{},log:[],
  goalNote:"I want to keep economics and engineering both open for another year, because I do not want to choose between them yet.",
  picks:{g1:{s:"ENL",lv:"SL"},g2:{s:"FRB",lv:"SL"},g3:{s:"ECO",lv:"HL"},g4:{s:"PHY",lv:"HL"},g5:{s:"MAA",lv:"HL"},g6:null},
- why:{g1:"I read a lot anyway and I would rather be examined on books than on adverts.",
-  g2:"I have done four years of French and dropping it now would waste them.",
-  g3:"The economics taster this term was the only class I have thought about afterwards.",
-  g4:"If I do end up going for engineering I will need physics, and I would rather have it and not need it.",
-  g5:"Everything I am considering asks for analysis and approaches, so it is not really a choice.",
-  g6:""}};
+ /* Blank on purpose. Maya is the student a demo opens on, and the
+    reason field is the part of this form she actually fills in. */
+ why:{g1:"",g2:"",g3:"",g4:"",g5:"",g6:""}};
 const CAS_STRANDS=[["c","Creativity","Anything that stretches you creatively, with a process you can point at."],
  ["a","Activity","Physical exertion that contributes to a healthy lifestyle. Rehearsal counts, and so does the walk-in."],
  ["s","Service","Unpaid work that meets a real need, decided with the people it serves rather than for them."]];
@@ -4996,40 +5423,96 @@ CASREC.s17={hrs:{c:34,a:26,s:22},outcomes:5,last:"This week",pending:0,
 
    Evidence requirements — a portfolio, an audition — are reported and
    never judged. The department decides those, not a table. */
-function prereqCheck(subId,lv,stu){
- const s=IBS(subId); if(!s||!s.needs) return {k:"met",items:[]};
- const n=s.needs;
- if(n.lv==="HL"&&lv!=="HL") return {k:"met",items:[],slOnly:true};
+function gateOf(gate,stu,ctx){
+ const items=[];
+ if(!gate||gate.signalOnly) return {k:"met",items};
  const hist=stu&&PRIOR[stu.id];
- if(!hist) return {k:"unknown",items:[{k:"unknown",t:"No course history on file"}]};
+ const held=hist&&hist.courses?hist.courses:null;
+ if(!held) return {k:"unknown",items:[{k:"unknown",hard:true,t:"No course record on file"}]};
+ const nameOf=id=>{const h=HSC(id);if(h)return h.n;const a=APC(id);if(a)return a.name;const i=IBS(id);return i?i.name:id;};
+ /* The three programmes publish their requirements in different words
+    and the catalogues kept those words, so the two spellings are
+    normalised here rather than in three places. `pre` and `courses`
+    mean the same thing, as do `anyPre` and `anyCourse`. */
+ const all=(gate.courses||[]).concat(gate.pre||[]);
+ const any=(gate.anyCourse||[]).concat(gate.anyPre||[]);
+ all.forEach(cid=>{const ok=held.indexOf(cid)>-1;
+  items.push({k:ok?"met":"unmet",hard:true,
+   t:ok?nameOf(cid)+" completed":nameOf(cid)+" not on record"});});
+ if(any.length){const hit=any.filter(cid=>held.indexOf(cid)>-1);
+  items.push({k:hit.length?"met":"unmet",hard:true,
+   t:hit.length?nameOf(hit[0])+" completed"
+    :"Neither "+any.map(nameOf).join(" nor ")+" on record"});}
+ /* A requirement met before high school. The record here starts in
+    Grade 9, so this is reported and never judged: answering "not met"
+    about a year the school has no transcript for would be a confident
+    wrong statement. */
+ if(gate.ext) items.push({k:"judged",hard:true,t:"Assumes "+gate.ext+", which sits before this record"});
+ if(gate.cond) items.push({k:"judged",hard:true,t:"Entry is conditional on meeting the eligibility requirements"});
+ if(gate.sst) items.push({k:"judged",hard:true,t:"A recommendation from the Student Support Team is required"});
+ /* A disqualifier, not a requirement: ab initio is for beginners, so
+    prior study of that language is what rules it out. */
+ if(gate.bars){const studied=hist.lang===gate.bars;
+  items.push({k:studied?"unmet":"met",hard:true,
+   t:studied?gate.bars+" already studied, so the beginners' course is closed":"No prior "+gate.bars});}
+ if(gate.years){const n=hist.langYears||0,ok=hist.lang===gate.years.lang&&n>=gate.years.n;
+  items.push({k:ok?"met":"unmet",hard:true,
+   t:ok?n+" years of "+gate.years.lang
+    :(hist.lang===gate.years.lang?n+" years of "+gate.years.lang+", against "+gate.years.n
+     :"No formal "+gate.years.lang+" on record")});}
+ /* Proficiency and coordinator approval are reported and never
+    judged. A table cannot know whether a student writes their first
+    language at literary level, and pretending to would be the
+    confident wrong answer this product exists not to give. */
+ if(gate.prof) items.push({k:"judged",hard:true,t:"Proficiency in "+gate.prof+" to be confirmed by the department"});
+ if(gate.coord) items.push({k:"judged",hard:true,t:"Enrolment granted in partnership with the Diploma Programme Coordinator"});
+ /* The published requirement is a recommendation for the course, not
+    for a level, so a recommendation at either level satisfies it. It
+    still says which level was recommended: a student asking for
+    Higher Level whose teacher wrote Standard is the case this module
+    exists for, and a checklist printing a bare "recommended" would
+    hide it at the exact moment it matters. */
+ if(gate.rec){const r=ctx&&ctx.rec,want=ctx&&ctx.lv;
+  items.push({k:r?"met":"judged",hard:true,
+   t:r?("Recommended by "+r.by+(r.lv&&want&&r.lv!==want?", at "+(r.lv==="HL"?"Higher":"Standard")+" Level":""))
+    :"A "+gate.rec+" teacher's recommendation is required"});}
+ if(gate.evidence) items.push({k:"judged",hard:true,t:"Requires "+gate.evidence});
+ const k=items.some(i=>i.k==="unmet")?"unmet":items.some(i=>i.k==="unknown")?"unknown":"met";
+ return {k,items};
+}
+function prereqCheck(subId,lv,stu){
+ const s=IBS(subId); if(!s) return {k:"met",gate:"met",items:[]};
+ const n=s.signal||{};
+ const rec=stu?eligFor(stu.id,subId):null;
+ const g=gateOf(s.gate,stu,{rec,lv});
+ /* A Higher Level signal says nothing about a Standard Level choice,
+    but the gate applies at either level: the school's rule is about
+    the course, not about the level inside it. */
+ const slOnly=n.lv==="HL"&&lv!=="HL";
+ const hist=stu&&PRIOR[stu.id];
+ if(!hist) return {k:g.k==="met"?"unknown":g.k,gate:g.k,items:g.items,note:n.note,slOnly};
  const all=hist.g9.concat(hist.g10);
  const has=a=>all.filter(c=>c.area===a);
  const best=a=>{const r=has(a);return r.length?Math.max.apply(null,r.map(c=>c.mark)):null;};
- const items=[];
- /* A disqualifier, not a requirement: ab initio is for beginners, so
-    prior study of that language is what rules it out. */
- if(n.bars){const studied=hist.lang===n.bars;
-  items.push({k:studied?"unmet":"met",
-   t:studied?"Two years of "+n.bars+" already studied":"No prior "+n.bars});}
- if(n.course){const ok=stu.mathSet===n.course;
-  items.push({k:stu.mathSet?(ok?"met":"unmet"):"unknown",
-   t:ok?"In the "+n.course+" set":stu.mathSet?"In the "+stu.mathSet+" set, not "+n.course:"Set not recorded"});}
- (n.areas||[]).forEach(a=>{const r=has(a);
-  items.push({k:r.length?"met":"unmet",
-   t:r.length?r[r.length-1].name:"No "+a.toLowerCase()+" course on record"});});
- if(n.anyOf){const hit=n.anyOf.filter(a=>has(a).length);
-  items.push({k:hit.length?"met":"unmet",
-   t:hit.length?has(hit[0])[has(hit[0]).length-1].name:"None of "+n.anyOf.join(" or ").toLowerCase()+" on record"});}
- /* The mark is read from the area the course gates, not from an
-    average: a student can sit well above the bar overall and still be
-    under it in the one subject that matters here. */
- if(n.pct){const area=(n.areas&&n.areas[0])||(n.anyOf&&n.anyOf.filter(a=>has(a).length)[0])||null;
-  const m=area?best(area):null;
-  items.push({k:m==null?"unknown":(m>=n.pct?"met":"unmet"),
-   t:m==null?"No mark recorded":m+" in "+area.toLowerCase()+", against "+n.pct});}
- if(n.evidence) items.push({k:"evidence",t:"Requires "+n.evidence});
- const k=items.some(i=>i.k==="unmet")?"unmet":items.some(i=>i.k==="unknown")?"unknown":"met";
- return {k,items,note:n.note};
+ const items=g.items.slice();
+ if(!slOnly){
+  if(n.course){const ok=stu.mathSet===n.course;
+   items.push({k:stu.mathSet?(ok?"met":"unmet"):"unknown",hard:false,
+    t:ok?"In the "+n.course+" set":stu.mathSet?"In the "+stu.mathSet+" set, not "+n.course:"Set not recorded"});}
+  /* The mark is read from the area the course gates, not from an
+     average: a student can sit well above the bar overall and still be
+     under it in the one subject that matters here. */
+  if(n.pct){const area=(n.areas&&n.areas[0])||(n.anyOf&&n.anyOf.filter(a=>has(a).length)[0])||null;
+   const m=area?best(area):null;
+   items.push({k:m==null?"unknown":(m>=n.pct?"met":"unmet"),hard:false,
+    t:m==null?"No mark recorded":m+" in "+area.toLowerCase()+", against "+n.pct});}
+  if(n.evidence&&!(s.gate&&s.gate.evidence)) items.push({k:"judged",hard:false,t:"Requires "+n.evidence});
+ }
+ const soft=items.filter(i=>!i.hard);
+ const k=g.k==="unmet"?"unmet"
+  :soft.some(i=>i.k==="unmet")?"unmet"
+  :(g.k==="unknown"||soft.some(i=>i.k==="unknown"))?"unknown":"met";
+ return {k,gate:g.k,items,note:n.note,slOnly};
 }
 /* Shorthand for the chooser, which has room for a mark and not a list. */
 /* ── ALTERNATIVES ───────────────────────────────────────────────────
@@ -5048,12 +5531,142 @@ function altsFor(subId,list,rec,stu,groupId){
    if(!open.length)return null;
    const lv=open.includes("HL")?"HL":open[0];
    const c=prereqCheck(a.id,lv,stu);
-   if(c.k==="unmet")return null;
+   /* Only the gate rules an alternative out. Offering a student a
+      course they are barred from is worse than offering none, but a
+      course they merely sit below the mark for is a real option and
+      the whole reason this list exists. */
+   if(c.gate==="unmet")return null;
    const r=eligFor(stu&&stu.id,a.id);
    return {s:a,lv,open,rec:r,score:(r?0:1)+(c.k==="met"?0:1)};})
   .filter(Boolean).sort((x,y)=>x.score-y.score).slice(0,3);}
+/* ── ADVANCED PLACEMENT, CHECKED THE SAME WAY ───────────────────────
+   One gate engine serves both programmes, because a published
+   prerequisite is the same kind of statement whichever programme
+   publishes it. What differs is what sits on top: the diploma has a
+   level question and so carries a signal layer, and Advanced
+   Placement has no levels at all, so there is nothing above the gate.
+   A course a student is eligible for is simply open to them, and the
+   remaining question is the teacher's, which is why `apPrereqCheck`
+   returns the gate and nothing else.
+
+   Two of the gates name Advanced Placement courses rather than high
+   school ones, because the sequences are real: Literature follows
+   Language and Composition, and Computer Science A follows
+   Principles. The course record holds both kinds of id, so the gate
+   reads them without caring which. */
+function apPrereqCheck(cid,stu){
+ const c=APC(cid); if(!c) return {k:"met",items:[]};
+ const rec=stu?apEligFor(stu.id,cid):null;
+ const g=gateOf(c.gate,stu,{rec:rec&&rec.ok?rec:null});
+ return {k:g.k,gate:g.k,items:g.items,note:c.note};
+}
+/* Which courses a student in this grade could choose next year.
+   Advanced Placement is listed by the grade it is taken in, so a
+   Grade 11 student is choosing from the Grade 12 offer. */
+function apOffer(grade){const next=(grade||10)+1;
+ return AP_COURSES.filter(c=>(c.gr||[]).includes(next));}
+/* One recommendation for any course in the offer, whichever programme
+   it belongs to. The high school courses and the Advanced Placement
+   courses have a gate and nothing above it, so the gate is the whole
+   answer; the diploma subjects have a level question too and go
+   through `prereqCheck` instead. Returning the same shape from both
+   means the student's list prints one kind of chip. */
+function courseRec(course,stu){
+ const gate=course.gate||{};
+ const rec=stu&&course.id?apEligFor(stu.id,course.id):null;
+ const g=gateOf(gate,stu,{rec:rec&&rec.ok?rec:null});
+ /* A teacher who has said no outranks the gate in the headline word,
+    and has to. The word on the chip is "Recommended", so a course a
+    teacher has explicitly advised against cannot carry it just
+    because the prerequisite is on the record: the student would read
+    "Recommended" above a note from their teacher saying the opposite.
+    The checklist underneath still shows the gate items as they are,
+    because the two facts are both true and the student should see
+    both. */
+ const k=(rec&&rec.ok===false)?"unmet":g.k;
+ return {k,items:g.items,note:course.note||"",advice:rec||null,gate:g.k};
+}
+/* The offer for the year a student is choosing into, grouped the way
+   the programme of study groups it, with a recommendation against
+   each. This is what makes a prerequisite visible to the student
+   rather than merely recorded: sixty-two high school courses and
+   seventeen Advanced Placement courses each carry a requirement, and
+   until this existed the student could only see the diploma ones. */
+function vCourseOffer(stu,grade){
+ const next=(grade||9)+1;
+ if(next>12)return "";
+ const hs=HS_COURSES.filter(c=>c.gr.includes(next));
+ const ap=AP_COURSES.filter(c=>(c.gr||[]).includes(next));
+ if(!hs.length&&!ap.length)return "";
+ const row=(name,course,tag)=>{
+  const r=courseRec(course,stu);
+  const open=S.offerOpen===course.id;
+  return `<div class="selrow-static" style="display:block">
+   <div style="display:flex;gap:12px;align-items:flex-start">
+    <div style="min-width:0;flex:1">
+     <div class="selrow-t">${name}${tag?` <span class="appa" style="margin-left:6px">${tag}</span>`:""}</div>
+     <div class="selrow-n">${r.note}</div>
+    </div>
+    <span class="prq prq-${r.k}" style="flex-shrink:0">${recIcon(r.k)}${recWord(r.k)}</span>
+   </div>
+   <div class="opt-more" style="margin-top:7px">
+    <button class="linkish" data-offeropen="${course.id}" aria-expanded="${open}">${open?"Less":"What this asks for"}</button>
+   </div>
+   ${open?`<div class="opt-desc">
+    <div class="optsec">
+     <div class="optsec-h"><span class="appa">Requirement</span>
+      <span class="prq prq-${r.k}">${recIcon(r.k)}${recWord(r.k)}</span></div>
+     <p class="optsec-p">${r.note}</p>
+     ${r.items.length?`<div class="checklist" style="margin-top:9px">${r.items.map(i=>`<div class="checkrow ${i.k==="unmet"?"block":"ask"}">
+       ${i.k==="unmet"?ic('x',13):i.k==="met"?ic('check',13):ic('alert',13)}<span>${i.t}</span></div>`).join("")}</div>`:""}
+     ${r.gate==="unmet"?`<p class="optsec-p" style="margin-top:9px">Not recommended on your record as it stands. You can still ask for it, and your counselor will talk it through with you.</p>`
+      :r.k==="unmet"?`<p class="optsec-p" style="margin-top:9px">The published requirement is met. The advice below is your teacher's, and it is advice rather than a restriction.</p>`:""}
+    </div>
+    ${r.advice?`<div class="optsec">
+     <div class="optsec-h"><span class="appa">Teacher advice</span>
+      <span class="prq prq-${r.advice.ok?"met":"unmet"}">${r.advice.ok?ic('check',12):ic('alert',12)}${r.advice.ok?"Recommended":"Not recommended"}</span></div>
+     <p class="optsec-p"><b>${r.advice.by}</b> ${r.advice.ok?"recommends this course":"does not recommend this course"}${r.advice.note?": "+r.advice.note:"."}</p>
+     <p class="optsec-p" style="color:var(--ink-4);margin-top:5px">Recorded ${r.advice.when}. Advice, not a restriction.</p>
+    </div>`:""}
+   </div>`:""}
+  </div>`;};
+ const depts=HS_DEPTS.filter(d=>hs.some(c=>c.dept===d));
+ return `<h2 class="sechead" style="margin-top:26px">Courses open to you in Grade ${next}</h2>
+  <p class="lede" style="max-width:66ch;margin-bottom:14px">Every course the school runs at this grade, with what each one asks for and whether it is recommended on your record as it stands. A course that is not recommended is not closed to you; it is a conversation to have.</p>
+  ${ap.length?`<h3 class="appa" style="margin:18px 0 7px">Advanced Placement</h3>
+   <div class="sheetbox">${ap.map(c=>row(c.name,c,c.area)).join("")}</div>`:""}
+  ${depts.map(d=>`<h3 class="appa" style="margin:18px 0 7px">${d}</h3>
+   <div class="sheetbox">${hs.filter(c=>c.dept===d).map(c=>row(c.n,c,"")).join("")}</div>`).join("")}`;
+}
+/* The requirement in a sentence, which is now two sentences' worth of
+   material: the published gate and the mark that informs the level.
+   The views printed `needs.note` when there was one field; with two
+   they would have printed half the requirement. */
+function reqNote(s){
+ const parts=[];
+ if(s.gate&&s.gate.note)parts.push(s.gate.note);
+ if(s.signal&&s.signal.note)parts.push(s.signal.note);
+ return parts.join(" ");
+}
+/* ── THE WORD THE STUDENT READS ─────────────────────────────────────
+   On every surface a student or a parent can see, the verdict is
+   "Recommended", "Not recommended" or "Recommendation pending", and
+   never "requirement met". The two say different things to a
+   fifteen-year-old. "You do not meet the requirement" is a ruling
+   about them and reads as a door closing; "not recommended for you"
+   is the school's advice, which is what it actually is, and leaves
+   the choice and the conversation where they belong.
+
+   This is the only place those words are built, so the student form,
+   the subject record and the parent portal cannot drift apart.
+   The coordinator's own screens still distinguish a missing
+   prerequisite from a low mark, because that distinction is what the
+   coordinator is there to act on. */
+const RECWORD={met:"Recommended",unmet:"Not recommended",unknown:"Recommendation pending",judged:"Recommendation pending"};
+function recWord(k){return RECWORD[k]||"Recommendation pending";}
+function recIcon(k){return k==="met"?ic('check',12):k==="unmet"?ic('alert',12):ic('eye',12);}
 function prereqMark(subId,lv,stu){const r=prereqCheck(subId,lv,stu);
- return r.k==="met"?"":r.k==="unmet"?"Requirement not met":"Requirement unconfirmed";}
+ return r.k==="met"?"":recWord(r.k);}
 function selPicks(rec){return IB_GROUPS.map(gr=>[gr,rec.picks?rec.picks[gr.id]:null]).filter(x=>x[1]&&x[1].s);}
 function selHL(rec){return selPicks(rec).filter(([,p])=>p.lv==="HL").length;}
 function selPeriod(p){const s=IBS(p.s);return s?s.per[p.lv]:null;}
@@ -5084,22 +5697,46 @@ function selCheck(rec,stu){
   d:"Your coordinator reads these before he meets you, and the meeting is better when he has. A sentence is enough."});
  else if(selPicks(rec).length)out.push({k:"ok",t:"A reason on every subject",d:"These go to your coordinator with the selection."});
  /* The feeder-set case is handled by prereqCheck below, which reads
-    the same `needs.course` field and reports it alongside every other
+    the same `signal.course` field and reports it alongside every other
     requirement. A separate rule here produced the finding twice. */
- /* ── PREREQUISITES ──────────────────────────────────────────────────
-    Against the student's own course history, never against a cohort.
-    An unmet requirement is an "ask", never a "block": the product
-    decision is that this advises and does not gate. A student who has
-    read the requirement and still wants the course is exactly who the
-    coordinator's meeting is for, and a form that refused to send would
-    route that conversation into a corridor instead of onto a record. */
- selPicks(rec).forEach(([gr,p])=>{const s2=IBS(p.s); if(!s2||!s2.needs||!stu)return;
+ /* ── PREREQUISITES, IN TWO LAYERS ───────────────────────────────────
+    Against the student's own course record, never against a cohort.
+
+    Neither layer blocks a submission. A published prerequisite the
+    student does not hold and a mark below the bar are both "ask", and
+    the difference between them is carried in the words rather than in
+    the verdict.
+
+    A hard block was built here and then taken out, which is worth
+    recording. On the student's own surfaces the verdict reads
+    "Recommended" or "Not recommended", and a form that prints "not
+    recommended" and then refuses to send is saying two things at
+    once. The school's own rule is advice until a coordinator applies
+    it, the student is the one living with the choice, and a refusal
+    would route that conversation into a corridor instead of onto a
+    record. So the finding names what is missing, says plainly that it
+    is the published requirement rather than a view about the student,
+    and carries the subject so the meeting request can be offered
+    against it.
+
+    The coordinator still sees which of the two it is, because that is
+    what a coordinator acts on. */
+ selPicks(rec).forEach(([gr,p])=>{const s2=IBS(p.s); if(!s2||!stu)return;
   const chk=prereqCheck(p.s,p.lv,stu);
-  if(chk.k==="unmet"){
-   const missed=chk.items.filter(i=>i.k==="unmet").map(i=>i.t).join("; ");
+  const hardMissed=chk.items.filter(i=>i.hard&&i.k==="unmet").map(i=>i.t);
+  const softMissed=chk.items.filter(i=>!i.hard&&i.k==="unmet").map(i=>i.t);
+  if(hardMissed.length){
+   const missed=hardMissed.join("; ");
+   out.push({k:"ask",t:s2.name+": not recommended on this record",
+    q:"The published requirement for "+s2.name+" is not on this record. What makes it the right course anyway?",
+    d:missed.charAt(0).toUpperCase()+missed.slice(1)+". "+((s2.gate&&s2.gate.note)?s2.gate.note+" ":"")
+     +"This is the published requirement for the course rather than a view about the student. Nothing stops the student choosing it, and a meeting with the coordinator is the route if it should not apply.",
+    meet:p.s});}
+  else if(softMissed.length){
+   const missed=softMissed.join("; ");
    out.push({k:"ask",t:s2.name+(p.lv==="HL"?" at Higher Level":""),
     q:"You have asked for "+s2.name+" without the usual preparation. What makes this the right course for you?",
-    d:(s2.needs.note||"")+" On this record: "+missed.charAt(0).toLowerCase()+missed.slice(1)+". Nothing stops the student choosing it, and the coordinator will want the reason."});}
+    d:((s2.signal&&s2.signal.note)||"")+" On this record: "+missed.charAt(0).toLowerCase()+missed.slice(1)+". Nothing stops the student choosing it, and the coordinator will want the reason."});}
   else if(chk.k==="unknown")
    out.push({k:"ask",t:s2.name+": record incomplete",
     q:"We have no course record for "+s2.name+". Can the office confirm what was taken?",
@@ -5279,9 +5916,6 @@ const EEREC={};
    "To what extent does a charity appeal's grammar decide who the reader is asked to be?",
    "How is authority constructed in the language of two competing public health campaigns?",
    "To what extent has the language of airline safety cards been designed against being read?"],
-  ARA:["To what extent does one modern Arabic novelist use dialect to mark social distance?",
-   "How does one Arabic poet use the desert as an argument rather than an image?",
-   "To what extent does a classical form constrain a contemporary Arabic writer working inside it?"],
   ECO:["To what extent did the 2024 tariff on imported steel achieve its stated aim in the domestic market?",
    "How far does minimum wage policy in one Gulf economy affect employment in the sectors it targets?",
    "To what extent has congestion pricing in one city changed behaviour rather than shifted it?",
@@ -5295,13 +5929,6 @@ const EEREC={};
    "How far did the Suez crisis change British policy in the Gulf rather than reveal it?",
    "To what extent was the pearl trade's collapse a technological event rather than an economic one?",
    "How far did the 1973 oil embargo change the politics of the states that imposed it?"],
-  PSY:["To what extent does testing effect research hold when the material is studied under time pressure?",
-   "How far does the presence of a phone in the room affect performance on a sustained attention task?",
-   "To what extent is the bystander effect reproduced in online rather than physical settings?",
-   "How does bilingualism affect performance on a task-switching measure in adolescents?"],
-  GPO:["How far has regional water scarcity shaped cooperation rather than conflict in one river basin?",
-   "To what extent has one small state used arbitration to offset the power of a larger neighbour?",
-   "How far do climate migration commitments made at summits survive contact with domestic politics?"],
   BIO:["What is the effect of varying light wavelength on the rate of photosynthesis in Elodea densa?",
    "To what extent does soil salinity affect germination rates in three coastal plant species?",
    "How does temperature affect the activity of catalase extracted from potato tissue?",
@@ -5315,13 +5942,6 @@ const EEREC={};
    "How does the angle of incidence affect the efficiency of a photovoltaic cell under fixed illumination?",
    "What is the relationship between string tension and harmonic content in a plucked wire?",
    "To what extent does a rotating body's moment of inertia predict its terminal descent speed on an incline?"],
-  CSC:["How far does the choice of hash function affect collision rates on real-world address data?",
-   "To what extent does a caching strategy change the response time of a small web service under bursty load?",
-   "How does training set size affect the accuracy of a handwritten digit classifier at fixed architecture?",
-   "To what extent can a rules engine outperform a learned model on a small, highly structured dataset?"],
-  DES:["How does material choice affect the durability of a low-cost prosthetic hand?",
-   "To what extent does infill density change the load a printed bracket can carry before failure?",
-   "How far can passive shading reduce internal temperature in a scale model of a school classroom?"],
   MAA:["To what extent can Markov chains model the movement of a queue at a single service point?",
    "How well does a logistic model describe the spread of a rumour through a bounded social network?",
    "To what extent does the choice of numerical method change the accuracy of a modelled projectile path?",
@@ -5334,12 +5954,6 @@ const EEREC={};
   VIS:["How does one contemporary artist use industrial material to argue about labour?",
    "To what extent does scale change the meaning of one sculptor's repeated form?",
    "How does one photographer use absence of the human figure to depict a city?"],
-  MUS:["How has one composer adapted a traditional form for a contemporary ensemble?",
-   "To what extent does instrumentation rather than melody carry the identity of one film score?",
-   "How does one producer use silence as a rhythmic device across an album?"],
-  THE:["To what extent does one director's staging change the politics of a canonical text?",
-   "How far can a single set serve two plays with opposing intentions?",
-   "To what extent does audience proximity change the performance of one monologue?"],
   FIL:["How does one director use colour grading to mark a shift in a character's reliability?",
    "To what extent does sound design rather than editing create tension in one thriller?",
    "How does one documentary use its own construction as an argument?"],
@@ -5349,7 +5963,30 @@ const EEREC={};
    "To what extent does one French advertising campaign rely on wordplay that cannot be translated?"],
   SPB:["To what extent does one Spanish poet use landscape to write about exile?",
    "How does one Spanish-language series use regional accent to signal class?"],
-  SPI:[]};
+  SPI:[],
+  SEH:["Which of two warm-up protocols produces the greater increase in vertical jump height in a group of willing adolescent volunteers?",
+   "To what extent does the published literature support caffeine as an ergogenic aid in endurance events lasting under thirty minutes?",
+   "What effect does the presence of a watching audience have on free-throw accuracy among recreational basketball players?",
+   "Does blocked or randomised practice give better retention of a novel underarm throwing task in beginners after one week?",
+   "Why does a deliberate change in stride length alter running economy at a fixed pace, according to the biomechanical literature?"],
+  ESS:["How does distance from a footpath affect plant species diversity across one area of managed woodland?",
+   "To what extent do competing environmental value systems account for local opposition to a proposed wind farm in one rural community?",
+   "What does the change in water quality between the upper and lower reaches of one urban stream reveal about the land use along it?",
+   "Why do two generations within one community describe the same local flooding risk in different terms?",
+   "How sustainable is the present rate of groundwater extraction in one agricultural catchment when judged against its rate of recharge?"],
+  GEO:["Which has done more to reduce flood risk in one lowland river basin, hard engineering or floodplain restoration?",
+   "How has the growth of short-term holiday letting altered the residential housing market of one coastal city?",
+   "Why has population decline in one rural district resisted reversal despite successive policy interventions?",
+   "To what extent does the closure of a single manufacturing plant reshape the economic geography of the town it leaves?"],
+  FRA:["How does the editorial voice of one French-language newspaper construct its reader as a citizen rather than a consumer?",
+   "What use does one francophone satirical television programme make of shifts in register to criticise political language?",
+   "To what extent does one novelist writing in French outside France treat the language itself as contested rather than neutral?",
+   "Where do two French-language advertising campaigns for the same category of product diverge in their appeal to national identity?"],
+  FRI:["What image of family life is presented in the television advertising of one French-language supermarket chain?",
+   "How do the tourist brochures of one French-speaking region describe its food traditions to visitors?"],
+  SST:["How do two works from one literary tradition, written a century apart, treat the figure of the returning exile?",
+   "What becomes of the narrator's role when a tale from one oral tradition is rewritten as a modern short story in the same language?",
+   "Why does the city appear as an antagonist in two novels from one national literature written in a language other than the language of instruction?"]};
  /* weight by what is left in the pool, so the popular subjects stay
     popular and nothing runs dry while another subject has five spare */
  const wpick2=list=>{const tot=list.reduce((a,x)=>a+RQ[x.id].length,0);let r=rnd()*tot;
@@ -5581,6 +6218,7 @@ function vStuSubjectRecord(c,grade){
   <div class="sheetbox">${DP_CORE.map(([k,n,d])=>`<div class="selrow-static">
    <span class="lstamp">${k==="CAS"?"C":k==="EE"?"E":"T"}</span>
    <div style="min-width:0"><div class="selrow-t">${n}</div><div class="selrow-n">${d}</div></div></div>`).join("")}</div>
+  ${vCourseOffer(c,9)}
   <div style="margin-top:22px">${moment({art:"fork",title:"The real choice is a year and a half away",
    body:"Your counselor opens this conversation in Grade 10, and the portal will walk you through it then. Until then the useful thing is to keep your options open in mathematics and in a language, because those two are the hardest to pick up late.",
    action:`<button class="btn btn-g btn-sm" data-snav="explore">Read how IB and AP differ</button>`})}</div>
@@ -5592,6 +6230,7 @@ function vStuSubjectRecord(c,grade){
   ${classes.length?`${tally([["Subjects",String(classes.length),ib?"the diploma shape":"AP route"],
    ...(total?[["Predicted",String(total)+" / 42","subject points, before the core"]]:[]),
    ["At higher level",String(classes.filter(x=>/HL/.test(x.name)).length||"—"),ib?"of six":"not applicable"]])}
+  ${vCourseOffer(c,grade)}
   <h2 class="sechead" style="margin-top:24px">Subject by subject</h2>
   <div class="sheetscroll"><table class="sheet"><thead><tr>
    <th style="width:38%">Subject</th><th>Teacher</th><th>Period</th>
@@ -5661,18 +6300,25 @@ function vSelForm(rec,stu){
         <div class="appa" style="color:var(--ink-4)">${gr.label}</div>
         ${s?`<div class="selrow-t" style="margin-top:2px">${s.name}
           <span class="lvstamp">${p.lv}</span></div>
-         ${(()=>{ /* The requirement and the teacher's view sit on the
-            meta line, not under it: two short marks on their own row
-            cost a line of height on every one of six slots. */
+         ${(()=>{ /* The requirement and the teacher's view sit on their
+            own line under the teacher and period, not beside them.
+            They were inline to save a line of height on each of six
+            slots, and the slot that matters most is the one that
+            proves it wrong: a subject carrying both a requirement
+            mark and a teacher's level, pushed up against "Mr. J.
+            Davies · P1", reads as one dense run of small type where
+            the two things a student needs to notice are the two
+            hardest to pick out. Height is cheaper than that.
+            Reversed 2026-10-20. */
            const bits=[];
-           if(s.needs){const c=prereqCheck(s.id,p.lv,stu);
-            if(!c.slOnly&&c.k!=="met")bits.push(`<span class="prq prq-${c.k}">${c.k==="unmet"?ic('alert',12):ic('eye',12)}${c.k==="unmet"?"Requirement not met":"Requirement unconfirmed"}</span>`);}
+           if(s.signal||s.gate){const c=prereqCheck(s.id,p.lv,stu);
+            if(!c.slOnly&&c.k!=="met")bits.push(`<span class="prq prq-${c.k}">${recIcon(c.k)}${recWord(c.k)}</span>`);}
            const r=eligFor(stu&&stu.id,s.id);
            if(r&&r.lv!=="either"&&r.lv!==p.lv)
             bits.push(`<span class="prq prq-unmet" title="${(r.note||"").replace(/"/g,"")}">${ic('user',12)}${r.by.split(" ").slice(-1)[0]} suggests ${r.lv}</span>`);
            else if(r)bits.push(`<span class="prq prq-rec">${ic('check',12)}${r.by.split(" ").slice(-1)[0]} agrees</span>`);
-           return `<div class="selrow-n" style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">
-            <span>${s.t} <span class="fig">\u00b7 ${s.per[p.lv]}</span></span>${bits.join("")}</div>`;})()}`
+           return `<div class="selrow-n">${s.t} <span class="fig">\u00b7 ${s.per[p.lv]}</span></div>
+            ${bits.length?`<div class="selmarks">${bits.join("")}</div>`:""}`;})()}`
         :`<div class="selrow-n" style="margin-top:3px">${gr.note}</div>`}
        </div>
        ${submitted?"":`<div class="selrow-r">
@@ -5713,7 +6359,7 @@ function vSelForm(rec,stu){
     const clash=selPicks(rec).map(([gr,p])=>{
       const r=eligFor(stu&&stu.id,p.s);
       const against=r&&r.lv!=="either"&&r.lv!==p.lv?r:null;
-      const unmet=IBS(p.s).needs&&prereqCheck(p.s,p.lv,stu).k==="unmet";
+      const unmet=prereqCheck(p.s,p.lv,stu).k==="unmet";
       return (against||unmet)?{gr,p,r:against,unmet}:null;}).filter(Boolean);
     if(!clash.length)return"";
     const req=rec.meetReq;
@@ -5734,6 +6380,8 @@ function vSelForm(rec,stu){
       :submitted?`<div class="selrow-n">Your form is with ${SEL_ROUND.coordinator}. Ask for a meeting through your counselor.</div>`
       :`<button class="btn btn-g" data-meetreqopen="${rec.sid}">${ic('msg',15)} Request a meeting</button>`}
     </div>`;})()}
+
+  ${vCourseOffer(stu,10)}
 
   ${submitted?"":`<div class="selsend">
    <div style="min-width:0;flex:1">
@@ -5821,13 +6469,12 @@ function vSelChooser(gr,list,rec,stu){
     ${already?"":!openLv.length?`<span class="selrow-n">${s.lv.map(lv=>selClashWith(rec,s.id,lv,gr.id).length?s.per[lv]+" is your "+selClashWith(rec,s.id,lv,gr.id)[0]:null).filter(Boolean).join(". ")}.</span>`
      :""}
     ${(()=>{ /* the requirement, and whether this student meets it */
-      if(!s.needs)return"";
+      if(!s.signal&&!s.gate)return"";
       const lvTry=openLv.includes("HL")?"HL":openLv[0]||s.lv[0];
       const c=prereqCheck(s.id,lvTry,stu);
-      if(c.slOnly)return `<span class="selrow-n">Requirement applies at Higher Level only.</span>`;
+      if(c.slOnly)return `<span class="selrow-n">The level advice applies at Higher Level only.</span>`;
       const w=c.k==="unmet"?"block":"ask";
-      return `<span class="prq prq-${c.k}">${c.k==="met"?ic('check',12):c.k==="unmet"?ic('alert',12):ic('eye',12)}${
-        c.k==="met"?"Requirement met":c.k==="unmet"?"Requirement not met":"Requirement unconfirmed"}</span>`;})()}
+      return `<span class="prq prq-${c.k}">${recIcon(c.k)}${recWord(c.k)}</span>`;})()}
     ${(()=>{ /* what a teacher has already said about this student */
       const r=eligFor(stu&&stu.id,s.id); if(!r)return"";
       return `<span class="prq prq-rec" title="${r.note||""}">${ic('user',12)}${r.by.split(" ").slice(-1)[0]} suggests ${r.lv==="either"?"either level":r.lv}</span>`;})()}
@@ -5836,22 +6483,22 @@ function vSelChooser(gr,list,rec,stu){
     ${(()=>{ /* What the student came here to check, before the prose:
        the requirement, what a teacher has said, and what else fits. */
       const lvTry=openLv.includes("HL")?"HL":openLv[0]||s.lv[0];
-      const c=s.needs?prereqCheck(s.id,lvTry,stu):null;
+      const c=(s.signal||s.gate)?prereqCheck(s.id,lvTry,stu):null;
       const r=eligFor(stu&&stu.id,s.id);
       const alts=(c&&c.k==="unmet")?altsFor(s.id,list,rec,stu,gr.id):[];
       const head=(t,k)=>`<div class="optsec-h"><span class="appa">${t}</span>${k?`<span class="prq prq-${k}">${
         k==="met"?ic('check',12):k==="unmet"?ic('alert',12):k==="rec"?ic('user',12):ic('eye',12)}${
-        k==="met"?"Met":k==="unmet"?"Not met":k==="rec"?"Advised":"Unconfirmed"}</span>`:""}</div>`;
+        k==="met"?"Recommended":k==="unmet"?"Not recommended":k==="rec"?"Teacher advice":"Pending"}</span>`:""}</div>`;
       let out="";
       if(c&&!c.slOnly){
        out+=`<div class="optsec">${head("Requirement",c.k)}
-        <p class="optsec-p">${s.needs.note||""}</p>
+        <p class="optsec-p">${reqNote(s)}</p>
         ${c.items.length?`<div class="checklist" style="margin-top:9px">${c.items.map(i=>`<div class="checkrow ${i.k==="unmet"?"block":"ask"}">
           ${i.k==="unmet"?ic('x',13):i.k==="met"?ic('check',13):ic('alert',13)}<span>${i.t}</span></div>`).join("")}</div>`:""}
         ${c.k==="unmet"?`<p class="optsec-p" style="margin-top:9px">This does not stop you choosing it. Your coordinator will ask for the reason, and the form lets you request a meeting.</p>`:""}
        </div>`;}
       else if(c&&c.slOnly){
-       out+=`<div class="optsec">${head("Requirement")}<p class="optsec-p">${s.needs.note||""} Checked at Higher Level only.</p></div>`;}
+       out+=`<div class="optsec">${head("Requirement")}<p class="optsec-p">${reqNote(s)} The mark applies at Higher Level only.</p></div>`;}
       out+=`<div class="optsec">${head("Teacher advice",r?"rec":null)}
         ${r?`<p class="optsec-p"><b>${r.by}</b> suggests <b>${r.lv==="either"?"either level":r.lv}</b>${r.note?": "+r.note:"."}</p>
             <p class="optsec-p" style="color:var(--ink-4);margin-top:5px">Recorded ${r.when}. Advice, not a restriction.</p>`
@@ -5953,13 +6600,13 @@ function vTSelCard(x,cls){
    ${stu?`<button class="btn btn-g btn-sm" data-tflag="${d.id}">Log a concern</button>`:""}
   </div>
   ${subs.map(({gid,p})=>{const s=IBS(p.s),why=(rec.why[gid]||"").trim();
-   const prereq=s.needs&&p.lv===s.needs.lv&&d.mathSet&&d.mathSet!==s.needs.course?s:null;
+   const prereq=s.signal&&p.lv===s.signal.lv&&s.signal.course&&d.mathSet&&d.mathSet!==s.signal.course?s:null;
    return `<div class="revbody">
     <div class="revask">
      <span class="lstamp on">${p.lv}</span>
      <div style="min-width:0">
       <div class="selrow-t">${s.name}, asked for at ${p.lv==="HL"?"Higher":"Standard"} Level</div>
-      <div class="selrow-n">${s.per[p.lv]} · ${prereq?`<b style="color:var(--ink)">They sit in the ${d.mathSet} set, and this is offered from the ${s.needs.course} set.</b> That is the question, and you are the one who can answer it.`:s.needs&&p.lv===s.needs.lv?"Offered from the "+s.needs.course+" set, which they are in":"No prerequisite set"}</div>
+      <div class="selrow-n">${s.per[p.lv]} · ${prereq?`<b style="color:var(--ink)">They sit in the ${d.mathSet} set, and this is usually offered from the ${s.signal.course} set.</b> That is the question, and you are the one who can answer it.`:(s.signal&&s.signal.course&&p.lv===s.signal.lv)?"Usually offered from the "+s.signal.course+" set, which they are in":"No level question on this subject"}</div>
      </div>
     </div>
     ${why?`<div class="revwhy"><div class="appa" style="color:var(--ink-4)">In their words</div>
@@ -6586,7 +7233,7 @@ function selDisagreements(){
   const items=selPicks(rec).map(([gr,p])=>{
    const r=eligFor(d.id,p.s);
    const against=r&&r.lv!=="either"&&r.lv!==p.lv?r:null;
-   const unmet=IBS(p.s)&&IBS(p.s).needs&&prereqCheck(p.s,p.lv,d).k==="unmet";
+   const unmet=IBS(p.s)&&prereqCheck(p.s,p.lv,d).k==="unmet";
    return (against||unmet)?{s:p.s,lv:p.lv,r:against,unmet}:null;}).filter(Boolean);
   return items.length?{d,rec,items,requested:!!rec.meetReq,talked:!!rec.talk}:null;}).filter(Boolean);}
 function selRows(){
@@ -7015,7 +7662,7 @@ const ARCHETYPES={
  finance:{title:"Investment Banking & Finance",tag:"Fast-paced · analytical · high reward",icon:"trend",color:"var(--brand)",
   blurb:"You lean toward numbers, strategy, and environments where the stakes are real. This path rewards precision under pressure.",
   score:{analyzing:2,money:3,fast:2,finance:3},
-  courses:["IB Economics HL","IB Mathematics HL","AP Calculus AB/BC","AP Statistics","AP Microeconomics"],
+  courses:["IB Economics HL","IB Mathematics: Analysis and Approaches HL","AP Calculus AB","AP Statistics","AP Seminar"],
   clubs:["Investment Club","Model UN","Debate Team","Student Government","Case Competition Club"],
   companies:["Goldman Sachs","JP Morgan","Morgan Stanley","Barclays","Citi","BNY Mellon","Lazard","Evercore","Moelis","Rothschild & Co"],
   companies_vc:["Sequoia Capital","Andreessen Horowitz","General Catalyst","Index Ventures","Accel Partners","Benchmark"],
@@ -7060,7 +7707,7 @@ const ARCHETYPES={
  venture:{title:"Entrepreneurship & Venture Capital",tag:"High risk · high freedom · builder-investor",icon:"zap",color:"var(--violet)",
   blurb:"You want to build something yours, or back the people who do. This path rewards judgment as much as raw skill.",
   score:{building:1,money:1,freedom:3,fast:1,finance:1},
-  courses:["IB Economics","IB Business Management","AP Microeconomics","Accounting basics","Any CS if tech-interested"],
+  courses:["IB Economics","IB Business management","Principles of Business Management","AP Statistics","AP Computer Science Principles if tech-interested"],
   clubs:["Entrepreneurship Club","Business Club","Pitch Competition","Case Competition","Startup Club"],
   vc_firms:["Sequoia Capital","Andreessen Horowitz","General Catalyst","Index Ventures","Accel Partners","Benchmark","Khosla Ventures"],
   accelerators:["Y Combinator","Techstars","500 Global","Plug and Play","AngelList"],
@@ -7081,7 +7728,7 @@ const ARCHETYPES={
   design_studios:["IDEO","Pentagram","MetaDesign","Wolff Olins","The Futur"],
   steps:[
    {t:"Build a real portfolio (before university)",d:"Three to five design projects. Not school projects: real client work or self-directed work. Website design, brand identity, mobile app UI, poster series. Post on Dribbble, Behance.",done:false},
-   {t:"Take Design Technology, Art, or Film at highest level available",d:"IB Art, AP Art & Design, or equivalent. You need work to show. Quality > grades in design.",done:false},
+   {t:"Take Design and Engineering, Art, or Film at the highest level available",d:"IB Visual arts, IB Film, AP 2D or 3D Art and Design, or Advanced Design and Engineering. You need work to show, and quality counts for more than the grade.",done:false},
    {t:"Study graphic design, UX/UI, or fine art at a strong design school",d:"Parsons School of Design, Rhode Island School of Design (RISD), California Institute of the Arts (CalArts), Royal College of Art, London College of Fashion.",done:false},
    {t:"Do a design internship at a real studio or tech company",d:"IDEO (design thinking), Airbnb (design systems), Stripe (product design), Figma (design software company). Real client work or product impact.",done:false},
    {t:"Contribute to design systems or products",d:"A published iOS app you designed, an open-source design system, or case studies showing 50K+ users of your design work.",done:false},
@@ -7089,19 +7736,23 @@ const ARCHETYPES={
    {t:"Senior Designer → Design Lead → Design Director",d:"Career path: 2-3 years junior → senior → lead → director/manager. Some designers go independent/agency.",done:false}]}
 };
 
-/* Real data: Courses, Clubs, Companies */
+/* One line per course, for the pathway pages. Nothing consumes it at
+   the moment; it is kept in step with the catalogue anyway, because a
+   stale copy of the offer is how the student portal came to advertise
+   a diploma computer science course the school does not teach. */
 const COURSE_DATA={
- ib_econ:"IB Economics HL - Markets, macroeconomics, international economics. Assessment: Paper 1-3 exams + internal assessment.",
- ib_math_aa:"IB Mathematics AA HL - Pure math, calculus, linear algebra. Required for engineering/CS. Assessment: Paper 1-3 exams.",
- ib_cs:"IB Computer Science HL - Programming, data structures, algorithms, theory. Uses pseudocode. Assessment: Paper 1-3 + practical project.",
- ib_bio:"IB Biology HL - Cellular biology, ecology, genetics, evolution. Lab work required. Assessment: Paper 1-3 + practical.",
- ib_chem:"IB Chemistry HL - Organic, inorganic, physical chemistry. Lab work heavy. Assessment: Paper 1-3 + practical.",
- ap_calc:"AP Calculus (AB/BC) - Limits, derivatives, integrals. AP Score 4-5 = college credit.",
- ap_cs:"AP Computer Science A - Java-based, data structures, algorithms. Harder than it sounds.",
- ap_stats:"AP Statistics - Probability, hypothesis testing, confidence intervals. Less technical than Calc.",
- ap_econ:"AP Microeconomics - Supply/demand, markets, consumer choice. Single exam.",
- ap_bio:"AP Biology - Cellular biology, genetics, evolution, ecology. Lots of memorization.",
- ap_chem:"AP Chemistry - Stoichiometry, equilibrium, thermodynamics. Quantitative."
+ ib_econ:"IB Economics HL - Microeconomics, macroeconomics, the global economy and development. Assessment: three papers and an internal assessment.",
+ ib_math_aa:"IB Mathematics: Analysis and Approaches HL - Algebra, functions, trigonometry, calculus and proof. The route engineering and computer science degrees ask for.",
+ ib_math_ai:"IB Mathematics: Applications and Interpretation SL - Modelling, statistics and applied calculus, taught with technology in hand. Standard Level only here.",
+ ib_bio:"IB Biology HL - Cells, molecular biology, genetics, ecology and physiology. Laboratory work required.",
+ ib_chem:"IB Chemistry HL - Structure, bonding, energetics, kinetics, equilibrium and organic chemistry. Laboratory work heavy.",
+ ib_ess:"IB Environmental systems and societies - Ecology, biodiversity, climate change and natural resources. Counts for Group 3 or Group 4, never both.",
+ ap_calc:"AP Calculus AB - Limits, derivatives and integrals. Grade 12, after Pre-Calculus.",
+ ap_cs:"AP Computer Science A - Java, data structures and algorithms. Follows Computer Science Principles.",
+ ap_stats:"AP Statistics - Sampling, inference, regression and experimental design. Single exam.",
+ ap_bio:"AP Biology - Cells, genetics, evolution and ecology. A large amount to commit to memory.",
+ ap_chem:"AP Chemistry - Stoichiometry, equilibrium and thermodynamics. Quantitative throughout.",
+ ap_phys:"AP Physics 1 - Mechanics, waves and electricity, taught algebraically. Requires Integrated Math 3."
 };
 
 /* AI discovery — scripted, but genuinely responsive to what the quiz already revealed. */
@@ -8892,11 +9543,15 @@ function vMeetings(){
  </div>`;}
 
 /* ═══ AP EXAM TRACKER ═══ demo data — shown only when track preview is set to AP */
+/* The exams for the courses he is actually enrolled in. The list this
+   replaced carried Calculus BC and the two economics papers, none of
+   which the school teaches, so a student could see an exam for a
+   course he could not have taken. */
 const AP_EXAMS=[
- {subject:"AP Calculus BC",regBy:"13 Mar 2026",examDate:"4 May 2026 · 08:00",scoreBy:"Early July 2026",status:"registered"},
- {subject:"AP Microeconomics",regBy:"13 Mar 2026",examDate:"6 May 2026 · 12:00",scoreBy:"Early July 2026",status:"registered"},
- {subject:"AP English Language",regBy:"13 Mar 2026",examDate:"11 May 2026 · 08:00",scoreBy:"Early July 2026",status:"registration open"},
- {subject:"AP Macroeconomics",regBy:"13 Mar 2026",examDate:"13 May 2026 · 12:00",scoreBy:"Early July 2026",status:"not yet registered"}];
+ {subject:"AP Computer Science Principles",regBy:"13 Mar 2026",examDate:"4 May 2026 · 08:00",scoreBy:"Early July 2026",status:"registered"},
+ {subject:"AP Physics 1",regBy:"13 Mar 2026",examDate:"6 May 2026 · 12:00",scoreBy:"Early July 2026",status:"registered"},
+ {subject:"AP English Language and Composition",regBy:"13 Mar 2026",examDate:"11 May 2026 · 08:00",scoreBy:"Early July 2026",status:"registration open"},
+ {subject:"AP United States History",regBy:"13 Mar 2026",examDate:"13 May 2026 · 12:00",scoreBy:"Early July 2026",status:"not yet registered"}];
 
 const MEET_KINDS=["Check-in","Follow-up","Parent meeting","Escalation"];
 function meetModal(){
@@ -9673,7 +10328,30 @@ function draw(){
  const tabbar=`<nav class="tabbar">${TABS.map(t=>{
    const on=t[0]!=="__menu"&&curKey===t[0];
    return `<button class="tabitem ${on?'on':''}" ${t[0]==="__menu"?'data-navopen="1"':navAttr+'="'+t[0]+'"'}>${ic(t[2],20)}<span>${t[1]}</span>${t[0]==="si-cases"&&prioCounts().urgent?`<i class="tabdot"></i>`:''}</button>`;}).join('')}</nav>`;
+ /* ── SCROLL ─────────────────────────────────────────────────────────
+    `draw()` replaces the whole tree, so the scrolling pane is a new
+    element every time and the browser has nothing to keep a scroll
+    position on. Every expander, filter and tab therefore threw the
+    reader back to the top of the page, which on a long screen means
+    the thing they just clicked is no longer anywhere in view.
+
+    `place()` already draws the only distinction that matters here.
+    An arrival is a new destination and belongs at the top. Anything
+    else — expanding a course, filtering a caseload, switching a tab
+    inside a panel — is the same page with one thing changed, and the
+    reader should still be looking at the thing they clicked.
+
+    Captured before the write because the old pane is gone after it,
+    and restored synchronously so the position is right on the first
+    frame rather than visibly jumping. */
+ const prevMain=arrived?0:(()=>{const m=document.getElementById("main");return m?m.scrollTop:0;})();
+ const prevWin=arrived?0:(window.scrollY||document.documentElement.scrollTop||0);
  R.innerHTML=`<a href="#main" class="skip-link">Skip to main content</a><div class="navscrim" data-navclose="1"></div><div${S.palOpen?' aria-hidden="true"':''} style="height:100vh;display:flex;flex-direction:column">${roleBar()}${sb}${demoStamp()}</div>${S.palOpen?tabbar.replace('<nav class="tabbar">','<nav class="tabbar" aria-hidden="true">'):tabbar}${palOpen}${modalEl()}${tflagModal()}${eligModal()}${meetReqModal()}${meetModal()}${mergeModal()}${assignModal()}${bulkAssignModal()}${escalateModal()}${selModal()}${casModal()}${S.toast?`<div class="toastbar pop" role="status" aria-live="polite">${ic('checkC',17)}${S.toast}</div>`:''}`;
+ if(prevMain||prevWin){
+  const m=document.getElementById("main");
+  if(m&&prevMain)m.scrollTop=prevMain;
+  if(prevWin)window.scrollTo(0,prevWin);
+ }
  if(S.palOpen){palPaint(S.palQuery||"",S.role);setTimeout(()=>{const palInput=document.getElementById("palInput");if(palInput){palInput.focus();palInput.selectionStart=palInput.selectionEnd=palInput.value.length;}} ,0);}
  bind();
 }
@@ -9723,26 +10401,54 @@ function bind(){
   /* Reopening on a student already marked loads what is there, so the
      teacher edits a record rather than retyping it. */
   const cur=eligList(id).filter(r=>r.by===TEACHER.name)[0];
-  S.eligForm=cur?{s:cur.s,lv:cur.lv,note:cur.note||""}:{s:null,lv:null,note:""};
+  S.eligForm=cur?{s:cur.s,lv:cur.lv,note:cur.note||"",ap:null,apok:null,apnote:""}
+   :{s:null,lv:null,note:"",ap:null,apok:null,apnote:""};
   draw();});
  q("[data-eligsub]",e=>e.onclick=()=>{S.eligForm=S.eligForm||{};
   const n=document.getElementById("eligNote"); if(n)S.eligForm.note=n.value;
   S.eligForm.s=e.getAttribute("data-eligsub");draw();});
  q("[data-eliglv]",e=>e.onclick=()=>{S.eligForm=S.eligForm||{};
   const n=document.getElementById("eligNote"); if(n)S.eligForm.note=n.value;
+  const an=document.getElementById("eligApNote"); if(an)S.eligForm.apnote=an.value;
   S.eligForm.lv=e.getAttribute("data-eliglv");draw();});
+ /* The Advanced Placement half of the same form. Both notes are read
+    back before every redraw, because draw() replaces the textareas
+    and anything typed into the one the teacher is not touching would
+    otherwise be lost the moment they click the other section. */
+ q("[data-eligap]",e=>e.onclick=()=>{S.eligForm=S.eligForm||{};
+  const n=document.getElementById("eligNote"); if(n)S.eligForm.note=n.value;
+  const an=document.getElementById("eligApNote"); if(an)S.eligForm.apnote=an.value;
+  const id=e.getAttribute("data-eligap");
+  S.eligForm.ap=S.eligForm.ap===id?null:id;
+  if(S.eligForm.ap){const prior=apEligFor(S.modal&&S.modal.id,S.eligForm.ap);
+   if(prior){S.eligForm.apok=prior.ok?"yes":"no";S.eligForm.apnote=prior.note||"";}}
+  draw();});
+ q("[data-eligapok]",e=>e.onclick=()=>{S.eligForm=S.eligForm||{};
+  const n=document.getElementById("eligNote"); if(n)S.eligForm.note=n.value;
+  const an=document.getElementById("eligApNote"); if(an)S.eligForm.apnote=an.value;
+  S.eligForm.apok=e.getAttribute("data-eligapok");draw();});
+ q("[data-eligapnote]",e=>e.oninput=()=>{S.eligForm=S.eligForm||{};S.eligForm.apnote=e.value;});
  q("[data-elignote]",e=>e.oninput=()=>{S.eligForm=S.eligForm||{};S.eligForm.note=e.value;});
  q("[data-eligsave]",e=>e.onclick=()=>{
   const id=e.getAttribute("data-eligsave"),f=S.eligForm||{};
-  if(!f.s||!f.lv)return;
   const n=document.getElementById("eligNote"); if(n)f.note=n.value;
-  ELIG[id]=ELIG[id]||{};
-  ELIG[id][f.s]={lv:f.lv,by:TEACHER.name,when:DAY.short,note:(f.note||"").trim()};
+  const an=document.getElementById("eligApNote"); if(an)f.apnote=an.value;
+  const doneIB=!!(f.s&&f.lv), doneAP=!!(f.ap&&f.apok);
+  if(!doneIB&&!doneAP)return;
   const stu=DPC.find(d=>d.id===id);
-  logAudit("M.DAVIES","LEVEL_RECOMMENDED",stu?stu.name:id,
-   IBS(f.s).name+" at "+(f.lv==="either"?"either level":f.lv)+(f.note?". "+f.note:""));
+  if(doneIB){
+   ELIG[id]=ELIG[id]||{};
+   ELIG[id][f.s]={lv:f.lv,by:TEACHER.name,when:DAY.short,note:(f.note||"").trim()};
+   logAudit("M.DAVIES","LEVEL_RECOMMENDED",stu?stu.name:id,
+    IBS(f.s).name+" at "+(f.lv==="either"?"either level":f.lv)+(f.note?". "+f.note:""));}
+  if(doneAP){
+   AP_ELIG[id]=AP_ELIG[id]||{};
+   AP_ELIG[id][f.ap]={ok:f.apok==="yes",by:TEACHER.name,when:DAY.short,note:(f.apnote||"").trim()};
+   logAudit("M.DAVIES","AP_COURSE_ADVISED",stu?stu.name:id,
+    APC(f.ap).name+": "+(f.apok==="yes"?"recommended":"not recommended")+(f.apnote?". "+f.apnote:""));}
   S.modal=null;S.eligForm=null;
-  toast("Recommendation recorded. "+(stu?stu.name.split(" ")[0]:"The student")+" sees it while choosing.");});
+  const what=doneIB&&doneAP?"Both recommendations recorded. ":"Recommendation recorded. ";
+  toast(what+(stu?stu.name.split(" ")[0]:"The student")+" sees it while choosing.");});
  q("[data-tkind]",e=>e.onclick=()=>{S.tKind=e.dataset.tkind;S.tTags=[];draw();});
  q("[data-ttag]",e=>e.onclick=()=>{const t=e.dataset.ttag;const i=S.tTags.indexOf(t);
    if(i>-1)S.tTags.splice(i,1);else S.tTags.push(t);
@@ -9773,6 +10479,11 @@ function bind(){
    S.selOpen=S.selOpen===gid?null:gid;S.selDesc=null;draw();});
  q("[data-seldesc]",e=>e.onclick=()=>{const id=e.dataset.seldesc;
    S.selDesc=S.selDesc===id?null:id;draw();});
+ /* Expanding a course in the offer. Deliberately not in place()'s
+    fingerprint: it is the same page with one row opened, so the
+    reader keeps their scroll position. */
+ q("[data-offeropen]",e=>e.onclick=()=>{const id=e.dataset.offeropen;
+   S.offerOpen=S.offerOpen===id?null:id;draw();});
  q("[data-selpick]",e=>e.onclick=()=>{
    const [gid,sub,lv]=e.dataset.selpick.split(":");
    const rec=selRecOf(S.open||PARENT_ME);if(!rec)return;

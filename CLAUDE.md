@@ -62,6 +62,12 @@ A **bridge alias block** sits at the end of that declaration (`--panel`, `--card
 
 `@media (prefers-color-scheme:dark)` at line ~148, and it is **gated to `html[data-role="student"]`**. The student surface is the only one with a dark palette; the counselor stays on paper in both schemes by design. Widening it is an open product decision, and the tokens are already written for it. A dark-mode audit run on the counselor will look like the media query is broken. It is not.
 
+### Scroll
+
+`draw()` replaces the whole tree, so the scrolling pane (`#main`) is a new element each time and the browser has nothing to restore a position on. Every expander, filter and tab used to throw the reader back to the top.
+
+`draw()` now captures `#main.scrollTop` before the write and restores it after, **keyed on the same arrival test `place()` already computes**: an arrival is a new destination and belongs at the top; anything else is the same page with one thing changed and keeps its position. A new control that should not jump the page must therefore stay **out** of `place()`'s fingerprint — that is what `S.offerOpen`, `S.selOpen` and `S.selDesc` do.
+
 ### Motion
 
 `draw()` rebuilds the whole tree on every state change, so **any entry animation replays on every click** unless suppression catches it.
@@ -96,20 +102,34 @@ Use these rather than composing a new one-off:
 
 Subject selection and CAS, sitting across three roles. Data and rules live together in one block; the views are with their own role's surfaces.
 
-- `IB_SUBJECTS` is the catalogue: 23 subjects, each with its group, the levels it offers, the period it runs at **per level**, a minimum to run, a cap, a prerequisite where there is one, and four pieces of prose (`about`, `like`, `assess`, `hard`). `IBS(id)` looks one up.
+- `IB_SUBJECTS` is the catalogue: **22 subjects**, each with its group, the levels it offers, the period it runs at **per level**, a minimum to run, a cap, a `gate`, a `signal` and four pieces of prose (`about`, `like`, `assess`, `hard`). `IBS(id)` looks one up.
+- **The levels are the real offer and not every subject offers both.** Physics is Higher Level only, Mathematics: applications and interpretation is Standard only, and the two ab initio languages and the self-taught literature course are Standard only. A catalogue offering every subject at both levels printed level choices the school cannot timetable.
+- **Environmental systems and societies carries `alt`**, because the IB lets it count for Group 3 or Group 4. `IB_BY_GROUP` returns it in both lists. It still fills one slot, and its own copy says so.
 - `SELREC[sid]` is one student's selection, `CASREC[sid]` one student's CAS. `DPC` is the Diploma cohort, 150 records across Grades 10 (82), 11 (32) and 12 (36).
-- **`selCheck(rec, stu)` is the rule engine** and the only place a submission is gated. It returns `{k:"block"|"ask"|"ok"}` findings. `block` stops the form; `ask` is a question the coordinator is handed, never a fault. Add a rule here, not in a view.
+- **`selCheck(rec, stu)` is the rule engine** and the only place a submission is gated. It returns `{k:"block"|"ask"|"ok"}` findings. `block` stops the form and is only ever about the form being incomplete — slots open, the Higher Level count, a timetable clash, a missing reason. `ask` is a question the coordinator is handed, never a fault, and **every prerequisite finding is an `ask`**. Add a rule here, not in a view.
 - **`demandFor` / `subjectViable` / `demandRows` count at render time.** Nothing about demand is stored. Whether a course runs is a question about the **subject**, not about a level — counting per level printed nineteen at-risk courses where there are four.
 - `casSum(sid)` reads `hrs` as the running programme total and `entries` as the recent log. **They are not the same number and deriving one from the other is wrong in both directions.**
 
-### Prerequisites and level recommendations (P11, 2026-10-20)
+### The course catalogue (P12, 2026-10-20)
 
-Two additions around the selection round. Both advise; neither gates.
+**The whole offer is real and nothing outside it exists anywhere in the build.** 102 courses taken from a published programme of study and carried without the school's name: `HS_COURSES` (63), `AP_COURSES` (17), `IB_SUBJECTS` (22). `HSC`, `APC` and `IBS` look one up; `HS_DEPTS` is the only list of subject areas.
 
-- **`IB_SUBJECTS[].needs`** carries a prerequisite on all 23 subjects, expressed as prior study: `areas` (all required), `anyOf` (one required), `pct` (a mark in the area the course gates), `course` (feeder set, mathematics only), `bars` (a disqualifier — prior study rules ab initio out), `evidence` (portfolio or audition, reported and never judged).
-- **`PRIOR[sid]`** is what those are checked against: Grade 9 and Grade 10 courses by subject area with a mark each, seeded from the cohort generator. Grade 10 mathematics defers to `mathSet`/`mark` rather than inventing a second number.
-- **`prereqCheck(sub, lv, stu)`** returns `met` / `unmet` / `unknown`. The third is returned when there is no history on file, never when a student fails. `selCheck` raises it as an `ask`, never a `block`.
-- **`TEACHES_TOWARD`** scopes what a teacher may recommend: their subject area maps to the IB subjects it feeds, so a mathematics teacher may recommend a level for physics and economics but not theatre. `recommendable(area)` reads it.
+- **`COURSE_CATALOG` and `COURSES_BY_GRADE` are derived**, not written out again. They were hand-maintained copies and had drifted: they offered Mandarin, music and design technology at diploma level, two economics courses and a human geography course under Advanced Placement, and a diploma psychology course — none of which the school runs. A course can now only appear if it appears in the offer. Do not reintroduce a literal.
+- Grade 11 and 12 students take high school courses alongside their diploma or Advanced Placement subjects, so `vCourseOffer` lists all three programmes for the year a student is choosing into.
+- `Viper Band` is the one course renamed on import (`Wind Band`): a mascot identifies the school, and the build carries no school identity.
+
+### Prerequisites and recommendations (P11–P12, 2026-10-20)
+
+Two additions around the selection round. Both advise; **neither gates**.
+
+- **A requirement has two layers and they are not the same kind of statement.** `gate` is the published prerequisite — a named prior course, a proficiency, a teacher's recommendation. It is a matter of record and answerable yes or no. `signal` is what the level conversation turns on — a mark in the area the course leans on, a mathematics set, a portfolio. Collapsing them produced a form that refused a student over a mark, which is a judgement a table should not make.
+- **`gateOf(gate, stu, ctx)`** answers the hard layer for any course in any of the three programmes. It normalises the two spellings the catalogues use (`courses`/`pre`, `anyCourse`/`anyPre`) and reports `ext`, `cond`, `sst`, `prof` and `coord` as `judged` — never as a failure, because the school has no transcript for them.
+- **`PRIOR[sid].courses`** is the course record the gate is checked against; `g9`/`g10` with marks per area is what the signal layer reads. **A gate names a course, so only a course list can answer it.**
+- **The mathematics set and Integrated Math 3 are different facts.** The set is a stream inside the course; both streams work through it. Deriving the gate from the set barred every foundation student from analysis and approaches, which is not the rule and blocked three quarters of the year group.
+- **`prereqCheck(sub, lv, stu)`** returns `{k, gate, items}`; every item says which layer it came from. `unknown` is returned when there is no record on file, never when a student fails.
+- **`courseRec(course, stu)`** is the same answer for a high school or Advanced Placement course, and a teacher's explicit no outranks the gate in the headline word.
+- **On student and parent surfaces the words are "Recommended", "Not recommended" and "Recommendation pending" — never "requirement met".** `recWord` and `recIcon` are the only place they are built. A hard block was built here and taken out: a form that prints "not recommended" and then refuses to send is saying two things at once. The coordinator's screens still distinguish a missing prerequisite from a low mark, because that is what a coordinator acts on.
+- **`TEACHES_TOWARD`** scopes what a teacher may recommend: their subject area maps to the IB subjects it feeds, so a mathematics teacher may recommend a level for physics and economics but not visual arts. `recommendable(area)` reads it. **`AP_TEACHES_TOWARD`** is the Advanced Placement equivalent and is deliberately separate, because the two programmes ask the teacher a different question: for the diploma it is which level, and Advanced Placement has no levels, only whether the course suits the student. `AP_ELIG[sid][courseId]` = `{ok, by, when, note}`, and `ok:false` is a real answer the student sees with the reasoning.
 - **`ELIG[sid][subId]`** = `{lv, by, when, note}` — a recommendation, never a permission. Nothing in `selCheck` reads it as a gate. `eligFor` and `eligList` read it; `eligCoverage()` and `selDisagreements()` count at render time and store nothing.
 - **`rec.meetReq`** is the student's side: where a choice sits against a recommendation or past a requirement, the form offers a meeting request with a required reason, and the coordinator's preparation page opens on it.
 
@@ -121,7 +141,9 @@ Three product rules the code enforces:
 2. **A teacher answers the level question only, for their own subjects.** `teacherQueue()` filters to `p.lv==="HL"` and `IBS(p.s).t===TEACHER.name`.
 3. **Two populations, never totalled.** The caseload is 87 students of one counselor; `DPC` is the school's IB cohort. Every heading says which it holds.
 
-New shared vocabulary: `.selform` / `.selslot` / `.selrow` (the printed entry form, red margin rule down the left), `.checklist` / `.checkrow` (findings as marks, cross in margin red for a blocker), `.lvstamp` (HL/SL as a ledger stamp, never a tier colour), `.ibsheet` / `.ibcell` (six subject-code cells per row, read across like a run of weeks), `.opt` / `.lvbtn` (the chooser).
+**The marks sit on their own line** (`.selmarks`), under the teacher and period rather than beside them — reversed 2026-10-20. They were inline to save a line of height on each of six slots, and the slot that matters most is the one that proved it wrong: a subject carrying both a requirement mark and a teacher's level, pushed against "Mr. J. Davies · P1", read as one dense run of small type. Height is cheaper than that. A draft's reason fields also start **empty**; only sent selections carry their reasons, because a submitted form with no reasons would contradict the rule above it.
+
+New shared vocabulary: `.selform` / `.selslot` / `.selrow` / `.selmarks` (the printed entry form, red margin rule down the left), `.checklist` / `.checkrow` (findings as marks, cross in margin red for a blocker), `.lvstamp` (HL/SL as a ledger stamp, never a tier colour), `.ibsheet` / `.ibcell` (six subject-code cells per row, read across like a run of weeks), `.opt` / `.lvbtn` (the chooser).
 
 ### The Extended Essay (P10, 2026-09-10)
 
