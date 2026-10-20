@@ -75,8 +75,8 @@ The second half of the Diploma-core module, from Davide's brief.
 - **Students propose**: a subject, a working research question, and a short rationale, sent to a teacher who teaches that subject. They then see the state of it, the schedule, and a nudge when a checkpoint is near or has passed.
 - **Teachers answer from a queue**, scoped to their own subjects, with the student's rationale and their own supervision load on every card. They accept, ask for a sharper question, or pass it to a colleague. The draft is readable in place.
 - **Capacity warns and never blocks.** Five essays is the school's guide, not a rule; the coordinator can see when a teacher is over it, and an assignment made over it records that it was.
-- **The three mandatory reflection sessions** are recorded when they happen, dated and attributed, rather than reconstructed before submission. They are the IB's Reflections on Planning and Progress Form.
-- **Coordinators get the aggregate that does not exist today**: who has a supervisor, who is drifting toward a deadline without one, which reflections have happened, and where supervision has landed across the staff.
+- **The reflective statement** is recorded when it is written, dated and attributed, rather than reconstructed before submission. Under the IB's Extended Essay guide for first assessment in 2027, the three mandatory reflection sessions of the 2018 guide (the Reflections on Planning and Progress Form) are replaced by one reflective statement of at most 500 words. Both of ACS's current Diploma cohorts are assessed under the 2027 guide. The prototype's screens still show the 2018 guide's three sessions; the backend follows the 2027 guide.
+- **Coordinators get the aggregate that does not exist today**: who has a supervisor, who is drifting toward a deadline without one, whose reflective statement is done, and where supervision has landed across the staff.
 
 Theory of knowledge is **described and not tracked**, and the interface says so rather than implying coverage it does not have.
 
