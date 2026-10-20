@@ -1,4 +1,4 @@
-# CAROS — Counselor OS
+# CLAROS — Counselor OS
 
 **The Student Career Operating System.** An AI-native platform that helps school counseling teams notice which students need support before they ask for it, automates the administrative weight of the university application cycle, and gives every stakeholder in a student's journey — the counselor, the family, the teacher, the mentor — exactly the view they need and nothing they don't.
 
@@ -9,7 +9,7 @@ This repository contains a single, self-contained, fully interactive prototype: 
 ## Quick start
 
 **Option 1 — just open it.**
-Download `index.html` and double-click it. It works completely offline.
+Download `index.html` and double-click it. Everything runs offline; the three webfonts load from Google Fonts, so without a connection the type falls back to the system sans stack and the condensed apparatus labels set slightly wider than designed.
 
 **Option 2 — run it locally with a server** (recommended for testing on mobile devices on the same network):
 ```bash
@@ -65,4 +65,4 @@ Built by **Faisal**, with **Qasim**, **Davide**, and **Taha**.
 
 ---
 
-*CAROS is not a diagnosis engine, a disciplinary tool, or a replacement for a trained counselor's judgment. Every signal it surfaces is explainable, every recommendation is reviewed by a human before it reaches a student or family, and nothing here makes a safeguarding decision on a school's behalf.*
+*CLAROS is not a diagnosis engine, a disciplinary tool, or a replacement for a trained counselor's judgment. Every signal it surfaces is explainable, every recommendation is reviewed by a human before it reaches a student or family, and nothing here makes a safeguarding decision on a school's behalf.*

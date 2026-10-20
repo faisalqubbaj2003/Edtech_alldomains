@@ -7,7 +7,7 @@ related_targets: []
 
 ## Scope
 
-`index.html` — the whole CAROS shell, all five role surfaces. Visitor mode: **Operate** (the visitor completes a task) throughout; the parent and student surfaces carry a secondary Read register for their explanatory prose.
+`index.html` — the whole CLAROS shell, all five role surfaces. Visitor mode: **Operate** (the visitor completes a task) throughout; the parent and student surfaces carry a secondary Read register for their explanatory prose.
 
 Audience and job: a Head of University Counseling triaging 87 students each morning, plus four secondary audiences (parent, student, teacher, alumni mentor). Action: decide who to see today and be able to justify it. Proof: the evidence chain behind every signal. Constraints: one self-contained file, vanilla JS, no build step, no backend, `draw()` rebuilds the whole tree on every state change.
 
@@ -38,21 +38,21 @@ Independently justified by the 2026-09-02 audit, so they survive the change of c
 
 ## Per-school theming — the letterhead rule
 
-Added 2026-09-02, when the pilot was confirmed as the American Community School of Abu Dhabi. The palette splits into three layers, and only one of them is themable:
+Added 2026-09-02 for a school pilot. The branding was removed on 2026-10-20 and the build now carries no school identity, but the three-layer split stands and is what makes onboarding a school a four-value change rather than a redesign:
 
 - **Material** — ledger stock, band, ruling, ink, pencil, radius, the three faces. Fixed across schools, plus a bounded tint of at most ~4% toward the school's primary. Never expose the tint as a free control: unbounded, it drifts the stock toward the warm cream this direction exists to refuse.
-- **Semantic** — the five triage tiers, IB/AP track, concern-domain tags, the baseline band. **Fixed. Never themed.** A counselor moving between schools must not have to relearn what a colour means, and CAROS must not look like a different product at every school.
+- **Semantic** — the five triage tiers, IB/AP track, concern-domain tags, the baseline band. **Fixed. Never themed.** A counselor moving between schools must not have to relearn what a colour means, and CLAROS must not look like a different product at every school.
 - **Letterhead** — masthead band, crest, avatars, links, focus ring, margin rule, school name. Themed per school.
 
 **The governing sentence: the school colour is letterhead, never data.** Enforceable by grep — no `--school-*` token may appear inside a severity, track or domain definition.
 
 Mechanism: a `SCHOOLS` record per partner (`brand: {primary, accent, paper}` plus name/counselor/DSL), an `applySchool(id)` that writes `--school-*` custom properties, and an `ink(hex)` helper that derives foreground as white-or-ink from luminance. `ink()` is load-bearing: it is what keeps contrast AA for whatever hex a partner school hands over, so each new school is not a fresh accessibility bug. Accent tokens ship in pairs (`--school-accent` / `--school-on-accent`) so the failing combination is unreachable. Switch at runtime with `?school=<id>`.
 
-ACS Abu Dhabi's real values, read from their production stylesheet (not a brand guide): primary `#004D43`, dark green `#024139`, light green `#809B82`, bone `#F5F4EE`, gold `#F7BD00`. Verified: ACS green passes AA on both stock (9.25) and band (8.34); white on ACS green is 9.80, which also fixes the current 2.63 avatar failure; gold passes only as a fill with dark ink (9.47) and fails as text (1.62); light green is decorative only (2.86). Their bone and the Register's stock differ by a ratio of 1.04 — the same value, differing only in warmth.
+The reference school's values, read from a production stylesheet rather than a brand guide, and retained as the worked example of the colour maths: primary `#004D43`, dark green `#024139`, light green `#809B82`, bone `#F5F4EE`, gold `#F7BD00`. Verified: that green passes AA on both stock (9.25) and band (8.34); white on that green is 9.80, which also fixes the current 2.63 avatar failure; gold passes only as a fill with dark ink (9.47) and fails as text (1.62); light green is decorative only (2.86). Their bone and the Register's stock differ by a ratio of 1.04 — the same value, differing only in warmth.
 
-Note the collision this rule prevents: ACS's brand green would otherwise sit on the same axis as the semantic "positive change" green. It doesn't, because the school colour is dark structural ink in the letterhead while the semantic green stays lighter and brighter.
+Note the collision this rule prevents: a school's brand green would otherwise sit on the same axis as the semantic "positive change" green. It doesn't, because the school colour is dark structural ink in the letterhead while the semantic green stays lighter and brighter.
 
-**Resolved 2026-09-02:** the demo is branded as ACS outright, so the invented "Al Bateen Academy" is retired — which was necessary anyway, since ACS occupied the Al Bateen campus for fifty years before moving to Saadiyat Island and the old name reads as their former campus. It is hardcoded in eleven places outside the `SCHOOL` object; fold them into the record in the same change.
+**Resolved 2026-10-20:** the demo carries no school name at all, so both the invented "Al Bateen Academy" and the later real-school branding are retired. It is hardcoded in eleven places outside the `SCHOOL` object; fold them into the record in the same change.
 
 Because a real school's name now sits over fabricated student welfare records, a **persistent visible "demonstration data" marker** is a shipping requirement on any surface showing student records while a real school is applied. Design it into the letterhead — a printed stamp on the sheet reads as part of the ledger world rather than as a warning banner bolted on, which is the version that survives contact with a live demo instead of being switched off for a cleaner screenshot.
 

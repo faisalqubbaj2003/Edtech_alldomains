@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "generatedAt": "2026-09-03T20:00:18.956160Z",
-  "title": "Design System: CAROS — Counselor OS",
+  "title": "Design System: CLAROS — Counselor OS",
   "extensions": {
     "colorMeta": {
       "stock": {
@@ -66,7 +66,7 @@
       },
       "school-primary": {
         "role": "primary",
-        "displayName": "ACS Pine",
+        "displayName": "Pine",
         "canonical": "#004D43",
         "tonalRamp": [
           "#00201C",
@@ -348,7 +348,7 @@
     "rules": [
       {
         "name": "The Letterhead Rule",
-        "body": "The school colour is letterhead, never data. No --school-* token may appear inside a severity, track or domain definition. A counselor who changes schools must not have to relearn what a colour means, and CAROS must not look like a different product at every partner.",
+        "body": "The school colour is letterhead, never data. No --school-* token may appear inside a severity, track or domain definition. A counselor who changes schools must not have to relearn what a colour means, and CLAROS must not look like a different product at every partner.",
         "section": "colors"
       },
       {

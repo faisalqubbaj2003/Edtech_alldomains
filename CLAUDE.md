@@ -1,6 +1,6 @@
-# CAROS — Counselor OS
+# CLAROS — Counselor OS
 
-A single-file prototype: `index.html`, ~7,300 lines, vanilla JS, **no build step, no backend, no test suite**. Five role surfaces in one shell — Counselor OS, Teacher, Student ("Career OS"), Parent (Family portal), Mentor Hub. Product description in `README.md`.
+A single-file prototype: `index.html`, ~10,050 lines, vanilla JS, **no build step, no backend, no test suite**. Five role surfaces in one shell — Counselor OS, Teacher, Student ("Career OS"), Parent (Family portal), Mentor Hub. Product description in `README.md`.
 
 This file describes the build as it stands after Phase 8 (2026-09-03). It was rewritten from the running code, not from intention — the version it replaces described a build that had been overwritten, and reading it as truth cost real work twice.
 
@@ -22,7 +22,7 @@ This file describes the build as it stands after Phase 8 (2026-09-03). It was re
 python3 -m http.server 8099 --directory .
 ```
 
-Or use the Browser pane with the `caros-static` config in `.claude/launch.json` — never `bash` for a server. `S` and `draw()` are globals, so drive state directly rather than clicking:
+Or use the Browser pane with the `caros-static` config in `.claude/launch.json` — the config name predates the rename and is left alone; never `bash` for a server. `S` and `draw()` are globals, so drive state directly rather than clicking:
 
 ```js
 S.role='counselor'; S.cv='si-why'; draw();
@@ -32,7 +32,7 @@ S.role='counselor'; S.cv='si-why'; draw();
 
 **Demo from the deployed build, not from localhost.** The debug audit panel is gated to `localhost` / `?debug`, so a local demo puts a "UX Audit" pill over every screen.
 
-`?school=<id>` switches the letterhead at runtime (`acs`, `demo`).
+`?school=<id>` switches the letterhead at runtime (`default`, `demo`). `default` is the unbranded record and carries no school name, short form, initials or mark.
 
 ## The three invariants
 
@@ -40,13 +40,17 @@ These are not style preferences. Breaking one is a product regression.
 
 1. **The school colour is letterhead, never data.** No `--school-*` token may appear inside a severity, track or domain definition. Grep-enforced; it is checked. Full reasoning in `DESIGN.md` under The Letterhead Rule.
 2. **The five triage tiers are product logic.** Never collapse them, never re-theme them per school, never carry severity on a coloured chip — the tier stamp carries it.
-3. **All student data is synthetic, over a real school's name.** The visible demonstration-data stamp is therefore a shipping requirement, gated on a school being applied rather than on a debug flag so it cannot be switched off for a cleaner screenshot. Never fabricate testimonials, customers, outcomes, benchmarks, pricing or press.
+3. **All student data is synthetic.** The build carries no school identity as of 2026-10-20, but the demonstration-data stamp stays: the welfare records are still fabricated and a screenshot still travels. It is gated on the school record rather than on a debug flag so it cannot be switched off for a cleaner screenshot. Never fabricate testimonials, customers, outcomes, benchmarks, pricing or press.
 
 Gamification is allowed on the student side and nowhere else (reversed 2026-09-02). Do not "fix" it back toward the old prohibition.
 
+**One register, formal, across all five roles** (reversed 2026-10-20; full reasoning in `PRODUCT.md` Principle 4). Headings are noun phrases, never questions or clauses — "Supervision allocation", not "Where supervision has landed". Idiom is out: no "nudge", "chase", "take a look", "can run", "slipped". The one heading that still reads as a clause, "Arts, or a sixth subject", is the IB's own name for Group 6 and is correct.
+
+The exception is content, not chrome: parent and counselor message threads, quoted parent questions, co-pilot queries and student writing stay in natural voice. Formalising those makes them read as fabricated.
+
 ## How the file is organised
 
-Roughly: tokens and CSS (1–560), icons and the school record (850–1030), data (1050–1500), shared render helpers (1500–1830), counselor views (1860–2800), nav (2810–2910), the sheet (3000–3200), remaining role surfaces, then the router, `bind()` and the debug panel at the end.
+Roughly: tokens and CSS (12–1076), icons and the school record (1080–1260), data (1260–1660), shared render helpers (1660–2110), counselor views (2110–3550), teacher and reference data (3550–4410), the IB module (4410–6415), the student Career OS (6415–7950), parent/mentor/modals (7950–8960), then `draw()`, `bind()` and the debug overlay at the end.
 
 ### Tokens
 
@@ -56,13 +60,13 @@ A **bridge alias block** sits at the end of that declaration (`--panel`, `--card
 
 ### The night ledger
 
-`@media (prefers-color-scheme:dark)` at line ~141, and it is **gated to `html[data-role="student"]`**. The student surface is the only one with a dark palette; the counselor stays on paper in both schemes by design. Widening it is an open product decision, and the tokens are already written for it. A dark-mode audit run on the counselor will look like the media query is broken. It is not.
+`@media (prefers-color-scheme:dark)` at line ~148, and it is **gated to `html[data-role="student"]`**. The student surface is the only one with a dark palette; the counselor stays on paper in both schemes by design. Widening it is an open product decision, and the tokens are already written for it. A dark-mode audit run on the counselor will look like the media query is broken. It is not.
 
 ### Motion
 
 `draw()` rebuilds the whole tree on every state change, so **any entry animation replays on every click** unless suppression catches it.
 
-- `place()` (line ~6471) fingerprints role, view, open file, grade, tab, and the panels that replace themselves wholesale (`letter`, `cpQ`, `cpLoad`, `discoverStage`, `psActiveSystem`, `onbStep`). A changed fingerprint is an *arrival*. Filtering, sorting, expanding and typing are not.
+- `place()` (line ~8941) fingerprints role, view, open file, grade, tab, and the panels that replace themselves wholesale (`letter`, `cpQ`, `cpLoad`, `discoverStage`, `psActiveSystem`, `onbStep`). A changed fingerprint is an *arrival*. Filtering, sorting, expanding and typing are not.
 - On a non-arrival, `.still` lands on `#root` and suppresses inline `animation:rise/fade/pop` plus the `.rise` / `.fade` / `.pop` classes. **A new entry animation must be covered by those selectors.**
 - Exempt on purpose: toast, modal, palette, spinner, shimmer — they *are* the state change.
 - Anything animating **to** a value from a non-default attribute (the baseline chart's `stroke-dashoffset`) needs its end state landed explicitly in the `.still` rule, or suppression makes it invisible.
@@ -93,9 +97,9 @@ Use these rather than composing a new one-off:
 Subject selection and CAS, sitting across three roles. Data and rules live together in one block; the views are with their own role's surfaces.
 
 - `IB_SUBJECTS` is the catalogue: 23 subjects, each with its group, the levels it offers, the period it runs at **per level**, a minimum to run, a cap, a prerequisite where there is one, and four pieces of prose (`about`, `like`, `assess`, `hard`). `IBS(id)` looks one up.
-- `SELREC[sid]` is one student's selection, `CASREC[sid]` one student's CAS. `DPC` is the Diploma cohort, 201 records across Grades 10, 11 and 12.
+- `SELREC[sid]` is one student's selection, `CASREC[sid]` one student's CAS. `DPC` is the Diploma cohort, 150 records across Grades 10 (82), 11 (32) and 12 (36).
 - **`selCheck(rec, stu)` is the rule engine** and the only place a submission is gated. It returns `{k:"block"|"ask"|"ok"}` findings. `block` stops the form; `ask` is a question the coordinator is handed, never a fault. Add a rule here, not in a view.
-- **`demandFor` / `subjectViable` / `demandRows` count at render time.** Nothing about demand is stored. Whether a course runs is a question about the **subject**, not about a level — counting per level printed nineteen at-risk courses where there are five.
+- **`demandFor` / `subjectViable` / `demandRows` count at render time.** Nothing about demand is stored. Whether a course runs is a question about the **subject**, not about a level — counting per level printed nineteen at-risk courses where there are four.
 - `casSum(sid)` reads `hrs` as the running programme total and `entries` as the recent log. **They are not the same number and deriving one from the other is wrong in both directions.**
 
 Three product rules the code enforces:
@@ -133,7 +137,7 @@ The global key listener is attached once at the bottom of the script, **not** in
 
 ### Routing
 
-The counselor router is a chain of `else if(S.cv===…)` around line 6500. **Order matters and has bitten before**: a broad early condition silently shadowed `S.cv==="files"`, so the sidebar's "360° student files" opened the caseload for weeks while the function sat there working. Add new routes below the catch-alls, and check no earlier branch already claims the key.
+The counselor router is a chain of `else if(S.cv===…)` around line 8998. **Order matters and has bitten before**: a broad early condition silently shadowed `S.cv==="files"`, so the sidebar's "360° student files" opened the caseload for weeks while the function sat there working. Add new routes below the catch-alls, and check no earlier branch already claims the key.
 
 Nav entries live in `CATS` (three expandable categories), `SYSNAV` (Tools & system) and `DIMS` (the ten dimension pages, all routed through `vDim`). A view with no entry in one of those is unreachable no matter how finished it is.
 

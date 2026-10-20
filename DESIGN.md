@@ -1,5 +1,5 @@
 ---
-name: CAROS — Counselor OS
+name: CLAROS — Counselor OS
 description: A school counseling platform built as the pastoral mark book the school already keeps.
 colors:
   stock: "#FAFBF7"
@@ -122,7 +122,7 @@ components:
     typography: "{typography.figure}"
 ---
 
-# Design System: CAROS — Counselor OS
+# Design System: CLAROS — Counselor OS
 
 ## Overview
 
@@ -148,7 +148,7 @@ The palette is three layers, and only one of them may ever be themed. This split
 
 ### Primary
 
-- **ACS Pine** (`{colors.school-primary}`): the letterhead. Masthead, sidebar field, links, focus ring, active nav bar, primary button. Themed per partner school. It is the only colour in the system that changes between schools.
+- **Pine** (`{colors.school-primary}`): the letterhead. Masthead, sidebar field, links, focus ring, active nav bar, primary button. Themed per partner school. It is the only colour in the system that changes between schools.
 - **Bone** (`{colors.school-accent}`): the crest, the demonstration-data stamp, the active-item bar, count badges. A **fill only** — it must never be set as type. It always ships with `school-on-accent` as its foreground.
 
   Replaced Sand Viper Gold on 2026-09-04. The gold was doing four unrelated jobs at once — school crest, student avatars, letterhead furniture and the synthetic-data marker — so it had stopped signifying any of them. Bone reads 7.9:1 on the letterhead field, against the gold's 5.71:1, but only **1.19:1 against the stock** where the gold managed 1.70:1. Every bone fill that lands on the sheet therefore carries a `rule-2` hairline; the five on-stock offer and sign-off stamps were amended when the token changed. Cool accents were tested first and rejected: pine is a dark blue-green, so a blue or a pine tint has luminance contrast against it but no hue contrast, and the demonstration-data stamp visibly receded.
@@ -180,7 +180,7 @@ Concern domains (`dom-academic` through `dom-university`) and the personal basel
 
 ### Named Rules
 
-**The Letterhead Rule.** The school colour is letterhead, never data. No `--school-*` token may appear inside a severity, track or domain definition. A counselor who changes schools must not have to relearn what a colour means, and CAROS must not look like a different product at every partner.
+**The Letterhead Rule.** The school colour is letterhead, never data. No `--school-*` token may appear inside a severity, track or domain definition. A counselor who changes schools must not have to relearn what a colour means, and CLAROS must not look like a different product at every partner.
 
 **The Short Ramp Rule.** `ink-4` sits only ~1.8 steps from `ink`, because it must still clear 4.5:1 on the green band. In print, metadata recedes by size and weight, never by washing out. Do not "fix" the ramp by lightening it back out — hierarchy here is typographic.
 
