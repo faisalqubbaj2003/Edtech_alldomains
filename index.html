@@ -2328,7 +2328,7 @@ function vCase(c){
  </div>
 
  ${has.evidence?`<div class="card" style="padding:16px 20px;margin-bottom:16px">
-  <h3 class="sechead" style="margin-bottom:11px">${ic('route',13)} Intervention loop · current position</h3>
+  <h3 class="sechead" style="margin-bottom:11px">${ic('route',13)} Intervention stage · current position</h3>
   <div class="stepper">${stages.map((s,i)=>`${i?'<span class="steparr">'+ic('arrowR',13)+'</span>':''}<span class="step ${i<si?'done':i===si?'now':''}">${i<si?ic('check',12):''}${s[1]}</span>`).join('')}</div>
  </div>`:''}
 
@@ -2918,7 +2918,7 @@ function vFlow(){
       ["Teacher reference requests","Initial request plus two escalating reminders","11 sent"],
       ["Transcript & form packaging","Assembled per student per university, status tracked","6 active"],
       ["Parent progress summaries","Scheduled, school-approved template, counselor-approved before send","Next: 22 Nov"],
-      ["Follow-up review dates","Every accepted case gets a review date and continues monitoring","3 scheduled"],
+      ["Follow-up review dates","Every accepted case receives a review date and continues monitoring","3 scheduled"],
       ["Cohort report generation","Replaces the manual spreadsheet at reporting time","On demand"]]
     .map(([t,d,n])=>`<div style="padding:11px 0;border-bottom:1px solid var(--lineSoft)">
      <div style="display:flex;justify-content:space-between;gap:9px;align-items:baseline"><b style="font-size:12.3px">${t}</b><span class="chip" style="background:var(--tealSoft);color:var(--tealDeep)">${n}</span></div>
@@ -2981,7 +2981,7 @@ function vArch(){
       "Deterministic rules stay separate from probabilistic AI, so urgent school rules never depend on a language model alone",
       "Original evidence and derived interpretation stored separately, so every flag stays auditable",
       "Retrieval limited to the staff member's permission scope",
-      "Thresholds, models and policies are versioned, so you can see why a past alert was created",
+      "Thresholds, models and policies are versioned, so the reason for any past alert can be traced",
       "Each school's data, configuration and model context stay isolated from every other school's"]
     .map(x=>`<div style="display:flex;gap:9px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--lineSoft);font-size:12.2px;color:var(--inkSoft);line-height:1.5">${ic('checkC',14)}<span>${x}</span></div>`).join('')}
   </div>
@@ -3295,7 +3295,7 @@ function vDim(key){
     </div></div>`).join('')}
   ${collapsed?`<button data-rag="good" class="card lift" style="width:100%;padding:13px 17px;text-align:left;cursor:pointer;font-family:inherit;font-size:12.5px;color:var(--ink-3);display:flex;align-items:center;gap:10px;background:var(--surface-2)">
     <span style="width:6px;height:6px;border-radius:var(--r-dot);background:var(--ok);opacity:.6"></span>
-    <span><b style="color:var(--ink-2);font-weight:600">${hidden} more on track.</b> Inside their personal baseline, no action needed</span>
+    <span><b style="color:var(--ink-2);font-weight:600">${hidden} more on track.</b> Inside their personal baseline, no action required</span>
     <span style="margin-left:auto;color:var(--brand);font-weight:600;display:flex;align-items:center;gap:4px">Show all ${ic('arrowR',13)}</span></button>`:''}
   </div>`;}).join('')}
  ${key.startsWith("si")?`<div class="card" style="padding:16px 19px;display:flex;gap:12px;align-items:center">
@@ -3550,7 +3550,7 @@ const TEACHER={name:"Mr. J. Davies",subject:"Mathematics",av:"JD",
 /* what a teacher can log — structured tags, then free text */
 const FLAG_KINDS=[
  {k:"concern",l:"Raise a concern",short:"Concern",c:"var(--crit)",bg:"var(--crit-bg)",ic:"alert",
-  tags:["Withdrawn / quiet","Appears tired","Distressed or upset","Sudden drop in work","Missing homework","Disengaged in class","Conflict with peers","Left lesson early"]},
+  tags:["Withdrawn or disengaged","Appears tired","Distressed or upset","Sudden drop in work","Missing homework","Disengaged in class","Conflict with peers","Left lesson early"]},
  {k:"positive",l:"Log something positive",short:"Positive",c:"var(--ok)",bg:"var(--ok-bg)",ic:"trend",
   tags:["Notable improvement","Excellent contribution","Helped a peer","Recovered after support","Strong effort"]},
  {k:"note",l:"Add context",short:"Context",c:"var(--info)",bg:"var(--info-bg)",ic:"pencil",
@@ -3559,7 +3559,7 @@ const FLAG_KINDS=[
 /* seeded log so the loop is visible immediately */
 let TFLAGS=[
  {id:"tf1",sid:"s1",student:"Ahmed Khalifa",av:"AK",by:"Mr. J. Davies · Mathematics",kind:"concern",
-  tags:["Withdrawn / quiet","Appears tired"],
+  tags:["Withdrawn or disengaged","Appears tired"],
   txt:"Unusually withdrawn over the last two weeks. Not engaging with group work, which is out of character. Appears tired.",
   when:"11 Nov · P2",status:"linked",routed:"Merged into Ahmed's open case · counselor notified"},
  {id:"tf2",sid:"s5",student:"Maryam Al Suwaidi",av:"MA",by:"Ms. Bianchi · Art",kind:"positive",
@@ -3578,7 +3578,7 @@ function tflagCounts(){return{concern:TFLAGS.filter(f=>f.kind==="concern").lengt
 function vTLog(){
  const mine=TFLAGS.filter(f=>f.by.indexOf(TEACHER.name.split(" ").slice(-1)[0])>-1);
  return `<div class="fade">
- ${head("Every entry, and what happened next","A record of what you have raised this term and how the counselor acted on it, so nothing you flag disappears into a form you never hear back from.")}
+ ${head("Every entry, and what happened next","A record of what you have raised this term and how the counselor acted on it, so no submitted concern is lost you never hear back from.")}
  <div class="card" style="padding:16px 18px">
   ${mine.length?mine.map(f=>{
    const K=FLAG_KINDS.find(k=>k.k===f.kind)||FLAG_KINDS[0];
@@ -3951,7 +3951,7 @@ const PARENT_MEETINGS_BY_GRADE={
  9:[{when:"18 Sep 2025",who:"Ms. Reem Haddad",topic:"Welcome to senior school",status:"done",
      summary:"Introduced the family to how the school and the portal work. No concerns; a routine first-term meeting."}],
  10:[{when:"22 Oct 2025",who:"Ms. Reem Haddad",topic:"First conversation about IB or AP",status:"done",
-      summary:"Walked through both routes in general terms. Maya to attend both information sessions before the next meeting."}],
+      summary:"Reviewed both routes in general terms. Maya to attend both information sessions before the next meeting."}],
  11:[{when:"3 Nov 2025",who:"Ms. Reem Haddad",topic:"Early university research",status:"done",
       summary:"Discussed Computer Science programmes broadly. Agreed Fahad would begin narrowing down a shortlist ahead of Grade 12."}],
  12:[{when:"14 Nov 2025",who:"Ms. Reem Haddad",topic:"University list review",status:"done",
@@ -3960,7 +3960,7 @@ const PARENT_MEETINGS_BY_GRADE={
       summary:"Reviewed Sara's target list and the UCAS timeline. No concerns raised."}]};
 let PARENT_MEETINGS=PARENT_MEETINGS_BY_GRADE[12];
 const MEETING_TOPICS=[
- ["uni","University choices and requirements","Which universities, which courses, and whether the student is on track for them"],
+ ["uni","University choices and requirements","Which universities, which courses, and whether the student meets their requirements"],
  ["grades","Grades and predicted grades","Working grades, predictions, and what they mean for university offers"],
  ["pathway","IB, AP and subject choices","Whether the current programme fits the student's plans"],
  ["wellbeing","General student progress","Wellbeing, workload, motivation"],
@@ -3984,7 +3984,7 @@ function gradeSwitcher(){
     ${[["AP","Fahad, AP"],["IB","Ivan, Diploma"]].map(([k,l])=>`<button data-ptrack="${k}" style="padding:6px 12px;min-height:44px;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;background:${(S.previewTrack||"AP")===k?'var(--surface)':'transparent'};color:${(S.previewTrack||"AP")===k?'var(--ink)':'var(--ink-3)'};box-shadow:${(S.previewTrack||"AP")===k?'var(--sh-xs)':'none'}">${l}</button>`).join('')}
    </div>`:""}</div>
   <span style="font-size:12px;color:var(--ink-2)"><b>${stu.name}</b> · ${trackLabel}</span>
-  <span style="font-size:11px;color:var(--ink-4);margin-left:auto">Each grade is a different real student and family, so you can show a school every stage in one sitting</span>
+  <span style="font-size:11px;color:var(--ink-4);margin-left:auto">Each grade is a different real student and family, so every stage can be shown in a single session</span>
  </div>`;}
 
 /* ═══ HIGH SCHOOL GUIDE — Grade 9 orientation content ═══ */
@@ -4356,7 +4356,7 @@ const IB_SUBJECTS=[
   assess:"A comparative study, a portfolio of production work, and a short film.",
   hard:"Equipment time is finite and shared, so the students who book early are the ones who finish."}];
 
-/* The three parts nobody chooses. They are on the form because leaving
+/* The three compulsory components. They are on the form because leaving
    them off the form is how a student meets them for the first time in
    October of Grade 11. */
 const DP_CORE=[
@@ -4762,7 +4762,7 @@ function casSum(sid){
    both flagged four students in five, which is a list nobody reads. */
 function casStalled(sid){const s=casSum(sid);if(!s)return null;
  if(s.gap)return "No entry for three months";
- if(s.thin.length>1)return s.thin.join(" and ")+" both thin";
+ if(s.thin.length>1)return s.thin.join(" and ")+" both below expected hours";
  if(s.pending>1)return s.pending+" reflections outstanding";
  return null;}
 /* One thin strand is worth seeing and is not worth a flag. Everything that
@@ -5152,7 +5152,7 @@ function vStuSubjectRecord(c,grade){
  const first=classes[0]||{};
  const total=ib&&first.scale==="ib"?classes.reduce((a,b)=>a+(b.grade||0),0):null;
  if(grade===9)return `<div class="fade">
-  ${head("Two years before you choose, and worth seeing now",
+  ${head("Two years before selection, available for review now",
    "You will pick six diploma subjects in Grade 10, or an AP-based route instead. Nothing here needs a decision yet. It is here so the choice is not the first time you meet it.")}
   <h2 class="sechead">Diploma components</h2>
   <div class="sheetbox">${IB_GROUPS.map(gr=>`<div class="selrow-static">
@@ -5160,7 +5160,7 @@ function vStuSubjectRecord(c,grade){
    <div style="min-width:0"><div class="selrow-t">${gr.label}</div>
     <div class="selrow-n">${gr.note}</div></div>
    <div class="selrow-r fig">${IB_BY_GROUP(gr.id).length} on offer</div></div>`).join("")}</div>
-  <h2 class="sechead" style="margin-top:26px">And three parts nobody chooses</h2>
+  <h2 class="sechead" style="margin-top:26px">Three compulsory components</h2>
   <div class="sheetbox">${DP_CORE.map(([k,n,d])=>`<div class="selrow-static">
    <span class="lstamp">${k==="CAS"?"C":k==="EE"?"E":"T"}</span>
    <div style="min-width:0"><div class="selrow-t">${n}</div><div class="selrow-n">${d}</div></div></div>`).join("")}</div>
@@ -5272,7 +5272,7 @@ function vSelForm(rec,stu){
    ${findings.length?findings.map(f=>`<div class="checkrow ${f.k}">
     <span class="checkmark" aria-hidden="true">${f.k==="block"?"&#10005;":f.k==="ask"?"?":"&#10003;"}</span>
     <div style="min-width:0"><div class="selrow-t">${f.t}</div><div class="selrow-n">${f.d}</div>
-    <span class="sr">${f.k==="block"?"Blocks submission":f.k==="ask"?"Worth a conversation":"Satisfied"}</span></div>
+    <span class="sr">${f.k==="block"?"Blocks submission":f.k==="ask"?"Requires discussion":"Satisfied"}</span></div>
    </div>`).join(""):empty("Nothing to check yet","Fill a slot and the diploma rules, your timetable and your stated goal are all checked here as you go.")}
   </div>
 
@@ -5834,7 +5834,7 @@ function vTEECard(d,r,load,cap){
    </div>
    ${confirm?vTEEConfirm(d,r,confirm,alts):`<div class="revacts">
     <button class="btn btn-p" data-eeact="${d.id}:accept">Supervise this essay</button>
-    <button class="btn btn-g" data-eeact="${d.id}:refine">Ask for a sharper question</button>
+    <button class="btn btn-g" data-eeact="${d.id}:refine">Request a more focused question</button>
     <button class="btn btn-g" data-eeact="${d.id}:pass">Pass to a colleague</button>
    </div>`}
   </div>
@@ -7320,7 +7320,7 @@ function vPathExplorer(navAttr,uniTab,contactTab){
   <h2 class="sechead">${ic('trend',13)} Outcomes of these choices</h2>
   <div style="font-size:12.3px;color:var(--ink-3);line-height:1.6;margin-bottom:18px">Every family faces the same question before finalising subject choices: which combination leads where? Pick a country to see real students from this school: what they took, IB or AP, and which university they now attend.</div>
 
-  <div style="font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);margin-bottom:9px">Which country is she considering?</div>
+  <div style="font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);margin-bottom:9px">Country under consideration</div>
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:18px">
    ${COUNTRY_OPTIONS.map(cn=>{const on=(S.pathCountry||"UK")===cn;
     const stats=(()=>{const all=PATH_ALUMNI.filter(a=>a.country===cn);return{n:all.length,u:[...new Set(all.map(a=>a.uni))].length};})();
@@ -7727,7 +7727,7 @@ function vPSOverview(c,uniOptions){
    return `<button data-ps-open="${sysKey}" style="text-align:left;font-family:inherit;cursor:pointer;padding:18px 20px;border-radius:var(--r-lg);border:1.5px solid var(--line-2);background:var(--surface);display:flex;align-items:center;gap:14px">
     <span style="width:38px;height:38px;border-radius:var(--r);background:var(--brand-3);color:var(--brand-2);display:grid;place-items:center;flex-shrink:0">${ic('grad',18)}</span>
     <div style="flex:1;min-width:0"><b style="font-size:14px">${bm.label} statement</b>
-     <div style="font-size:11.8px;color:var(--ink-3);margin-top:2px">Covers ${unis.length?unis.join(", "):"applications you haven't specified yet"}</div>
+     <div style="font-size:11.8px;color:var(--ink-3);margin-top:2px">Covers ${unis.length?unis.join(", "):"applications not yet specified"}</div>
      <div style="font-size:11.3px;color:var(--ink-4);margin-top:1px">${rec&&rec.submitted?'Sent to your counselor':versionCount?versionCount+' draft'+(versionCount>1?'s':'')+' so far':'No draft started yet'}</div></div>
     ${latest?`<div style="text-align:right;flex-shrink:0">
      <div style="font-size:18px;font-weight:700;color:${latest.score>=80?'var(--ok)':latest.score>=55?'var(--warn)':'var(--crit)'}" class="stamp">${latest.score}</div>
@@ -8269,7 +8269,7 @@ function vParent(){
  <div class="card" style="padding:22px;margin-bottom:16px">
   <h2 class="sechead">${ic('brief',13)} Request a meeting with Ms. Haddad</h2>
   <div style="font-size:12.5px;color:var(--ink-3);line-height:1.6;margin-bottom:16px">${"Choose what you would like to discuss and add a sentence or two. The counselor receives that note together with everything relevant about "+c.name.split(" ")[0]+" before the meeting, so no one spends the first ten minutes looking things up."}</div>
-  <div style="font-size:11.5px;font-weight:600;color:var(--ink-2);margin-bottom:8px">What would you like to discuss?</div>
+  <div style="font-size:11.5px;font-weight:600;color:var(--ink-2);margin-bottom:8px">Discussion topic</div>
   <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
    ${MEETING_TOPICS.map(t=>{const on=(S.pmTopic||"")===t[0];
     return `<button data-pmtopic="${t[0]}" style="text-align:left;font-family:inherit;cursor:pointer;border:1px solid ${on?'var(--rose)':'var(--line)'};background:${on?'#FEF1F5':'var(--surface)'};border-radius:var(--r);padding:12px 14px;display:flex;gap:11px;align-items:flex-start">
@@ -8277,7 +8277,7 @@ function vParent(){
      <span><b style="font-size:12.8px;color:${on?'#8A2247':'var(--ink)'}">${t[1]}</b>
       <div style="font-size:11.5px;color:var(--ink-3);margin-top:2px">${t[2]}</div></span></button>`;}).join('')}
   </div>
-  <label for="pmnote" style="display:block;font-size:11.5px;font-weight:600;color:var(--ink-2);margin-bottom:8px">Briefly, what would you like to cover?</label>
+  <label for="pmnote" style="display:block;font-size:11.5px;font-weight:600;color:var(--ink-2);margin-bottom:8px">Brief description of the topic</label>
   <textarea id="pmnote" placeholder="For example: we would like to better understand the requirements for the courses and universities being considered." style="width:100%;min-height:92px;border:1px solid var(--line-2);border-radius:var(--r);padding:13px 14px;font-size:13px;line-height:1.6;resize:vertical;background:var(--surface)">${S.pmNote||""}</textarea>
   <div style="font-size:11.5px;font-weight:600;color:var(--ink-2);margin:16px 0 8px">Preferred time</div>
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
