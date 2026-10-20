@@ -2178,7 +2178,7 @@ function vIntel(){
   {k:"academic",t:"Academic anomalies",v:"84%",d:"cohort mean · −4 pts",series:cohortAcad,bad:true,n:ds.academic.n,det:[["Result outside personal band","5 students"],["Multi-week decline","2 students"],["Predicted vs current mismatch","4 students"]]},
   {k:"engagement",t:"Engagement",v:"61",d:"index · −21 over 8 weeks",series:cohortEng,bad:true,n:ds.engagement.n,det:[["No login 14+ days","2 students"],["Abandoned tasks","7 students"],["Missed scheduled meetings","3 students"]]}];
  return `<div class="fade">
- ${head("Why a student surfaces","Every signal is compared against each student's own historical pattern, not the cohort average. Weak signals across domains are combined so a pattern becomes visible before a crisis or a missed deadline.")}
+ ${head("Detection criteria","Every signal is compared against each student's own historical pattern, not the cohort average. Weak signals across domains are combined so a pattern becomes visible before a crisis or a missed deadline.")}
 
  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:0 26px;margin-bottom:20px">
  ${tiles.map((t,i)=>`<div style="padding:13px 0 15px;border-top:1px solid var(--rule-3);animation:rise .4s ${i*.06}s backwards">
@@ -2671,7 +2671,7 @@ function vCopilot(){
 function vProve(){
  const fam=[["Detection quality","radar",METRICS.detection],["Counselor efficiency","clock",METRICS.efficiency],["Intervention performance","brief",METRICS.intervention],["Student progress","trend",METRICS.student]];
  return `<div class="fade">
- ${head("What the pilot sets out to prove","The question a head of school asks is whether this changed anything. These are the targets the pilot is built to measure — detection quality, time returned, and whether students recovered. CLAROS has not yet run at a school, so nothing on this page is a result.")}
+ ${head("Pilot objectives","The question a head of school asks is whether this changed anything. These are the targets the pilot is built to measure — detection quality, time returned, and whether students recovered. CLAROS has not yet run at a school, so nothing on this page is a result.")}
  <div class="tally" style="border-color:var(--t-review)">
   <div style="flex:1 1 100%;padding-left:0">
    <div class="tallyl" style="color:var(--t-review)">Targets, not measurements</div>
@@ -3578,7 +3578,7 @@ function tflagCounts(){return{concern:TFLAGS.filter(f=>f.kind==="concern").lengt
 function vTLog(){
  const mine=TFLAGS.filter(f=>f.by.indexOf(TEACHER.name.split(" ").slice(-1)[0])>-1);
  return `<div class="fade">
- ${head("Every entry, and what happened next","A record of what you have raised this term and how the counselor acted on it, so no submitted concern is lost you never hear back from.")}
+ ${head("Entry log and outcomes","A record of what you have raised this term and how the counselor acted on it, so no submitted concern is lost you never hear back from.")}
  <div class="card" style="padding:16px 18px">
   ${mine.length?mine.map(f=>{
    const K=FLAG_KINDS.find(k=>k.k===f.kind)||FLAG_KINDS[0];
@@ -5253,7 +5253,7 @@ function vSelForm(rec,stu){
        </div>`}
       </div>
       ${s&&!submitted?`<div class="selwhy">
-       <label class="appa" for="why-${gr.id}" style="color:var(--ink-3)">Why this subject</label>
+       <label class="appa" for="why-${gr.id}" style="color:var(--ink-3)">Subject rationale</label>
        <textarea id="why-${gr.id}" data-selwhy="${gr.id}" rows="2" placeholder="One sentence. What made you pick it, or what you want it for."
         style="width:100%;box-sizing:border-box;resize:vertical;margin-top:5px">${(rec.why[gr.id]||"").replace(/</g,"&lt;")}</textarea>
       </div>`:s&&submitted&&(rec.why[gr.id]||"").trim()?`<div class="selwhy"><div class="appa" style="color:var(--ink-3)">Why you picked it</div>
@@ -5533,7 +5533,7 @@ function vStuTOK(c){
  return `<div>
   ${empty("Theory of knowledge is not tracked here yet",
    "Your TOK teacher sets the exhibition and the essay, and those deadlines live in the course itself rather than in this portal. Nothing on this page will remind you about them, which is worth knowing rather than assuming otherwise.")}
-  <h2 class="sechead" style="margin-top:26px">What it is worth</h2>
+  <h2 class="sechead" style="margin-top:26px">Contribution to the Diploma</h2>
   <div class="sheetbox">
    <div class="selrow-static"><span class="lstamp">1</span>
     <div style="min-width:0"><div class="selrow-t">The exhibition</div>
@@ -5740,7 +5740,7 @@ function vStuEEPropose(c,r){
    <label class="appa" for="eerq" style="color:var(--ink-3);display:block">A working question, not a topic</label>
    <div class="selrow-n" style="margin-bottom:7px">It will change, and it is meant to. A question you could answer wrongly is a better start than a subject area you could write about forever.</div>
    <textarea id="eerq" data-eerq="1" rows="2" placeholder="${sub&&sub.g==="g4"?"What is the effect of … on … ?":"To what extent … ?"}" style="width:100%;box-sizing:border-box;font-size:13px;line-height:1.55;padding:10px;font-family:inherit">${(draft.rq||"").replace(/</g,"&lt;")}</textarea>
-   <label class="appa" for="eewhy" style="color:var(--ink-3);display:block;margin-top:14px">Why this one</label>
+   <label class="appa" for="eewhy" style="color:var(--ink-3);display:block;margin-top:14px">Stated reason</label>
    <div class="selrow-n" style="margin-bottom:7px">Your supervisor reads this before they answer. A sentence is enough.</div>
    <textarea id="eewhy" data-eewhy="1" rows="2" placeholder="What made you pick it, and what you want to find out." style="width:100%;box-sizing:border-box;font-size:13px;line-height:1.55;padding:10px;font-family:inherit">${(draft.why||"").replace(/</g,"&lt;")}</textarea>
   </div>
@@ -6077,12 +6077,12 @@ function vSelQueue(){
  const rows=selRows(),c=selCounts(),shown=Math.min(rows.length,S.selShown||25);
  const round=DPC.filter(d=>d.yr===10).length;
  return `<div class="fade">
-  ${head("What Grade 10 has chosen, and who is still waiting",
+  ${head("Grade 10 selection status",
    `The ${SEL_ROUND.year} round. ${round} students in the year group, closing ${SEL_ROUND.closes}. This is the Diploma cohort, not your caseload.`)}
   ${tally([["Awaiting your action",String(selWaiting()),"teachers have answered"],
-   ["With teachers",String(selWithTeachers()),"not yours yet"],
+   ["With teachers",String(selWithTeachers()),"awaiting teacher response"],
    ["Confirmed",String(c.approved),"conversation recorded"],
-   ["Not started",String(c.none+c.draft),SEL_ROUND.deadlineIn+" days left"]])}
+   ["Not started",String(c.none+c.draft),SEL_ROUND.deadlineIn+" days remaining"]])}
   <div class="filterbar" role="group" aria-label="Filter selections">
    ${SEL_FILTERS.map(([k,l])=>`<button class="tab${(S.selFilter||"act")===k?" on":""}" data-selfilter="${k}" aria-pressed="${(S.selFilter||"act")===k}">${l}</button>`).join("")}
   </div>
@@ -6139,7 +6139,7 @@ function vSelStudent(sid){
   if(sg&&sg.verdict!=="hl")questions.push({q:IBS(p.s).t.split(" ").slice(-1)[0]+" suggested Standard Level. Have you spoken to him?",src:sg.by+", "+sg.when+": "+sg.note});});
  return `<div class="fade">
   <button class="btn btn-g btn-sm" style="margin-bottom:14px" data-selback="1">${ic("arrow-left",14)} All selections</button>
-  ${head("Before you meet "+d.name,
+  ${head("Meeting preparation: "+d.name,
    `Grade 10 · ${d.goal} · ${rec.submitted?"sent "+rec.submitted:"nothing sent yet"} · ${st.n}`)}
   ${stu?`<div class="sheetbox" style="margin-bottom:20px"><div class="selrow-static">
    ${av(d.av,"counselor",38)}
@@ -6148,7 +6148,7 @@ function vSelStudent(sid){
    <div class="selrow-r"><button class="btn btn-g btn-sm" data-file="${sid}">Open the case file</button></div>
   </div></div>`:""}
 
-  <h2 class="sechead">What they chose, and why</h2>
+  <h2 class="sechead">Selections and stated reasons</h2>
   <div class="selform">
    ${IB_GROUPS.map(gr=>{const p=rec.picks&&rec.picks[gr.id],s=p&&p.s?IBS(p.s):null,why=(rec.why&&rec.why[gr.id]||"").trim();
     return `<div class="selslot${s?"":" void"}">
@@ -6248,7 +6248,7 @@ function vSelDemand(){
   if(inPer.length>1)clashes.push({per,rows:inPer});});
  const c=selCounts(),sent=c.submitted+c.signed+c.approved+c.changes;
  return `<div class="fade">
-  ${head("Which courses are offered next year",
+  ${head("Courses offered next year",
    `Counted from ${sent+c.draft} Grade 10 selections, ${sent} of them sent and ${c.draft} still in draft. ${SEL_ROUND.minNote} Nothing here is a decision: the round closes ${SEL_ROUND.closes}.`)}
   ${tally([["Below minimum",String(under.length),under.length===1?"subject would not run":"subjects would not run"],
    ["Over cap",String(over.length),"teaching groups too large"],
@@ -7847,7 +7847,7 @@ function vPSSubmitted(c){
  <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px">
   <button data-ps-back="1" style="background:none;border:none;cursor:pointer;color:var(--ink-3);display:flex;align-items:center;gap:5px;font-family:inherit;font-size:12.5px;padding:0">${ic('arrowL',13)} All statements</button>
  </div>
- ${head("With your counselor now")}
+ ${head("Currently with your counselor")}
  <div class="card" style="padding:40px 32px;text-align:center">
   <div style="width:56px;height:56px;border-radius:var(--r-lg);background:var(--brand-3);color:var(--brand-2);display:grid;place-items:center;margin:0 auto 18px">${ic('checkC',28)}</div>
   <div class="stamp" style="font-size:19px;font-weight:600;margin-bottom:8px">Sent to Ms. Haddad</div>
@@ -8327,7 +8327,7 @@ const MEETINGS=[
 
 function vMeetings(){
  return `<div class="fade">
- ${head("Record what was said and agreed","Every conversation logged here feeds response-time reporting and the student's support history. This is the record an inspector asks for.")}
+ ${head("Record of discussion","Every conversation logged here feeds response-time reporting and the student's support history. This is the record an inspector asks for.")}
  <button class="btn btn-p" data-newmeet="1" style="margin-bottom:16px">${ic('plus',15)} Record a meeting</button>
  ${MEETINGS.map((m,i)=>`<div class="card" style="padding:18px 20px;margin-bottom:11px;animation:rise .35s ${i*.05}s backwards">
   <div style="display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:start">
