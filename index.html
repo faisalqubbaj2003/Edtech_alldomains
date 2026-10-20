@@ -656,13 +656,42 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
 .selrow-t{font-size:13.2px;font-weight:600;color:var(--ink);line-height:1.3}
 .selrow-n{font-size:11.8px;color:var(--ink-3);line-height:1.55;margin-top:2px;max-width:70ch}
 .selrow-r{display:flex;gap:7px;align-items:center;flex-shrink:0;margin-left:auto}
-.selwhy{padding:0 16px 14px 58px;background:inherit}
-.selwhy textarea{font-size:12.5px;min-height:58px;line-height:1.5}
+.selwhy{padding:0 16px 12px 58px;background:inherit;display:flex;align-items:baseline;gap:12px}
+/* The rationale is one sentence, so it is one line until it is not.
+   A three-line box on each of six slots added 400px of empty field to
+   a form whose whole argument is that it is short. */
+.selwhy .whyfield{flex:1;min-width:0;min-height:38px;height:38px;box-sizing:border-box;
+ resize:vertical;padding:9px 11px;line-height:1.4}
+/* It grows when it is being written in, and only then. */
+.selwhy .whyfield:focus{height:76px}
+@media(max-width:640px){.selwhy{flex-direction:column;gap:5px;padding-left:16px}.selwhy .whyfield{width:100%}}
+.selwhy textarea{font-size:12.5px;line-height:1.5}
 /* The level, printed rather than chipped. It is not severity, so it takes
    the ledger stamp's register and never a tier colour. */
 /* The requirement chip. Three states, and each carries a mark as well
    as a colour: met, not met, and unconfirmed. Tier colours are not
    used here — a prerequisite is not a severity. */
+/* A row of single-line chips. The two-line cards this replaced were
+   accurate and unreadable: six subject names at two lines each filled
+   half a modal before the teacher reached the question. */
+.chiprow{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+/* The segmented control, borrowed from the concern form, where three
+   mutually exclusive choices already read as one control rather than
+   three buttons that happen to sit together. */
+.seg{display:flex;background:var(--stock-3);border:1px solid var(--rule-2);border-radius:var(--r);
+ padding:3px;gap:3px;margin-top:7px}
+.segbtn{flex:1;min-height:38px;padding:7px 10px;border:1px solid transparent;border-radius:var(--r-sm);
+ background:transparent;cursor:pointer;font-family:var(--f-content);font-size:12.6px;font-weight:500;
+ color:var(--ink-3);transition:background .12s,color .12s,border-color .12s}
+.segbtn:hover{color:var(--ink)}
+.segbtn.on{background:var(--stock);border-color:var(--rule-2);color:var(--ink);font-weight:600}
+/* A single-line verdict strip, the same furniture as the "goes to the
+   counselor only" note on the concern form. */
+.noteband{display:flex;gap:10px;align-items:flex-start;margin-top:12px;padding:11px 13px;
+ background:var(--stock-3);border-radius:var(--r);font-size:12.3px;color:var(--ink-2);line-height:1.5}
+.noteband svg{flex-shrink:0;margin-top:1px;color:var(--ink-3)}
+.noteband.warn{background:var(--t-urgent-bg)}
+.noteband.warn svg{color:var(--margin)}
 /* A section inside an opened subject. The heading carries its own
    verdict chip, so the answer is readable before the prose under it. */
 /* The subject picker in the recommendation modal. A grid, because six
@@ -3617,6 +3646,13 @@ const TEACHES_TOWARD={
  Arts:["VIS","MUS","THE","FIL","DES"],
  Technology:["CSC","DES","MAI"]
 };
+/* Catalogue names are the IB's own and stay that way in prose. In a
+   chip row six of them wrap into a block nobody reads, so these are
+   the short forms, used only where space is the constraint. */
+const SUB_SHORT={MAA:"Maths: Analysis",MAI:"Maths: Applications",ENL:"English A: Lit",
+ ELL:"English A: Lang & Lit",ARA:"Arabic A: Lit",ARB:"Arabic B",FRB:"French B",SPB:"Spanish B",
+ SPI:"Spanish ab initio",BUS:"Business",CSC:"Computer science",DES:"Design tech",GPO:"Global politics"};
+function subShort(x){const s=typeof x==="string"?IBS(x):x;return s?(SUB_SHORT[s.id]||s.name):"";}
 function recommendable(subjectArea){return (TEACHES_TOWARD[subjectArea]||[]).map(IBS).filter(Boolean);}
 /* ELIG[sid][subjectId] = {lv,by,when,note}. A recommendation, never a
    permission: nothing in selCheck reads this as a gate. */
@@ -3768,10 +3804,11 @@ function meetReqModal(){
  const why=(S.meetReqWhy||"");
  const ok=why.trim().length>=15;
  return `<div class="modalbg" data-mbg="1"><div class="modal pop" role="dialog" aria-modal="true" aria-label="Request a meeting">
-  <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:4px">
-   <div style="flex:1"><h2 style="font-family:var(--f-apparatus);font-size:17px;font-weight:600">Request a meeting</h2>
-    <div style="font-size:12.2px;color:var(--ink-3);margin-top:3px">With ${SEL_ROUND.coordinator}, about your subject choices</div></div>
-   ${mcloseBtn()}</div>
+  <div style="padding:20px 22px 0">${mcloseBtn()}
+   <div class="stamp" style="font-size:19px;font-weight:600">Request a meeting</div>
+   <div style="font-size:12.3px;color:var(--ink-3);margin:4px 0 16px;line-height:1.5">With ${SEL_ROUND.coordinator}, about your subject choices.</div>
+  </div>
+  <div style="padding:0 22px 22px">
   <div style="font-size:12.3px;color:var(--ink-2);line-height:1.6;margin:14px 0 4px">
    Your form is not blocked and your choices are not changed by this. The meeting is where a choice that sits against the advice gets talked through.</div>
   <label class="appa" for="meetWhy" style="display:block;margin:16px 0 8px;color:var(--ink-3)">Why you want the course <span style="color:var(--crit)">\u00b7 required</span></label>
@@ -3782,46 +3819,53 @@ function meetReqModal(){
   <div style="display:flex;gap:9px;margin-top:18px">
    <button class="btn btn-g" data-mclose="1" style="flex:1">Cancel</button>
    <button class="btn btn-p" data-meetreqgo="${rec.sid}" ${ok?"":"disabled"} style="flex:1.4">${ic('send',15)} ${ok?"Send the request":"Add a reason first"}</button></div>
+   </div>
  </div></div>`;}
 function eligModal(){
  if(!S.modal||S.modal.type!=="elig")return"";
  const stu=DPC.find(d=>d.id===S.modal.id); if(!stu)return"";
  const f=S.eligForm||{};
  const opts=recommendable(TEACHER.subject);
+ const own=opts.filter(o=>o.t===TEACHER.name),near=opts.filter(o=>o.t!==TEACHER.name);
  const sub=f.s?IBS(f.s):null;
  const prior=f.s?eligFor(stu.id,f.s):null;
  const chk=sub&&f.lv?prereqCheck(f.s,f.lv,stu):null;
+ /* One line, not a checklist. The teacher needs the verdict and the
+    number behind it; the full breakdown belongs on the student's own
+    screen, where they have the room and the reason to read it. */
+ const vd=!chk?null:chk.slOnly?{k:"met",t:"no requirement at Standard Level"}
+  :{k:chk.k,t:(chk.items.filter(i=>i.k===chk.k).map(i=>i.t)[0]||"").replace(/^./,c=>c.toLowerCase())};
+ const chip=o=>`<button class="tagbtn${f.s===o.id?" on":""}" data-eligsub="${o.id}">${subShort(o)}</button>`;
+ const hint=t=>`<span style="text-transform:none;letter-spacing:0;font-family:var(--f-content);font-weight:400;color:var(--ink-4)">${t}</span>`;
  return `<div class="modalbg" data-mbg="1"><div class="modal pop" role="dialog" aria-modal="true" aria-label="Recommend a level">
-  <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:4px">
-   <div style="flex:1"><h2 style="font-family:var(--f-apparatus);font-size:17px;font-weight:600">Recommended level</h2>
-    <div style="font-size:12.2px;color:var(--ink-3);margin-top:3px">${stu.name} \u00b7 ${stu.mathSet?stu.mathSet+" set, "+stu.mark:"Grade 10"}</div></div>
-   ${mcloseBtn()}</div>
-  ${(()=>{ /* Own subjects first and labelled as such, then the courses
-     the teacher's subject feeds. Repeating "associated" on every chip
-     said it six times and grouping says it once. */
-   const own=opts.filter(o=>o.t===TEACHER.name),near=opts.filter(o=>o.t!==TEACHER.name);
-   const grid=list=>`<div class="subgrid">${list.map(o=>`<button class="subopt${f.s===o.id?" on":""}" data-eligsub="${o.id}">
-     <span class="subopt-n">${o.name}</span><span class="subopt-m">${o.lv.join(" / ")} \u00b7 ${o.t.split(" ").slice(-1)[0]}</span></button>`).join("")}</div>`;
-   return `${own.length?`<div class="appa" style="margin:16px 0 7px">Your subject</div>${grid(own)}`:""}
-    ${near.length?`<div class="appa" style="margin:15px 0 7px">Courses ${TEACHER.subject.toLowerCase()} feeds</div>${grid(near)}
-     <div style="font-size:11.4px;color:var(--ink-4);margin-top:8px;line-height:1.5">A recommendation outside these belongs to the teacher who takes that subject.</div>`:""}`;})()}
-  ${sub?`<div class="appa" style="margin:18px 0 8px">Level</div>
-  <div style="display:flex;gap:9px">
-   ${["HL","SL"].map(lv=>`<button class="lvbtn${f.lv===lv?" on":""}" data-eliglv="${lv}">${lv}</button>`).join("")}
-   <button class="tagbtn${f.lv==="either"?" on":""}" data-eliglv="either" style="flex:1">Either level</button></div>
-  ${chk?`<div class="appa" style="margin:16px 0 7px">This student against the requirement</div>
-   <div class="checklist tight">
-   ${chk.slOnly?`<div class="checkrow ask">${ic('check',13)}<span>No requirement at Standard Level</span></div>`
-    :chk.items.length?chk.items.map(i=>`<div class="checkrow ${i.k==="unmet"?"block":"ask"}">
-     ${i.k==="unmet"?ic('x',13):i.k==="met"?ic('check',13):ic('alert',13)}<span>${i.t}</span></div>`).join(""):
-     `<div class="checkrow ask">${ic('check',13)}<span>No prerequisite recorded</span></div>`}
-   </div>`:""}
-  <div class="appa" style="margin:18px 0 8px">Note for the student</div>
-  <textarea id="eligNote" data-elignote="1" placeholder="What you have seen in class. The student reads this beside the subject." style="width:100%;min-height:74px">${(f.note||"").replace(/</g,"&lt;")}</textarea>
-  ${prior?`<div style="font-size:11.4px;color:var(--ink-4);margin-top:8px">Replaces the recommendation recorded on ${prior.when}.</div>`:""}`:""}
-  <div style="display:flex;gap:9px;margin-top:18px">
-   <button class="btn btn-g" data-mclose="1" style="flex:1">Cancel</button>
-   <button class="btn btn-p" data-eligsave="${stu.id}" ${sub&&f.lv?"":"disabled"} style="flex:1.4">${ic('check',15)} ${sub&&f.lv?"Record it":"Choose a subject and level"}</button></div>
+  <div style="padding:20px 22px 0">${mcloseBtn()}
+   <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+    ${av(stu.av,"counselor",42)}
+    <div style="min-width:0">
+     <b style="font-size:15.5px">${stu.name}</b>
+     <div style="font-size:11.5px;color:var(--ink-3)">Grade 10${stu.mathSet?" · "+stu.mathSet+" set, "+stu.mark:""}</div></div></div>
+  </div>
+  <div style="padding:0 22px 22px">
+
+  <div class="appa">Subject ${hint("— "+TEACHER.subject.toLowerCase()+" and the courses it feeds")}</div>
+  <div class="chiprow">${own.map(chip).join("")}${near.map(chip).join("")}</div>
+
+  ${sub?`<div class="appa" style="margin-top:16px">Level</div>
+  <div class="seg" role="group" aria-label="Level">
+   ${[["HL","Higher Level"],["SL","Standard Level"],["either","Either"]].map(([v,l])=>
+     `<button class="segbtn${f.lv===v?" on":""}" data-eliglv="${v}">${l}</button>`).join("")}</div>
+  ${vd?`<div class="noteband${vd.k==="unmet"?" warn":""}">
+    ${vd.k==="unmet"?ic('alert',15):vd.k==="met"?ic('checkC',15):ic('eye',15)}
+    <div><b>${vd.k==="met"?"Meets the requirement":vd.k==="unmet"?"Does not meet the requirement":"Requirement unconfirmed"}</b>${vd.t?" · "+vd.t:""}.${vd.k==="unmet"?" You can still recommend it.":""}</div></div>`:""}
+
+  <div class="appa" style="margin-top:16px">Note ${hint("— the student reads this")}</div>
+  <textarea id="eligNote" data-elignote="1" rows="2" placeholder="What you have seen in class." style="width:100%;margin-top:7px">${(f.note||"").replace(/</g,"&lt;")}</textarea>
+  ${prior?`<div style="font-size:11.4px;color:var(--ink-4);margin-top:7px">Replaces the recommendation recorded ${prior.when}.</div>`:""}`:""}
+
+  <div style="display:flex;gap:9px;margin-top:19px">
+   <button class="btn btn-p" data-eligsave="${stu.id}" ${sub&&f.lv?"":"disabled"} style="flex:2">${ic('check',15)} Record it</button>
+   <button class="btn btn-g" data-mclose="1" style="flex:1">Cancel</button></div>
+  </div>
  </div></div>`;}
 function tflagModal(){
  if(!S.modal||S.modal.type!=="tflag")return "";
@@ -5617,9 +5661,9 @@ function vSelForm(rec,stu){
         <div class="appa" style="color:var(--ink-4)">${gr.label}</div>
         ${s?`<div class="selrow-t" style="margin-top:2px">${s.name}
           <span class="lvstamp">${p.lv}</span></div>
-         <div class="selrow-n">${s.t} <span class="fig">· ${s.per[p.lv]}</span></div>
-         ${(()=>{ /* the requirement and the teacher's view, on the slot
-            itself, so a mismatch is visible without opening anything */
+         ${(()=>{ /* The requirement and the teacher's view sit on the
+            meta line, not under it: two short marks on their own row
+            cost a line of height on every one of six slots. */
            const bits=[];
            if(s.needs){const c=prereqCheck(s.id,p.lv,stu);
             if(!c.slOnly&&c.k!=="met")bits.push(`<span class="prq prq-${c.k}">${c.k==="unmet"?ic('alert',12):ic('eye',12)}${c.k==="unmet"?"Requirement not met":"Requirement unconfirmed"}</span>`);}
@@ -5627,7 +5671,8 @@ function vSelForm(rec,stu){
            if(r&&r.lv!=="either"&&r.lv!==p.lv)
             bits.push(`<span class="prq prq-unmet" title="${(r.note||"").replace(/"/g,"")}">${ic('user',12)}${r.by.split(" ").slice(-1)[0]} suggests ${r.lv}</span>`);
            else if(r)bits.push(`<span class="prq prq-rec">${ic('check',12)}${r.by.split(" ").slice(-1)[0]} agrees</span>`);
-           return bits.length?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">${bits.join("")}</div>`:"";})()}`
+           return `<div class="selrow-n" style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">
+            <span>${s.t} <span class="fig">\u00b7 ${s.per[p.lv]}</span></span>${bits.join("")}</div>`;})()}`
         :`<div class="selrow-n" style="margin-top:3px">${gr.note}</div>`}
        </div>
        ${submitted?"":`<div class="selrow-r">
@@ -5636,9 +5681,9 @@ function vSelForm(rec,stu){
        </div>`}
       </div>
       ${s&&!submitted?`<div class="selwhy">
-       <label class="appa" for="why-${gr.id}" style="color:var(--ink-3)">Subject rationale</label>
-       <textarea id="why-${gr.id}" data-selwhy="${gr.id}" rows="2" placeholder="One sentence. What made you pick it, or what you want it for."
-        style="width:100%;box-sizing:border-box;resize:vertical;margin-top:5px">${(rec.why[gr.id]||"").replace(/</g,"&lt;")}</textarea>
+       <label class="appa" for="why-${gr.id}" style="color:var(--ink-4)">Why this subject</label>
+       <textarea id="why-${gr.id}" data-selwhy="${gr.id}" rows="1" placeholder="One sentence."
+        class="whyfield">${(rec.why[gr.id]||"").replace(/</g,"&lt;")}</textarea>
       </div>`:s&&submitted&&(rec.why[gr.id]||"").trim()?`<div class="selwhy"><div class="appa" style="color:var(--ink-3)">Why you picked it</div>
        <div class="prose" style="font-size:12.3px;color:var(--ink-2);margin-top:4px;line-height:1.55">${rec.why[gr.id]}</div></div>`:""}
       ${open?vSelChooser(gr,list,rec,stu):""}
