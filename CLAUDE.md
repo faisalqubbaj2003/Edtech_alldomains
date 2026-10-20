@@ -102,6 +102,19 @@ Subject selection and CAS, sitting across three roles. Data and rules live toget
 - **`demandFor` / `subjectViable` / `demandRows` count at render time.** Nothing about demand is stored. Whether a course runs is a question about the **subject**, not about a level — counting per level printed nineteen at-risk courses where there are four.
 - `casSum(sid)` reads `hrs` as the running programme total and `entries` as the recent log. **They are not the same number and deriving one from the other is wrong in both directions.**
 
+### Prerequisites and level recommendations (P11, 2026-10-20)
+
+Two additions around the selection round. Both advise; neither gates.
+
+- **`IB_SUBJECTS[].needs`** carries a prerequisite on all 23 subjects, expressed as prior study: `areas` (all required), `anyOf` (one required), `pct` (a mark in the area the course gates), `course` (feeder set, mathematics only), `bars` (a disqualifier — prior study rules ab initio out), `evidence` (portfolio or audition, reported and never judged).
+- **`PRIOR[sid]`** is what those are checked against: Grade 9 and Grade 10 courses by subject area with a mark each, seeded from the cohort generator. Grade 10 mathematics defers to `mathSet`/`mark` rather than inventing a second number.
+- **`prereqCheck(sub, lv, stu)`** returns `met` / `unmet` / `unknown`. The third is returned when there is no history on file, never when a student fails. `selCheck` raises it as an `ask`, never a `block`.
+- **`TEACHES_TOWARD`** scopes what a teacher may recommend: their subject area maps to the IB subjects it feeds, so a mathematics teacher may recommend a level for physics and economics but not theatre. `recommendable(area)` reads it.
+- **`ELIG[sid][subId]`** = `{lv, by, when, note}` — a recommendation, never a permission. Nothing in `selCheck` reads it as a gate. `eligFor` and `eligList` read it; `eligCoverage()` and `selDisagreements()` count at render time and store nothing.
+- **`rec.meetReq`** is the student's side: where a choice sits against a recommendation or past a requirement, the form offers a meeting request with a required reason, and the coordinator's preparation page opens on it.
+
+Mr. Davies gained a fourth class, `c4`, the Grade 10 extended set, filled from `DPC` so the register and the cohort are the same people. `vTClass` resolves its roster from the caseload *then* the cohort — it is the one screen that reads across both populations, and resolving from only one rendered it empty.
+
 Three product rules the code enforces:
 
 1. **A selection cannot be approved before the conversation is recorded.** `data-selapprove` is disabled without `rec.talk`. This is the module's reason to exist.

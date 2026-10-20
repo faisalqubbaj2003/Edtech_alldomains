@@ -660,6 +660,17 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
 .selwhy textarea{font-size:12.5px;min-height:58px;line-height:1.5}
 /* The level, printed rather than chipped. It is not severity, so it takes
    the ledger stamp's register and never a tier colour. */
+/* The requirement chip. Three states, and each carries a mark as well
+   as a colour: met, not met, and unconfirmed. Tier colours are not
+   used here — a prerequisite is not a severity. */
+.prq{display:inline-flex;align-items:center;gap:4px;font-family:var(--f-apparatus);font-size:10.5px;
+ font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px 2px 5px;
+ border-radius:var(--r-sm);border:1px solid var(--rule-2);color:var(--ink-3);background:var(--stock)}
+.prq svg{width:12px;height:12px}
+.prq-met{color:var(--t-good);border-color:var(--t-good)}
+.prq-unmet{color:var(--margin);border-color:var(--margin)}
+.prq-unknown{color:var(--ink-4);border-style:dashed}
+.prq-rec{color:var(--ink-2);border-color:var(--rule-3);background:var(--band)}
 .lvstamp{display:inline-block;font-family:var(--f-apparatus);font-size:10px;font-weight:700;
  letter-spacing:.085em;text-transform:uppercase;color:var(--ink-2);
  border:1px solid var(--rule-3);background:var(--stock);padding:2px 5px;vertical-align:2px;white-space:nowrap}
@@ -3544,8 +3555,40 @@ const TEACHER={name:"Mr. J. Davies",subject:"Mathematics",av:"JD",
  classes:[
   {id:"c1",code:"12A/Ma1",label:"Grade 12 Mathematics: Analysis & Approaches HL",period:"P2",students:["s1","s2","s3","s4","s5","s6"],enrolled:6,avg:87},
   {id:"c2",code:"11B/Ma2",label:"Grade 11 Mathematics",period:"P4",students:["s11","s12","s17"],enrolled:3,avg:84},
-  {id:"c3",code:"10C/Ma3",label:"Grade 10 Mathematics (Foundation)",period:"P6",students:["s10"],enrolled:1,avg:79}
+  {id:"c3",code:"10C/Ma3",label:"Grade 10 Mathematics (Foundation)",period:"P6",students:["s10"],enrolled:1,avg:79},
+  /* The extended set is the register this module is actually about: a
+     Grade 10 maths class large enough that recommending a level for
+     each student is a morning's work rather than a single click. Its
+     roll is filled from the Diploma cohort below, once that exists. */
+  {id:"c4",code:"10A/Ma1",label:"Grade 10 Mathematics (Extended)",period:"P1",students:[],enrolled:0,avg:0}
  ]};
+
+/* ── WHAT A TEACHER MAY RECOMMEND ───────────────────────────────────
+   Not every subject, and not only their own. A mathematics teacher
+   watching a student handle proof and algebra has a defensible view on
+   Higher Level physics and economics, because those courses lean on
+   the thing they teach; they have no view at all on theatre.
+
+   So the right is scoped to the subjects their own feeds. The teacher's
+   own subject sits first in each list, and the student sees who made
+   the recommendation next to it, so a physics recommendation from a
+   mathematics teacher is read as what it is. */
+const TEACHES_TOWARD={
+ Mathematics:["MAA","MAI","PHY","ECO","BUS","CSC"],
+ Science:["BIO","CHE","PHY","PSY","DES"],
+ English:["ENL","ELL","HIS","GPO"],
+ "Social Science":["ECO","BUS","HIS","PSY","GPO"],
+ Humanities:["HIS","GPO","PSY","BUS"],
+ Languages:["ARA","ARB","FRB","SPB","SPI"],
+ Arts:["VIS","MUS","THE","FIL","DES"],
+ Technology:["CSC","DES","MAI"]
+};
+function recommendable(subjectArea){return (TEACHES_TOWARD[subjectArea]||[]).map(IBS).filter(Boolean);}
+/* ELIG[sid][subjectId] = {lv,by,when,note}. A recommendation, never a
+   permission: nothing in selCheck reads this as a gate. */
+const ELIG={};
+function eligFor(sid,subId){return (ELIG[sid]||{})[subId]||null;}
+function eligList(sid){const e=ELIG[sid]||{};return Object.keys(e).map(k=>Object.assign({s:k},e[k]));}
 
 /* what a teacher can log — structured tags, then free text */
 const FLAG_KINDS=[
@@ -3623,7 +3666,11 @@ function vTMyClasses(){
 /* ── Teacher: my classes / register ── */
 function vTClass(){
  const cls=TEACHER.classes.find(x=>x.id===S.tClass)||TEACHER.classes[0];
- const roster=cls.students.map(id=>g(id)).filter(Boolean);
+ /* A register may hold caseload students or Diploma cohort students:
+    the two populations are deliberately separate, and this is the one
+    screen that reads across both. Resolve from the caseload first,
+    then the cohort, so neither list silently renders empty. */
+ const roster=cls.students.map(id=>g(id)||DPC.find(d=>d.id===id)).filter(Boolean);
  const surname=TEACHER.name.split(" ").slice(-1)[0];
  return `<div class="fade">
  ${head("Following the lesson",cls.label+" · "+cls.period+". Tap a student to log something. It takes about fifteen seconds and goes straight to their counselor. You never need to follow up manually or complete a form twice.")}
@@ -3637,11 +3684,20 @@ function vTClass(){
  </div>`:''}
  <div style="display:grid;gap:10px">
  ${roster.length?roster.map((c,i)=>{const mine=TFLAGS.filter(f=>f.sid===c.id);
+  /* Grade 10 is the year that chooses, so the level recommendation
+     appears on that register and on no other. */
+  const dp=DPC.find(d=>d.id===c.id), choosing=dp&&dp.yr===10;
+  const recs=choosing?eligList(c.id).filter(r=>r.by===TEACHER.name):[];
   return `<div class="card lift" data-tflag="${c.id}" style="padding:14px 16px;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;animation:rise .35s ${i*.04}s backwards">
    ${av(c.av,"monitor",40)}
    <div style="min-width:0"><b style="font-size:13.5px">${c.name}</b>
-    <div style="font-size:11.5px;color:var(--ink-3);margin-top:1px">${cls.code}${mine.length?` · you logged ${mine.length} this term`:''}</div></div>
-   <span class="btn btn-g btn-sm" style="pointer-events:none">${ic('plus',13)} Log</span>
+    <div style="font-size:11.5px;color:var(--ink-3);margin-top:1px">${cls.code}${dp&&dp.mark?` · ${dp.mark} this year`:''}${mine.length?` · you logged ${mine.length} this term`:''}</div>
+    ${recs.length?`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:6px">
+      ${recs.map(r=>`<span class="lvstamp" title="Recorded ${r.when}">${IBS(r.s).name.split(":")[0]} ${r.lv==="either"?"HL/SL":r.lv}</span>`).join("")}</div>`
+     :choosing?`<div style="font-size:11px;color:var(--ink-4);margin-top:6px">No level recommended yet</div>`:""}</div>
+   <div style="display:flex;flex-direction:column;gap:6px;align-items:stretch">
+    ${choosing?`<button class="btn btn-g btn-sm" data-eligopen="${c.id}">${ic('check',13)} ${recs.length?"Update level":"Recommend level"}</button>`:""}
+    <span class="btn btn-g btn-sm" style="pointer-events:none">${ic('plus',13)} Log</span></div>
   </div>`;}).join(''):`<div style="font-size:12.3px;color:var(--ink-3);line-height:1.6">No students on this register yet.</div>`}
  </div>
  <div class="card" style="padding:16px 18px;margin-top:16px">
@@ -3658,6 +3714,76 @@ function vTClass(){
  </div></div>`;}
 
 /* ── the log sheet (modal) ── */
+/* ── RECOMMENDING A LEVEL ───────────────────────────────────────────
+   The teacher's half of the level question, moved to where they
+   already are. Today they answer it reactively, one subject at a time,
+   after a student has submitted; here they answer it from the register
+   before the round closes, for the subjects their own feeds.
+
+   It records a view, not a permission. Nothing downstream treats a
+   recommendation as a gate, and the student sees it beside the subject
+   while choosing rather than after. */
+/* The student's side of the disagreement. A reason is required for the
+   same reason the coordinator's own review note is: a meeting request
+   with nothing in it gives the person reading it nothing to prepare
+   from, and this is the record the conversation starts from. */
+function meetReqModal(){
+ if(!S.modal||S.modal.type!=="meetreq")return"";
+ const rec=SELREC[S.modal.id]; if(!rec)return"";
+ const stu=DPC.find(d=>d.id===S.modal.id);
+ const why=(S.meetReqWhy||"");
+ const ok=why.trim().length>=15;
+ return `<div class="modalbg" data-mbg="1"><div class="modal pop" role="dialog" aria-modal="true" aria-label="Request a meeting">
+  <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:4px">
+   <div style="flex:1"><h2 style="font-family:var(--f-apparatus);font-size:17px;font-weight:600">Request a meeting</h2>
+    <div style="font-size:12.2px;color:var(--ink-3);margin-top:3px">With ${SEL_ROUND.coordinator}, about your subject choices</div></div>
+   ${mcloseBtn()}</div>
+  <div style="font-size:12.3px;color:var(--ink-2);line-height:1.6;margin:14px 0 4px">
+   Your form is not blocked and your choices are not changed by this. The meeting is where a choice that sits against the advice gets talked through.</div>
+  <label class="appa" for="meetWhy" style="display:block;margin:16px 0 8px;color:var(--ink-3)">Why you want the course <span style="color:var(--crit)">\u00b7 required</span></label>
+  <textarea id="meetWhy" data-meetreqwhy="1" placeholder="What you want it for, and what you think you can handle. A few sentences is enough."
+   style="width:100%;min-height:96px">${why.replace(/</g,"&lt;")}</textarea>
+  <div aria-live="polite" style="font-size:11.3px;color:${why.length&&!ok?"var(--crit)":"var(--ink-4)"};margin-top:6px;line-height:1.45">
+   ${!why.length?"This is what the coordinator reads first.":ok?"This goes to the coordinator with your form.":"A little more detail."}</div>
+  <div style="display:flex;gap:9px;margin-top:18px">
+   <button class="btn btn-g" data-mclose="1" style="flex:1">Cancel</button>
+   <button class="btn btn-p" data-meetreqgo="${rec.sid}" ${ok?"":"disabled"} style="flex:1.4">${ic('send',15)} ${ok?"Send the request":"Add a reason first"}</button></div>
+ </div></div>`;}
+function eligModal(){
+ if(!S.modal||S.modal.type!=="elig")return"";
+ const stu=DPC.find(d=>d.id===S.modal.id); if(!stu)return"";
+ const f=S.eligForm||{};
+ const opts=recommendable(TEACHER.subject);
+ const sub=f.s?IBS(f.s):null;
+ const prior=f.s?eligFor(stu.id,f.s):null;
+ const chk=sub&&f.lv?prereqCheck(f.s,f.lv,stu):null;
+ return `<div class="modalbg" data-mbg="1"><div class="modal pop" role="dialog" aria-modal="true" aria-label="Recommend a level">
+  <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:4px">
+   <div style="flex:1"><h2 style="font-family:var(--f-apparatus);font-size:17px;font-weight:600">Recommended level</h2>
+    <div style="font-size:12.2px;color:var(--ink-3);margin-top:3px">${stu.name} \u00b7 ${stu.mathSet?stu.mathSet+" set, "+stu.mark:"Grade 10"}</div></div>
+   ${mcloseBtn()}</div>
+  <div class="appa" style="margin:16px 0 8px">Subject</div>
+  <div style="display:flex;gap:7px;flex-wrap:wrap">
+   ${opts.map(o=>`<button class="tagbtn${f.s===o.id?" on":""}" data-eligsub="${o.id}">${o.name}${o.t===TEACHER.name?"":" \u00b7 associated"}</button>`).join("")}
+  </div>
+  <div style="font-size:11.4px;color:var(--ink-4);margin-top:9px;line-height:1.5">
+   ${TEACHER.subject} feeds these courses. A recommendation outside them belongs to the teacher who takes that subject.</div>
+  ${sub?`<div class="appa" style="margin:18px 0 8px">Level</div>
+  <div style="display:flex;gap:9px">
+   ${["HL","SL"].map(lv=>`<button class="lvbtn${f.lv===lv?" on":""}" data-eliglv="${lv}">${lv}</button>`).join("")}
+   <button class="tagbtn${f.lv==="either"?" on":""}" data-eliglv="either" style="flex:1">Either level</button></div>
+  ${chk?`<div class="checklist" style="margin-top:14px">
+   ${chk.items.length?chk.items.map(i=>`<div class="checkrow ${i.k==="unmet"?"block":"ask"}">
+     ${i.k==="unmet"?ic('x',13):i.k==="met"?ic('check',13):ic('alert',13)}<span>${i.t}</span></div>`).join(""):
+     `<div class="checkrow ask">${ic('check',13)}<span>No prerequisite at this level</span></div>`}
+   </div>`:""}
+  <div class="appa" style="margin:18px 0 8px">Note for the student</div>
+  <textarea id="eligNote" data-elignote="1" placeholder="What you have seen in class. The student reads this beside the subject." style="width:100%;min-height:74px">${(f.note||"").replace(/</g,"&lt;")}</textarea>
+  ${prior?`<div style="font-size:11.4px;color:var(--ink-4);margin-top:8px">Replaces the recommendation recorded on ${prior.when}.</div>`:""}`:""}
+  <div style="display:flex;gap:9px;margin-top:18px">
+   <button class="btn btn-g" data-mclose="1" style="flex:1">Cancel</button>
+   <button class="btn btn-p" data-eligsave="${stu.id}" ${sub&&f.lv?"":"disabled"} style="flex:1.4">${ic('check',15)} ${sub&&f.lv?"Record it":"Choose a subject and level"}</button></div>
+ </div></div>`;}
 function tflagModal(){
  if(!S.modal||S.modal.type!=="tflag")return "";
  const c=g(S.modal.id);const kind=S.tKind||"concern";
@@ -4569,6 +4695,47 @@ const SELREC={};
    if(m){m.mark=d.mark;m.name=d.mathSet==="extended mathematics"?"Extended Mathematics 10":"Foundation Mathematics 10";}}
   PRIOR[d.id]={g9,g10,lang,elective};
  });
+ /* ── THE EXTENDED SET REGISTER ─────────────────────────────────────
+    Mr. Davies's Grade 10 class, filled from the students who actually
+    sit the extended set, so the register and the Diploma cohort are
+    the same people rather than two lists that merely look alike.
+
+    Capped at 24: a class roll, not a year group. The teacher's job on
+    this screen is to work down a register he recognises. */
+ (function(){
+  const cls=TEACHER.classes.find(c=>c.id==="c4"); if(!cls)return;
+  const roll=DPC.filter(d=>d.yr===10&&d.mathSet==="extended mathematics").slice(0,24);
+  cls.students=roll.map(d=>d.id);
+  cls.enrolled=roll.length;
+  cls.avg=roll.length?Math.round(roll.reduce((a,d)=>a+(d.mark||0),0)/roll.length):0;
+  /* Part of the register is already marked, because a teacher who opens
+     this screen mid-round has done some of it. The rest is the work
+     left, which is what the coordinator's coverage figure counts. */
+  roll.forEach((d,i)=>{
+   if(i%3===2)return;
+   const strong=(d.mark||0)>=82;
+   const lv=strong?"HL":"SL";
+   ELIG[d.id]=ELIG[d.id]||{};
+   ELIG[d.id].MAA={lv,by:TEACHER.name,when:"18 Nov",
+    note:strong?"Handles proof and algebra without being led. Ready for the Higher Level pace."
+     :"Secure on method, slower on unfamiliar problems. Standard Level is the stronger grade."};
+   /* A mathematics teacher's view reaches the courses that lean on
+      mathematics. Only recorded for the students it is true of. */
+   if(strong&&i%2===0){ELIG[d.id].PHY={lv:"HL",by:TEACHER.name,when:"18 Nov",
+    note:"The algebra that Higher Level physics assumes is already there."};}
+   if(strong&&i%4===1){ELIG[d.id].ECO={lv:"HL",by:TEACHER.name,when:"19 Nov",
+    note:"Comfortable with the quantitative side, which is where Higher Level economics separates."};}
+  });
+  /* Maya sits in the foundation set and is the Grade 10 student a demo
+     opens on, so her record carries the case the module is built for:
+     a teacher recommending Standard Level against a student who has
+     asked for Higher. The disagreement is the point, and it has to be
+     on the student the screen actually shows. */
+  ELIG.s10={MAA:{lv:"SL",by:TEACHER.name,when:"18 Nov",
+   note:"Strong on method and consistently well prepared. Analysis and approaches at Higher Level moves faster than the foundation set has covered, so Standard Level is the stronger grade and the better year."},
+   ECO:{lv:"HL",by:"Ms. Fahri",when:"19 Nov",
+   note:"Argues well in class and reads around the subject. Higher Level economics would suit her."}};
+ })();
  /* Grade 10 carries a live selection round; Grades 11 and 12 are in the
     diploma already and carry a CAS record instead. */
  const stateFor=()=>{const r=rnd();
@@ -5390,7 +5557,17 @@ function vSelForm(rec,stu){
         <div class="appa" style="color:var(--ink-4)">${gr.label}</div>
         ${s?`<div class="selrow-t" style="margin-top:2px">${s.name}
           <span class="lvstamp">${p.lv}</span></div>
-         <div class="selrow-n">${s.t} <span class="fig">· ${s.per[p.lv]}</span></div>`
+         <div class="selrow-n">${s.t} <span class="fig">· ${s.per[p.lv]}</span></div>
+         ${(()=>{ /* the requirement and the teacher's view, on the slot
+            itself, so a mismatch is visible without opening anything */
+           const bits=[];
+           if(s.needs){const c=prereqCheck(s.id,p.lv,stu);
+            if(!c.slOnly&&c.k!=="met")bits.push(`<span class="prq prq-${c.k}">${c.k==="unmet"?ic('alert',12):ic('eye',12)}${c.k==="unmet"?"Requirement not met":"Requirement unconfirmed"}</span>`);}
+           const r=eligFor(stu&&stu.id,s.id);
+           if(r&&r.lv!=="either"&&r.lv!==p.lv)
+            bits.push(`<span class="prq prq-unmet" title="${(r.note||"").replace(/"/g,"")}">${ic('user',12)}${r.by.split(" ").slice(-1)[0]} suggests ${r.lv}</span>`);
+           else if(r)bits.push(`<span class="prq prq-rec">${ic('check',12)}${r.by.split(" ").slice(-1)[0]} agrees</span>`);
+           return bits.length?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">${bits.join("")}</div>`:"";})()}`
         :`<div class="selrow-n" style="margin-top:3px">${gr.note}</div>`}
        </div>
        ${submitted?"":`<div class="selrow-r">
@@ -5421,6 +5598,37 @@ function vSelForm(rec,stu){
     <span class="sr">${f.k==="block"?"Blocks submission":f.k==="ask"?"Requires discussion":"Satisfied"}</span></div>
    </div>`).join(""):empty("Nothing to check yet","Fill a slot and the diploma rules, your timetable and your stated goal are all checked here as you go.")}
   </div>
+
+  ${(()=>{ /* ── DISAGREEMENT ──────────────────────────────────────
+     Where the student has chosen against a teacher's recommendation,
+     or past a requirement. Neither stops the form. What they get is
+     the conversation: a dated, attributed meeting request that reaches
+     the coordinator with the reason already attached, so the meeting
+     starts from the student's own words rather than from the mismatch. */
+    const clash=selPicks(rec).map(([gr,p])=>{
+      const r=eligFor(stu&&stu.id,p.s);
+      const against=r&&r.lv!=="either"&&r.lv!==p.lv?r:null;
+      const unmet=IBS(p.s).needs&&prereqCheck(p.s,p.lv,stu).k==="unmet";
+      return (against||unmet)?{gr,p,r:against,unmet}:null;}).filter(Boolean);
+    if(!clash.length)return"";
+    const req=rec.meetReq;
+    return `<h2 class="sechead" style="margin-top:26px">Requesting a conversation</h2>
+    <div class="card" style="padding:16px 18px">
+     <div style="font-size:12.4px;color:var(--ink-2);line-height:1.6;margin-bottom:12px">
+      ${clash.length===1?"One of your choices sits against the advice on your record.":clash.length+" of your choices sit against the advice on your record."}
+      Nothing is blocked. If you want the course, request a meeting and say why; ${SEL_ROUND.coordinator} reads it before you sit down.</div>
+     <div class="checklist" style="margin-bottom:14px">
+      ${clash.map(c=>`<div class="checkrow ask">${ic('alert',13)}
+       <div style="min-width:0"><div class="selrow-t">${IBS(c.p.s).name} at ${c.p.lv==="HL"?"Higher Level":"Standard Level"}</div>
+        <div class="selrow-n">${c.r?c.r.by+" suggests "+c.r.lv+". ":""}${c.unmet?"The usual preparation for this course is not on your record.":""}</div></div></div>`).join("")}
+     </div>
+     ${req?`<div class="revdone" style="margin:0">
+       ${ic('checkC',14)}<div><b>Meeting requested ${req.when}</b>
+       <div class="selrow-n" style="margin-top:3px">\u201c${(req.why||"").replace(/</g,"&lt;")}\u201d</div>
+       <div class="selrow-n" style="margin-top:4px">${SEL_ROUND.coordinator} has this with your form.</div></div></div>`
+      :submitted?`<div class="selrow-n">Your form is with ${SEL_ROUND.coordinator}. Ask for a meeting through your counselor.</div>`
+      :`<button class="btn btn-g" data-meetreqopen="${rec.sid}">${ic('msg',15)} Request a meeting</button>`}
+    </div>`;})()}
 
   ${submitted?"":`<div class="selsend">
    <div style="min-width:0;flex:1">
@@ -5506,11 +5714,36 @@ function vSelChooser(gr,list,rec,stu){
    <div class="opt-more">
     <button class="linkish" data-seldesc="${s.id}" aria-expanded="${openDesc}">${openDesc?"Less":"What it is like"}</button>
     ${already?"":!openLv.length?`<span class="selrow-n">${s.lv.map(lv=>selClashWith(rec,s.id,lv,gr.id).length?s.per[lv]+" is your "+selClashWith(rec,s.id,lv,gr.id)[0]:null).filter(Boolean).join(". ")}.</span>`
-     :s.needs?`<span class="selrow-n">Offered from the ${s.needs.course} set at ${s.needs.lv}.</span>`:""}
+     :""}
+    ${(()=>{ /* the requirement, and whether this student meets it */
+      if(!s.needs)return"";
+      const lvTry=openLv.includes("HL")?"HL":openLv[0]||s.lv[0];
+      const c=prereqCheck(s.id,lvTry,stu);
+      if(c.slOnly)return `<span class="selrow-n">Requirement applies at Higher Level only.</span>`;
+      const w=c.k==="unmet"?"block":"ask";
+      return `<span class="prq prq-${c.k}">${c.k==="met"?ic('check',12):c.k==="unmet"?ic('alert',12):ic('eye',12)}${
+        c.k==="met"?"Requirement met":c.k==="unmet"?"Requirement not met":"Requirement unconfirmed"}</span>`;})()}
+    ${(()=>{ /* what a teacher has already said about this student */
+      const r=eligFor(stu&&stu.id,s.id); if(!r)return"";
+      return `<span class="prq prq-rec" title="${r.note||""}">${ic('user',12)}${r.by.split(" ").slice(-1)[0]} suggests ${r.lv==="either"?"either level":r.lv}</span>`;})()}
    </div>
    ${openDesc?`<div class="opt-desc">
     <div class="dl"><span class="appa">The year</span><p>${s.like}</p></div>
     <div class="dl"><span class="appa">Assessed by</span><p>${s.assess}</p></div>
+    ${s.needs?(()=>{const lvTry=openLv.includes("HL")?"HL":openLv[0]||s.lv[0];
+      const c=prereqCheck(s.id,lvTry,stu);
+      return `<div class="dl"><span class="appa">Requirement</span><div>
+       <p style="margin-bottom:${c.items.length?"8px":"0"}">${s.needs.note||""}</p>
+       ${c.slOnly?`<p class="selrow-n" style="margin:0">Checked at Higher Level only.</p>`:
+        c.items.length?`<div class="checklist">${c.items.map(i=>`<div class="checkrow ${i.k==="unmet"?"block":"ask"}">
+          ${i.k==="unmet"?ic('x',13):i.k==="met"?ic('check',13):ic('alert',13)}
+          <span>${i.t}</span></div>`).join("")}</div>`:""}
+       ${c.k==="unmet"?`<p class="selrow-n" style="margin:8px 0 0">You can still choose it. Your coordinator will ask for the reason, and you can request a meeting from the form.</p>`:""}
+      </div></div>`;})():""}
+    ${(()=>{const r=eligFor(stu&&stu.id,s.id); if(!r)return"";
+      return `<div class="dl"><span class="appa">Your teacher</span><div>
+       <p style="margin:0">${r.by} suggests <b>${r.lv==="either"?"either level":r.lv}</b> for you${r.note?": "+r.note:"."}</p>
+       <p class="selrow-n" style="margin:6px 0 0">Recorded ${r.when}. This is advice, not a restriction.</p></div></div>`;})()}
     <div class="dl"><span class="appa">The hard part</span><p>${s.hard}</p></div>
     <div class="dl"><span class="appa">Taught by</span><p>${s.t}. ${via.under?"Chosen by "+via.n+" so far and it needs "+via.min+", so it may not run.":"Running next year, with "+via.n+" so far."}</p></div>
    </div>`:""}
@@ -6210,6 +6443,26 @@ const SEL_STATE={
  approved:{l:"A",t:"Confirmed",n:"Conversation recorded and selection approved."}};
 const SEL_FILTERS=[["act","Awaiting your action"],["sent","Sent"],["not","Not started"],["all","Everyone"]];
 const selWithTeachers=()=>DPC.filter(d=>d.yr===10&&SELREC[d.id]&&SELREC[d.id].status==="submitted").length;
+/* ── RECOMMENDATION COVERAGE AND DISAGREEMENTS ──────────────────────
+   Counted at render time from ELIG and the selections, never stored,
+   for the same reason subject demand is: a stored figure drifts from
+   the thing it counts the moment either side changes.
+
+   Coverage is the gap the coordinator can still close before the round
+   shuts. Disagreements are the conversations the round owes. */
+function eligCoverage(){
+ const yr10=DPC.filter(d=>d.yr===10);
+ const marked=yr10.filter(d=>eligList(d.id).length).length;
+ return {of:yr10.length,marked,gap:yr10.length-marked};}
+function selDisagreements(){
+ return DPC.filter(d=>d.yr===10).map(d=>{
+  const rec=SELREC[d.id]; if(!rec||!rec.picks)return null;
+  const items=selPicks(rec).map(([gr,p])=>{
+   const r=eligFor(d.id,p.s);
+   const against=r&&r.lv!=="either"&&r.lv!==p.lv?r:null;
+   const unmet=IBS(p.s)&&IBS(p.s).needs&&prereqCheck(p.s,p.lv,d).k==="unmet";
+   return (against||unmet)?{s:p.s,lv:p.lv,r:against,unmet}:null;}).filter(Boolean);
+  return items.length?{d,rec,items,requested:!!rec.meetReq,talked:!!rec.talk}:null;}).filter(Boolean);}
 function selRows(){
  const f=S.selFilter||"act";
  return DPC.filter(d=>d.yr===10).map(d=>({d,rec:SELREC[d.id]||{status:"none",picks:{},why:{},signs:{}}}))
@@ -6225,6 +6478,16 @@ function vSelQueue(){
  return `<div class="fade">
   ${head("Grade 10 selection status",
    `The ${SEL_ROUND.year} round. ${round} students in the year group, closing ${SEL_ROUND.closes}. This is the Diploma cohort, not your caseload.`)}
+  ${(()=>{const cov=eligCoverage(),dis=selDisagreements();
+    const open=dis.filter(x=>!x.talked).length;
+    return `<div class="card" style="padding:15px 18px;margin-bottom:16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center">
+     <div style="flex:1;min-width:240px;font-size:12.3px;color:var(--ink-2);line-height:1.55">
+      <b style="color:var(--ink)">${cov.marked} of ${cov.of} students carry a level recommendation.</b>
+      ${cov.gap?"The remaining "+cov.gap+" have none on file, which is a gap a teacher can still close before "+SEL_ROUND.closes+".":"Every student in the year group has one."}</div>
+     <div style="font-size:12.3px;color:var(--ink-2);line-height:1.55;min-width:200px">
+      <b style="color:var(--ink)">${open} ${open===1?"choice sits":"choices sit"} against the advice.</b>
+      ${open?"Each one is a conversation the round owes.":"Nothing outstanding."}</div>
+    </div>`;})()}
   ${tally([["Awaiting your action",String(selWaiting()),"teachers have answered"],
    ["With teachers",String(selWithTeachers()),"awaiting teacher response"],
    ["Confirmed",String(c.approved),"conversation recorded"],
@@ -6281,12 +6544,24 @@ function vSelStudent(sid){
  const questions=[];
  if(rec.goalNote)questions.push({q:"You wrote that you want to keep two routes open. Which one would you drop if the timetable made you?",src:"Their own note on the form"});
  asks.forEach(a=>{if(a.q)questions.push({q:a.q,src:a.d});});
+ /* A teacher's recommendation that the student chose against is the
+    same kind of question as a teacher's sign-off that disagreed, so it
+    joins the same list rather than opening a second one. */
+ selPicks(rec).forEach(([gr,p])=>{const r=eligFor(sid,p.s);
+  if(r&&r.lv!=="either"&&r.lv!==p.lv)
+   questions.push({q:r.by.split(" ").slice(-1)[0]+" recommended "+r.lv+" for "+IBS(p.s).name+", and the form asks for "+p.lv+". What does the student say?",
+    src:r.note||("Recorded "+r.when)});});
  hlSubs.forEach(([,p])=>{const sg=rec.signs&&rec.signs[p.s];
   if(sg&&sg.verdict!=="hl")questions.push({q:IBS(p.s).t.split(" ").slice(-1)[0]+" suggested Standard Level. Have you spoken to him?",src:sg.by+", "+sg.when+": "+sg.note});});
  return `<div class="fade">
   <button class="btn btn-g btn-sm" style="margin-bottom:14px" data-selback="1">${ic("arrow-left",14)} All selections</button>
   ${head("Meeting preparation: "+d.name,
    `Grade 10 · ${d.goal} · ${rec.submitted?"sent "+rec.submitted:"nothing sent yet"} · ${st.n}`)}
+  ${rec.meetReq?`<div class="card" style="padding:16px 18px;margin-bottom:18px;border-left:3px solid var(--margin)">
+   <div class="appa" style="color:var(--ink-3);margin-bottom:7px">Requested by the student \u00b7 ${rec.meetReq.when}</div>
+   <div style="font-size:12.8px;color:var(--ink);line-height:1.6">\u201c${(rec.meetReq.why||"").replace(/</g,"&lt;")}\u201d</div>
+   <div class="selrow-n" style="margin-top:8px">${d.name.split(" ")[0]} asked for this meeting. The reason above was written before it.</div>
+  </div>`:""}
   ${stu?`<div class="sheetbox" style="margin-bottom:20px"><div class="selrow-static">
    ${av(d.av,"counselor",38)}
    <div style="min-width:0;flex:1"><div class="selrow-t">${d.name} is on your caseload</div>
@@ -9272,7 +9547,7 @@ function draw(){
  const tabbar=`<nav class="tabbar">${TABS.map(t=>{
    const on=t[0]!=="__menu"&&curKey===t[0];
    return `<button class="tabitem ${on?'on':''}" ${t[0]==="__menu"?'data-navopen="1"':navAttr+'="'+t[0]+'"'}>${ic(t[2],20)}<span>${t[1]}</span>${t[0]==="si-cases"&&prioCounts().urgent?`<i class="tabdot"></i>`:''}</button>`;}).join('')}</nav>`;
- R.innerHTML=`<a href="#main" class="skip-link">Skip to main content</a><div class="navscrim" data-navclose="1"></div><div${S.palOpen?' aria-hidden="true"':''} style="height:100vh;display:flex;flex-direction:column">${roleBar()}${sb}${demoStamp()}</div>${S.palOpen?tabbar.replace('<nav class="tabbar">','<nav class="tabbar" aria-hidden="true">'):tabbar}${palOpen}${modalEl()}${tflagModal()}${meetModal()}${mergeModal()}${assignModal()}${bulkAssignModal()}${escalateModal()}${selModal()}${casModal()}${S.toast?`<div class="toastbar pop" role="status" aria-live="polite">${ic('checkC',17)}${S.toast}</div>`:''}`;
+ R.innerHTML=`<a href="#main" class="skip-link">Skip to main content</a><div class="navscrim" data-navclose="1"></div><div${S.palOpen?' aria-hidden="true"':''} style="height:100vh;display:flex;flex-direction:column">${roleBar()}${sb}${demoStamp()}</div>${S.palOpen?tabbar.replace('<nav class="tabbar">','<nav class="tabbar" aria-hidden="true">'):tabbar}${palOpen}${modalEl()}${tflagModal()}${eligModal()}${meetReqModal()}${meetModal()}${mergeModal()}${assignModal()}${bulkAssignModal()}${escalateModal()}${selModal()}${casModal()}${S.toast?`<div class="toastbar pop" role="status" aria-live="polite">${ic('checkC',17)}${S.toast}</div>`:''}`;
  if(S.palOpen){palPaint(S.palQuery||"",S.role);setTimeout(()=>{const palInput=document.getElementById("palInput");if(palInput){palInput.focus();palInput.selectionStart=palInput.selectionEnd=palInput.value.length;}} ,0);}
  bind();
 }
@@ -9295,6 +9570,53 @@ function bind(){
  q("[data-cat]",e=>e.onclick=()=>{const k=e.dataset.cat;S.cat[k]=!S.cat[k];draw();});
  /* ── teacher flag flow ── */
  q("[data-tflag]",e=>{kb(e,"button");e.onclick=()=>{S.modal={type:"tflag",id:e.dataset.tflag};S.tKind="concern";S.tTags=[];S.tNote="";draw();};});
+ /* ── RECOMMENDING A LEVEL (teacher register) ─────────────────────
+    stopPropagation on the opener: the whole row is the log-a-concern
+    target, and without it recommending a level would open the concern
+    modal underneath at the same time. */
+ q("[data-meetreqopen]",e=>e.onclick=()=>{S.modal={type:"meetreq",id:e.getAttribute("data-meetreqopen")};
+  S.meetReqWhy="";draw();});
+ q("[data-meetreqwhy]",e=>e.oninput=()=>{const was=(S.meetReqWhy||"").trim().length>=15;
+  S.meetReqWhy=e.value;
+  /* redraw only when the button's state actually flips, so the caret
+     survives ordinary typing */
+  if(was!==(e.value.trim().length>=15)){draw();
+   const n=document.getElementById("meetWhy"); if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length);}}});
+ q("[data-meetreqgo]",e=>e.onclick=()=>{
+  const id=e.getAttribute("data-meetreqgo"),rec=SELREC[id];
+  const why=(S.meetReqWhy||"").trim(); if(!rec||why.length<15)return;
+  rec.meetReq={why,when:DAY.short,by:"student"};
+  rec.log.unshift({when:DAY.short,who:(DPC.find(d=>d.id===id)||{}).name||"Student",
+   what:"Meeting requested about a choice that sits against the advice. "+why});
+  logAudit("STUDENT","MEETING_REQUESTED",(DPC.find(d=>d.id===id)||{}).name||id,why);
+  S.modal=null;S.meetReqWhy="";
+  toast("Request sent. "+SEL_ROUND.coordinator+" sees it with your form.");});
+ q("[data-eligopen]",e=>e.onclick=ev=>{ev.stopPropagation();
+  const id=e.getAttribute("data-eligopen");
+  S.modal={type:"elig",id};
+  /* Reopening on a student already marked loads what is there, so the
+     teacher edits a record rather than retyping it. */
+  const cur=eligList(id).filter(r=>r.by===TEACHER.name)[0];
+  S.eligForm=cur?{s:cur.s,lv:cur.lv,note:cur.note||""}:{s:null,lv:null,note:""};
+  draw();});
+ q("[data-eligsub]",e=>e.onclick=()=>{S.eligForm=S.eligForm||{};
+  const n=document.getElementById("eligNote"); if(n)S.eligForm.note=n.value;
+  S.eligForm.s=e.getAttribute("data-eligsub");draw();});
+ q("[data-eliglv]",e=>e.onclick=()=>{S.eligForm=S.eligForm||{};
+  const n=document.getElementById("eligNote"); if(n)S.eligForm.note=n.value;
+  S.eligForm.lv=e.getAttribute("data-eliglv");draw();});
+ q("[data-elignote]",e=>e.oninput=()=>{S.eligForm=S.eligForm||{};S.eligForm.note=e.value;});
+ q("[data-eligsave]",e=>e.onclick=()=>{
+  const id=e.getAttribute("data-eligsave"),f=S.eligForm||{};
+  if(!f.s||!f.lv)return;
+  const n=document.getElementById("eligNote"); if(n)f.note=n.value;
+  ELIG[id]=ELIG[id]||{};
+  ELIG[id][f.s]={lv:f.lv,by:TEACHER.name,when:DAY.short,note:(f.note||"").trim()};
+  const stu=DPC.find(d=>d.id===id);
+  logAudit("M.DAVIES","LEVEL_RECOMMENDED",stu?stu.name:id,
+   IBS(f.s).name+" at "+(f.lv==="either"?"either level":f.lv)+(f.note?". "+f.note:""));
+  S.modal=null;S.eligForm=null;
+  toast("Recommendation recorded. "+(stu?stu.name.split(" ")[0]:"The student")+" sees it while choosing.");});
  q("[data-tkind]",e=>e.onclick=()=>{S.tKind=e.dataset.tkind;S.tTags=[];draw();});
  q("[data-ttag]",e=>e.onclick=()=>{const t=e.dataset.ttag;const i=S.tTags.indexOf(t);
    if(i>-1)S.tTags.splice(i,1);else S.tTags.push(t);
