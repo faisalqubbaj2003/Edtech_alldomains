@@ -92,6 +92,13 @@ The IB subject catalogue, its descriptions, the school activities behind CAS, ev
 
 **Resolved 2026-09-03 (P5):** the Mentor role survives, unpriced. The $120/session marketplace stays cut — no view charges for a session, mentor introductions are arranged by the school at no cost, and every mentor conversation is described as safeguarded and in-platform rather than transactional.
 
+### Prerequisites and level recommendations, added 2026-10-20
+
+- **A prerequisite advises and never gates.** Every subject states what it asks for, checked against the student's own prior courses, and an unmet requirement raises a question for the coordinator rather than stopping the form. A student reaching past their record is who the meeting is for; a form that refused to send would route that conversation into a corridor instead of onto a record.
+- **A teacher recommends a level from their register**, before the round closes, for the subjects their own feeds — a mathematics teacher may speak to physics and economics, not to theatre. The student sees it beside the subject while choosing, with the teacher's name on it.
+- **Disagreement is a meeting, not a block.** Where a student chooses against the advice, they can request a meeting with a written reason, and the coordinator reads it before they sit down. This is the same mechanism as a teacher raising a concern, from the other side.
+- **Three answers, not two.** A requirement is met, not met, or not recorded. A student with no course history gets the third, never the second.
+
 **Explicitly undecided:** whether Teacher and Mentor roles get their own persona accent.
 
 ## Brand Commitments

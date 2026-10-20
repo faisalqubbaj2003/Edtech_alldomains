@@ -656,10 +656,78 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
 .selrow-t{font-size:13.2px;font-weight:600;color:var(--ink);line-height:1.3}
 .selrow-n{font-size:11.8px;color:var(--ink-3);line-height:1.55;margin-top:2px;max-width:70ch}
 .selrow-r{display:flex;gap:7px;align-items:center;flex-shrink:0;margin-left:auto}
-.selwhy{padding:0 16px 14px 58px;background:inherit}
-.selwhy textarea{font-size:12.5px;min-height:58px;line-height:1.5}
+.selwhy{padding:0 16px 12px 58px;background:inherit;display:flex;align-items:baseline;gap:12px}
+/* The rationale is one sentence, so it is one line until it is not.
+   A three-line box on each of six slots added 400px of empty field to
+   a form whose whole argument is that it is short. */
+.selwhy .whyfield{flex:1;min-width:0;min-height:38px;height:38px;box-sizing:border-box;
+ resize:vertical;padding:9px 11px;line-height:1.4}
+/* It grows when it is being written in, and only then. */
+.selwhy .whyfield:focus{height:76px}
+@media(max-width:640px){.selwhy{flex-direction:column;gap:5px;padding-left:16px}.selwhy .whyfield{width:100%}}
+.selwhy textarea{font-size:12.5px;line-height:1.5}
 /* The level, printed rather than chipped. It is not severity, so it takes
    the ledger stamp's register and never a tier colour. */
+/* The requirement chip. Three states, and each carries a mark as well
+   as a colour: met, not met, and unconfirmed. Tier colours are not
+   used here — a prerequisite is not a severity. */
+/* A row of single-line chips. The two-line cards this replaced were
+   accurate and unreadable: six subject names at two lines each filled
+   half a modal before the teacher reached the question. */
+.chiprow{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+/* The segmented control, borrowed from the concern form, where three
+   mutually exclusive choices already read as one control rather than
+   three buttons that happen to sit together. */
+.seg{display:flex;background:var(--stock-3);border:1px solid var(--rule-2);border-radius:var(--r);
+ padding:3px;gap:3px;margin-top:7px}
+.segbtn{flex:1;min-height:38px;padding:7px 10px;border:1px solid transparent;border-radius:var(--r-sm);
+ background:transparent;cursor:pointer;font-family:var(--f-content);font-size:12.6px;font-weight:500;
+ color:var(--ink-3);transition:background .12s,color .12s,border-color .12s}
+.segbtn:hover{color:var(--ink)}
+.segbtn.on{background:var(--stock);border-color:var(--rule-2);color:var(--ink);font-weight:600}
+/* A single-line verdict strip, the same furniture as the "goes to the
+   counselor only" note on the concern form. */
+.noteband{display:flex;gap:10px;align-items:flex-start;margin-top:12px;padding:11px 13px;
+ background:var(--stock-3);border-radius:var(--r);font-size:12.3px;color:var(--ink-2);line-height:1.5}
+.noteband svg{flex-shrink:0;margin-top:1px;color:var(--ink-3)}
+.noteband.warn{background:var(--t-urgent-bg)}
+.noteband.warn svg{color:var(--margin)}
+/* A section inside an opened subject. The heading carries its own
+   verdict chip, so the answer is readable before the prose under it. */
+/* The subject picker in the recommendation modal. A grid, because six
+   chips of very different widths wrapped into a ragged block that read
+   as an accident rather than as a list. */
+.subgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(192px,1fr));gap:7px}
+.subopt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;
+ padding:9px 12px;min-height:44px;background:var(--stock);border:1px solid var(--rule-2);
+ border-radius:var(--r);cursor:pointer;transition:border-color .12s,background .12s}
+.subopt:hover{border-color:var(--rule-3);background:var(--band)}
+.subopt.on{background:var(--school-primary);border-color:var(--school-primary)}
+.subopt.on .subopt-n,.subopt.on .subopt-m{color:var(--school-on-primary)}
+.subopt-n{font-family:var(--f-content);font-size:12.5px;font-weight:600;color:var(--ink);line-height:1.3}
+.subopt-m{font-family:var(--f-apparatus);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-4)}
+.checklist.tight .checkrow{padding:7px 10px}
+.optsec{padding:12px 0;border-top:1px solid var(--rule)}
+.optsec:first-child{border-top:0;padding-top:2px}
+.optsec-h{display:flex;align-items:center;gap:9px;margin-bottom:7px;flex-wrap:wrap}
+.optsec-p{margin:0;font-size:12.3px;color:var(--ink-2);line-height:1.6;max-width:68ch}
+/* Alternatives sit in a row of equal cards: three courses being weighed
+   against each other should not be read as a ranked list. */
+.altgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(176px,1fr));gap:8px}
+.altcard{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;
+ padding:10px 12px;min-height:44px;background:var(--stock);border:1px solid var(--rule-2);
+ border-radius:var(--r);cursor:pointer;transition:border-color .12s,background .12s}
+.altcard:hover{border-color:var(--rule-3);background:var(--band)}
+.altcard-n{font-family:var(--f-content);font-size:12.6px;font-weight:600;color:var(--ink);line-height:1.35}
+.altcard-m{font-family:var(--f-apparatus);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-4)}
+.prq{display:inline-flex;align-items:center;gap:4px;font-family:var(--f-apparatus);font-size:10.5px;
+ font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px 2px 5px;
+ border-radius:var(--r-sm);border:1px solid var(--rule-2);color:var(--ink-3);background:var(--stock)}
+.prq svg{width:12px;height:12px}
+.prq-met{color:var(--t-good);border-color:var(--t-good)}
+.prq-unmet{color:var(--margin);border-color:var(--margin)}
+.prq-unknown{color:var(--ink-4);border-style:dashed}
+.prq-rec{color:var(--ink-2);border-color:var(--rule-3);background:var(--band)}
 .lvstamp{display:inline-block;font-family:var(--f-apparatus);font-size:10px;font-weight:700;
  letter-spacing:.085em;text-transform:uppercase;color:var(--ink-2);
  border:1px solid var(--rule-3);background:var(--stock);padding:2px 5px;vertical-align:2px;white-space:nowrap}
@@ -1680,6 +1748,12 @@ lettered:false,
 palOpen:false,palQuery:"",palActiveIndex:0,palResults:[]};
 const R=document.getElementById("root");
 const g=id=>S.cases.find(c=>c.id===id);
+/* A register may hold caseload students or Diploma cohort students. Any
+   screen that reads across both resolves through this: the caseload
+   first, because that is where a full case record lives, then the
+   cohort. Resolving through `g` alone returned undefined for a cohort
+   student and crashed on the next property read. */
+const anyStudent=id=>S.cases.find(c=>c.id===id)||(typeof DPC!=="undefined"?DPC.find(d=>d.id===id):null)||null;
 /* Attendance is quoted to the parent and to the student on separate screens.
    Both read it here so the same girl cannot be 98% to her father and 97% to
    herself, which is what two different fallback literals used to produce. */
@@ -3544,8 +3618,47 @@ const TEACHER={name:"Mr. J. Davies",subject:"Mathematics",av:"JD",
  classes:[
   {id:"c1",code:"12A/Ma1",label:"Grade 12 Mathematics: Analysis & Approaches HL",period:"P2",students:["s1","s2","s3","s4","s5","s6"],enrolled:6,avg:87},
   {id:"c2",code:"11B/Ma2",label:"Grade 11 Mathematics",period:"P4",students:["s11","s12","s17"],enrolled:3,avg:84},
-  {id:"c3",code:"10C/Ma3",label:"Grade 10 Mathematics (Foundation)",period:"P6",students:["s10"],enrolled:1,avg:79}
+  {id:"c3",code:"10C/Ma3",label:"Grade 10 Mathematics (Foundation)",period:"P6",students:["s10"],enrolled:1,avg:79},
+  /* The extended set is the register this module is actually about: a
+     Grade 10 maths class large enough that recommending a level for
+     each student is a morning's work rather than a single click. Its
+     roll is filled from the Diploma cohort below, once that exists. */
+  {id:"c4",code:"10A/Ma1",label:"Grade 10 Mathematics (Extended)",period:"P1",students:[],enrolled:0,avg:0}
  ]};
+
+/* ── WHAT A TEACHER MAY RECOMMEND ───────────────────────────────────
+   Not every subject, and not only their own. A mathematics teacher
+   watching a student handle proof and algebra has a defensible view on
+   Higher Level physics and economics, because those courses lean on
+   the thing they teach; they have no view at all on theatre.
+
+   So the right is scoped to the subjects their own feeds. The teacher's
+   own subject sits first in each list, and the student sees who made
+   the recommendation next to it, so a physics recommendation from a
+   mathematics teacher is read as what it is. */
+const TEACHES_TOWARD={
+ Mathematics:["MAA","MAI","PHY","ECO","BUS","CSC"],
+ Science:["BIO","CHE","PHY","PSY","DES"],
+ English:["ENL","ELL","HIS","GPO"],
+ "Social Science":["ECO","BUS","HIS","PSY","GPO"],
+ Humanities:["HIS","GPO","PSY","BUS"],
+ Languages:["ARA","ARB","FRB","SPB","SPI"],
+ Arts:["VIS","MUS","THE","FIL","DES"],
+ Technology:["CSC","DES","MAI"]
+};
+/* Catalogue names are the IB's own and stay that way in prose. In a
+   chip row six of them wrap into a block nobody reads, so these are
+   the short forms, used only where space is the constraint. */
+const SUB_SHORT={MAA:"Maths: Analysis",MAI:"Maths: Applications",ENL:"English A: Lit",
+ ELL:"English A: Lang & Lit",ARA:"Arabic A: Lit",ARB:"Arabic B",FRB:"French B",SPB:"Spanish B",
+ SPI:"Spanish ab initio",BUS:"Business",CSC:"Computer science",DES:"Design tech",GPO:"Global politics"};
+function subShort(x){const s=typeof x==="string"?IBS(x):x;return s?(SUB_SHORT[s.id]||s.name):"";}
+function recommendable(subjectArea){return (TEACHES_TOWARD[subjectArea]||[]).map(IBS).filter(Boolean);}
+/* ELIG[sid][subjectId] = {lv,by,when,note}. A recommendation, never a
+   permission: nothing in selCheck reads this as a gate. */
+const ELIG={};
+function eligFor(sid,subId){return (ELIG[sid]||{})[subId]||null;}
+function eligList(sid){const e=ELIG[sid]||{};return Object.keys(e).map(k=>Object.assign({s:k},e[k]));}
 
 /* what a teacher can log — structured tags, then free text */
 const FLAG_KINDS=[
@@ -3623,7 +3736,11 @@ function vTMyClasses(){
 /* ── Teacher: my classes / register ── */
 function vTClass(){
  const cls=TEACHER.classes.find(x=>x.id===S.tClass)||TEACHER.classes[0];
- const roster=cls.students.map(id=>g(id)).filter(Boolean);
+ /* A register may hold caseload students or Diploma cohort students:
+    the two populations are deliberately separate, and this is the one
+    screen that reads across both. Resolve from the caseload first,
+    then the cohort, so neither list silently renders empty. */
+ const roster=cls.students.map(anyStudent).filter(Boolean);
  const surname=TEACHER.name.split(" ").slice(-1)[0];
  return `<div class="fade">
  ${head("Following the lesson",cls.label+" · "+cls.period+". Tap a student to log something. It takes about fifteen seconds and goes straight to their counselor. You never need to follow up manually or complete a form twice.")}
@@ -3637,11 +3754,20 @@ function vTClass(){
  </div>`:''}
  <div style="display:grid;gap:10px">
  ${roster.length?roster.map((c,i)=>{const mine=TFLAGS.filter(f=>f.sid===c.id);
+  /* Grade 10 is the year that chooses, so the level recommendation
+     appears on that register and on no other. */
+  const dp=DPC.find(d=>d.id===c.id), choosing=dp&&dp.yr===10;
+  const recs=choosing?eligList(c.id).filter(r=>r.by===TEACHER.name):[];
   return `<div class="card lift" data-tflag="${c.id}" style="padding:14px 16px;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;animation:rise .35s ${i*.04}s backwards">
    ${av(c.av,"monitor",40)}
    <div style="min-width:0"><b style="font-size:13.5px">${c.name}</b>
-    <div style="font-size:11.5px;color:var(--ink-3);margin-top:1px">${cls.code}${mine.length?` · you logged ${mine.length} this term`:''}</div></div>
-   <span class="btn btn-g btn-sm" style="pointer-events:none">${ic('plus',13)} Log</span>
+    <div style="font-size:11.5px;color:var(--ink-3);margin-top:1px">${cls.code}${dp&&dp.mark?` · ${dp.mark} this year`:''}${mine.length?` · you logged ${mine.length} this term`:''}</div>
+    ${recs.length?`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:6px">
+      ${recs.map(r=>`<span class="lvstamp" title="Recorded ${r.when}">${IBS(r.s).name.split(":")[0]} ${r.lv==="either"?"HL/SL":r.lv}</span>`).join("")}</div>`
+     :choosing?`<div style="font-size:11px;color:var(--ink-4);margin-top:6px">No level recommended yet</div>`:""}</div>
+   <div style="display:flex;flex-direction:column;gap:6px;align-items:stretch">
+    ${choosing?`<button class="btn btn-g btn-sm" data-eligopen="${c.id}">${ic('check',13)} ${recs.length?"Update level":"Recommend level"}</button>`:""}
+    <span class="btn btn-g btn-sm" style="pointer-events:none">${ic('plus',13)} Log</span></div>
   </div>`;}).join(''):`<div style="font-size:12.3px;color:var(--ink-3);line-height:1.6">No students on this register yet.</div>`}
  </div>
  <div class="card" style="padding:16px 18px;margin-top:16px">
@@ -3658,9 +3784,93 @@ function vTClass(){
  </div></div>`;}
 
 /* ── the log sheet (modal) ── */
+/* ── RECOMMENDING A LEVEL ───────────────────────────────────────────
+   The teacher's half of the level question, moved to where they
+   already are. Today they answer it reactively, one subject at a time,
+   after a student has submitted; here they answer it from the register
+   before the round closes, for the subjects their own feeds.
+
+   It records a view, not a permission. Nothing downstream treats a
+   recommendation as a gate, and the student sees it beside the subject
+   while choosing rather than after. */
+/* The student's side of the disagreement. A reason is required for the
+   same reason the coordinator's own review note is: a meeting request
+   with nothing in it gives the person reading it nothing to prepare
+   from, and this is the record the conversation starts from. */
+function meetReqModal(){
+ if(!S.modal||S.modal.type!=="meetreq")return"";
+ const rec=SELREC[S.modal.id]; if(!rec)return"";
+ const stu=DPC.find(d=>d.id===S.modal.id);
+ const why=(S.meetReqWhy||"");
+ const ok=why.trim().length>=15;
+ return `<div class="modalbg" data-mbg="1"><div class="modal pop" role="dialog" aria-modal="true" aria-label="Request a meeting">
+  <div style="padding:20px 22px 0">${mcloseBtn()}
+   <div class="stamp" style="font-size:19px;font-weight:600">Request a meeting</div>
+   <div style="font-size:12.3px;color:var(--ink-3);margin:4px 0 16px;line-height:1.5">With ${SEL_ROUND.coordinator}, about your subject choices.</div>
+  </div>
+  <div style="padding:0 22px 22px">
+  <div style="font-size:12.3px;color:var(--ink-2);line-height:1.6;margin:14px 0 4px">
+   Your form is not blocked and your choices are not changed by this. The meeting is where a choice that sits against the advice gets talked through.</div>
+  <label class="appa" for="meetWhy" style="display:block;margin:16px 0 8px;color:var(--ink-3)">Why you want the course <span style="color:var(--crit)">\u00b7 required</span></label>
+  <textarea id="meetWhy" data-meetreqwhy="1" placeholder="What you want it for, and what you think you can handle. A few sentences is enough."
+   style="width:100%;min-height:96px">${why.replace(/</g,"&lt;")}</textarea>
+  <div aria-live="polite" style="font-size:11.3px;color:${why.length&&!ok?"var(--crit)":"var(--ink-4)"};margin-top:6px;line-height:1.45">
+   ${!why.length?"This is what the coordinator reads first.":ok?"This goes to the coordinator with your form.":"A little more detail."}</div>
+  <div style="display:flex;gap:9px;margin-top:18px">
+   <button class="btn btn-g" data-mclose="1" style="flex:1">Cancel</button>
+   <button class="btn btn-p" data-meetreqgo="${rec.sid}" ${ok?"":"disabled"} style="flex:1.4">${ic('send',15)} ${ok?"Send the request":"Add a reason first"}</button></div>
+   </div>
+ </div></div>`;}
+function eligModal(){
+ if(!S.modal||S.modal.type!=="elig")return"";
+ const stu=DPC.find(d=>d.id===S.modal.id); if(!stu)return"";
+ const f=S.eligForm||{};
+ const opts=recommendable(TEACHER.subject);
+ const own=opts.filter(o=>o.t===TEACHER.name),near=opts.filter(o=>o.t!==TEACHER.name);
+ const sub=f.s?IBS(f.s):null;
+ const prior=f.s?eligFor(stu.id,f.s):null;
+ const chk=sub&&f.lv?prereqCheck(f.s,f.lv,stu):null;
+ /* One line, not a checklist. The teacher needs the verdict and the
+    number behind it; the full breakdown belongs on the student's own
+    screen, where they have the room and the reason to read it. */
+ const vd=!chk?null:chk.slOnly?{k:"met",t:"no requirement at Standard Level"}
+  :{k:chk.k,t:(chk.items.filter(i=>i.k===chk.k).map(i=>i.t)[0]||"").replace(/^./,c=>c.toLowerCase())};
+ const chip=o=>`<button class="tagbtn${f.s===o.id?" on":""}" data-eligsub="${o.id}">${subShort(o)}</button>`;
+ const hint=t=>`<span style="text-transform:none;letter-spacing:0;font-family:var(--f-content);font-weight:400;color:var(--ink-4)">${t}</span>`;
+ return `<div class="modalbg" data-mbg="1"><div class="modal pop" role="dialog" aria-modal="true" aria-label="Recommend a level">
+  <div style="padding:20px 22px 0">${mcloseBtn()}
+   <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+    ${av(stu.av,"counselor",42)}
+    <div style="min-width:0">
+     <b style="font-size:15.5px">${stu.name}</b>
+     <div style="font-size:11.5px;color:var(--ink-3)">Grade 10${stu.mathSet?" · "+stu.mathSet+" set, "+stu.mark:""}</div></div></div>
+  </div>
+  <div style="padding:0 22px 22px">
+
+  <div class="appa">Subject ${hint("— "+TEACHER.subject.toLowerCase()+" and the courses it feeds")}</div>
+  <div class="chiprow">${own.map(chip).join("")}${near.map(chip).join("")}</div>
+
+  ${sub?`<div class="appa" style="margin-top:16px">Level</div>
+  <div class="seg" role="group" aria-label="Level">
+   ${[["HL","Higher Level"],["SL","Standard Level"],["either","Either"]].map(([v,l])=>
+     `<button class="segbtn${f.lv===v?" on":""}" data-eliglv="${v}">${l}</button>`).join("")}</div>
+  ${vd?`<div class="noteband${vd.k==="unmet"?" warn":""}">
+    ${vd.k==="unmet"?ic('alert',15):vd.k==="met"?ic('checkC',15):ic('eye',15)}
+    <div><b>${vd.k==="met"?"Meets the requirement":vd.k==="unmet"?"Does not meet the requirement":"Requirement unconfirmed"}</b>${vd.t?" · "+vd.t:""}.${vd.k==="unmet"?" You can still recommend it.":""}</div></div>`:""}
+
+  <div class="appa" style="margin-top:16px">Note ${hint("— the student reads this")}</div>
+  <textarea id="eligNote" data-elignote="1" rows="2" placeholder="What you have seen in class." style="width:100%;margin-top:7px">${(f.note||"").replace(/</g,"&lt;")}</textarea>
+  ${prior?`<div style="font-size:11.4px;color:var(--ink-4);margin-top:7px">Replaces the recommendation recorded ${prior.when}.</div>`:""}`:""}
+
+  <div style="display:flex;gap:9px;margin-top:19px">
+   <button class="btn btn-p" data-eligsave="${stu.id}" ${sub&&f.lv?"":"disabled"} style="flex:2">${ic('check',15)} Record it</button>
+   <button class="btn btn-g" data-mclose="1" style="flex:1">Cancel</button></div>
+  </div>
+ </div></div>`;}
 function tflagModal(){
  if(!S.modal||S.modal.type!=="tflag")return "";
- const c=g(S.modal.id);const kind=S.tKind||"concern";
+ const c=anyStudent(S.modal.id); if(!c)return "";
+ const kind=S.tKind||"concern";
  const K=FLAG_KINDS.find(k=>k.k===kind);
  const picked=S.tTags||[];
  const cls=TEACHER.classes.find(x=>(x.students||[]).includes(c.id))||TEACHER.classes.find(x=>x.id===S.tClass)||TEACHER.classes[0];
@@ -4240,86 +4450,103 @@ const IB_GROUPS=[
    check is a comparison rather than an opinion. */
 const IB_SUBJECTS=[
  {id:"ENL",g:"g1",name:"English A: Literature",lv:["HL","SL"],t:"Mr. Adeyemi",per:{HL:"P2",SL:"P2"},min:10,cap:24,
+  needs:{lv:"HL",areas:["English"],pct:65,note:"Grade 10 English, with a mark around 65 or above. Literature at Higher Level reads eleven more works than Standard."},
   about:"Thirteen works read closely, across at least three literary forms and several centuries.",
   like:"You read more than you have read before, and you write about far less of it than you read. Most weeks are one text, one argument, and a seminar where you are expected to have a position.",
   assess:"Two exams, a taught oral, and an essay you write over the second year.",
   hard:"The volume of reading is the part students underestimate. The writing is a skill you build; the reading is time you have to find."},
  {id:"ELL",g:"g1",name:"English A: Language and literature",lv:["HL","SL"],t:"Mr. Adeyemi",per:{HL:"P2",SL:"P5"},min:10,cap:24,
+  needs:{lv:"HL",areas:["English"],pct:60,note:"Grade 10 English. Language and literature at Higher Level adds a comparative study."},
   about:"Half literature, half how language works in advertising, speeches, journalism and images.",
   like:"You will spend a week on a novel and the next on a campaign poster, using the same tools on both. Students who find pure literature airless often prefer this one.",
   assess:"Two exams, a taught oral, and a comparative essay at Higher Level.",
   hard:"The non-literary half looks easier and is not. Analysing an advert well is harder than analysing a poem badly."},
  {id:"ARA",g:"g1",name:"Arabic A: Literature",lv:["HL","SL"],t:"Ms. Nasser",per:{HL:"P5",SL:"P5"},min:8,cap:20,
+  needs:{lv:"HL",areas:["Languages"],pct:65,note:"Arabic to Grade 10 at first-language level. This is a literature course, not a language course."},
   about:"Literature in Arabic, for students whose Arabic is a first language rather than a school subject.",
   like:"Seminar-shaped, in Arabic throughout, with classical and modern texts sitting beside each other.",
   assess:"Two exams, a taught oral, and a written essay.",
   hard:"Written register. Speaking Arabic at home is not the same as writing literary analysis in it."},
  {id:"ARB",g:"g2",name:"Arabic B",lv:["HL","SL"],t:"Ms. Nasser",per:{HL:"P6",SL:"P6"},min:8,cap:22,
+  needs:{lv:"both",areas:["Languages"],note:"At least two years of Arabic. Students new to the language take ab initio instead."},
   about:"Arabic as an acquired language, built around five themes from identity to sharing the planet.",
   like:"Speaking every lesson. The course is organised around what you can do with the language, so a quiet term is a term you lose.",
   assess:"Reading and writing exams, plus a recorded individual oral.",
   hard:"If Arabic is your home language this is the wrong course, and the school will say so."},
  {id:"FRB",g:"g2",name:"French B",lv:["HL","SL"],t:"Ms. Laurent",per:{HL:"P6",SL:"P6"},min:8,cap:22,
+  needs:{lv:"both",areas:["Languages"],note:"At least two years of French. Students new to the language take ab initio instead."},
   about:"French built on at least two years of prior study, across the same five themes.",
   like:"Lessons run in French. The first term is uncomfortable and the third is not.",
   assess:"Reading and writing exams, plus a recorded individual oral.",
   hard:"Higher Level adds two literary works, which is a genuine step up rather than more of the same."},
  {id:"SPB",g:"g2",name:"Spanish B",lv:["HL","SL"],t:"Ms. Garcia",per:{HL:"P6",SL:"P6"},min:8,cap:22,
+  needs:{lv:"both",areas:["Languages"],note:"At least two years of Spanish. Students new to the language take ab initio instead."},
   about:"Spanish built on prior study, across the same five themes.",
   like:"Lessons run in Spanish, with a lot of speaking and a steady diet of authentic text.",
   assess:"Reading and writing exams, plus a recorded individual oral.",
   hard:"Vocabulary load is relentless and it does not respond to cramming."},
  {id:"SPI",g:"g2",name:"Spanish ab initio",lv:["SL"],t:"Ms. Garcia",per:{SL:"P3"},min:8,cap:20,
+  needs:{lv:"both",bars:"Spanish",note:"For students with little or no previous Spanish. Two years of prior study rules this course out; take Spanish B instead."},
   about:"Spanish from the beginning, for students who have not studied it before.",
   like:"Two years from nothing to holding a conversation. Fast, structured, and unforgiving about missed weeks.",
   assess:"Reading and writing exams, plus a recorded individual oral.",
   hard:"It is only open to genuine beginners, and eligibility is checked."},
  {id:"ECO",g:"g3",name:"Economics",lv:["HL","SL"],t:"Ms. Fahri",per:{HL:"P3",SL:"P3"},min:10,cap:24,
+  needs:{lv:"HL",areas:["Mathematics"],anyOf:["Social Science","Humanities"],pct:65,note:"Grade 10 Mathematics and a social science. Higher Level carries quantitative work every week."},
   about:"Microeconomics, macroeconomics, the global economy and development, taught around real policy.",
   like:"Diagrams, then arguments about what the diagrams leave out. You will be asked to evaluate rather than describe from the first month.",
   assess:"Exams, plus a portfolio of three commentaries written on real news articles.",
   hard:"Higher Level adds quantitative work. Students who chose it to avoid mathematics find that out in the second term."},
  {id:"BUS",g:"g3",name:"Business management",lv:["HL","SL"],t:"Mr. Haddad",per:{HL:"P4",SL:"P4"},min:10,cap:24,
+  needs:{lv:"HL",anyOf:["Social Science","Humanities"],note:"A Grade 10 social science or humanities course."},
   about:"How organisations are financed, run, marketed and changed.",
   like:"Case studies, most weeks, on companies you have heard of. More writing than students expect and more accounting than they expect.",
   assess:"Exams, plus a research project on one organisation at Higher Level.",
   hard:"The finance unit. It is arithmetic with vocabulary attached, and it separates the class."},
  {id:"HIS",g:"g3",name:"History",lv:["HL","SL"],t:"Ms. Sharma",per:{HL:"P3",SL:"P1"},min:10,cap:24,
+  needs:{lv:"HL",anyOf:["Humanities","Social Science"],pct:60,note:"Grade 10 Social Studies or an equivalent humanities course. Higher Level adds a depth study and far more writing."},
   about:"One thematic world-history study, one regional depth study, and a piece of independent research.",
   like:"Argument every week, from sources that disagree with each other. The essays are long and get longer.",
   assess:"Exams, plus a historical investigation you choose and research yourself.",
   hard:"Timed essay writing. Knowing the material and writing it in forty-five minutes are separate skills."},
  {id:"PSY",g:"g3",name:"Psychology",lv:["HL","SL"],t:"Ms. Johnson",per:{HL:"P5",SL:"P4"},min:10,cap:24,
+  needs:{lv:"HL",anyOf:["Science","Social Science"],note:"A Grade 10 science or social science course. Higher Level includes research methods and statistics."},
   about:"Behaviour explained biologically, cognitively and socioculturally, taught through the studies themselves.",
   like:"You learn studies the way a science student learns experiments: method, findings, and what the method could not show.",
   assess:"Exams, plus an experimental study you run and write up.",
   hard:"It is a science, not a discussion subject, and the command word is almost always evaluate."},
  {id:"GPO",g:"g3",name:"Global politics",lv:["HL","SL"],t:"Ms. Sharma",per:{HL:"P4",SL:"P2"},min:8,cap:20,
+  needs:{lv:"HL",anyOf:["Humanities","Social Science"],note:"A Grade 10 humanities or social science course."},
   about:"Power, sovereignty, human rights, development and peace, tested against current cases.",
   like:"The reading is the news. Class runs as structured disagreement, and you are expected to argue a position that is not your own.",
   assess:"Exams, plus an engagement activity you take part in and analyse.",
   hard:"Small cohort most years, so there is nowhere to hide in a seminar."},
  {id:"BIO",g:"g4",name:"Biology",lv:["HL","SL"],t:"Dr. Reid",per:{HL:"P2",SL:"P4"},min:10,cap:24,
+  needs:{lv:"HL",areas:["Science"],pct:70,note:"Grade 10 Science, with a mark around 70 or above. Higher Level covers roughly twice the content of Standard."},
   about:"Cells, molecular biology, genetics, ecology, physiology, and how biological knowledge is built.",
   like:"Lab most weeks. The content volume at Higher Level is the largest of any science here, and it accumulates rather than resets.",
   assess:"Exams, plus an individual scientific investigation.",
   hard:"Sheer volume. Falling four weeks behind in Biology is harder to recover than in any other subject on this list."},
  {id:"CHE",g:"g4",name:"Chemistry",lv:["HL","SL"],t:"Dr. Chen",per:{HL:"P4",SL:"P2"},min:10,cap:22,
+  needs:{lv:"HL",areas:["Science"],pct:75,note:"Grade 10 Chemistry or Science, with a mark around 75 or above. Higher Level assumes confident algebra alongside the chemistry."},
   about:"Structure, bonding, energetics, kinetics, equilibrium and organic chemistry.",
   like:"Problem sets. Chemistry rewards doing questions rather than reading notes, and the practical work is precise.",
   assess:"Exams, plus an individual scientific investigation.",
   hard:"It is the most mathematical of the three sciences, and Higher Level organic chemistry is a memory load."},
  {id:"PHY",g:"g4",name:"Physics",lv:["HL","SL"],t:"Dr. Reid",per:{HL:"P5",SL:"P5"},min:10,cap:22,
+  needs:{lv:"HL",areas:["Science","Mathematics"],pct:70,note:"Grade 10 Science and Mathematics. Higher Level physics is mathematical throughout, so the maths mark matters as much as the science one."},
   about:"Mechanics, waves, fields, energy and one option topic, taught mathematically throughout.",
   like:"Derivation and problem solving, with the laboratory used to test what the algebra claims.",
   assess:"Exams, plus an individual scientific investigation.",
   hard:"Physics HL alongside Mathematics: applications is a combination that fights itself. Take analysis and approaches if you can."},
  {id:"CSC",g:"g4",name:"Computer science",lv:["HL","SL"],t:"Mr. Patel",per:{HL:"P6",SL:"P1"},min:8,cap:20,
+  needs:{lv:"HL",anyOf:["Technology","Mathematics"],note:"A Grade 10 technology or mathematics course. No prior programming is assumed, but the logic load is heavy."},
   about:"How machines compute, plus a solution you design and build for a real client.",
   like:"Half theory that looks like discrete mathematics, half a two-year software project with a person waiting on it.",
   assess:"Exams, plus the developed solution and its documentation.",
   hard:"The project has a real deadline and no way to compress it. Students who start it late lose marks they cannot recover."},
  {id:"DES",g:"g4",name:"Design technology",lv:["HL","SL"],t:"Mr. Patel",per:{HL:"P1",SL:"P3"},min:8,cap:18,
+  needs:{lv:"HL",anyOf:["Technology","Arts"],note:"A Grade 10 technology or arts course."},
   about:"Design thinking, materials, manufacturing and sustainability, with a major design project.",
   like:"Workshop time and iteration. You will build things that do not work before you build one that does.",
   assess:"Exams, plus a design project carried through prototyping.",
@@ -4329,28 +4556,33 @@ const IB_SUBJECTS=[
   like:"Calculus arrives early and never leaves. Higher Level is the most demanding course in the diploma by hours.",
   assess:"Exams, plus a mathematical exploration you write yourself.",
   hard:"Engineering, physics, computer science and most economics degrees ask for this route, so it is chosen for reasons other than enjoyment more often than any other subject here.",
-  needs:{course:"extended mathematics",pct:85,lv:"HL"}},
+  needs:{lv:"HL",course:"extended mathematics",pct:85,areas:["Mathematics"],note:"Offered from the extended mathematics set, with a mark around 85 or above. This is the most demanding mathematics route in the diploma."}},
  {id:"MAI",g:"g5",name:"Mathematics: applications and interpretation",lv:["HL","SL"],t:"Mr. Yilmaz",per:{HL:"P1",SL:"P4"},min:10,cap:24,
+  needs:{lv:"HL",areas:["Mathematics"],pct:70,note:"Grade 10 Mathematics. Higher Level applications carries a statistics and modelling load."},
   about:"Modelling, statistics and applied calculus, taught with technology in hand throughout.",
   like:"You will use a graphing calculator constantly and model situations that come with messy numbers.",
   assess:"Exams, plus a mathematical exploration you write yourself.",
   hard:"Some engineering and physics courses will not accept it, even at Higher Level. Check the universities before choosing it."},
  {id:"VIS",g:"g6",name:"Visual arts",lv:["HL","SL"],t:"Ms. Wilson",per:{HL:"P4",SL:"P6"},min:8,cap:18,
+  needs:{lv:"both",anyOf:["Arts"],evidence:"a portfolio of recent work",note:"A Grade 10 arts course, and a portfolio shown to the department before the round closes."},
   about:"Studio practice, comparative study of other artists, and a resolved body of work.",
   like:"Studio time, a process journal that is genuinely assessed, and an exhibition at the end with your own commentary beside each piece.",
   assess:"A comparative study, the process portfolio, and the exhibition. No written exam.",
   hard:"The workload is continuous rather than seasonal. There is nothing to revise and nowhere to catch up."},
  {id:"MUS",g:"g6",name:"Music",lv:["HL","SL"],t:"Ms. Bianchi",per:{HL:"P5",SL:"P1"},min:6,cap:16,
+  needs:{lv:"both",anyOf:["Arts"],evidence:"an audition or a recording",note:"A Grade 10 music course, and an audition or recording. Reading notation is assumed."},
   about:"Performing, composing and researching music across several traditions.",
   like:"You will perform, write, and defend both. Practice happens outside lessons and the course assumes it.",
   assess:"Recorded performance and composition portfolios, plus a contemporary music enquiry.",
   hard:"It expects existing instrumental or vocal ability. Starting from nothing in Grade 11 is very hard."},
  {id:"THE",g:"g6",name:"Theatre",lv:["HL","SL"],t:"Ms. Wilson",per:{HL:"P2",SL:"P4"},min:6,cap:16,
+  needs:{lv:"both",anyOf:["Arts"],note:"A Grade 10 arts course, or evidence of performance experience."},
   about:"Theatre made, directed and researched, not theatre read.",
   like:"Rehearsal, collaboration and deadlines that involve other people. Missing a session costs four other students their session.",
   assess:"A research presentation, a collaborative project, and a director's notebook.",
   hard:"Group assessment. Your mark depends partly on people who are not you."},
  {id:"FIL",g:"g6",name:"Film",lv:["SL"],t:"Ms. Wilson",per:{SL:"P2"},min:6,cap:16,
+  needs:{lv:"both",anyOf:["Arts","Technology"],note:"A Grade 10 arts or technology course."},
   about:"Film history and theory, alongside films you make.",
   like:"Watching closely and shooting badly, then shooting less badly. Editing takes longer than anyone plans for.",
   assess:"A comparative study, a portfolio of production work, and a short film.",
@@ -4402,6 +4634,7 @@ const SEL_ROUND={year:"2027 / 28",opened:"10 November",closes:"5 December",
  minNote:"A course runs at 8 students or more in most subjects, 6 in the arts.",
  deadlineIn:11};
 const DPC=[];
+const PRIOR={};
 const CASREC={};
 const SELREC={};
 (function(){
@@ -4428,7 +4661,15 @@ const SELREC={};
     them and the rules panel contradicted the status above it. Level and
     period are decided together, slot by slot, against the periods already
     taken. */
- const buildPicks=()=>{
+ /* Given the student, the draw prefers subjects they actually qualify
+    for. Without that the picks are made blind to the prerequisites and
+    roughly half the year group ends up holding a requirement they do
+    not meet, which reads as a broken school rather than as a cohort
+    worth a coordinator's attention. A minority is left unqualified on
+    purpose: a student reaching past their record is the case this
+    panel exists to surface, and a screen with none of them proves
+    nothing. */
+ const buildPicks=(stu)=>{
   for(let attempt=0;attempt<40;attempt++){
    const picks={},used=[],taken=[];
    /* which three slots carry Higher Level is decided first, because it is
@@ -4451,6 +4692,12 @@ const SELREC={};
     /* a slot whose subjects offer only one level still has to be filled */
     if(!cand.length)cand=pool.filter(s=>s.lv.some(lv=>!used.includes(s.per[lv])));
     if(!cand.length){ok=false;return;}
+    /* about one pick in eight ignores the requirement, which is what
+       leaves real mismatches on the sheet */
+    if(stu&&cand.length>1&&rnd()<.88){
+     const fit=cand.filter(c=>{const lvTry=c.lv.includes(want)?want:c.lv[0];
+      return prereqCheck(c.id,lvTry,stu).k!=="unmet";});
+     if(fit.length)cand=fit;}
     const s=wpick(cand);
     const lv=s.lv.includes(want)&&!used.includes(s.per[want])?want
      :s.lv.find(x=>!used.includes(s.per[x]));
@@ -4489,6 +4736,90 @@ const SELREC={};
  addYear(11,30,[{id:"s12",name:"Tariq Al Balushi",av:"TB",goal:"Law"},{id:"s17",name:"Ivan Petrov",av:"IP",goal:"Mathematics"}]);
  addYear(12,34,[{id:"s3",name:"Sara Al Mansoori",av:"SA",goal:"Investment Banking"},
   {id:"s14",name:"Priya Raghunathan",av:"PR",goal:"Biomedical Science"}]);
+ /* ── PRIOR COURSES ──────────────────────────────────────────────────
+    What each student has already studied, which is what a prerequisite
+    is actually checked against. A requirement that only prints its own
+    text ("Grade 10 Science, 70 or above") leaves the student to work
+    out whether it applies to them; checked against this, the form can
+    say met, not met, or — the honest third answer — not recorded.
+
+    Every student takes the five core areas. The sixth is an elective,
+    and it is the one that decides whether the arts and technology
+    subjects are open to them, so it is drawn rather than assumed. Marks
+    are per area, because a prerequisite asks about a mark in the
+    subject it gates, not about an average.
+
+    Grade 9 and Grade 10 are kept separate: "Chemistry in Grade 9 or
+    Science since" is a real distinction when a student changed course
+    between the two years. */
+ const AREA_COURSE={English:"English",Mathematics:"Mathematics",Science:"Science",
+  "Social Science":"Social Studies",Humanities:"Humanities",Languages:"Language",
+  Arts:"Arts",Technology:"Design and Technology"};
+ const ELECTIVES=["Arts","Technology","Humanities","Social Science"];
+ const LANGS=["Arabic","French","Spanish"];
+ DPC.forEach(d=>{
+  const core=["English","Mathematics","Science","Social Science","Languages"];
+  const elective=ELECTIVES[Math.floor(rnd()*ELECTIVES.length)];
+  const lang=LANGS[Math.floor(rnd()*LANGS.length)];
+  /* A mark band per student, so a strong student is strong across the
+     row rather than strong in one area and weak in the next by accident
+     of the draw. The spread inside the band is what makes a single
+     subject fall below its own threshold. */
+  const band=58+Math.floor(rnd()*30);
+  const mk=()=>Math.max(42,Math.min(98,Math.round(band+(rnd()*18-9))));
+  const row=(area,yr)=>({area,yr,
+   name:area==="Languages"?lang+(yr===9?"":" II"):AREA_COURSE[area]+" "+yr,
+   mark:mk()});
+  const g9=core.concat([elective]).map(a=>row(a,9));
+  const g10=core.concat([elective]).map(a=>row(a,10));
+  /* Grade 10 mathematics is already modelled as a set, and the set is
+     the thing MAA asks about, so the maths row defers to it rather than
+     inventing a second number that could disagree with it. */
+  if(d.yr===10&&d.mark){const m=g10.find(c=>c.area==="Mathematics");
+   if(m){m.mark=d.mark;m.name=d.mathSet==="extended mathematics"?"Extended Mathematics 10":"Foundation Mathematics 10";}}
+  PRIOR[d.id]={g9,g10,lang,elective};
+ });
+ /* ── THE EXTENDED SET REGISTER ─────────────────────────────────────
+    Mr. Davies's Grade 10 class, filled from the students who actually
+    sit the extended set, so the register and the Diploma cohort are
+    the same people rather than two lists that merely look alike.
+
+    Capped at 24: a class roll, not a year group. The teacher's job on
+    this screen is to work down a register he recognises. */
+ (function(){
+  const cls=TEACHER.classes.find(c=>c.id==="c4"); if(!cls)return;
+  const roll=DPC.filter(d=>d.yr===10&&d.mathSet==="extended mathematics").slice(0,24);
+  cls.students=roll.map(d=>d.id);
+  cls.enrolled=roll.length;
+  cls.avg=roll.length?Math.round(roll.reduce((a,d)=>a+(d.mark||0),0)/roll.length):0;
+  /* Part of the register is already marked, because a teacher who opens
+     this screen mid-round has done some of it. The rest is the work
+     left, which is what the coordinator's coverage figure counts. */
+  roll.forEach((d,i)=>{
+   if(i%3===2)return;
+   const strong=(d.mark||0)>=82;
+   const lv=strong?"HL":"SL";
+   ELIG[d.id]=ELIG[d.id]||{};
+   ELIG[d.id].MAA={lv,by:TEACHER.name,when:"18 Nov",
+    note:strong?"Handles proof and algebra without being led. Ready for the Higher Level pace."
+     :"Secure on method, slower on unfamiliar problems. Standard Level is the stronger grade."};
+   /* A mathematics teacher's view reaches the courses that lean on
+      mathematics. Only recorded for the students it is true of. */
+   if(strong&&i%2===0){ELIG[d.id].PHY={lv:"HL",by:TEACHER.name,when:"18 Nov",
+    note:"The algebra that Higher Level physics assumes is already there."};}
+   if(strong&&i%4===1){ELIG[d.id].ECO={lv:"HL",by:TEACHER.name,when:"19 Nov",
+    note:"Comfortable with the quantitative side, which is where Higher Level economics separates."};}
+  });
+  /* Maya sits in the foundation set and is the Grade 10 student a demo
+     opens on, so her record carries the case the module is built for:
+     a teacher recommending Standard Level against a student who has
+     asked for Higher. The disagreement is the point, and it has to be
+     on the student the screen actually shows. */
+  ELIG.s10={MAA:{lv:"SL",by:TEACHER.name,when:"18 Nov",
+   note:"Strong on method and consistently well prepared. Analysis and approaches at Higher Level moves faster than the foundation set has covered, so Standard Level is the stronger grade and the better year."},
+   ECO:{lv:"HL",by:"Ms. Fahri",when:"19 Nov",
+   note:"Argues well in class and reads around the subject. Higher Level economics would suit her."}};
+ })();
  /* Grade 10 carries a live selection round; Grades 11 and 12 are in the
     diploma already and carry a CAS record instead. */
  const stateFor=()=>{const r=rnd();
@@ -4511,7 +4842,7 @@ const SELREC={};
  DPC.filter(d=>d.yr===10).forEach(d=>{
   const st=d.id==="s10"?"draft":stateFor();
   if(st==="none"){SELREC[d.id]={sid:d.id,status:"none",picks:{},why:{},goalNote:"",signs:{},talk:null,log:[],v:0};return;}
-  const picks=buildPicks();
+  const picks=buildPicks(d);
   if(!picks){SELREC[d.id]={sid:d.id,status:"none",picks:{},why:{},goalNote:"",signs:{},talk:null,log:[],v:0};return;}
   /* drawn without replacement: three identical sentences on one form is
      what generated content looks like, and a reader spots it before they
@@ -4652,6 +4983,77 @@ CASREC.s17={hrs:{c:34,a:26,s:22},outcomes:5,last:"This week",pending:0,
    Everything a submission is gated on, as comparisons. `block` stops a
    submission; `ask` is surfaced to the student and carried into the
    coordinator's meeting prep as a question rather than a fault. */
+/* ── PREREQUISITES ───────────────────────────────────────────────────
+   One subject, one level, one student: has this student already studied
+   what the course asks for? Three answers, and the third is the one
+   that keeps the panel honest.
+
+   "unknown" is returned when the student has no course history on file
+   rather than when they fail. The generated cohort all have one, but a
+   student imported mid-round would not, and answering "not met" for a
+   record we have never seen would be the kind of confident wrong
+   statement this product exists not to make.
+
+   Evidence requirements — a portfolio, an audition — are reported and
+   never judged. The department decides those, not a table. */
+function prereqCheck(subId,lv,stu){
+ const s=IBS(subId); if(!s||!s.needs) return {k:"met",items:[]};
+ const n=s.needs;
+ if(n.lv==="HL"&&lv!=="HL") return {k:"met",items:[],slOnly:true};
+ const hist=stu&&PRIOR[stu.id];
+ if(!hist) return {k:"unknown",items:[{k:"unknown",t:"No course history on file"}]};
+ const all=hist.g9.concat(hist.g10);
+ const has=a=>all.filter(c=>c.area===a);
+ const best=a=>{const r=has(a);return r.length?Math.max.apply(null,r.map(c=>c.mark)):null;};
+ const items=[];
+ /* A disqualifier, not a requirement: ab initio is for beginners, so
+    prior study of that language is what rules it out. */
+ if(n.bars){const studied=hist.lang===n.bars;
+  items.push({k:studied?"unmet":"met",
+   t:studied?"Two years of "+n.bars+" already studied":"No prior "+n.bars});}
+ if(n.course){const ok=stu.mathSet===n.course;
+  items.push({k:stu.mathSet?(ok?"met":"unmet"):"unknown",
+   t:ok?"In the "+n.course+" set":stu.mathSet?"In the "+stu.mathSet+" set, not "+n.course:"Set not recorded"});}
+ (n.areas||[]).forEach(a=>{const r=has(a);
+  items.push({k:r.length?"met":"unmet",
+   t:r.length?r[r.length-1].name:"No "+a.toLowerCase()+" course on record"});});
+ if(n.anyOf){const hit=n.anyOf.filter(a=>has(a).length);
+  items.push({k:hit.length?"met":"unmet",
+   t:hit.length?has(hit[0])[has(hit[0]).length-1].name:"None of "+n.anyOf.join(" or ").toLowerCase()+" on record"});}
+ /* The mark is read from the area the course gates, not from an
+    average: a student can sit well above the bar overall and still be
+    under it in the one subject that matters here. */
+ if(n.pct){const area=(n.areas&&n.areas[0])||(n.anyOf&&n.anyOf.filter(a=>has(a).length)[0])||null;
+  const m=area?best(area):null;
+  items.push({k:m==null?"unknown":(m>=n.pct?"met":"unmet"),
+   t:m==null?"No mark recorded":m+" in "+area.toLowerCase()+", against "+n.pct});}
+ if(n.evidence) items.push({k:"evidence",t:"Requires "+n.evidence});
+ const k=items.some(i=>i.k==="unmet")?"unmet":items.some(i=>i.k==="unknown")?"unknown":"met";
+ return {k,items,note:n.note};
+}
+/* Shorthand for the chooser, which has room for a mark and not a list. */
+/* ── ALTERNATIVES ───────────────────────────────────────────────────
+   What else fills this slot, for a student looking at a subject whose
+   requirement they do not meet. Restricted to the same group, because
+   the slot still has to be filled from it, and to subjects that
+   actually fit the timetable alongside what they have already chosen.
+
+   A recommendation from a teacher sorts first: a student deciding
+   between two courses they qualify for is better served by the one
+   somebody has already said yes to. */
+function altsFor(subId,list,rec,stu,groupId){
+ const taken=selPicks(rec).filter(([g2])=>g2.id!==groupId).map(([,p])=>p.s);
+ return list.filter(a=>a.id!==subId&&!taken.includes(a.id))
+  .map(a=>{const open=a.lv.filter(lv=>!selClashWith(rec,a.id,lv,groupId).length);
+   if(!open.length)return null;
+   const lv=open.includes("HL")?"HL":open[0];
+   const c=prereqCheck(a.id,lv,stu);
+   if(c.k==="unmet")return null;
+   const r=eligFor(stu&&stu.id,a.id);
+   return {s:a,lv,open,rec:r,score:(r?0:1)+(c.k==="met"?0:1)};})
+  .filter(Boolean).sort((x,y)=>x.score-y.score).slice(0,3);}
+function prereqMark(subId,lv,stu){const r=prereqCheck(subId,lv,stu);
+ return r.k==="met"?"":r.k==="unmet"?"Requirement not met":"Requirement unconfirmed";}
 function selPicks(rec){return IB_GROUPS.map(gr=>[gr,rec.picks?rec.picks[gr.id]:null]).filter(x=>x[1]&&x[1].s);}
 function selHL(rec){return selPicks(rec).filter(([,p])=>p.lv==="HL").length;}
 function selPeriod(p){const s=IBS(p.s);return s?s.per[p.lv]:null;}
@@ -4681,13 +5083,28 @@ function selCheck(rec,stu){
  if(noWhy.length)out.push({k:"block",t:noWhy.length===1?"One subject has no reason written":noWhy.length+" subjects have no reason written",
   d:"Your coordinator reads these before he meets you, and the meeting is better when he has. A sentence is enough."});
  else if(selPicks(rec).length)out.push({k:"ok",t:"A reason on every subject",d:"These go to your coordinator with the selection."});
- /* prerequisite, as a comparison against the record rather than a view */
- selPicks(rec).forEach(([gr,p])=>{const s=IBS(p.s);
-  /* No record of the feeder set is not the same as being in the wrong one,
-     so a student the school has no data for is not warned about. */
-  if(s.needs&&p.lv===s.needs.lv&&stu&&stu.mathSet){const set=stu.mathSet;
-   if(set!==s.needs.course)out.push({k:"ask",q:"Talk me through "+s.name+" at Higher Level. What makes you think you can carry it?",t:s.name+" at Higher Level",
-    d:"It is offered from the "+s.needs.course+" set, and you are in the "+set+" set this year. Your teacher answers this one when the selection reaches him, so it is worth writing down why you want it."});}});
+ /* The feeder-set case is handled by prereqCheck below, which reads
+    the same `needs.course` field and reports it alongside every other
+    requirement. A separate rule here produced the finding twice. */
+ /* ── PREREQUISITES ──────────────────────────────────────────────────
+    Against the student's own course history, never against a cohort.
+    An unmet requirement is an "ask", never a "block": the product
+    decision is that this advises and does not gate. A student who has
+    read the requirement and still wants the course is exactly who the
+    coordinator's meeting is for, and a form that refused to send would
+    route that conversation into a corridor instead of onto a record. */
+ selPicks(rec).forEach(([gr,p])=>{const s2=IBS(p.s); if(!s2||!s2.needs||!stu)return;
+  const chk=prereqCheck(p.s,p.lv,stu);
+  if(chk.k==="unmet"){
+   const missed=chk.items.filter(i=>i.k==="unmet").map(i=>i.t).join("; ");
+   out.push({k:"ask",t:s2.name+(p.lv==="HL"?" at Higher Level":""),
+    q:"You have asked for "+s2.name+" without the usual preparation. What makes this the right course for you?",
+    d:(s2.needs.note||"")+" On this record: "+missed.charAt(0).toLowerCase()+missed.slice(1)+". Nothing stops the student choosing it, and the coordinator will want the reason."});}
+  else if(chk.k==="unknown")
+   out.push({k:"ask",t:s2.name+": record incomplete",
+    q:"We have no course record for "+s2.name+". Can the office confirm what was taken?",
+    d:"The requirement cannot be checked because the prior course record is missing. This is a records question rather than a judgement about the student."});
+ });
  /* the goal check, which never blocks */
  const goalKey=stu&&Object.keys(GOAL_NEEDS).find(k=>(stu.goal||"").includes(k));
  if(goalKey&&selPicks(rec).length>=4){const G=GOAL_NEEDS[goalKey],have=selPicks(rec).map(([,p])=>p.s);
@@ -5244,7 +5661,18 @@ function vSelForm(rec,stu){
         <div class="appa" style="color:var(--ink-4)">${gr.label}</div>
         ${s?`<div class="selrow-t" style="margin-top:2px">${s.name}
           <span class="lvstamp">${p.lv}</span></div>
-         <div class="selrow-n">${s.t} <span class="fig">· ${s.per[p.lv]}</span></div>`
+         ${(()=>{ /* The requirement and the teacher's view sit on the
+            meta line, not under it: two short marks on their own row
+            cost a line of height on every one of six slots. */
+           const bits=[];
+           if(s.needs){const c=prereqCheck(s.id,p.lv,stu);
+            if(!c.slOnly&&c.k!=="met")bits.push(`<span class="prq prq-${c.k}">${c.k==="unmet"?ic('alert',12):ic('eye',12)}${c.k==="unmet"?"Requirement not met":"Requirement unconfirmed"}</span>`);}
+           const r=eligFor(stu&&stu.id,s.id);
+           if(r&&r.lv!=="either"&&r.lv!==p.lv)
+            bits.push(`<span class="prq prq-unmet" title="${(r.note||"").replace(/"/g,"")}">${ic('user',12)}${r.by.split(" ").slice(-1)[0]} suggests ${r.lv}</span>`);
+           else if(r)bits.push(`<span class="prq prq-rec">${ic('check',12)}${r.by.split(" ").slice(-1)[0]} agrees</span>`);
+           return `<div class="selrow-n" style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">
+            <span>${s.t} <span class="fig">\u00b7 ${s.per[p.lv]}</span></span>${bits.join("")}</div>`;})()}`
         :`<div class="selrow-n" style="margin-top:3px">${gr.note}</div>`}
        </div>
        ${submitted?"":`<div class="selrow-r">
@@ -5253,9 +5681,9 @@ function vSelForm(rec,stu){
        </div>`}
       </div>
       ${s&&!submitted?`<div class="selwhy">
-       <label class="appa" for="why-${gr.id}" style="color:var(--ink-3)">Subject rationale</label>
-       <textarea id="why-${gr.id}" data-selwhy="${gr.id}" rows="2" placeholder="One sentence. What made you pick it, or what you want it for."
-        style="width:100%;box-sizing:border-box;resize:vertical;margin-top:5px">${(rec.why[gr.id]||"").replace(/</g,"&lt;")}</textarea>
+       <label class="appa" for="why-${gr.id}" style="color:var(--ink-4)">Why this subject</label>
+       <textarea id="why-${gr.id}" data-selwhy="${gr.id}" rows="1" placeholder="One sentence."
+        class="whyfield">${(rec.why[gr.id]||"").replace(/</g,"&lt;")}</textarea>
       </div>`:s&&submitted&&(rec.why[gr.id]||"").trim()?`<div class="selwhy"><div class="appa" style="color:var(--ink-3)">Why you picked it</div>
        <div class="prose" style="font-size:12.3px;color:var(--ink-2);margin-top:4px;line-height:1.55">${rec.why[gr.id]}</div></div>`:""}
       ${open?vSelChooser(gr,list,rec,stu):""}
@@ -5275,6 +5703,37 @@ function vSelForm(rec,stu){
     <span class="sr">${f.k==="block"?"Blocks submission":f.k==="ask"?"Requires discussion":"Satisfied"}</span></div>
    </div>`).join(""):empty("Nothing to check yet","Fill a slot and the diploma rules, your timetable and your stated goal are all checked here as you go.")}
   </div>
+
+  ${(()=>{ /* ── DISAGREEMENT ──────────────────────────────────────
+     Where the student has chosen against a teacher's recommendation,
+     or past a requirement. Neither stops the form. What they get is
+     the conversation: a dated, attributed meeting request that reaches
+     the coordinator with the reason already attached, so the meeting
+     starts from the student's own words rather than from the mismatch. */
+    const clash=selPicks(rec).map(([gr,p])=>{
+      const r=eligFor(stu&&stu.id,p.s);
+      const against=r&&r.lv!=="either"&&r.lv!==p.lv?r:null;
+      const unmet=IBS(p.s).needs&&prereqCheck(p.s,p.lv,stu).k==="unmet";
+      return (against||unmet)?{gr,p,r:against,unmet}:null;}).filter(Boolean);
+    if(!clash.length)return"";
+    const req=rec.meetReq;
+    return `<h2 class="sechead" style="margin-top:26px">Requesting a conversation</h2>
+    <div class="card" style="padding:16px 18px">
+     <div style="font-size:12.4px;color:var(--ink-2);line-height:1.6;margin-bottom:12px">
+      ${clash.length===1?"One of your choices sits against the advice on your record.":clash.length+" of your choices sit against the advice on your record."}
+      Nothing is blocked. If you want the course, request a meeting and say why; ${SEL_ROUND.coordinator} reads it before you sit down.</div>
+     <div class="checklist" style="margin-bottom:14px">
+      ${clash.map(c=>`<div class="checkrow ask">${ic('alert',13)}
+       <div style="min-width:0"><div class="selrow-t">${IBS(c.p.s).name} at ${c.p.lv==="HL"?"Higher Level":"Standard Level"}</div>
+        <div class="selrow-n">${c.r?c.r.by+" suggests "+c.r.lv+". ":""}${c.unmet?"The usual preparation for this course is not on your record.":""}</div></div></div>`).join("")}
+     </div>
+     ${req?`<div class="revdone" style="margin:0">
+       ${ic('checkC',14)}<div><b>Meeting requested ${req.when}</b>
+       <div class="selrow-n" style="margin-top:3px">\u201c${(req.why||"").replace(/</g,"&lt;")}\u201d</div>
+       <div class="selrow-n" style="margin-top:4px">${SEL_ROUND.coordinator} has this with your form.</div></div></div>`
+      :submitted?`<div class="selrow-n">Your form is with ${SEL_ROUND.coordinator}. Ask for a meeting through your counselor.</div>`
+      :`<button class="btn btn-g" data-meetreqopen="${rec.sid}">${ic('msg',15)} Request a meeting</button>`}
+    </div>`;})()}
 
   ${submitted?"":`<div class="selsend">
    <div style="min-width:0;flex:1">
@@ -5358,15 +5817,61 @@ function vSelChooser(gr,list,rec,stu){
     </div>
    </div>
    <div class="opt-more">
-    <button class="linkish" data-seldesc="${s.id}" aria-expanded="${openDesc}">${openDesc?"Less":"What it is like"}</button>
+    <button class="linkish" data-seldesc="${s.id}" aria-expanded="${openDesc}">${openDesc?"Less":"Requirement, advice and alternatives"}</button>
     ${already?"":!openLv.length?`<span class="selrow-n">${s.lv.map(lv=>selClashWith(rec,s.id,lv,gr.id).length?s.per[lv]+" is your "+selClashWith(rec,s.id,lv,gr.id)[0]:null).filter(Boolean).join(". ")}.</span>`
-     :s.needs?`<span class="selrow-n">Offered from the ${s.needs.course} set at ${s.needs.lv}.</span>`:""}
+     :""}
+    ${(()=>{ /* the requirement, and whether this student meets it */
+      if(!s.needs)return"";
+      const lvTry=openLv.includes("HL")?"HL":openLv[0]||s.lv[0];
+      const c=prereqCheck(s.id,lvTry,stu);
+      if(c.slOnly)return `<span class="selrow-n">Requirement applies at Higher Level only.</span>`;
+      const w=c.k==="unmet"?"block":"ask";
+      return `<span class="prq prq-${c.k}">${c.k==="met"?ic('check',12):c.k==="unmet"?ic('alert',12):ic('eye',12)}${
+        c.k==="met"?"Requirement met":c.k==="unmet"?"Requirement not met":"Requirement unconfirmed"}</span>`;})()}
+    ${(()=>{ /* what a teacher has already said about this student */
+      const r=eligFor(stu&&stu.id,s.id); if(!r)return"";
+      return `<span class="prq prq-rec" title="${r.note||""}">${ic('user',12)}${r.by.split(" ").slice(-1)[0]} suggests ${r.lv==="either"?"either level":r.lv}</span>`;})()}
    </div>
    ${openDesc?`<div class="opt-desc">
-    <div class="dl"><span class="appa">The year</span><p>${s.like}</p></div>
-    <div class="dl"><span class="appa">Assessed by</span><p>${s.assess}</p></div>
-    <div class="dl"><span class="appa">The hard part</span><p>${s.hard}</p></div>
-    <div class="dl"><span class="appa">Taught by</span><p>${s.t}. ${via.under?"Chosen by "+via.n+" so far and it needs "+via.min+", so it may not run.":"Running next year, with "+via.n+" so far."}</p></div>
+    ${(()=>{ /* What the student came here to check, before the prose:
+       the requirement, what a teacher has said, and what else fits. */
+      const lvTry=openLv.includes("HL")?"HL":openLv[0]||s.lv[0];
+      const c=s.needs?prereqCheck(s.id,lvTry,stu):null;
+      const r=eligFor(stu&&stu.id,s.id);
+      const alts=(c&&c.k==="unmet")?altsFor(s.id,list,rec,stu,gr.id):[];
+      const head=(t,k)=>`<div class="optsec-h"><span class="appa">${t}</span>${k?`<span class="prq prq-${k}">${
+        k==="met"?ic('check',12):k==="unmet"?ic('alert',12):k==="rec"?ic('user',12):ic('eye',12)}${
+        k==="met"?"Met":k==="unmet"?"Not met":k==="rec"?"Advised":"Unconfirmed"}</span>`:""}</div>`;
+      let out="";
+      if(c&&!c.slOnly){
+       out+=`<div class="optsec">${head("Requirement",c.k)}
+        <p class="optsec-p">${s.needs.note||""}</p>
+        ${c.items.length?`<div class="checklist" style="margin-top:9px">${c.items.map(i=>`<div class="checkrow ${i.k==="unmet"?"block":"ask"}">
+          ${i.k==="unmet"?ic('x',13):i.k==="met"?ic('check',13):ic('alert',13)}<span>${i.t}</span></div>`).join("")}</div>`:""}
+        ${c.k==="unmet"?`<p class="optsec-p" style="margin-top:9px">This does not stop you choosing it. Your coordinator will ask for the reason, and the form lets you request a meeting.</p>`:""}
+       </div>`;}
+      else if(c&&c.slOnly){
+       out+=`<div class="optsec">${head("Requirement")}<p class="optsec-p">${s.needs.note||""} Checked at Higher Level only.</p></div>`;}
+      out+=`<div class="optsec">${head("Teacher advice",r?"rec":null)}
+        ${r?`<p class="optsec-p"><b>${r.by}</b> suggests <b>${r.lv==="either"?"either level":r.lv}</b>${r.note?": "+r.note:"."}</p>
+            <p class="optsec-p" style="color:var(--ink-4);margin-top:5px">Recorded ${r.when}. Advice, not a restriction.</p>`
+          :`<p class="optsec-p" style="color:var(--ink-4)">No teacher has recorded a level for you on this subject.</p>`}
+       </div>`;
+      if(alts.length){
+       out+=`<div class="optsec">${head("Alternatives in this group")}
+        <p class="optsec-p" style="color:var(--ink-4);margin-bottom:8px">These fit your timetable and you meet what they ask for.</p>
+        <div class="altgrid">${alts.map(a=>`<button class="altcard" data-selpick="${gr.id}:${a.s.id}:${a.lv}">
+          <span class="altcard-n">${a.s.name}</span>
+          <span class="altcard-m">${a.lv} \u00b7 ${a.s.per[a.lv]}${a.rec?" \u00b7 "+a.rec.by.split(" ").slice(-1)[0]+" advises "+a.rec.lv:""}</span>
+         </button>`).join("")}</div>
+       </div>`;}
+      return out;})()}
+    <div class="optsec">${`<div class="optsec-h"><span class="appa">The course</span></div>`}
+     <div class="dl"><span class="appa">The year</span><p>${s.like}</p></div>
+     <div class="dl"><span class="appa">Assessed by</span><p>${s.assess}</p></div>
+     <div class="dl"><span class="appa">The hard part</span><p>${s.hard}</p></div>
+     <div class="dl"><span class="appa">Taught by</span><p>${s.t}.${via.under?" Chosen by "+via.n+" so far against a minimum of "+via.min+", so it may not run.":""}</p></div>
+    </div>
    </div>`:""}
   </div>`;};
  return `<div class="selchoose">
@@ -6064,6 +6569,26 @@ const SEL_STATE={
  approved:{l:"A",t:"Confirmed",n:"Conversation recorded and selection approved."}};
 const SEL_FILTERS=[["act","Awaiting your action"],["sent","Sent"],["not","Not started"],["all","Everyone"]];
 const selWithTeachers=()=>DPC.filter(d=>d.yr===10&&SELREC[d.id]&&SELREC[d.id].status==="submitted").length;
+/* ── RECOMMENDATION COVERAGE AND DISAGREEMENTS ──────────────────────
+   Counted at render time from ELIG and the selections, never stored,
+   for the same reason subject demand is: a stored figure drifts from
+   the thing it counts the moment either side changes.
+
+   Coverage is the gap the coordinator can still close before the round
+   shuts. Disagreements are the conversations the round owes. */
+function eligCoverage(){
+ const yr10=DPC.filter(d=>d.yr===10);
+ const marked=yr10.filter(d=>eligList(d.id).length).length;
+ return {of:yr10.length,marked,gap:yr10.length-marked};}
+function selDisagreements(){
+ return DPC.filter(d=>d.yr===10).map(d=>{
+  const rec=SELREC[d.id]; if(!rec||!rec.picks)return null;
+  const items=selPicks(rec).map(([gr,p])=>{
+   const r=eligFor(d.id,p.s);
+   const against=r&&r.lv!=="either"&&r.lv!==p.lv?r:null;
+   const unmet=IBS(p.s)&&IBS(p.s).needs&&prereqCheck(p.s,p.lv,d).k==="unmet";
+   return (against||unmet)?{s:p.s,lv:p.lv,r:against,unmet}:null;}).filter(Boolean);
+  return items.length?{d,rec,items,requested:!!rec.meetReq,talked:!!rec.talk}:null;}).filter(Boolean);}
 function selRows(){
  const f=S.selFilter||"act";
  return DPC.filter(d=>d.yr===10).map(d=>({d,rec:SELREC[d.id]||{status:"none",picks:{},why:{},signs:{}}}))
@@ -6079,6 +6604,16 @@ function vSelQueue(){
  return `<div class="fade">
   ${head("Grade 10 selection status",
    `The ${SEL_ROUND.year} round. ${round} students in the year group, closing ${SEL_ROUND.closes}. This is the Diploma cohort, not your caseload.`)}
+  ${(()=>{const cov=eligCoverage(),dis=selDisagreements();
+    const open=dis.filter(x=>!x.talked).length;
+    return `<div class="card" style="padding:15px 18px;margin-bottom:16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center">
+     <div style="flex:1;min-width:240px;font-size:12.3px;color:var(--ink-2);line-height:1.55">
+      <b style="color:var(--ink)">${cov.marked} of ${cov.of} students carry a level recommendation.</b>
+      ${cov.gap?"The remaining "+cov.gap+" have none on file, which is a gap a teacher can still close before "+SEL_ROUND.closes+".":"Every student in the year group has one."}</div>
+     <div style="font-size:12.3px;color:var(--ink-2);line-height:1.55;min-width:200px">
+      <b style="color:var(--ink)">${open} ${open===1?"choice sits":"choices sit"} against the advice.</b>
+      ${open?"Each one is a conversation the round owes.":"Nothing outstanding."}</div>
+    </div>`;})()}
   ${tally([["Awaiting your action",String(selWaiting()),"teachers have answered"],
    ["With teachers",String(selWithTeachers()),"awaiting teacher response"],
    ["Confirmed",String(c.approved),"conversation recorded"],
@@ -6135,12 +6670,24 @@ function vSelStudent(sid){
  const questions=[];
  if(rec.goalNote)questions.push({q:"You wrote that you want to keep two routes open. Which one would you drop if the timetable made you?",src:"Their own note on the form"});
  asks.forEach(a=>{if(a.q)questions.push({q:a.q,src:a.d});});
+ /* A teacher's recommendation that the student chose against is the
+    same kind of question as a teacher's sign-off that disagreed, so it
+    joins the same list rather than opening a second one. */
+ selPicks(rec).forEach(([gr,p])=>{const r=eligFor(sid,p.s);
+  if(r&&r.lv!=="either"&&r.lv!==p.lv)
+   questions.push({q:r.by.split(" ").slice(-1)[0]+" recommended "+r.lv+" for "+IBS(p.s).name+", and the form asks for "+p.lv+". What does the student say?",
+    src:r.note||("Recorded "+r.when)});});
  hlSubs.forEach(([,p])=>{const sg=rec.signs&&rec.signs[p.s];
   if(sg&&sg.verdict!=="hl")questions.push({q:IBS(p.s).t.split(" ").slice(-1)[0]+" suggested Standard Level. Have you spoken to him?",src:sg.by+", "+sg.when+": "+sg.note});});
  return `<div class="fade">
   <button class="btn btn-g btn-sm" style="margin-bottom:14px" data-selback="1">${ic("arrow-left",14)} All selections</button>
   ${head("Meeting preparation: "+d.name,
    `Grade 10 · ${d.goal} · ${rec.submitted?"sent "+rec.submitted:"nothing sent yet"} · ${st.n}`)}
+  ${rec.meetReq?`<div class="card" style="padding:16px 18px;margin-bottom:18px;border-left:3px solid var(--margin)">
+   <div class="appa" style="color:var(--ink-3);margin-bottom:7px">Requested by the student \u00b7 ${rec.meetReq.when}</div>
+   <div style="font-size:12.8px;color:var(--ink);line-height:1.6">\u201c${(rec.meetReq.why||"").replace(/</g,"&lt;")}\u201d</div>
+   <div class="selrow-n" style="margin-top:8px">${d.name.split(" ")[0]} asked for this meeting. The reason above was written before it.</div>
+  </div>`:""}
   ${stu?`<div class="sheetbox" style="margin-bottom:20px"><div class="selrow-static">
    ${av(d.av,"counselor",38)}
    <div style="min-width:0;flex:1"><div class="selrow-t">${d.name} is on your caseload</div>
@@ -9126,7 +9673,7 @@ function draw(){
  const tabbar=`<nav class="tabbar">${TABS.map(t=>{
    const on=t[0]!=="__menu"&&curKey===t[0];
    return `<button class="tabitem ${on?'on':''}" ${t[0]==="__menu"?'data-navopen="1"':navAttr+'="'+t[0]+'"'}>${ic(t[2],20)}<span>${t[1]}</span>${t[0]==="si-cases"&&prioCounts().urgent?`<i class="tabdot"></i>`:''}</button>`;}).join('')}</nav>`;
- R.innerHTML=`<a href="#main" class="skip-link">Skip to main content</a><div class="navscrim" data-navclose="1"></div><div${S.palOpen?' aria-hidden="true"':''} style="height:100vh;display:flex;flex-direction:column">${roleBar()}${sb}${demoStamp()}</div>${S.palOpen?tabbar.replace('<nav class="tabbar">','<nav class="tabbar" aria-hidden="true">'):tabbar}${palOpen}${modalEl()}${tflagModal()}${meetModal()}${mergeModal()}${assignModal()}${bulkAssignModal()}${escalateModal()}${selModal()}${casModal()}${S.toast?`<div class="toastbar pop" role="status" aria-live="polite">${ic('checkC',17)}${S.toast}</div>`:''}`;
+ R.innerHTML=`<a href="#main" class="skip-link">Skip to main content</a><div class="navscrim" data-navclose="1"></div><div${S.palOpen?' aria-hidden="true"':''} style="height:100vh;display:flex;flex-direction:column">${roleBar()}${sb}${demoStamp()}</div>${S.palOpen?tabbar.replace('<nav class="tabbar">','<nav class="tabbar" aria-hidden="true">'):tabbar}${palOpen}${modalEl()}${tflagModal()}${eligModal()}${meetReqModal()}${meetModal()}${mergeModal()}${assignModal()}${bulkAssignModal()}${escalateModal()}${selModal()}${casModal()}${S.toast?`<div class="toastbar pop" role="status" aria-live="polite">${ic('checkC',17)}${S.toast}</div>`:''}`;
  if(S.palOpen){palPaint(S.palQuery||"",S.role);setTimeout(()=>{const palInput=document.getElementById("palInput");if(palInput){palInput.focus();palInput.selectionStart=palInput.selectionEnd=palInput.value.length;}} ,0);}
  bind();
 }
@@ -9149,12 +9696,60 @@ function bind(){
  q("[data-cat]",e=>e.onclick=()=>{const k=e.dataset.cat;S.cat[k]=!S.cat[k];draw();});
  /* ── teacher flag flow ── */
  q("[data-tflag]",e=>{kb(e,"button");e.onclick=()=>{S.modal={type:"tflag",id:e.dataset.tflag};S.tKind="concern";S.tTags=[];S.tNote="";draw();};});
+ /* ── RECOMMENDING A LEVEL (teacher register) ─────────────────────
+    stopPropagation on the opener: the whole row is the log-a-concern
+    target, and without it recommending a level would open the concern
+    modal underneath at the same time. */
+ q("[data-meetreqopen]",e=>e.onclick=()=>{S.modal={type:"meetreq",id:e.getAttribute("data-meetreqopen")};
+  S.meetReqWhy="";draw();});
+ q("[data-meetreqwhy]",e=>e.oninput=()=>{const was=(S.meetReqWhy||"").trim().length>=15;
+  S.meetReqWhy=e.value;
+  /* redraw only when the button's state actually flips, so the caret
+     survives ordinary typing */
+  if(was!==(e.value.trim().length>=15)){draw();
+   const n=document.getElementById("meetWhy"); if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length);}}});
+ q("[data-meetreqgo]",e=>e.onclick=()=>{
+  const id=e.getAttribute("data-meetreqgo"),rec=SELREC[id];
+  const why=(S.meetReqWhy||"").trim(); if(!rec||why.length<15)return;
+  rec.meetReq={why,when:DAY.short,by:"student"};
+  rec.log.unshift({when:DAY.short,who:(DPC.find(d=>d.id===id)||{}).name||"Student",
+   what:"Meeting requested about a choice that sits against the advice. "+why});
+  logAudit("STUDENT","MEETING_REQUESTED",(DPC.find(d=>d.id===id)||{}).name||id,why);
+  S.modal=null;S.meetReqWhy="";
+  toast("Request sent. "+SEL_ROUND.coordinator+" sees it with your form.");});
+ q("[data-eligopen]",e=>e.onclick=ev=>{ev.stopPropagation();
+  const id=e.getAttribute("data-eligopen");
+  S.modal={type:"elig",id};
+  /* Reopening on a student already marked loads what is there, so the
+     teacher edits a record rather than retyping it. */
+  const cur=eligList(id).filter(r=>r.by===TEACHER.name)[0];
+  S.eligForm=cur?{s:cur.s,lv:cur.lv,note:cur.note||""}:{s:null,lv:null,note:""};
+  draw();});
+ q("[data-eligsub]",e=>e.onclick=()=>{S.eligForm=S.eligForm||{};
+  const n=document.getElementById("eligNote"); if(n)S.eligForm.note=n.value;
+  S.eligForm.s=e.getAttribute("data-eligsub");draw();});
+ q("[data-eliglv]",e=>e.onclick=()=>{S.eligForm=S.eligForm||{};
+  const n=document.getElementById("eligNote"); if(n)S.eligForm.note=n.value;
+  S.eligForm.lv=e.getAttribute("data-eliglv");draw();});
+ q("[data-elignote]",e=>e.oninput=()=>{S.eligForm=S.eligForm||{};S.eligForm.note=e.value;});
+ q("[data-eligsave]",e=>e.onclick=()=>{
+  const id=e.getAttribute("data-eligsave"),f=S.eligForm||{};
+  if(!f.s||!f.lv)return;
+  const n=document.getElementById("eligNote"); if(n)f.note=n.value;
+  ELIG[id]=ELIG[id]||{};
+  ELIG[id][f.s]={lv:f.lv,by:TEACHER.name,when:DAY.short,note:(f.note||"").trim()};
+  const stu=DPC.find(d=>d.id===id);
+  logAudit("M.DAVIES","LEVEL_RECOMMENDED",stu?stu.name:id,
+   IBS(f.s).name+" at "+(f.lv==="either"?"either level":f.lv)+(f.note?". "+f.note:""));
+  S.modal=null;S.eligForm=null;
+  toast("Recommendation recorded. "+(stu?stu.name.split(" ")[0]:"The student")+" sees it while choosing.");});
  q("[data-tkind]",e=>e.onclick=()=>{S.tKind=e.dataset.tkind;S.tTags=[];draw();});
  q("[data-ttag]",e=>e.onclick=()=>{const t=e.dataset.ttag;const i=S.tTags.indexOf(t);
    if(i>-1)S.tTags.splice(i,1);else S.tTags.push(t);
    const n=document.getElementById("tnote");if(n)S.tNote=n.value;draw();});
  q("[data-tsave]",e=>e.onclick=()=>{
-   const id=e.dataset.tsave,c=g(id);const n=document.getElementById("tnote");
+   const id=e.dataset.tsave,c=anyStudent(id); if(!c)return;
+   const n=document.getElementById("tnote");
    const txt=(n?n.value:"").trim()||S.tTags.join(", ")||"Logged after lesson.";
    const K=FLAG_KINDS.find(k=>k.k===S.tKind);
    TFLAGS.unshift({id:"tf"+Date.now(),sid:id,student:c.name,av:c.av,by:TEACHER.name+" · "+TEACHER.subject,
