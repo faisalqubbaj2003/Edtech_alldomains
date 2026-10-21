@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#004D43">
+<meta name="theme-color" content="#101C36">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='32' y2='32'%3E%3Cstop offset='0' stop-color='%231FC7A8'/%3E%3Cstop offset='1' stop-color='%23087B68'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-weight='700' font-size='20' fill='white' text-anchor='middle'%3EC%3C/text%3E%3C/svg%3E">
 <title>CLAROS · Counselor OS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,14 +33,14 @@
    ══════════════════════════════════════════════════════════════════════════ */
 :root{
  /* ── MATERIAL · the sheet ─────────────────────────────────────────────── */
- --stock:#FAFBF7;          /* the sheet */
- --stock-2:#F1F4EE;        /* the desk the sheet sits on */
- --stock-3:#E8ECE4;        /* a recessed field: inset wells, unfilled controls */
- --band:#DCE8DA;           /* the green bar. Every ink above passes AA on it. */
- --band-2:#CFDECC;         /* a band under the cursor, or selected */
- --rule:#C4D3C2;           /* hairline ruling */
- --rule-2:#AFC3AE;         /* a ruling that divides */
- --rule-3:#93AB93;         /* the heavy rule under a column head */
+ --stock:#FAFBFC;          /* the sheet */
+ --stock-2:#F1F3F7;        /* the desk the sheet sits on */
+ --stock-3:#E7EAF0;        /* a recessed field: inset wells, unfilled controls */
+ --band:#DFE4EE;           /* the bar, tinted toward the Claros navy. Every ink above passes AA on it. */
+ --band-2:#D1D8E6;         /* a band under the cursor, or selected */
+ --rule:#C5CDDB;           /* hairline ruling */
+ --rule-2:#AEB8CB;         /* a ruling that divides */
+ --rule-3:#8F9AB0;         /* the heavy rule under a column head */
  --ink:#131D26;            /* blue-black. Printed, not sprayed. */
  --ink-2:#33454F;
  --ink-3:#4F636B;
@@ -89,8 +89,8 @@
  /* ── LETTERHEAD · overwritten by applySchool(). The unbranded default. */
  /* --school-src* are written inline by applySchool(); the literals below are
     the default seed, so the sheet is correct before a line of JS runs. */
- --school-src:#004D43; --school-src-deep:#023A33; --school-src-lift:#4FA898; --school-src-accent:#EFE6D2;
- --school-field:#004D43; --school-field-dark:#00302A;
+ --school-src:#101C36; --school-src-deep:#0A1326; --school-src-lift:#7E8492; --school-src-accent:#E8A33D;
+ --school-field:#101C36; --school-field-dark:#101C36;
  --school-primary:var(--school-src);
  /* Read through a *-paper source, never written directly by applySchool: an
     inline custom property on <html> outranks the night-ledger media query on
@@ -147,9 +147,9 @@
    product decision, and the tokens are already here when it is taken. */
 @media (prefers-color-scheme:dark){
  html[data-role="student"]{
-  --stock:#141A17; --stock-2:#101512; --stock-3:#1B221D;
-  --band:#1E2621; --band-2:#26302A;
-  --rule:#2E3A32; --rule-2:#3C4A40; --rule-3:#516052;
+  --stock:#13161D; --stock-2:#0F1218; --stock-3:#1A1E27;
+  --band:#1E2330; --band-2:#262C3A;
+  --rule:#2E3545; --rule-2:#3C4456; --rule-3:#515A6E;
   --ink:#EDF1EA; --ink-2:#C3CEC4; --ink-3:#9EAB9F; --ink-4:#8B9A8D;
   --margin:#E0736A;
   --t-urgent:#F0857A;  --t-urgent-bg:#2E1A18; --t-urgent-deep:#F6A79E;
@@ -281,6 +281,10 @@ button{color:inherit}
  background:var(--stock);border:1px solid var(--rule-2);border-radius:var(--r);
  font-family:var(--f-content);font-size:12.5px;color:var(--ink-3);cursor:pointer}
 .topsearch:hover{border-color:var(--rule-3);color:var(--ink-2)}
+@media (max-width:820px){.rolebar-brand{width:auto!important;margin-left:0!important}}
+.topsearch-bar{width:min(440px,100%);height:34px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:var(--nav-txt)}
+.topsearch-bar:hover{background:rgba(255,255,255,.11);border-color:rgba(255,255,255,.24);color:#fff}
+.topsearch-bar kbd{font-family:var(--f-figure);font-size:10px;color:var(--nav-txt);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:var(--r-sm);padding:1px 5px;flex-shrink:0}
 @media (max-width:820px),(max-height:540px) and (max-width:1000px){.topsearch{display:none}}
 .btn{
  display:inline-flex;align-items:center;justify-content:center;gap:6px;
@@ -580,6 +584,18 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--band-2)}
 .navitem.on{background:rgba(255,255,255,.09);color:#fff;font-weight:600}
 .navitem svg{width:15.5px;height:15.5px;opacity:.72;flex-shrink:0}
 .navitem.on svg{opacity:1}
+.navitem.nav2{min-height:32px;padding:5px 10px;font-family:var(--f-content);font-size:13px;font-weight:450;letter-spacing:0;gap:10px}
+.navitem.nav2.on{font-weight:600}
+.navgrp{display:flex;align-items:center;gap:10px;width:100%;min-height:32px;padding:5px 10px;margin-top:13px;position:relative;border:none;background:transparent;cursor:pointer;font-family:var(--f-content);font-size:12px;font-weight:500;color:var(--nav-txt);text-align:left;border-radius:var(--r-sm)}
+.navgrp::before{content:"";position:absolute;left:10px;right:10px;top:-7px;height:1px;background:var(--nav-line)}
+.navrule{height:1px;background:var(--nav-line);margin:6px 10px 4px;flex-shrink:0}
+.navsec{position:relative;margin-top:7px}
+.navsec::before{content:"";position:absolute;left:11px;right:11px;top:0;height:1px;background:var(--nav-line)}
+.navgrp:hover{color:#fff;background:rgba(255,255,255,.06)}
+.navgrp svg.ico{opacity:.72}
+.navgrp[aria-expanded="true"]{color:var(--on-letterhead)}
+.navgrp .chev{margin-left:auto;display:flex;opacity:.55;transition:transform .18s cubic-bezier(.22,1,.36,1)}
+.navdot{margin-left:auto;width:6px;height:6px;border-radius:var(--r-dot);background:var(--on-letterhead-2);opacity:.85;flex-shrink:0}
 .rolebtn{transition:background .15s ease,color .15s ease,box-shadow .15s ease;border:none;cursor:pointer;font-family:inherit;min-height:44px}
 svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
 
@@ -1120,6 +1136,8 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
  .btn{padding:11px 15px;font-size:13.5px;min-height:44px}
  .btn-sm{padding:9px 12px;font-size:12.5px;min-height:44px}
  .navitem{padding:11px 12px;font-size:14px;min-height:44px}
+ .navitem.nav2{padding:11px 12px;font-size:14px;min-height:44px}
+ .navgrp{min-height:44px}
  .tab{padding:10px 14px;font-size:13px;min-height:44px}
  .chip{font-size:11.5px}
 
@@ -1279,6 +1297,8 @@ book:'M4 4h7a2 2 0 0 1 2 2v14a1.5 1.5 0 0 0-1.5-1.5H4zM20 4h-7a2 2 0 0 0-2 2v14a
 route:'M6 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM9 19h6a3 3 0 0 0 3-3v-3M6 15V8a3 3 0 0 1 3-3h3',
 gauge:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 12l4-4',
 list:'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01',
+cal:'M4 5h16v16H4zM4 10h16M8 3v4M16 3v4',checkSq:'M4 4h16v16H4zM8.5 12l2.5 2.5 4.5-5',grid:'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',pulse:'M3 12h4l3-7 4 14 3-7h4',folder:'M3 6a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z',branch:'M6 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM6 8v4a6 6 0 0 0 6 6h4',
+scale:'M12 3v18M7 21h10M5 7h14M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0z',clip:'M21 11.5 12.5 20a5 5 0 0 1-7-7L14 4.5a3.3 3.3 0 0 1 4.7 4.7L10.2 17.7a1.7 1.7 0 0 1-2.4-2.4L15.5 7.6',pie:'M12 3a9 9 0 1 0 9 9h-9zM15 3.5A9 9 0 0 1 20.5 9H15z',sliders:'M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0M14 4v4M8 10v4M16 16v4',map:'M9 4 3 6v14l6-2 6 2 6-2V4l-6 2zM9 4v14M15 6v14',hand:'M7 11V6a1.5 1.5 0 0 1 3 0v4M10 10V4.5a1.5 1.5 0 0 1 3 0V10M13 10V5.5a1.5 1.5 0 0 1 3 0V12M16 9.5a1.5 1.5 0 0 1 3 0V14a7 7 0 0 1-7 7h-1a6 6 0 0 1-5-2.7L3.5 14a1.5 1.5 0 0 1 2.5-1.7L7 14',
 merge:'M6 3v6a6 6 0 0 0 6 6h6M18 12l3 3-3 3',heart:'M12 21C7 16.5 3 13.2 3 9.3 3 6.4 5.2 4.5 7.7 4.5c1.7 0 3.3.9 4.3 2.4 1-1.5 2.6-2.4 4.3-2.4 2.5 0 4.7 1.9 4.7 4.8 0 3.9-4 7.2-9 11.7z',inbox:'M3 12h5l2 3h4l2-3h5M5 5h14l2 7v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z',msg:'M21 12a8 8 0 0 1-11.5 7.2L3 21l1.8-6.5A8 8 0 1 1 21 12z',chevR:'M9 6l6 6-6 6',refresh:'M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5',user:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 20c0-4 3.5-6 8-6s8 2 8 6',target:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2z'};
 function ic(n,s){s=s||17;return '<svg class="ico" viewBox="0 0 24 24" style="width:'+s+'px;height:'+s+'px">'+(IP[n]||'').split('M').filter(Boolean).map(function(d){return '<path d="M'+d+'"/>';}).join('')+'</svg>';}
 
@@ -1304,12 +1324,11 @@ const SCHOOLS={
   counselor:"Ms. Reem Haddad", role:"High School Counselor",
   safeLead:"Mr. J. Okonkwo (Child Protection Officer)",
   dept:"High School Counseling", sis:"Veracross", safeguarding:"Child Protection Officer",
-  /* primary is 9.25:1 on the stock and 8.34:1 on the band; white on it is
-     9.80, which is also what fixes the 2.63:1 avatar failure measured on
-     2026-09-02. accent is bone: 7.9:1 on the letterhead field behind dark
-     ink, and never set as type, so it ships as a pair and the failing
-     combination is unreachable. */
-  brand:{primary:"#004D43", primaryDeep:"#023A33", accent:"#EFE6D2"}
+  /* The Claros brand: navy field, flame accent (2026-10-21; was the ACS
+     pine). primary is 16.33:1 on the stock and 13.27:1 on the band; white
+     on it is 16.92. accent is the flame: 7.91:1 behind dark ink and
+     7.84:1 on the navy field, never set as type, so it ships as a pair. */
+  brand:{primary:"#101C36", primaryDeep:"#0A1326", accent:"#E8A33D"}
  },
  /* The unbranded rendition: the sheet with no school over it. */
  demo:{
@@ -2080,7 +2099,7 @@ function roleNav(role){
  const track=(g(PARENT_ME)||{}).track||"IB";
  if(role==="parent"){
   let nav=[["overview","Overview","home"],["messages","Messages","msg"],["meetings","Meet the counselor","brief"]];
-  if(grade===9)nav.splice(2,0,["guide","High School Guide","book"]);
+  if(grade===9)nav.splice(2,0,["guide","High School Guide","map"]);
   if(grade>=10)nav.splice(2,0,["pathway","IB or AP","route"]);
   if(grade>=11)nav.splice(2,0,["grades","Grades & transcripts","book"]);
   if(grade===12)nav.splice(Math.max(nav.findIndex(t=>t[0]==="pathway"),0),0,["uni","University requirements","grad"]);
@@ -2090,7 +2109,7 @@ function roleNav(role){
  }
  if(role==="student"){
   const nav=[["discover","My Pathway","spark"]];
-  if(grade===9)nav.push(["guide","High School Guide","book"],["stuclass","My subjects","book"],["stucas","Activities","users"]);
+  if(grade===9)nav.push(["guide","High School Guide","map"],["stuclass","My subjects","book"],["stucas","Activities","users"]);
   else{
    if(grade>=11)nav.push(["progress","My progress","trend"]);
    /* Grade 10 is the selection round, so this entry is the form itself
@@ -2110,7 +2129,7 @@ function roleNav(role){
    if(grade>=11&&track==="AP")nav.push(["apexams","AP Exams","clock"]);
    /* Alumni are gated to Grade 11 and up: the conversation is about an
       application the student is close enough to be making. */
-   if(grade>=11)nav.push(["mentors","Find a Mentor","users"]);
+   if(grade>=11)nav.push(["mentors","Find a Mentor","hand"]);
    if(grade===12)nav.push(["network","My network","brief"]);
   }
   return nav;
@@ -2233,23 +2252,36 @@ function demoStamp(){
   <span class="demofoot-s">No real student records</span></div>`;
 }
 
+/* The product's own name, once, in the top bar. A partner school's crest
+   lives in the sidebar head beside the school's name, never next to this,
+   so two marks never sit side by side. */
+const CLAROS_WORDMARK="data:image/png;base64,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";
 function roleBar(){
  const roles=[["counselor","Counselor","brief"],["teacher","Teacher","book"],["student","Student","grad"],["parent","Parent","heart"],["mentor","Mentor","route"]];
- const pc=prioCounts();
  return `<div class="rolebar" style="height:52px;background:var(--navy);display:flex;align-items:center;padding:0 18px;gap:15px;flex-shrink:0;z-index:60">
-  <div style="display:flex;align-items:center;gap:10px">
-   ${crest(32)}
-   <div><div class="stamp" style="font-weight:700;font-size:15px;color:#fff;letter-spacing:.03em">CLAROS</div>
+  <div class="rolebar-brand" style="width:234px;margin-left:2px;flex-shrink:0;display:flex;align-items:center;gap:10px">
+   <div><img src="${CLAROS_WORDMARK}" alt="Claros" height="32" style="height:32px;width:auto;display:block">
    ${SCHOOL.short?`<div class="rolebar-tag" style="font-family:var(--f-apparatus);font-size:10px;letter-spacing:.16em;color:var(--nav-txt);text-transform:uppercase;margin-top:1px">${SCHOOL.short}</div>`:``}</div></div>
-  <div style="margin-left:auto;display:flex;align-items:center;gap:14px">
-   <div class="rolebar-stats" style="display:flex;align-items:center;gap:9px;font-size:11px;color:var(--nav-txt)">
-    <span style="display:flex;align-items:center;gap:5px"><span class="pulsedot" style="width:7px;height:7px;border-radius:var(--r-dot);background:var(--t-urgent)"></span><b class="fig" style="color:#fff;font-weight:500">${pc.urgent}</b> urgent</span>
-    <span style="display:flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:var(--r-dot);background:var(--t-checkin)"></span><b class="fig" style="color:#fff;font-weight:500">${pc.checkin}</b> check-in</span>
-    <span style="display:flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:var(--r-dot);background:var(--t-review)"></span><b class="fig" style="color:#fff;font-weight:500">${pc.review}</b> review</span></div>
+  <div style="flex:1;display:flex;justify-content:center;min-width:0">
+   <button class="topsearch topsearch-bar" data-palopener="1" aria-label="Search" aria-keyshortcuts="Meta+K">
+    ${ic('search',14)}<span style="flex:1;text-align:left">${S.role==="counselor"?"Search students, cases and pages":"Search"}</span>
+    <kbd>⌘K</kbd></button></div>
+  <div style="display:flex;align-items:center;gap:14px">
    <div class="rolebar-switch" style="display:flex;background:rgba(255,255,255,.08);border-radius:var(--r);padding:3px;gap:2px">
    ${roles.map(([id,l,i])=>`<button class="rolebtn" data-role="${id}" aria-pressed="${S.role===id}" style="display:flex;align-items:center;gap:6px;padding:6px 13px;border-radius:var(--r);font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:var(--f-apparatus);letter-spacing:.02em;background:${S.role===id?'var(--stock)':'transparent'};color:${S.role===id?'var(--ink)':'rgba(255,255,255,.72)'}">${ic(i,14)}<span class="rl">${l}</span></button>`).join('')}
    </div></div></div>`;}
 
+/* Sidebar clusters for the four smaller roles, so their lists read in
+   groups with the same divider the counselor's categories carry. Display
+   only: roleNav() stays the one flat list the tab bar and ⌘K read. */
+const NAVGROUP={
+ student:{discover:1,progress:1,guide:2,stuclass:2,stucas:2,explore:2,apexams:2,targets:3,pslab:3,mentors:4,network:4},
+ parent:{overview:1,messages:1,guide:2,grades:2,uni:2,pathway:2,apexams:2,meetings:3},
+ teacher:{class:1,tclasses:2,classapprovals:2,ee:2,tlog:3},
+ mentor:{requests:1,mentees:2}};
+function groupedNav(theme,nav){const m=NAVGROUP[theme];if(!m)return nav;
+ const items=nav.map((x,i)=>({x,i,g:m[x[0]]||9})).sort((a,b)=>a.g-b.g||a.i-b.i);
+ const out=[];items.forEach((it,k)=>{if(k&&it.g!==items[k-1].g)out.push(["|"]);out.push(it.x);});return out;}
 /* ═══════════ SHELL ═══════════ */
 function shell(theme,nav,active,attr,footAv,footN,footR,title,sub,body){
  /* Letterhead, all five roles. The old per-role navy/teal/violet/rose pairs
@@ -2259,16 +2291,15 @@ function shell(theme,nav,active,attr,footAv,footN,footR,title,sub,body){
  const bar="var(--school-accent)";
  const nm={counselor:"Counselor OS",student:"Career OS",mentor:"Mentor Hub",teacher:"Teacher Portal",parent:"Family Portal"}[theme];
  return `<div class="shell" style="flex:1;display:flex;overflow:hidden">
- <aside class="sidebar" style="width:218px;background:${bg};display:flex;flex-direction:column;padding:18px 0;flex-shrink:0;overflow-y:auto">
-  <div style="padding:0 18px 16px;display:flex;align-items:center;gap:10px">
+ <aside class="sidebar" style="width:252px;background:${bg};display:flex;flex-direction:column;padding:18px 0 0;flex-shrink:0;overflow-y:auto">
+  ${SCHOOL.short?`<div style="padding:0 18px 16px;display:flex;align-items:center;gap:10px">
    ${crest(32)}
-   <div><div class="stamp" style="font-weight:600;font-size:14.5px;color:#fff;line-height:1">${nm}</div>
-   ${SCHOOL.short?`<div style="font-size:10px;letter-spacing:.13em;color:var(--nav-txt);margin-top:3px">${SCHOOL.short.toUpperCase()}</div>`:``}</div></div>
-  <nav style="display:flex;flex-direction:column;gap:2px;padding:0 11px">
-   ${nav.map(x=>x[0]==="_"?`<div style="font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--nav-txt);padding:14px 11px 6px;font-weight:700">${x[1]}</div>`:
-   `<button class="navitem ${active===x[0]?'on':''}" ${attr}="${x[0]}">${active===x[0]?`<span style="position:absolute;left:-11px;top:50%;transform:translateY(-50%);width:3px;height:19px;background:${bar};border-radius:var(--r-sm)"></span>`:''}${ic(x[2])}${x[1]}${x[3]?`<span style="margin-left:auto;background:${x[4]||bar};color:${x[4]?'#fff':bg};font-size:10.5px;font-weight:700;min-width:17px;height:17px;border-radius:var(--r);display:grid;place-items:center;padding:0 5px">${x[3]}</span>`:''}</button>`).join('')}
+   <div style="font-size:10px;letter-spacing:.13em;color:var(--nav-txt)">${SCHOOL.short.toUpperCase()}</div></div>`:''}
+  <nav style="display:flex;flex-direction:column;gap:2px;padding:0 10px">
+   ${groupedNav(theme,nav).map(x=>x[0]==="|"?`<div class="navrule" role="separator"></div>`:x[0]==="_"?`<div class="navsec" style="font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--nav-txt);padding:14px 11px 6px;font-weight:700">${x[1]}</div>`:
+   `<button class="navitem nav2 ${active===x[0]?'on':''}" ${attr}="${x[0]}">${active===x[0]?`<span style="position:absolute;left:-11px;top:50%;transform:translateY(-50%);width:3px;height:19px;background:${bar};border-radius:var(--r-sm)"></span>`:''}${ic(x[2],15)}${x[1]}${x[3]?`<span style="margin-left:auto;background:${x[4]||bar};color:${x[4]?'#fff':bg};font-size:10.5px;font-weight:700;min-width:17px;height:17px;border-radius:var(--r);display:grid;place-items:center;padding:0 5px">${x[3]}</span>`:''}</button>`).join('')}
   </nav>
-  <div style="margin-top:auto;padding:13px 15px 0;margin:13px 11px 0;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:9px">
+  <div style="margin:auto 10px 8px;padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px">
    ${av(footAv,theme==="student"?"student":"mentor",32)}
    <div><div style="font-size:12px;font-weight:600;color:#fff">${footN}</div><div style="font-size:10px;color:var(--nav-txt)">${footR}</div></div></div>
  </aside>
@@ -2276,14 +2307,6 @@ function shell(theme,nav,active,attr,footAv,footN,footR,title,sub,body){
   <div class="glass" style="position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);padding:13px 30px;display:flex;align-items:center;gap:16px">
    <button class="navtoggle" data-navopen="1" aria-label="Menu">${ic('list',18)}</button>
    <div style="flex:1;min-width:0"><div class="stamp" style="font-size:18px;font-weight:600">${title}</div><div style="font-size:11.5px;color:var(--inkMute);margin-top:1px">${sub}</div></div>
-   ${/* Was a dead <input placeholder="Search students…"> on a white literal:
-        it had no handler, it inverted wrong on the night ledger, and on the
-        student's own portal it offered to search other students — the exact
-        permission the ⌘K palette is scoped to withhold. It is now the opener
-        for that palette, which already knows what each role may search. */''}
-   <button class="topsearch" data-palopener="1" aria-label="Search" aria-keyshortcuts="Meta+K">
-    ${ic('search',14)}<span style="flex:1;text-align:left">Search</span>
-    <kbd style="font-family:var(--f-figure);font-size:10px;color:var(--ink-3);background:var(--stock-3);border:1px solid var(--rule-2);border-radius:var(--r-sm);padding:1px 5px;flex-shrink:0">⌘K</kbd></button>
   </div>
   <div class="pagewrap" style="padding:24px 30px 70px">${body}</div>
  </main></div>`;}
@@ -3362,36 +3385,34 @@ function dimCounts(key){const f=DIMS[key].f;const o={critical:0,watch:0,good:0};
 
 /* ═══════════ CATEGORY NAV ═══════════ */
 const CATS=[
- {id:"cohort",label:"My Cohort",ic:"users",sub:[
-   ["cohort-schedule","Caseload"],["flags","From teachers"],["meetings","Meetings"],["approvals","Pathway approvals"],["psreviews","Personal statements"]]},
- {id:"uni",label:"University Applications",ic:"grad",sub:[
-   ["app-season","Season overview"],
-   ["app-progress","Application progress"],["app-list","List balance"],["app-deadlines","Deadlines"],
-   ["app-docs","Documents & references"],["app-statement","Personal statements"],["app-letter","Letter Engine"]]},
+ {id:"cohort",label:"My cohort",ic:"users",sub:[
+   ["cohort-schedule","Caseload","list"],["flags","From teachers","inbox"],["meetings","Meetings","cal"],["approvals","Pathway approvals","checkSq"],["psreviews","Personal statements","doc"]]},
+ {id:"uni",label:"University applications",ic:"grad",sub:[
+   ["app-season","Season overview","eye"],
+   ["app-progress","Application progress","chart"],["app-list","List balance","scale"],["app-deadlines","Deadlines","clock"],
+   ["app-docs","Documents & references","clip"],["app-statement","Personal statements","pencil"],["app-letter","Letter Engine","send"]]},
  /* The coordinator's work, inside the console the counseling team already
     has open. The school runs no separate coordination department, so this is a
     category rather than a sixth role. */
  {id:"ib",label:"IB Diploma",ic:"route",sub:[
-   ["ib-selections","Subject selections"],["ib-demand","Courses offered"],["ib-ee","Extended essays"],["ib-cas","CAS progress"]]},
- {id:"si",label:"Student Intelligence",ic:"radar",sub:[
-   ["si-cases","Priority cases"],["si-why","How detection works"],
-   ["si-attendance","Attendance"],["si-punctuality","Punctuality & tardiness"],
-   ["si-academic","Academic signals"],["si-engagement","Engagement"],["si-behaviour","Behaviour & conduct"],
-   ["si-interventions","Interventions"]]}];
-const SYSNAV=[["files","360° student files","layers"],["app-flow","Admin & automation","refresh"],["copilot","AI co-pilot","spark"],["prove","Reporting","chart"],["arch","Signal architecture","layers"],["thresholds","Thresholds","gauge"],["pilot","Pilot & rollout","route"]];
+   ["ib-selections","Subject selections","grid"],["ib-demand","Courses offered","layers"],["ib-ee","Extended essays","book"],["ib-cas","CAS progress","pulse"]]},
+ {id:"si",label:"Student intelligence",ic:"radar",sub:[
+   ["si-cases","Priority cases","folder"],["si-why","How detection works","branch"],
+   ["si-attendance","Attendance","checkC"],["si-punctuality","Punctuality & tardiness","late"],
+   ["si-academic","Academic signals","trend"],["si-engagement","Engagement","gauge"],["si-behaviour","Behaviour & conduct","flag"],
+   ["si-interventions","Interventions","target"]]}];
+const SYSNAV=[["files","360° student files","user"],["app-flow","Admin & automation","refresh"],["copilot","AI co-pilot","spark"],["prove","Reporting","pie"],["arch","Signal architecture","zap"],["thresholds","Thresholds","sliders"],["pilot","Pilot & rollout","map"]];
 
-function catCounts(cat){
- /* The caseload categories answer with the tier. Only "University
-    Applications" keeps a dimension-derived count, because it is asking a
-    genuinely different question — how many application files have a problem —
-    rather than a second opinion about the same triage. */
- if(cat.id==="cohort"){const p=prioCounts();return {critical:p.urgent,watch:p.checkin,good:S.cases.length-p.urgent-p.checkin};}
- const keys=cat.sub.map(s=>s[0]).filter(k=>DIMS[k]);
- const o2={critical:0,watch:0,good:0};
- S.cases.forEach(c=>{const rs=keys.map(k=>DIMS[k].f(c).r);
-  o2[rs.includes("critical")?"critical":rs.includes("watch")?"watch":"good"]++;});
- if(cat.id==="si"){const p=prioCounts();return {critical:p.urgent,watch:p.checkin,good:S.cases.length-p.urgent-p.checkin};}
- return o2;}
+/* A nav row: icon, label, and a neutral dot when something there is waiting.
+   The dot replaces the old tier-coloured counts; it answers "is there work
+   here", and the page itself says how much. */
+function navWaiting(k){
+ if(DIMS[k]){const cn=dimCounts(k);return cn.critical+cn.watch>0;}
+ if(k==="cohort-schedule"||k==="si-cases")return needToday()>0;
+ if(k==="si-interventions")return S.ivs.filter(i=>i.status==="open").length>0;
+ return false;}
+function navRow(k,l,i,dot){const on=S.cv===k;
+ return `<button class="navitem nav2 ${on?'on':''}" data-cnav="${k}"${on?' aria-current="page"':''}>${on?'<span style="position:absolute;left:-10px;top:50%;transform:translateY(-50%);width:2px;height:16px;background:var(--school-accent);border-radius:var(--r-pill)"></span>':''}${ic(i,15)}<span style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${l}</span>${dot?'<span class="navdot" title="Something is waiting"></span>':''}</button>`;}
 
 function sidebarC(){
  /* The white hairline this column used to carry on its right edge is gone:
@@ -3399,46 +3420,18 @@ function sidebarC(){
     would outrank it. The crest is the school's mark, same as every other
     role's letterhead gets from shell(). */
  return `<aside class="sidebar" style="width:252px;background:var(--letterhead);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto">
-  <div style="padding:18px 16px 16px;display:flex;align-items:center;gap:10px">
+  ${SCHOOL.short?`<div style="padding:18px 16px 16px;display:flex;align-items:center;gap:10px">
    ${crest(32)}
-   <div style="min-width:0">
-    <div style="font-weight:600;font-size:13.5px;color:var(--on-letterhead);letter-spacing:-.012em;line-height:1.2">Counselor OS</div>
-    ${SCHOOL.short?`<div style="font-family:var(--f-apparatus);font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--nav-txt);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${SCHOOL.short}</div>`:``}</div>
+   ${SCHOOL.short?`<div style="min-width:0;font-family:var(--f-apparatus);font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--nav-txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${SCHOOL.short}</div>`:``}
   </div>
-  <div style="height:1px;background:rgba(255,255,255,.06);margin:0 16px 12px"></div>
+  <div style="height:1px;background:rgba(255,255,255,.06);margin:0 16px 12px"></div>`:`<div style="height:18px"></div>`}
   <div style="padding:0 10px;display:flex;flex-direction:column;gap:2px">
-  <button class="navitem ${S.cv==="cohort-schedule"?"on":""}" data-cnav="cohort-schedule" style="margin-bottom:6px">
-   ${S.cv==="cohort-schedule"?'<span style="position:absolute;left:-10px;top:50%;transform:translateY(-50%);width:2px;height:16px;background:var(--school-accent);border-radius:var(--r-pill)"></span>':''}
-   ${ic('home',15)}<span style="font-weight:600">Home</span></button>
-  ${CATS.map(cat=>{const open=S.cat[cat.id];const cc=catCounts(cat);
-   return `<div style="margin:0 11px 4px">
-    <button data-cat="${cat.id}" style="display:flex;align-items:center;gap:9px;width:100%;padding:8px 10px;min-height:44px;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:inherit;text-align:left;background:${open?'rgba(255,255,255,.05)':'transparent'};color:var(--on-letterhead);transition:background .13s ease" onmouseover="this.style.background='rgba(255,255,255,.07)'" onmouseout="this.style.background='${open?'rgba(255,255,255,.05)':'transparent'}'">
-     <span style="opacity:.8;display:flex;color:var(--on-letterhead-2)">${ic(cat.ic,15)}</span>
-     <span style="font-size:12.5px;font-weight:600;letter-spacing:-.008em;flex:1;line-height:1.3">${cat.label}</span>
-     <span style="display:flex;gap:4px;align-items:center">
-      ${cc.critical?`<span style="font-size:10px;font-weight:600;color:var(--t-urgent-field);background:rgba(0,0,0,.24);border-radius:var(--r-sm);padding:1px 5px;line-height:1.5;font-variant-numeric:tabular-nums">${cc.critical}</span>`:''}
-      ${cc.watch?`<span style="font-size:10px;font-weight:600;color:var(--t-checkin-field);background:rgba(0,0,0,.24);border-radius:var(--r-sm);padding:1px 5px;line-height:1.5;font-variant-numeric:tabular-nums">${cc.watch}</span>`:''}</span>
-     <span style="transform:rotate(${open?90:0}deg);transition:transform .18s cubic-bezier(.22,1,.36,1);opacity:.4;display:flex;color:var(--on-letterhead-2)">${ic('chevR',13)}</span></button>
-    ${open?`<div style="padding:3px 0 8px 10px;margin:2px 0 0 18px;border-left:1px solid rgba(255,255,255,.07)">
-     ${cat.sub.map(([k,l])=>{const on=S.cv===k;const d=DIMS[k];const cn=d?dimCounts(k):null;
-      let badge="";
-      if(cn){badge=`<span style="display:flex;gap:3px;margin-left:auto;align-items:center">
-        ${cn.critical?`<span title="Critical" style="width:6px;height:6px;border-radius:var(--r-dot);background:var(--t-urgent-field)"></span>`:''}
-        ${cn.watch?`<span title="Requires review" style="width:6px;height:6px;border-radius:var(--r-dot);background:var(--t-checkin-field)"></span>`:''}
-        ${!cn.critical&&!cn.watch?`<span title="All on track" style="width:6px;height:6px;border-radius:var(--r-dot);background:var(--t-good-field);opacity:.75"></span>`:''}</span>`;}
-      else if(k==="cohort-schedule"||k==="si-cases"){badge=`<span style="margin-left:auto;font-size:10.5px;font-weight:700;color:var(--school-on-accent);background:var(--school-accent);border-radius:var(--r);padding:1px 6px">${needToday()}</span>`;}
-      else if(k==="si-interventions"){const n=S.ivs.filter(i=>i.status==="open").length;badge=`<span style="margin-left:auto;font-size:10.5px;font-weight:700;color:var(--school-on-accent);background:var(--school-accent);border-radius:var(--r);padding:1px 6px">${n}</span>`;}
-      return `<button class="navitem ${on?'on':''}" data-cnav="${k}" style="padding:7px 10px;font-size:12px;gap:8px">
-       ${on?'<span style="position:absolute;left:-11px;top:50%;transform:translateY(-50%);width:2px;height:16px;background:var(--school-accent);border-radius:var(--r-pill)"></span>':''}
-       <span style="flex:1">${l}</span>${badge}</button>`;}).join('')}
-    </div>`:''}
-   </div>`;}).join('')}
-
-  </div>
-  <div style="margin:14px 10px 0;padding-top:12px;border-top:1px solid var(--nav-line);color:var(--nav-txt)">
-   <button data-cat="sys" style="display:flex;align-items:center;gap:8px;width:100%;padding:7px 11px;min-height:44px;border:none;background:transparent;cursor:pointer;font-family:var(--f-apparatus);color:var(--nav-txt);font-size:10px;letter-spacing:.09em;text-transform:uppercase;font-weight:600">
-    Tools & system <span style="margin-left:auto;transform:rotate(${S.cat.sys?90:0}deg);transition:transform .2s;display:flex">${ic('chevR',12)}</span></button>
-   ${S.cat.sys?SYSNAV.map(([k,l,i])=>`<button class="navitem ${S.cv===k?'on':''}" data-cnav="${k}" style="padding:7px 11px;font-size:12px">${ic(i,15)}${l}</button>`).join(''):''}
+  ${navRow("cohort-schedule","Home","home",needToday()>0)}
+  ${CATS.map(cat=>{const open=S.cat[cat.id];
+   return `<button class="navgrp" data-cat="${cat.id}" aria-expanded="${open?'true':'false'}">${ic(cat.ic,15)}<span>${cat.label}</span><span class="chev" style="transform:rotate(${open?90:0}deg)">${ic('chevR',12)}</span></button>
+   ${open?cat.sub.map(([k,l,i])=>navRow(k,l,i,navWaiting(k))).join(''):''}`;}).join('')}
+  <button class="navgrp" data-cat="sys" aria-expanded="${S.cat.sys?'true':'false'}">${ic('brief',15)}<span>Tools</span><span class="chev" style="transform:rotate(${S.cat.sys?90:0}deg)">${ic('chevR',12)}</span></button>
+  ${S.cat.sys?SYSNAV.map(([k,l,i])=>navRow(k,l,i,false)).join(''):''}
   </div>
 
   <div style="margin-top:auto;padding:12px 14px;margin:auto 10px 8px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px">
@@ -10999,14 +10992,6 @@ function draw(){
         <span style="width:5px;height:5px;border-radius:var(--r-dot);background:var(--ok);display:inline-block"></span>Engine swept 07:04</span></div>
      </div>
      <div style="display:flex;align-items:center;gap:9px;flex-shrink:0">
-      ${/* The same dead input shell() already retired, missed here because the
-           counselor's topbar is inline rather than going through shell(). It
-           had no handler of any kind: typing in the primary persona's most
-           obvious control did nothing at all. Now it opens the ⌘K palette,
-           which is already scoped to what each role may search. */''}
-      <button class="topsearch" data-palopener="1" style="width:236px" aria-label="Search students" aria-keyshortcuts="Meta+K">
-       ${ic('search',14)}<span style="flex:1;text-align:left">Search students</span>
-       <kbd style="font-family:var(--f-figure);font-size:10px;color:var(--ink-3);background:var(--stock-3);border:1px solid var(--rule-2);border-radius:var(--r-sm);padding:1px 5px;flex-shrink:0">⌘K</kbd></button>
       <button class="btn btn-g btn-sm" aria-label="Notifications" style="height:36px;padding:0 11px" data-toast="Notifications are up to date">${ic('inbox',15)}</button>
      </div>
     </div>
