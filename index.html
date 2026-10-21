@@ -687,6 +687,24 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
 .qrow-t{font-size:12.9px;font-weight:600;color:var(--ink);line-height:1.35}
 .qrow-d{font-size:11.7px;color:var(--ink-3);line-height:1.5;margin-top:3px;max-width:72ch}
 .qrow-a{flex-shrink:0;display:flex;gap:7px;align-items:center}
+/* The exchange, as a ruled column. A turn per row, the role in the
+   margin where a ledger puts its apparatus, and the words themselves
+   given the width. No avatars and no bubbles: this is a record three
+   people read, not a chat one of them owns. */
+.thread{list-style:none;margin:10px 0 0;padding:0;border-left:1px solid var(--rule-2)}
+.thread-i{display:flex;gap:12px;padding:9px 0 9px 13px;position:relative}
+.thread-i+.thread-i{border-top:1px solid var(--rule)}
+.thread-i::before{content:"";position:absolute;left:-3.5px;top:15px;width:6px;height:6px;
+ background:var(--ink-4);border-radius:50%}
+.thread-teacher::before{background:var(--margin)}
+.thread-coordinator::before{background:var(--t-good)}
+.thread-r{flex-shrink:0;width:74px;font-family:var(--f-apparatus);font-size:9.5px;font-weight:700;
+ letter-spacing:.06em;text-transform:uppercase;color:var(--ink-4);padding-top:2px}
+.thread-b{min-width:0;flex:1;display:block}
+.thread-t{display:block;font-size:12.4px;font-weight:600;color:var(--ink);line-height:1.35}
+.thread-w{display:block;font-size:11.2px;color:var(--ink-4);line-height:1.4;margin-top:1px}
+.thread-n{display:block;font-size:11.9px;color:var(--ink-2);line-height:1.55;margin-top:4px;max-width:66ch}
+@media(max-width:560px){.thread-i{flex-direction:column;gap:3px}.thread-r{width:auto}}
 .qsub{background:var(--band);padding-left:42px}
 .qsub .qrow-m{width:15px}
 @media(max-width:620px){.qrow{flex-wrap:wrap}.qrow-a{margin-left:27px;width:100%}
@@ -1821,7 +1839,7 @@ audit:JSON.parse(JSON.stringify(AUDIT)),
 toast:null,modal:null,cpQ:null,cpA:null,cpLoad:false,
 letter:"idle",thresh:{acad:2,att:3,eng:14,persist:3},
 sortBy:"prio",noteDraft:{},caseNotes:{},escReason:"",selSlot:null,
-uniOpen:"",pmTopic:"",pmSlot:null,pmNote:"",pathDegree:"",pathCountry:"UK",previewGrade:12,previewTrack:"AP",earlyStart:false,offerOpen:null,actShown:10,actOpen:false,qOpen:null,schedForm:null,
+uniOpen:"",pmTopic:"",pmSlot:null,pmNote:"",pathDegree:"",pathCountry:"UK",previewGrade:12,previewTrack:"AP",earlyStart:false,offerOpen:null,actShown:10,actOpen:false,qOpen:null,thrOpen:null,schedForm:null,
 discoverStage:null,onbStep:0,onbAnswers:{},chatLog:[],chatStep:0,rankedArchetypes:null,selectedArchetypes:[],pathwaysSubmitted:false,activeArchetype:null,roadmapProgress:{},
 fileId:null,fileTab:"synth",
 cat:{cohort:true,uni:false,ib:false,si:false,sys:false},ragFilter:"all",
@@ -3854,6 +3872,71 @@ function disputeState(rec,subId){
 /* Every disagreement in the round, flattened to one row each, which is
    the unit the coordinator actually works in. A student with three of
    them is three rows and one conversation, and the row says so. */
+/* ── THE EXCHANGE, IN ORDER ─────────────────────────────────────────
+   A disagreement is a conversation between a student and a teacher
+   that a coordinator is kept across, and the build held every turn of
+   it while showing none of them together. The teacher's
+   recommendation was a chip on the form; the student's answer was the
+   form itself; the teacher's signed reply was a panel on a different
+   screen; the meeting request was a third thing below both. Three
+   people each saw their own half and nobody saw the exchange.
+
+   This reads the turns back out of the records in the order they
+   happened. It stores nothing. Oldest first, because a thread is read
+   forwards and the question it answers is "how did this get here".
+
+   `role` is who moved, and it is the point: every line says whether
+   it came from the student, the teacher or the coordinator. */
+function disputeThread(rec,subId,d){
+ const out=[];
+ const sub=IBS(subId);
+ const add=(when,role,who,what,note)=>{if(when)out.push({when,n:dayNum(when),role,who,what,note});};
+ const r=(ELIG[d&&d.id]||{})[subId];
+ if(r)add(r.when,"teacher",r.by,
+  r.lv==="either"?"Said either level would suit":"Recommended "+(r.lv==="HL"?"Higher Level":"Standard Level"),r.note);
+ /* The student's own choice is a turn whether or not the form has
+    been sent. A draft carries no sent date, which left the one
+    student a demo opens on with a thread that showed her teacher's
+    view and her meeting request and not the choice between them —
+    the turn the whole exchange is about. An unsent choice is dated
+    from whatever she did next, because she made it before that. */
+ const pick=rec&&rec.picks?Object.values(rec.picks).find(p=>p&&p.s===subId):null;
+ if(pick){
+  const sqW=((rec.meetReq||{})[subId]||{}).when;
+  const when=rec.submitted||sqW||DAY.short;
+  add(when,"student",d?d.name:"The student",
+   "Asked for "+(pick.lv==="HL"?"Higher Level":"Standard Level")+(rec.submitted?"":", on the form but not sent"),
+   (rec.why&&Object.keys(rec.picks).filter(k=>rec.picks[k]&&rec.picks[k].s===subId).map(k=>rec.why[k])[0])||"");}
+ const sg=(rec&&rec.signs||{})[subId];
+ if(sg)add(sg.when,"teacher",sg.by,
+  sg.verdict==="hl"?"Supported it at Higher Level":sg.verdict==="sl"?"Answered Standard Level":"Raised a concern",sg.note);
+ const sq=(rec&&rec.meetReq||{})[subId];
+ if(sq)add(sq.when,"student",d?d.name:"The student","Asked for a meeting",sq.why);
+ const tq=(rec&&rec.teachReq||{})[subId];
+ if(tq)add(tq.when,"teacher",tq.by,"Asked for a meeting",tq.why);
+ const rp=(rec&&rec.meetReply||{})[subId];
+ if(rp)add(rp.when,"coordinator",rp.by,"Confirmed a meeting for "+rp.date,rp.note);
+ if(rec&&rec.talk)add(rec.talk.when,"coordinator",rec.talk.by,"Recorded the conversation",rec.talk.note);
+ out.sort((a,b)=>(a.n-b.n));
+ return out;}
+/* One rendering, read by all three. The role is a label rather than a
+   colour, because which of them moved is the fact a reader is looking
+   for and colour cannot carry a name. */
+function vThread(rec,subId,d,role){
+ const t=disputeThread(rec,subId,d);
+ if(!t.length)return "";
+ const nameOf=x=>x.role==="student"?(d?d.name:"The student"):staffShort(x.who);
+ const label=x=>x.role==="student"?"Student":x.role==="teacher"?"Teacher":"Coordinator";
+ return `<ol class="thread">
+  ${t.map(x=>`<li class="thread-i thread-${x.role}">
+   <span class="thread-r">${label(x)}</span>
+   <span class="thread-b">
+    <span class="thread-t">${x.what}</span>
+    <span class="thread-w">${nameOf(x)} \u00b7 ${x.when}</span>
+    ${x.note?`<span class="thread-n">\u201c${(x.note||"").replace(/</g,"&lt;")}\u201d</span>`:""}
+   </span>
+  </li>`).join("")}
+ </ol>`;}
 /* The same state, in the same words, wherever it is read. The three
    roles were describing one fact three ways. */
 function disputeChip(st){
@@ -5591,6 +5674,15 @@ SELREC.s10={sid:"s10",status:"draft",v:0,submitted:null,talk:null,signs:{},log:[
  /* The disagreement, with no request against it. The teacher's own
     queue is where the action is offered, so it has to arrive with the
     action still available rather than already taken. */
+ /* The register recommendation has to agree with the signature, or
+    the thread prints a teacher recommending Higher Level on the 18th
+    and answering Standard on the 20th with nothing in between. The
+    coherent story is the one the module is about: the teacher said
+    Standard from the register, the student asked for Higher anyway,
+    and the teacher held their answer on the form. */
+ ELIG[cand.id]=ELIG[cand.id]||{};
+ ELIG[cand.id][sub]={lv:"SL",by:TEACHER.name,when:"18 Nov",
+  note:"Secure on method, slower on unfamiliar problems. Standard Level is the stronger grade."};
  rec.signs[sub]={by:TEACHER.name,verdict:"sl",when:"20 Nov",
   note:"Capable, and the pace at Higher Level is the question rather than the ability. I would rather see a strong Standard Level grade."};
  /* A second one, already requested and already answered, on another
@@ -5608,6 +5700,9 @@ SELREC.s10={sid:"s10",status:"draft",v:0,submitted:null,talk:null,signs:{},log:[
  if(!other)return;
  const orec=SELREC[other.id];
  const osub=Object.keys(orec.signs).find(k=>IBS(k)&&IBS(k).t===TEACHER.name);
+ ELIG[other.id]=ELIG[other.id]||{};
+ ELIG[other.id][osub]={lv:"SL",by:TEACHER.name,when:"17 Nov",
+  note:"Reliable and well prepared. The step up in abstraction is the part I would want to be sure about."};
  orec.signs[osub]={by:TEACHER.name,verdict:"sl",when:"19 Nov",
   note:"Strong arithmetic, but the abstraction at Higher Level is a different demand and I am not sure it is there yet."};
  orec.teachReq=orec.teachReq||{};
@@ -6655,18 +6750,13 @@ function vSelForm(rec,stu){
          <div class="selmarks">${disputeChip(st)}</div></div>
         ${mine||submitted?"":`<button class="btn btn-g btn-sm" data-meetreqopen="${rec.sid}:${c.p.s}">${ic('msg',14)} Request a meeting</button>`}
        </div>
-       ${st.k==="scheduled"?`<div class="revdone" style="margin:9px 0 0">
-         ${ic('calendar',14)}<div><b>${staffShort(st.reply.by)} confirmed ${st.reply.date}</b>
-         ${st.reply.note?`<div class="selrow-n" style="margin-top:3px">\u201c${(st.reply.note||"").replace(/</g,"&lt;")}\u201d</div>`:""}
-         <div class="selrow-n" style="margin-top:4px">Bring the form. Nothing on it changes before you meet.</div></div></div>`:""}
-       ${mine?`<div class="revdone" style="margin:9px 0 0">
-         ${ic('checkC',14)}<div><b>You asked for this on ${mine.when}</b>
-         <div class="selrow-n" style="margin-top:3px">\u201c${(mine.why||"").replace(/</g,"&lt;")}\u201d</div>
-         ${st.k==="requested"?`<div class="selrow-n" style="margin-top:4px">${SEL_ROUND.coordinator} has this with your form.</div>`:""}</div></div>`:""}
-       ${theirs?`<div class="revdone" style="margin:9px 0 0">
-         ${ic('user',14)}<div><b>${staffShort(theirs.by)} asked for a meeting on ${theirs.when}</b>
-         <div class="selrow-n" style="margin-top:3px">\u201c${(theirs.why||"").replace(/</g,"&lt;")}\u201d</div></div></div>`:""}
-       ${!mine&&submitted&&st.k!=="scheduled"?`<div class="selrow-n" style="margin-top:7px">Your form is with ${SEL_ROUND.coordinator}. Ask for a meeting through your counselor.</div>`:""}
+       ${/* The exchange, rather than three stacked notices. A student
+            reading this is working out how the disagreement got here
+            and what happens next, and that is a sequence. */""}
+       ${vThread(rec,c.p.s,stu,"student")}
+       ${st.k==="scheduled"?`<div class="selrow-n" style="margin-top:9px"><b style="color:var(--ink)">Bring the form.</b> Nothing on it changes before you meet.</div>`
+        :st.k==="requested"?`<div class="selrow-n" style="margin-top:9px">${SEL_ROUND.coordinator} has this with your form and will confirm a time.</div>`
+        :!mine&&submitted?`<div class="selrow-n" style="margin-top:9px">Your form is with ${SEL_ROUND.coordinator}. Ask for a meeting through your counselor.</div>`:""}
       </div>`;}).join("")}
      </div>
     </div>`;})()}
@@ -6703,7 +6793,7 @@ function vSelSubmittedPanel(rec,stu){
    return `<div class="selrow-static">
     <span class="lstamp${sg?" on":" void"}">${sg?"&#10003;":"·"}</span>
     <div style="min-width:0"><div class="selrow-t">${s.name} at Higher Level</div>
-     <div class="selrow-n">${sg?`<b style="color:var(--ink-2)">${sg.by}</b>, ${sg.when}. ${sg.note}`:s.t+" has not answered yet."}</div></div>
+     <div class="selrow-n">${sg?`<b style="color:var(--ink-2)">${staffShort(sg.by)}</b>, ${sg.when}. ${sg.note}`:s.t+" has not answered yet."}</div></div>
     ${sg?`<div class="selrow-r"><span class="lvstamp">${sg.verdict==="hl"?"Supported at HL":sg.verdict==="sl"?"Suggests SL":"Concern raised"}</span></div>`:""}
    </div>`;}).join("")}
   <div class="selrow-static">
@@ -6879,8 +6969,9 @@ function vTSelReview(){
      <div class="selrow-n">${IBS(p0.s).name} ${p0.lv} · ${sg?sg.note:""}</div>
      ${disagrees?`<div class="selmarks">${disputeChip(st)}</div>
       <div class="selrow-n" style="margin-top:5px">${disputeLine(st,x.d,"teacher")}</div>`:""}
-     ${own?`<div class="selrow-n" style="margin-top:4px;color:var(--ink-2)"><b>You asked for this on ${own.when}.</b> \u201c${(own.why||"").replace(/</g,"&lt;")}\u201d</div>`:""}
-     ${theirs?`<div class="selrow-n" style="margin-top:4px">${x.d.name.split(" ")[0]} asked too, on ${theirs.when}. \u201c${(theirs.why||"").replace(/</g,"&lt;")}\u201d</div>`:""}
+     ${disagrees?`<div class="opt-more" style="margin-top:6px">
+       <button class="linkish" data-thropen="${x.d.id}:${p0.s}" aria-expanded="${S.thrOpen===x.d.id+":"+p0.s}">${S.thrOpen===x.d.id+":"+p0.s?"Hide the exchange":"See the exchange"}</button></div>
+      ${S.thrOpen===x.d.id+":"+p0.s?vThread(x.rec,p0.s,x.d,"teacher"):""}`:""}
     </div>
     <div class="selrow-r" style="gap:8px">
      ${disagrees&&!own&&st.k!=="settled"?`<button class="btn btn-g btn-sm" data-meetreqopen="${x.d.id}:${p0.s}:teacher">${ic('msg',14)} Request a meeting</button>`:""}
@@ -7867,9 +7958,7 @@ function vSelStudent(sid){
       return `<div class="meetreq-item">
       <div class="selrow-t">${IBS(sub)?IBS(sub).name:sub}</div>
       <div class="selmarks">${disputeChip(st)}</div>
-      ${mine.map(x=>`<div style="margin-top:8px">
-       <div class="appa" style="color:var(--ink-3)">${x.side==="student"?d.name:staffShort(x.r.by)} \u00b7 ${x.r.when}</div>
-       <div style="font-size:12.8px;color:var(--ink);line-height:1.6;margin-top:4px">\u201c${(x.r.why||"").replace(/</g,"&lt;")}\u201d</div></div>`).join("")}
+      ${vThread(rec,sub,d,"coordinator")}
       ${st.k==="scheduled"?`<div class="revdone" style="margin:10px 0 0">${ic('calendar',14)}
         <div><b>You confirmed ${st.reply.date}</b>${st.reply.note?`<div class="selrow-n" style="margin-top:3px">\u201c${(st.reply.note||"").replace(/</g,"&lt;")}\u201d</div>`:""}</div></div>`
        :st.k==="settled"?`<div class="selrow-n" style="margin-top:8px">The conversation is on the record.</div>`
@@ -7925,7 +8014,7 @@ function vSelStudent(sid){
    return `<div class="selrow-static">
     <span class="lstamp${sg?" on":" void"}">${sg?"&#10003;":"·"}</span>
     <div style="min-width:0"><div class="selrow-t">${s.name} at Higher Level</div>
-     <div class="selrow-n">${sg?`<b style="color:var(--ink-2)">${sg.by}</b>, ${sg.when}. ${sg.note}`:s.t+" has not answered yet."}</div></div>
+     <div class="selrow-n">${sg?`<b style="color:var(--ink-2)">${staffShort(sg.by)}</b>, ${sg.when}. ${sg.note}`:s.t+" has not answered yet."}</div></div>
     ${sg?`<div class="selrow-r"><span class="lvstamp">${sg.verdict==="hl"?"Supported at HL":sg.verdict==="sl"?"Suggests SL":"Concern"}</span></div>`:""}
    </div>`;}).join("")}</div>`:""}
 
@@ -11177,6 +11266,7 @@ function bind(){
  q("[data-actmore]",e=>e.onclick=()=>{S.actShown=(S.actShown||10)+20;draw();});
  q("[data-actopen]",e=>e.onclick=()=>{S.actOpen=!S.actOpen;draw();});
  q("[data-qopen]",e=>e.onclick=()=>{const k=e.dataset.qopen;S.qOpen=S.qOpen===k?null:k;draw();});
+ q("[data-thropen]",e=>e.onclick=()=>{const k=e.dataset.thropen;S.thrOpen=S.thrOpen===k?null:k;draw();});
  q("[data-selback]",e=>e.onclick=()=>{S.selStu=null;draw();});
  q("[data-seltalk]",e=>e.onclick=()=>{S.modal={type:"seltalk",id:e.dataset.seltalk};S.selTalkNote="";draw();});
  q("[data-talknote]",e=>{e.oninput=()=>{const was=(S.selTalkNote||"").trim().length>=10,now=e.value.trim().length>=10;
