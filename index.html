@@ -657,6 +657,53 @@ svg.ico{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;str
    meant to stop at, so they are not pushed against the teacher's name
    above them. */
 .selmarks{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:7px}
+/* One row per subject in dispute, because a meeting is requested about
+   a subject and not about a form. */
+/* The round's movement, as a dated run rather than a list of cards.
+   A day is a heading and the rows under it are the ledger's own
+   register: a mark, what happened, who moved it, and which side they
+   are on. */
+/* The round, on a surface that is not its own. One line, the full
+   width of the sheet, and only when it is asking for somebody. */
+.roundstrip{display:flex;align-items:center;gap:12px;width:100%;text-align:left;margin:0 0 14px;
+ padding:11px 14px;background:var(--stock);border:1px solid var(--rule-2);
+ border-left:2px solid var(--margin);font-family:inherit;cursor:pointer;color:inherit;min-height:44px}
+.roundstrip:hover{background:var(--band)}
+.roundstrip:focus-visible{outline:2px solid var(--ink-2);outline-offset:2px}
+.roundstrip-m{flex-shrink:0;color:var(--ink-3);display:flex}
+.roundstrip-b{min-width:0;flex:1;display:block}
+.roundstrip-t{display:block;font-size:12.6px;font-weight:600;color:var(--ink);line-height:1.35}
+.roundstrip-d{display:block;font-size:11.6px;color:var(--ink-3);line-height:1.5;margin-top:2px}
+.roundstrip-r{flex-shrink:0;color:var(--ink-4);display:flex}
+.actfeed{border:1px solid var(--rule-2);border-top:1.5px solid var(--rule-3);background:var(--stock)}
+.actday+.actday{border-top:1px solid var(--rule-2)}
+.actday-h{padding:8px 14px 7px;background:var(--band);border-bottom:1px solid var(--rule)}
+.actrow{display:flex;gap:11px;align-items:flex-start;width:100%;text-align:left;
+ padding:10px 14px;background:none;border:none;border-top:1px solid var(--rule);
+ font-family:inherit;cursor:pointer;color:inherit;min-height:44px}
+.actday-h+.actrow{border-top:none}
+.actrow:hover{background:var(--band)}
+.actrow:focus-visible{outline:2px solid var(--ink-2);outline-offset:-2px}
+.actrow-m{flex-shrink:0;margin-top:1px;color:var(--ink-3);display:flex}
+.actrow-against .actrow-m{color:var(--margin)}
+.actrow-meet .actrow-m{color:var(--margin)}
+.actrow-agree .actrow-m,.actrow-talk .actrow-m{color:var(--t-good)}
+.actrow-b{min-width:0;flex:1;display:block}
+.actrow-t{display:block;font-size:12.6px;font-weight:600;color:var(--ink);line-height:1.35}
+.actrow-who{font-weight:400;color:var(--ink-3)}
+.actrow-d{display:block;font-size:11.6px;color:var(--ink-3);line-height:1.5;margin-top:2px;
+ overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.actrow-r{flex-shrink:0;font-family:var(--f-apparatus);font-size:10px;font-weight:700;
+ letter-spacing:.06em;text-transform:uppercase;color:var(--ink-4);margin-top:2px}
+@media(max-width:560px){.actrow-r{display:none}}
+.meetreq-item+.meetreq-item{margin-top:12px;padding-top:12px;border-top:1px solid var(--rule)}
+.meetlist{border:1px solid var(--rule-2);background:var(--stock)}
+.meetrow+.meetrow{border-top:1px solid var(--rule)}
+.meetrow{padding:12px 14px}
+.meetrow-h{display:flex;align-items:flex-start;gap:10px}
+.meetrow-h>svg{flex-shrink:0;margin-top:2px;color:var(--margin)}
+.meetrow-h>button{flex-shrink:0;margin-left:auto}
+@media(max-width:560px){.meetrow-h{flex-wrap:wrap}.meetrow-h>button{margin-left:0;width:100%}}
 .selrow-static:nth-child(even),.casent:nth-child(even){background:var(--band)}
 .selrow-t{font-size:13.2px;font-weight:600;color:var(--ink);line-height:1.35}
 .selrow-n{font-size:11.8px;color:var(--ink-3);line-height:1.55;margin-top:2px;max-width:70ch}
@@ -1286,11 +1333,23 @@ function applySchool(id){
  document.documentElement.dataset.school=rec.id;
  document.documentElement.dataset.demoData=rec.real?'on':'off';
 }
-/* Spoken about rather than addressed, a counselor is title plus surname:
-   "Ms. Reem Haddad" reads as "Ms. Haddad", which is also the form the other
-   49 references in this file already use. */
-function counselorShort(){const p=SCHOOL.counselor.split(" ");
- return p.length>2?p[0]+" "+p[p.length-1]:SCHOOL.counselor;}
+/* Spoken about rather than addressed, a member of staff is title plus
+   surname: "Ms. Reem Haddad" reads as "Ms. Haddad", "Mr. J. Davies"
+   as "Mr. Davies".
+
+   The title is not decoration and it is never dropped. A chip reading
+   "DAVIES SUGGESTS SL" on a fifteen-year-old's subject form names a
+   teacher the way a colleague would, not the way the student does,
+   and the student is the one reading it. Several screens stripped to
+   the bare surname to save a few characters; they go through here
+   now, so there is one answer and it carries the title. */
+function staffShort(name){
+ const n=(name||"").trim(); if(!n)return "";
+ const m=n.match(/^((?:Mr|Ms|Mrs|Dr|Mx)\.)\s+(.*)$/);
+ if(!m)return n;
+ const rest=m[2].split(" ").filter(Boolean);
+ return m[1]+" "+(rest[rest.length-1]||m[2]);}
+function counselorShort(){return staffShort(SCHOOL.counselor);}
 function hexA(hex,a){const h=hex.replace('#','');
  return 'rgba('+parseInt(h.substr(0,2),16)+','+parseInt(h.substr(2,2),16)+','+parseInt(h.substr(4,2),16)+','+a+')';}
 /* A school primary dark enough to read on paper is too dark to read on the
@@ -1738,7 +1797,7 @@ audit:JSON.parse(JSON.stringify(AUDIT)),
 toast:null,modal:null,cpQ:null,cpA:null,cpLoad:false,
 letter:"idle",thresh:{acad:2,att:3,eng:14,persist:3},
 sortBy:"prio",noteDraft:{},caseNotes:{},escReason:"",selSlot:null,
-uniOpen:"",pmTopic:"",pmSlot:null,pmNote:"",pathDegree:"",pathCountry:"UK",previewGrade:12,previewTrack:"AP",earlyStart:false,offerOpen:null,
+uniOpen:"",pmTopic:"",pmSlot:null,pmNote:"",pathDegree:"",pathCountry:"UK",previewGrade:12,previewTrack:"AP",earlyStart:false,offerOpen:null,actShown:12,
 discoverStage:null,onbStep:0,onbAnswers:{},chatLog:[],chatStep:0,rankedArchetypes:null,selectedArchetypes:[],pathwaysSubmitted:false,activeArchetype:null,roadmapProgress:{},
 fileId:null,fileTab:"synth",
 cat:{cohort:true,uni:false,ib:false,si:false,sys:false},ragFilter:"all",
@@ -3536,6 +3595,28 @@ function vSheet(){
 
   ${tierBar()}
 
+  ${(()=>{ /* The selection round, on the caseload, in one line.
+     It is the coordinator's work rather than the counselor's and this
+     is a welfare surface, so it earns a strip and not a panel, and it
+     appears only when the round is asking for somebody: a meeting
+     requested, or a choice sitting against the advice with nobody
+     having spoken to the student yet. Silence here means the round
+     needs nothing, which is the honest state to print. */
+    if(typeof selActivity!=="function")return"";
+    const k=selActivityCounts(), dis=selDisagreements();
+    const open=dis.filter(x=>!x.talked).length;
+    const meets=k.meets;
+    if(!open&&!meets)return"";
+    const latest=selActivity(1)[0];
+    return `<button class="roundstrip" data-cnav="ib-selections">
+     <span class="roundstrip-m">${ic('route',16)}</span>
+     <span class="roundstrip-b">
+      <span class="roundstrip-t">Grade 10 selection round${meets?" \u00b7 "+meets+" "+(meets===1?"meeting requested":"meetings requested"):""}</span>
+      <span class="roundstrip-d">${open} ${open===1?"student has a choice":"students have choices"} against the advice with no conversation recorded.${latest?" Last update "+latest.when+", "+(latest.role==="student"?latest.name:staffShort(latest.who))+".":""}</span>
+     </span>
+     <span class="roundstrip-r">${ic('arrow-right',15)}</span>
+    </button>`;})()}
+
   ${list.length?`<div class="sheetscroll"><table class="sheet ledger">
    <caption class="sr">The caseload, one row per student: triage tier, name, the last eight weeks measured against that student's own baseline band, and what the ${DAY.sweep} sweep changed this morning.</caption>
    <thead><tr>
@@ -3687,6 +3768,33 @@ function recommendableAP(subjectArea){return (AP_TEACHES_TOWARD[subjectArea]||[]
 const ELIG={};
 function eligFor(sid,subId){return (ELIG[sid]||{})[subId]||null;}
 function eligList(sid){const e=ELIG[sid]||{};return Object.keys(e).map(k=>Object.assign({s:k},e[k]));}
+/* A meeting request, held per subject and per side.
+
+   rec.meetReq[subId]  = {why,when,by:"student"}
+   rec.teachReq[subId] = {why,when,by:"<teacher>"}
+
+   Two maps rather than one, because both sides can ask about the same
+   subject and the coordinator needs to see that they both did. It was
+   one request for the whole form, which asked the coordinator to work
+   out which of three disagreements the meeting was about and left a
+   student with two to argue able to argue only one. */
+/* Dates on this module's records are written the way a person writes
+   them, "18 Nov", so sorting them needs a number. Day-of-year is
+   enough: the round runs inside one term and nothing here crosses a
+   year boundary. An unparseable date sorts last rather than throwing,
+   because a feed that drops an item is worse than one that orders it
+   oddly. */
+const MONTHNUM={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+function dayNum(when){
+ const m=String(when||"").match(/(\d{1,2})\s+([A-Za-z]{3})/);
+ if(!m)return -1;
+ const mon=MONTHNUM[m[2].toLowerCase()];
+ return mon?mon*100+parseInt(m[1],10):-1;}
+function meetFor(rec,subId,side){
+ if(!rec)return null;
+ const m=side==="teacher"?rec.teachReq:rec.meetReq;
+ return (m&&m[subId])||null;}
+function meetAny(rec,subId){return meetFor(rec,subId,"student")||meetFor(rec,subId,"teacher");}
 /* AP_ELIG[sid][courseId] = {ok,by,when,note}. The Advanced Placement
    equivalent, and deliberately a different shape: there is no Higher
    or Standard in Advanced Placement, so a teacher is not recommending
@@ -3845,21 +3953,26 @@ function meetReqModal(){
  if(!S.modal||S.modal.type!=="meetreq")return"";
  const rec=SELREC[S.modal.id]; if(!rec)return"";
  const stu=DPC.find(d=>d.id===S.modal.id);
+ const sub=S.modal.sub?IBS(S.modal.sub):null;
+ const teacherSide=S.modal.side==="teacher";
+ const pick=sub&&rec.picks?Object.values(rec.picks).find(p=>p&&p.s===sub.id):null;
  const why=(S.meetReqWhy||"");
  const ok=why.trim().length>=15;
  return `<div class="modalbg" data-mbg="1"><div class="modal pop" role="dialog" aria-modal="true" aria-label="Request a meeting">
   <div style="padding:20px 22px 0">${mcloseBtn()}
    <div class="stamp" style="font-size:19px;font-weight:600">Request a meeting</div>
-   <div style="font-size:12.3px;color:var(--ink-3);margin:4px 0 16px;line-height:1.5">With ${SEL_ROUND.coordinator}, about your subject choices.</div>
+   <div style="font-size:12.3px;color:var(--ink-3);margin:4px 0 16px;line-height:1.5">With ${SEL_ROUND.coordinator}${sub?", about "+sub.name+(pick?" at "+(pick.lv==="HL"?"Higher":"Standard")+" Level":""):", about the subject choices"}${teacherSide&&stu?", and "+stu.name:""}.</div>
   </div>
   <div style="padding:0 22px 22px">
   <div style="font-size:12.3px;color:var(--ink-2);line-height:1.6;margin:14px 0 4px">
-   Your form is not blocked and your choices are not changed by this. The meeting is where a choice that sits against the advice gets talked through.</div>
-  <label class="appa" for="meetWhy" style="display:block;margin:16px 0 8px;color:var(--ink-3)">Why you want the course <span style="color:var(--crit)">\u00b7 required</span></label>
-  <textarea id="meetWhy" data-meetreqwhy="1" placeholder="What you want it for, and what you think you can handle. A few sentences is enough."
+   ${teacherSide
+     ?"The student's form is not blocked and their choice is not changed by this. The meeting is where a level you and the student read differently gets talked through, with your reasoning already on the record."
+     :"Your form is not blocked and your choices are not changed by this. The meeting is where a choice that sits against the advice gets talked through."}</div>
+  <label class="appa" for="meetWhy" style="display:block;margin:16px 0 8px;color:var(--ink-3)">${teacherSide?"What you want to discuss":"Why you want the course"} <span style="color:var(--crit)">\u00b7 required</span></label>
+  <textarea id="meetWhy" data-meetreqwhy="1" placeholder="${teacherSide?"What you have seen, and what you would want the student to understand before they decide.":"What you want it for, and what you think you can handle. A few sentences is enough."}"
    style="width:100%;min-height:96px">${why.replace(/</g,"&lt;")}</textarea>
   <div aria-live="polite" style="font-size:11.3px;color:${why.length&&!ok?"var(--crit)":"var(--ink-4)"};margin-top:6px;line-height:1.45">
-   ${!why.length?"This is what the coordinator reads first.":ok?"This goes to the coordinator with your form.":"A little more detail."}</div>
+   ${!why.length?"This is what the coordinator reads first.":ok?(teacherSide?"This goes to the coordinator and to the student.":"This goes to the coordinator with your form."):"A little more detail."}</div>
   <div style="display:flex;gap:9px;margin-top:18px">
    <button class="btn btn-g" data-mclose="1" style="flex:1">Cancel</button>
    <button class="btn btn-p" data-meetreqgo="${rec.sid}" ${ok?"":"disabled"} style="flex:1.4">${ic('send',15)} ${ok?"Send the request":"Add a reason first"}</button></div>
@@ -5264,6 +5377,16 @@ const SELREC={};
   "Has done the harder extension work all term without being asked."];
  const NOTE_SL=["Capable, but the pace at Higher Level would cost the rest of the diploma.",
   "I would rather see a strong Standard Level grade than a struggle at Higher."];
+ /* The coordinator's own note, drawn rather than fixed. It was one
+    sentence used for every approved selection, which nobody saw while
+    it sat on one record at a time and which read as generated the
+    moment the round's feed printed three of them together. */
+ const NOTE_TALK=["Talked the whole selection through. The reasons on the form held up when I asked about them, and the Higher Levels are the right three.",
+  "Went through each slot. They had thought about the sixth subject more carefully than the form suggests, and I am satisfied with the shape.",
+  "Asked about the Higher Level load first. They have a realistic picture of the hours and a plan for the term the extended essay lands in.",
+  "Spoke about the university end of it. The subjects support what they said they want, and they know which doors the mathematics route decides.",
+  "Short conversation. Nothing on the form needed defending and they answered every question about it without hesitating.",
+  "Went over the two subjects their teachers had flagged. They had already spoken to both and the reasoning has changed since the form was sent."];
  DPC.filter(d=>d.yr===10).forEach(d=>{
   const st=d.id==="s10"?"draft":stateFor();
   if(st==="none"){SELREC[d.id]={sid:d.id,status:"none",picks:{},why:{},goalNote:"",signs:{},talk:null,log:[],v:0};return;}
@@ -5291,10 +5414,9 @@ const SELREC={};
     rec.signs[p.s]={by:s.t,verdict:hl?"hl":"sl",when:["18 Nov","19 Nov","20 Nov"][Math.floor(rnd()*3)],
      note:hl?pick(NOTE_HL):pick(NOTE_SL)};});}
   if(st==="approved"){
-   rec.talk={when:"21 Nov",by:"Mr. A. Diaz",
-    note:"Talked the whole selection through. The reasons on the form held up when I asked about them, and the Higher Levels are the right three."};
-   rec.log.unshift({when:"21 Nov",who:"Mr. A. Diaz",what:"Review conversation recorded. "+rec.talk.note});
-   rec.log.unshift({when:"21 Nov",who:"Mr. A. Diaz",what:"Selection approved. Six subjects confirmed for "+SEL_ROUND.year+"."});}
+   rec.talk={when:"21 Nov",by:SEL_ROUND.coordinator,note:pick(NOTE_TALK)};
+   rec.log.unshift({when:"21 Nov",who:SEL_ROUND.coordinator,what:"Review conversation recorded. "+rec.talk.note});
+   rec.log.unshift({when:"21 Nov",who:SEL_ROUND.coordinator,what:"Selection approved. Six subjects confirmed for "+SEL_ROUND.year+"."});}
   if(st==="changes"){
    rec.returnNote="One of your Higher Levels needs a rethink after what your teacher wrote. Come and see me before you change it.";
    rec.log.unshift({when:"20 Nov",who:"Mr. A. Diaz",what:"Sent back for a change. "+rec.returnNote});}
@@ -5343,7 +5465,55 @@ SELREC.s10={sid:"s10",status:"draft",v:0,submitted:null,talk:null,signs:{},log:[
  picks:{g1:{s:"ENL",lv:"SL"},g2:{s:"FRB",lv:"SL"},g3:{s:"ECO",lv:"HL"},g4:{s:"PHY",lv:"HL"},g5:{s:"MAA",lv:"HL"},g6:null},
  /* Blank on purpose. Maya is the student a demo opens on, and the
     reason field is the part of this form she actually fills in. */
- why:{g1:"",g2:"",g3:"",g4:"",g5:"",g6:""}};
+ why:{g1:"",g2:"",g3:"",g4:"",g5:"",g6:""},
+ /* She has already asked for the meeting on the one subject she and
+    her teacher read differently. It is the whole chain in one record:
+    a teacher's recommendation, a student who disagrees, and a request
+    that reaches the coordinator with her reasoning already attached. */
+ meetReq:{MAA:{why:"I know the foundation set has not covered as much, and I have been working through the extended problems on my own since September. Every course I am looking at asks for analysis and approaches, so I would rather be stretched than take the safer one and close those doors.",
+  when:"22 Nov",by:"student"}}};
+/* The teacher's half of the same chain, so the round carries both
+   directions rather than only the student's.
+
+   Seeded against the demo teacher deliberately. Eighty-two per cent
+   of generated answers support the level asked for, so the one
+   screen a demo actually opens — Mr. Davies's own queue — came up
+   with five supportive answers and nothing to disagree about, and
+   the action built for a disagreement had no case to appear on.
+   Seeded here rather than above because it reads the signatures,
+   which do not exist until every selection has been generated. */
+(function(){
+ /* Only a selection still in the teacher's queue. An approved one
+    has left it, so seeding there put the disagreement somewhere the
+    teacher cannot see it. */
+ const QUEUED=["submitted","signed","changes"];
+ const mine=DPC.filter(d=>d.yr===10).filter(d=>{const r=SELREC[d.id];
+  if(!r||!r.signs||QUEUED.indexOf(r.status)<0)return false;
+  return Object.keys(r.signs).some(k=>IBS(k)&&IBS(k).t===TEACHER.name);});
+ const cand=mine.find(d=>{const r=SELREC[d.id];
+  return Object.keys(r.signs).some(k=>IBS(k)&&IBS(k).t===TEACHER.name&&r.signs[k].verdict==="sl");})||mine[0];
+ if(!cand)return;
+ const rec=SELREC[cand.id];
+ const sub=Object.keys(rec.signs).find(k=>IBS(k)&&IBS(k).t===TEACHER.name);
+ if(!sub)return;
+ /* The disagreement, with no request against it. The teacher's own
+    queue is where the action is offered, so it has to arrive with the
+    action still available rather than already taken. */
+ rec.signs[sub]={by:TEACHER.name,verdict:"sl",when:"20 Nov",
+  note:"Capable, and the pace at Higher Level is the question rather than the ability. I would rather see a strong Standard Level grade."};
+ /* A second one, already requested, on another teacher's student, so
+    the coordinator's round carries a teacher's request as well as a
+    student's without spending the button on the demo teacher. */
+ const other=DPC.filter(d=>d.yr===10).find(d=>{const r=SELREC[d.id];
+  return r&&r.signs&&d.id!==cand.id&&
+   Object.keys(r.signs).some(k=>IBS(k)&&IBS(k).t!==TEACHER.name&&r.signs[k].verdict==="sl");});
+ if(!other)return;
+ const orec=SELREC[other.id];
+ const osub=Object.keys(orec.signs).find(k=>IBS(k)&&IBS(k).t!==TEACHER.name&&orec.signs[k].verdict==="sl");
+ orec.teachReq=orec.teachReq||{};
+ orec.teachReq[osub]={by:IBS(osub).t,when:"23 Nov",
+  why:"I would rather say this in front of them than leave it as a note on a form. The work is sound and the pace is the question, and a short conversation with all three of us saves a difficult January."};
+})();
 const CAS_STRANDS=[["c","Creativity","Anything that stretches you creatively, with a process you can point at."],
  ["a","Activity","Physical exertion that contributes to a healthy lifestyle. Rehearsal counts, and so does the walk-in."],
  ["s","Service","Unpaid work that meets a real need, decided with the people it serves rather than for them."]];
@@ -6315,8 +6485,8 @@ function vSelForm(rec,stu){
             if(!c.slOnly&&c.k!=="met")bits.push(`<span class="prq prq-${c.k}">${recIcon(c.k)}${recWord(c.k)}</span>`);}
            const r=eligFor(stu&&stu.id,s.id);
            if(r&&r.lv!=="either"&&r.lv!==p.lv)
-            bits.push(`<span class="prq prq-unmet" title="${(r.note||"").replace(/"/g,"")}">${ic('user',12)}${r.by.split(" ").slice(-1)[0]} suggests ${r.lv}</span>`);
-           else if(r)bits.push(`<span class="prq prq-rec">${ic('check',12)}${r.by.split(" ").slice(-1)[0]} agrees</span>`);
+            bits.push(`<span class="prq prq-unmet" title="${(r.note||"").replace(/"/g,"")}">${ic('user',12)}${staffShort(r.by)} suggests ${r.lv}</span>`);
+           else if(r)bits.push(`<span class="prq prq-rec">${ic('check',12)}${staffShort(r.by)} agrees</span>`);
            return `<div class="selrow-n">${s.t} <span class="fig">\u00b7 ${s.per[p.lv]}</span></div>
             ${bits.length?`<div class="selmarks">${bits.join("")}</div>`:""}`;})()}`
         :`<div class="selrow-n" style="margin-top:3px">${gr.note}</div>`}
@@ -6362,23 +6532,35 @@ function vSelForm(rec,stu){
       const unmet=prereqCheck(p.s,p.lv,stu).k==="unmet";
       return (against||unmet)?{gr,p,r:against,unmet}:null;}).filter(Boolean);
     if(!clash.length)return"";
-    const req=rec.meetReq;
     return `<h2 class="sechead" style="margin-top:26px">Requesting a conversation</h2>
     <div class="card" style="padding:16px 18px">
      <div style="font-size:12.4px;color:var(--ink-2);line-height:1.6;margin-bottom:12px">
       ${clash.length===1?"One of your choices sits against the advice on your record.":clash.length+" of your choices sit against the advice on your record."}
       Nothing is blocked. If you want the course, request a meeting and say why; ${SEL_ROUND.coordinator} reads it before you sit down.</div>
-     <div class="checklist" style="margin-bottom:14px">
-      ${clash.map(c=>`<div class="checkrow ask">${ic('alert',13)}
-       <div style="min-width:0"><div class="selrow-t">${IBS(c.p.s).name} at ${c.p.lv==="HL"?"Higher Level":"Standard Level"}</div>
-        <div class="selrow-n">${c.r?c.r.by+" suggests "+c.r.lv+". ":""}${c.unmet?"The usual preparation for this course is not on your record.":""}</div></div></div>`).join("")}
+     ${/* One subject, one request. A single button for the whole form
+          asked the coordinator to work out which of three disagreements
+          the meeting was about, and a student with two to argue could
+          only argue one of them. */""}
+     <div class="meetlist">
+      ${clash.map(c=>{const mine=meetFor(rec,c.p.s,"student"),theirs=meetFor(rec,c.p.s,"teacher");
+       return `<div class="meetrow">
+       <div class="meetrow-h">
+        ${ic('alert',14)}
+        <div style="min-width:0;flex:1">
+         <div class="selrow-t">${IBS(c.p.s).name} at ${c.p.lv==="HL"?"Higher Level":"Standard Level"}</div>
+         <div class="selrow-n">${c.r?staffShort(c.r.by)+" suggests "+c.r.lv+". ":""}${c.unmet?"The usual preparation for this course is not on your record.":""}</div></div>
+        ${mine?"":submitted?"":`<button class="btn btn-g btn-sm" data-meetreqopen="${rec.sid}:${c.p.s}">${ic('msg',14)} Request a meeting</button>`}
+       </div>
+       ${mine?`<div class="revdone" style="margin:9px 0 0">
+         ${ic('checkC',14)}<div><b>You requested a meeting ${mine.when}</b>
+         <div class="selrow-n" style="margin-top:3px">\u201c${(mine.why||"").replace(/</g,"&lt;")}\u201d</div>
+         <div class="selrow-n" style="margin-top:4px">${SEL_ROUND.coordinator} has this with your form.</div></div></div>`:""}
+       ${theirs?`<div class="revdone" style="margin:9px 0 0">
+         ${ic('user',14)}<div><b>${staffShort(theirs.by)} also asked for a meeting, ${theirs.when}</b>
+         <div class="selrow-n" style="margin-top:3px">\u201c${(theirs.why||"").replace(/</g,"&lt;")}\u201d</div></div></div>`:""}
+       ${!mine&&submitted?`<div class="selrow-n" style="margin-top:7px">Your form is with ${SEL_ROUND.coordinator}. Ask for a meeting through your counselor.</div>`:""}
+      </div>`;}).join("")}
      </div>
-     ${req?`<div class="revdone" style="margin:0">
-       ${ic('checkC',14)}<div><b>Meeting requested ${req.when}</b>
-       <div class="selrow-n" style="margin-top:3px">\u201c${(req.why||"").replace(/</g,"&lt;")}\u201d</div>
-       <div class="selrow-n" style="margin-top:4px">${SEL_ROUND.coordinator} has this with your form.</div></div></div>`
-      :submitted?`<div class="selrow-n">Your form is with ${SEL_ROUND.coordinator}. Ask for a meeting through your counselor.</div>`
-      :`<button class="btn btn-g" data-meetreqopen="${rec.sid}">${ic('msg',15)} Request a meeting</button>`}
     </div>`;})()}
 
   ${vCourseOffer(stu,10)}
@@ -6477,7 +6659,7 @@ function vSelChooser(gr,list,rec,stu){
       return `<span class="prq prq-${c.k}">${recIcon(c.k)}${recWord(c.k)}</span>`;})()}
     ${(()=>{ /* what a teacher has already said about this student */
       const r=eligFor(stu&&stu.id,s.id); if(!r)return"";
-      return `<span class="prq prq-rec" title="${r.note||""}">${ic('user',12)}${r.by.split(" ").slice(-1)[0]} suggests ${r.lv==="either"?"either level":r.lv}</span>`;})()}
+      return `<span class="prq prq-rec" title="${r.note||""}">${ic('user',12)}${staffShort(r.by)} suggests ${r.lv==="either"?"either level":r.lv}</span>`;})()}
    </div>
    ${openDesc?`<div class="opt-desc">
     ${(()=>{ /* What the student came here to check, before the prose:
@@ -6509,7 +6691,7 @@ function vSelChooser(gr,list,rec,stu){
         <p class="optsec-p" style="color:var(--ink-4);margin-bottom:8px">These fit your timetable and you meet what they ask for.</p>
         <div class="altgrid">${alts.map(a=>`<button class="altcard" data-selpick="${gr.id}:${a.s.id}:${a.lv}">
           <span class="altcard-n">${a.s.name}</span>
-          <span class="altcard-m">${a.lv} \u00b7 ${a.s.per[a.lv]}${a.rec?" \u00b7 "+a.rec.by.split(" ").slice(-1)[0]+" advises "+a.rec.lv:""}</span>
+          <span class="altcard-m">${a.lv} \u00b7 ${a.s.per[a.lv]}${a.rec?" \u00b7 "+staffShort(a.rec.by)+" advises "+a.rec.lv:""}</span>
          </button>`).join("")}</div>
        </div>`;}
       return out;})()}
@@ -6574,12 +6756,24 @@ function vTSelReview(){
     body:"A selection lands here when a Grade 10 student picks "+TEACHER.subject.toLowerCase()+" and sends their form. This page only ever holds the ones still awaiting your response, so it empties as you work.",
     action:`<button class="btn btn-g btn-sm" data-tnav="class">Back to the register</button>`})}</div>`}
   ${done.length?`<h2 class="sechead" style="margin-top:30px">Already answered</h2>
-  <div class="sheetbox">${done.map(x=>{const sg=x.rec.signs[x.subs[0].p.s];
-   return `<div class="selrow-static">
+  <div class="sheetbox">${done.map(x=>{const p0=x.subs[0].p,sg=x.rec.signs[p0.s];
+   /* An answered selection is where a disagreement actually sits: a
+      teacher who suggested Standard Level has said their piece and
+      has nowhere to take it. The meeting request belongs on this row
+      rather than only on the card above, which the teacher has
+      already worked through and will not open again. */
+   const disagrees=sg&&sg.verdict!=="hl";
+   const mine=meetFor(x.rec,p0.s,"teacher"),theirs=meetFor(x.rec,p0.s,"student");
+   return `<div class="selrow-static" style="flex-wrap:wrap">
     <span class="lstamp on">&#10003;</span>
-    <div style="min-width:0"><div class="selrow-t">${x.d.name}</div>
-     <div class="selrow-n">${IBS(x.subs[0].p.s).name} ${x.subs[0].p.lv} · ${sg?sg.note:""}</div></div>
-    <div class="selrow-r"><span class="lvstamp">${sg&&sg.verdict==="hl"?"Supported at HL":sg&&sg.verdict==="sl"?"Suggested SL":"Concern"}</span></div>
+    <div style="min-width:0;flex:1"><div class="selrow-t">${x.d.name}</div>
+     <div class="selrow-n">${IBS(p0.s).name} ${p0.lv} · ${sg?sg.note:""}</div>
+     ${mine?`<div class="selrow-n" style="margin-top:4px;color:var(--ink-2)"><b>You asked for a meeting ${mine.when}.</b> \u201c${(mine.why||"").replace(/</g,"&lt;")}\u201d</div>`:""}
+     ${theirs?`<div class="selrow-n" style="margin-top:4px">${x.d.name.split(" ")[0]} asked for a meeting on ${theirs.when}.</div>`:""}
+    </div>
+    <div class="selrow-r" style="gap:8px">
+     ${disagrees&&!mine?`<button class="btn btn-g btn-sm" data-meetreqopen="${x.d.id}:${p0.s}:teacher">${ic('msg',14)} Request a meeting</button>`:""}
+     <span class="lvstamp">${sg&&sg.verdict==="hl"?"Supported at HL":sg&&sg.verdict==="sl"?"Suggested SL":"Concern"}</span></div>
    </div>`;}).join("")}</div>`:""}
  </div>`;}
 
@@ -6632,8 +6826,20 @@ function vTSelCard(x,cls){
      </div>
     </div>`:rec.signs[p.s]?`<div class="revdone">
      <span class="lstamp on">&#10003;</span>
-     <div><div class="selrow-t">${rec.signs[p.s].verdict==="hl"?"Supported at Higher Level":rec.signs[p.s].verdict==="sl"?"Standard Level suggested":"Concern raised"}</div>
-     <div class="selrow-n">${rec.signs[p.s].by}, ${rec.signs[p.s].when}. ${rec.signs[p.s].note}</div></div>
+     <div style="min-width:0;flex:1"><div class="selrow-t">${rec.signs[p.s].verdict==="hl"?"Supported at Higher Level":rec.signs[p.s].verdict==="sl"?"Standard Level suggested":"Concern raised"}</div>
+     <div class="selrow-n">${staffShort(rec.signs[p.s].by)}, ${rec.signs[p.s].when}. ${rec.signs[p.s].note}</div>
+     ${/* Where the teacher and the student read the level differently,
+          the teacher gets the same action the student has. A
+          disagreement recorded with no way to ask for the conversation
+          leaves the teacher's only move a message outside the system,
+          which is the notebook this module replaced. */""}
+     ${(()=>{const mine=meetFor(rec,p.s,"teacher"),theirs=meetFor(rec,p.s,"student");
+       const disagrees=rec.signs[p.s].verdict!=="hl";
+       let out="";
+       if(mine)out+=`<div class="selrow-n" style="margin-top:6px;color:var(--ink-2)"><b>You asked for a meeting ${mine.when}.</b> \u201c${(mine.why||"").replace(/</g,"&lt;")}\u201d</div>`;
+       else if(disagrees)out+=`<div style="margin-top:9px"><button class="btn btn-g btn-sm" data-meetreqopen="${d.id}:${p.s}:teacher">${ic('msg',14)} Request a meeting</button></div>`;
+       if(theirs)out+=`<div class="selrow-n" style="margin-top:6px">${d.name.split(" ")[0]} also asked for a meeting on ${theirs.when}.</div>`;
+       return out;})()}</div>
     </div>`:`<div class="revacts">
      <button class="btn btn-p" data-sign="${d.id}:${p.s}:hl">${p.lv==="HL"?"Suitable for Higher Level":"Happy at this level"}</button>
      ${p.lv==="HL"?`<button class="btn btn-g" data-sign="${d.id}:${p.s}:sl">Suggest Standard Level</button>`:""}
@@ -6810,7 +7016,7 @@ function vStuEE(c){
    <div class="selrow-n">${nudge.d}</div></div></div>`:""}
 
   ${tally([["Subject",sub?sub.id:"—",sub?sub.name.split(":")[0]:""],
-   ["Supervisor",r.supervisor?r.supervisor.split(" ").slice(-1)[0]:"—",r.supervisor?"confirmed "+(r.done.super||""):r.status==="refine"?"question sent back":"with "+(r.target||"a teacher")],
+   ["Supervisor",r.supervisor?staffShort(r.supervisor):"—",r.supervisor?"confirmed "+(r.done.super||""):r.status==="refine"?"question sent back":"with "+(r.target||"a teacher")],
    ["Reflections",eeReflectionsDone(c.id)+" of "+eeReflectionsDue(c.id),"recorded on the "+EE_ROUND.rppf.toLowerCase()],
    ["Next",next?next.m.label.split(",")[0]:"Nothing",next?next.label:"you are done"]])}
 
@@ -7011,7 +7217,7 @@ function vTEEConfirm(d,r,a,alts){
    :a.kind==="refine"?"What would make this a question rather than a topic."
    :"Why this colleague, and what you told the student."}" style="width:100%;box-sizing:border-box;margin-top:5px">${(a.note||"").replace(/</g,"&lt;")}</textarea>
   <div style="display:flex;gap:8px;margin-top:11px">
-   <button class="btn ${a.kind==="accept"?"btn-p":"btn-d"}" data-eego="1" ${ok?"":"disabled"}>${a.kind==="accept"?"Confirm me as supervisor":a.kind==="refine"?"Send it back":a.to?"Pass it to "+a.to.split(" ").slice(-1)[0]:"Pick a colleague"}</button>
+   <button class="btn ${a.kind==="accept"?"btn-p":"btn-d"}" data-eego="1" ${ok?"":"disabled"}>${a.kind==="accept"?"Confirm me as supervisor":a.kind==="refine"?"Send it back":a.to?"Pass it to "+staffShort(a.to):"Pick a colleague"}</button>
    <button class="btn btn-g" data-eecancel="1">Cancel</button>
   </div>
  </div>`;}
@@ -7235,7 +7441,101 @@ function selDisagreements(){
    const against=r&&r.lv!=="either"&&r.lv!==p.lv?r:null;
    const unmet=IBS(p.s)&&prereqCheck(p.s,p.lv,d).k==="unmet";
    return (against||unmet)?{s:p.s,lv:p.lv,r:against,unmet}:null;}).filter(Boolean);
-  return items.length?{d,rec,items,requested:!!rec.meetReq,talked:!!rec.talk}:null;}).filter(Boolean);}
+  const asked=items.filter(i=>meetAny(rec,i.s)).length;
+  return items.length?{d,rec,items,requested:asked>0,asked,talked:!!rec.talk}:null;}).filter(Boolean);}
+/* ── WHAT HAS MOVED IN THIS ROUND ───────────────────────────────────
+   The selection round is a conversation between three people and
+   until now each of them could only see their own half of it. The
+   student saw their teacher's answer; the teacher saw the student's
+   form; the coordinator saw two counters and a list of names. Nobody
+   saw the round itself moving.
+
+   This derives that movement rather than storing it. Every item here
+   is read back out of the records the two sides already write — a
+   recommendation, a signature, a submission, a meeting request — so
+   there is no second copy to drift from the first, and an item cannot
+   exist here that does not exist on the student's own form.
+
+   Each item says who moved it, because "updated" without a name is
+   the thing a coordinator has to go and ask about. */
+function selActivity(limit){
+ const out=[];
+ const add=(when,who,role,sid,name,what,detail,kind)=>out.push(
+  {when,n:dayNum(when),who,role,sid,name,what,detail,kind});
+ DPC.filter(d=>d.yr===10).forEach(d=>{
+  const rec=SELREC[d.id]; if(!rec)return;
+  /* the teacher's level recommendation, made from the register */
+  Object.keys(ELIG[d.id]||{}).forEach(sub=>{const r=ELIG[d.id][sub];
+   const pick=rec.picks&&Object.values(rec.picks).find(p=>p&&p.s===sub);
+   const against=pick&&r.lv!=="either"&&r.lv!==pick.lv;
+   add(r.when,r.by,"teacher",d.id,d.name,
+    against?"Recommended "+r.lv+", against the form":"Recommended "+(r.lv==="either"?"either level":r.lv),
+    (IBS(sub)?IBS(sub).name:sub)+(r.note?". "+r.note:""),
+    against?"against":"agree");});
+  /* the teacher's answer to a submitted selection */
+  Object.keys(rec.signs||{}).forEach(sub=>{const sg=rec.signs[sub];
+   add(sg.when,sg.by,"teacher",d.id,d.name,
+    sg.verdict==="hl"?"Supported at Higher Level":sg.verdict==="sl"?"Suggested Standard Level":"Raised a concern",
+    (IBS(sub)?IBS(sub).name:sub)+(sg.note?". "+sg.note:""),
+    sg.verdict==="hl"?"agree":"against");});
+  /* the student sending the form */
+  if(rec.submitted)add(rec.submitted,d.name,"student",d.id,d.name,"Sent their selection",
+   selPicks(rec).length+" subjects, "+selHL(rec)+" at Higher Level","sent");
+  /* a meeting asked for, by either side */
+  Object.keys(rec.meetReq||{}).forEach(sub=>{const r=rec.meetReq[sub];
+   add(r.when,d.name,"student",d.id,d.name,"Requested a meeting",
+    (IBS(sub)?IBS(sub).name:sub)+". \u201c"+(r.why||"")+"\u201d","meet");});
+  Object.keys(rec.teachReq||{}).forEach(sub=>{const r=rec.teachReq[sub];
+   add(r.when,r.by,"teacher",d.id,d.name,"Requested a meeting",
+    (IBS(sub)?IBS(sub).name:sub)+". \u201c"+(r.why||"")+"\u201d","meet");});
+  /* the conversation, once it has happened */
+  if(rec.talk)add(rec.talk.when||rec.submitted,SEL_ROUND.coordinator,"coordinator",d.id,d.name,
+   "Recorded the conversation",rec.talk.note||"","talk");
+ });
+ out.sort((a,b)=>(b.n-a.n)||a.name.localeCompare(b.name));
+ return limit?out.slice(0,limit):out;}
+/* The same movement counted rather than listed, for the strip a
+   counselor reads on the way past. */
+function selActivityCounts(){
+ const a=selActivity();
+ return {all:a.length,
+  against:a.filter(x=>x.kind==="against").length,
+  meets:a.filter(x=>x.kind==="meet").length,
+  sent:a.filter(x=>x.kind==="sent").length,
+  agree:a.filter(x=>x.kind==="agree").length};}
+/* The feed, as the coordinator reads it. Grouped by day, because the
+   question a coordinator actually asks is "what happened since I last
+   looked" and a flat list of a hundred and sixty rows does not answer
+   it. Every row names the person who moved it and opens the student's
+   own preparation page, so the feed is a way into the work rather
+   than a notification shelf. */
+function vSelActivity(){
+ const items=selActivity(), shown=items.slice(0,S.actShown||12);
+ if(!items.length)return "";
+ const k=selActivityCounts();
+ const days=[];
+ shown.forEach(x=>{const d=days.find(y=>y.when===x.when);
+  (d||days[days.push({when:x.when,rows:[]})-1]).rows.push(x);});
+ const mark=x=>x.kind==="against"?ic('alert',13)
+  :x.kind==="meet"?ic('msg',13)
+  :x.kind==="sent"?ic('send',13)
+  :x.kind==="talk"?ic('checkC',13):ic('check',13);
+ return `<h2 class="sechead" style="margin-top:4px">What has moved in this round</h2>
+  <p class="lede" style="max-width:68ch;margin-bottom:12px">Every update either side has made, newest first. ${k.sent} ${k.sent===1?"selection":"selections"} sent, ${k.agree} ${k.agree===1?"answer":"answers"} supporting the level asked for, ${k.against} going against it, and ${k.meets} ${k.meets===1?"meeting":"meetings"} requested.</p>
+  <div class="actfeed">
+   ${days.map(d=>`<div class="actday">
+    <div class="actday-h"><span class="appa">${d.when}</span></div>
+    ${d.rows.map(x=>`<button class="actrow actrow-${x.kind}" data-selopenstu="${x.sid}">
+     <span class="actrow-m">${mark(x)}</span>
+     <span class="actrow-b">
+      <span class="actrow-t">${x.what}<span class="actrow-who"> \u00b7 ${x.role==="student"?x.name:staffShort(x.who)}</span></span>
+      <span class="actrow-d">${x.role==="student"?"":x.name+" \u00b7 "}${(x.detail||"").replace(/</g,"&lt;")}</span>
+     </span>
+     <span class="actrow-r">${x.role==="student"?"Student":x.role==="teacher"?"Teacher":"Coordinator"}</span>
+    </button>`).join("")}
+   </div>`).join("")}
+  </div>
+  ${items.length>shown.length?`<button class="btn btn-g btn-sm" data-actmore="1" style="margin-top:11px">Show ${Math.min(20,items.length-shown.length)} more of ${items.length}</button>`:""}`;}
 function selRows(){
  const f=S.selFilter||"act";
  return DPC.filter(d=>d.yr===10).map(d=>({d,rec:SELREC[d.id]||{status:"none",picks:{},why:{},signs:{}}}))
@@ -7252,15 +7552,22 @@ function vSelQueue(){
   ${head("Grade 10 selection status",
    `The ${SEL_ROUND.year} round. ${round} students in the year group, closing ${SEL_ROUND.closes}. This is the Diploma cohort, not your caseload.`)}
   ${(()=>{const cov=eligCoverage(),dis=selDisagreements();
-    const open=dis.filter(x=>!x.talked).length;
+    /* Students and choices are different numbers and this line used
+       the first while naming the second. A student can hold three
+       choices that sit against the advice and is still one
+       conversation, so the sentence now says both. */
+    const openStu=dis.filter(x=>!x.talked);
+    const open=openStu.length;
+    const openCh=openStu.reduce((a,x)=>a+x.items.length,0);
     return `<div class="card" style="padding:15px 18px;margin-bottom:16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center">
      <div style="flex:1;min-width:240px;font-size:12.3px;color:var(--ink-2);line-height:1.55">
       <b style="color:var(--ink)">${cov.marked} of ${cov.of} students carry a level recommendation.</b>
       ${cov.gap?"The remaining "+cov.gap+" have none on file, which is a gap a teacher can still close before "+SEL_ROUND.closes+".":"Every student in the year group has one."}</div>
      <div style="font-size:12.3px;color:var(--ink-2);line-height:1.55;min-width:200px">
-      <b style="color:var(--ink)">${open} ${open===1?"choice sits":"choices sit"} against the advice.</b>
-      ${open?"Each one is a conversation the round owes.":"Nothing outstanding."}</div>
+      <b style="color:var(--ink)">${open} ${open===1?"student holds a choice":"students hold choices"} against the advice.</b>
+      ${open?openCh+" "+(openCh===1?"choice":"choices")+" in all, and each student is one conversation the round owes.":"Nothing outstanding."}</div>
     </div>`;})()}
+  ${vSelActivity()}
   ${tally([["Awaiting your action",String(selWaiting()),"teachers have answered"],
    ["With teachers",String(selWithTeachers()),"awaiting teacher response"],
    ["Confirmed",String(c.approved),"conversation recorded"],
@@ -7322,19 +7629,31 @@ function vSelStudent(sid){
     joins the same list rather than opening a second one. */
  selPicks(rec).forEach(([gr,p])=>{const r=eligFor(sid,p.s);
   if(r&&r.lv!=="either"&&r.lv!==p.lv)
-   questions.push({q:r.by.split(" ").slice(-1)[0]+" recommended "+r.lv+" for "+IBS(p.s).name+", and the form asks for "+p.lv+". What does the student say?",
+   questions.push({q:staffShort(r.by)+" recommended "+r.lv+" for "+IBS(p.s).name+", and the form asks for "+p.lv+". What does the student say?",
     src:r.note||("Recorded "+r.when)});});
  hlSubs.forEach(([,p])=>{const sg=rec.signs&&rec.signs[p.s];
-  if(sg&&sg.verdict!=="hl")questions.push({q:IBS(p.s).t.split(" ").slice(-1)[0]+" suggested Standard Level. Have you spoken to him?",src:sg.by+", "+sg.when+": "+sg.note});});
+  if(sg&&sg.verdict!=="hl")questions.push({q:staffShort(IBS(p.s).t)+" suggested Standard Level. Have you spoken to them?",src:sg.by+", "+sg.when+": "+sg.note});});
  return `<div class="fade">
   <button class="btn btn-g btn-sm" style="margin-bottom:14px" data-selback="1">${ic("arrow-left",14)} All selections</button>
   ${head("Meeting preparation: "+d.name,
    `Grade 10 · ${d.goal} · ${rec.submitted?"sent "+rec.submitted:"nothing sent yet"} · ${st.n}`)}
-  ${rec.meetReq?`<div class="card" style="padding:16px 18px;margin-bottom:18px;border-left:3px solid var(--margin)">
-   <div class="appa" style="color:var(--ink-3);margin-bottom:7px">Requested by the student \u00b7 ${rec.meetReq.when}</div>
-   <div style="font-size:12.8px;color:var(--ink);line-height:1.6">\u201c${(rec.meetReq.why||"").replace(/</g,"&lt;")}\u201d</div>
-   <div class="selrow-n" style="margin-top:8px">${d.name.split(" ")[0]} asked for this meeting. The reason above was written before it.</div>
-  </div>`:""}
+  ${(()=>{ /* Every meeting request on this selection, each naming its
+       subject and the side that asked. Both can ask about the same
+       subject and the coordinator needs to see that they both did. */
+    const reqs=[];
+    Object.keys(rec.meetReq||{}).forEach(k=>reqs.push({sub:k,side:"student",r:rec.meetReq[k]}));
+    Object.keys(rec.teachReq||{}).forEach(k=>reqs.push({sub:k,side:"teacher",r:rec.teachReq[k]}));
+    if(!reqs.length)return"";
+    reqs.sort((a,b)=>dayNum(b.r.when)-dayNum(a.r.when));
+    return `<div class="card" style="padding:16px 18px;margin-bottom:18px;border-left:3px solid var(--margin)">
+     <div class="appa" style="color:var(--ink-3);margin-bottom:10px">${reqs.length===1?"A meeting has been requested":reqs.length+" meetings have been requested"}</div>
+     ${reqs.map(x=>`<div class="meetreq-item">
+      <div class="selrow-t">${IBS(x.sub)?IBS(x.sub).name:x.sub}
+       <span class="lvstamp" style="margin-left:5px">${x.side==="student"?"Student":"Teacher"}</span></div>
+      <div style="font-size:12.8px;color:var(--ink);line-height:1.6;margin-top:5px">\u201c${(x.r.why||"").replace(/</g,"&lt;")}\u201d</div>
+      <div class="selrow-n" style="margin-top:5px">${x.side==="student"?d.name.split(" ")[0]:staffShort(x.r.by)} asked for this on ${x.r.when}. The reason above was written before it.</div>
+     </div>`).join("")}
+    </div>`;})()}
   ${stu?`<div class="sheetbox" style="margin-bottom:20px"><div class="selrow-static">
    ${av(d.av,"counselor",38)}
    <div style="min-width:0;flex:1"><div class="selrow-t">${d.name} is on your caseload</div>
@@ -10378,7 +10697,12 @@ function bind(){
     stopPropagation on the opener: the whole row is the log-a-concern
     target, and without it recommending a level would open the concern
     modal underneath at the same time. */
- q("[data-meetreqopen]",e=>e.onclick=()=>{S.modal={type:"meetreq",id:e.getAttribute("data-meetreqopen")};
+ q("[data-meetreqopen]",e=>e.onclick=()=>{
+  /* "<sid>:<subject>" from the student's form, with ":teacher" from the
+     review card. The subject travels with the request because the
+     request is about one subject. */
+  const parts=e.getAttribute("data-meetreqopen").split(":");
+  S.modal={type:"meetreq",id:parts[0],sub:parts[1]||null,side:parts[2]||"student"};
   S.meetReqWhy="";draw();});
  q("[data-meetreqwhy]",e=>e.oninput=()=>{const was=(S.meetReqWhy||"").trim().length>=15;
   S.meetReqWhy=e.value;
@@ -10389,12 +10713,21 @@ function bind(){
  q("[data-meetreqgo]",e=>e.onclick=()=>{
   const id=e.getAttribute("data-meetreqgo"),rec=SELREC[id];
   const why=(S.meetReqWhy||"").trim(); if(!rec||why.length<15)return;
-  rec.meetReq={why,when:DAY.short,by:"student"};
-  rec.log.unshift({when:DAY.short,who:(DPC.find(d=>d.id===id)||{}).name||"Student",
-   what:"Meeting requested about a choice that sits against the advice. "+why});
-  logAudit("STUDENT","MEETING_REQUESTED",(DPC.find(d=>d.id===id)||{}).name||id,why);
+  const sub=S.modal&&S.modal.sub, teacherSide=S.modal&&S.modal.side==="teacher";
+  if(!sub){S.modal=null;S.meetReqWhy="";draw();return;}
+  if(teacherSide){rec.teachReq=rec.teachReq||{};
+   rec.teachReq[sub]={why,when:DAY.short,by:TEACHER.name};}
+  else {rec.meetReq=rec.meetReq||{};
+   rec.meetReq[sub]={why,when:DAY.short,by:"student"};}
+  const nm=(DPC.find(d=>d.id===id)||{}).name||"Student";
+  const subN=IBS(sub)?IBS(sub).name:sub;
+  rec.log.unshift({when:DAY.short,who:teacherSide?TEACHER.name:nm,
+   what:"Meeting requested about "+subN+", a choice that sits against the advice. "+why});
+  logAudit(teacherSide?"TEACHER":"STUDENT","MEETING_REQUESTED",nm,subN+". "+why);
   S.modal=null;S.meetReqWhy="";
-  toast("Request sent. "+SEL_ROUND.coordinator+" sees it with your form.");});
+  toast(teacherSide
+   ?"Request sent. "+SEL_ROUND.coordinator+" and "+nm.split(" ")[0]+" both see it."
+   :"Request sent. "+SEL_ROUND.coordinator+" sees it with your form.");});
  q("[data-eligopen]",e=>e.onclick=ev=>{ev.stopPropagation();
   const id=e.getAttribute("data-eligopen");
   S.modal={type:"elig",id};
@@ -10558,6 +10891,10 @@ function bind(){
     redundant role="button" and tabindex on a button is noise, and kb() on
     a row element is what broke the caseload's column associations once. */
  q("[data-selstu]",e=>e.onclick=()=>{S.selStu=e.dataset.selstu;S.cv="ib-selections";draw();});
+ /* A row in the round's feed opens the student it is about. The feed
+    is a way into the work, not a notification shelf. */
+ q("[data-selopenstu]",e=>e.onclick=()=>{S.selStu=e.dataset.selopenstu;S.cv="ib-selections";draw();});
+ q("[data-actmore]",e=>e.onclick=()=>{S.actShown=(S.actShown||12)+20;draw();});
  q("[data-selback]",e=>e.onclick=()=>{S.selStu=null;draw();});
  q("[data-seltalk]",e=>e.onclick=()=>{S.modal={type:"seltalk",id:e.dataset.seltalk};S.selTalkNote="";draw();});
  q("[data-talknote]",e=>{e.oninput=()=>{const was=(S.selTalkNote||"").trim().length>=10,now=e.value.trim().length>=10;
